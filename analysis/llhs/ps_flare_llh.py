@@ -33,7 +33,7 @@ class ps_flare_llh(object):
         else:
             self.sob_maps = np.zeros((len(bins[0])-1, len(bins[1])-1, len(gammas)))
             self.bg_p_dec = self._create_bg_p_dec()
-            for i,gamma in enumerate(gammas):
+            for i,gamma in enumerate(tqdm(gammas)):
                 self.sob_maps[:,:,i],_ = self._create_interpolated_ratio(gamma, bins)
         
         if outfile is not None:
