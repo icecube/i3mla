@@ -170,7 +170,7 @@ class cluster_multiflare_llh(object):
         return final_sob_ratios
 
     # prune simulation around source
-    def _select_and_weight(self, N=0, gamma=-2, source = {'ra':np.pi/2, 'dec':np.pi/6},
+    def _select_and_weight(self, gamma=-2, source = {'ra':np.pi/2, 'dec':np.pi/6},
                           time_profiles = None, sampling_width = np.radians(1)):
         '''Prune the simulation set to only events close to a given source and calculate the
             weight for each event. Add the weights as a new column to the simulation set
@@ -198,7 +198,12 @@ class cluster_multiflare_llh(object):
         reduced_sims = np.array([reduced_sim.copy() for _ in time_profiles])
         for i, time_profile in enumerate(time_profiles):
             effective_livetime = time_profile[0].effective_exposure()
-            reduced_sims[i]['weight'] = time_profile[1]*reduced_sims[i]['ow'] *\
+
+            N = time_profile[1] / np.sum(reduced_sims[i]['ow'] *\
+                                         (reduced_sims[i]['trueE']/100.e3)**gamma *\
+                                         effective_livetime * 24 * 3600.)
+
+            reduced_sims[i]['weight'] = reduced_sims[i]['ow'] *\
                                         N * (reduced_sims[i]['trueE']/100.e3)**gamma *\
                                         effective_livetime * 24 * 3600.
 
@@ -212,7 +217,7 @@ class cluster_multiflare_llh(object):
         return reduced_sims
 
     # calculate test statistics
-    def produce_trial(self, N=0, gamma=-2, source = {'ra':np.pi/2, 'dec':np.pi/6},
+    def produce_trial(self, gamma=-2, source = {'ra':np.pi/2, 'dec':np.pi/6},
                       signal_time_profiles = None, background_time_profile = None,
                       background_window = 14, # days
                       random_seed = None, signal_weights = None, sims = None,
@@ -220,7 +225,6 @@ class cluster_multiflare_llh(object):
         '''Produces a single trial of background+signal events based on input parameters
 
         keyword arguments:
-            N
             gamma
             source
             signal_time_profile
@@ -231,11 +235,7 @@ class cluster_multiflare_llh(object):
             signal_weights
             return_signal_weights
         '''
-        if sims is None:
-            sims = [self.sim for _ in signal_time_profiles]
-
         assert(background_window > 0)
-        assert(signal_time_profiles != None)
         assert(background_time_profile != None)
 
         if random_seed != None: np.random.seed(random_seed)
@@ -276,11 +276,17 @@ class cluster_multiflare_llh(object):
         background['ra'] = np.random.uniform(0, 2*np.pi, len(background))
 
         # Do we want signal events?
-        reduced_sims = sims
+        reduced_sims = None
 
         signal = np.empty(0, dtype=background.dtype)
-        
-        if N > 0:
+
+        if signal_time_profiles != None:
+
+            if sims is None:
+                sims = [self.sim for _ in signal_time_profiles]
+
+            reduced_sims = sims
+
             signals = [np.empty(0, dtype=background.dtype) for _ in reduced_sims]
             if "weight" not in sims[0].dtype.names:
                 reduced_sims = self._select_and_weight(N=N,
@@ -359,6 +365,17 @@ class cluster_multiflare_llh(object):
             return events, reduced_sims
         else:
             return events
+
+    def evaluate_sob_per_event(self, events, source, gamma = -2):
+        '''
+        '''
+        S = self._signal_pdf(events, source)
+        B = self._background_pdf(events, source)
+
+        splines = self._get_energy_splines(events)
+
+        e_lh_ratio = self._get_energy_sob(events, gamma, splines)
+        return e_lh_ratio*(S/B)
 
     def evaluate_ts(self, events, source, bg_time_profile, sig_time_profile, ns = 0,
                     gamma = -2, minimize = True):
@@ -561,7 +578,7 @@ class cluster_multiflare_llh(object):
 
         return fit_info
 
-    # generate signal time profiles 
+    # generate signal time profiles
     def get_signal_time_profiles(self, Am, alpha, time_mu_dist, time_sigma_dist):
         '''
         '''
@@ -571,7 +588,7 @@ class cluster_multiflare_llh(object):
         sigmas = time_sigma_dist.rvs(size=Am)
 
         if s.sum() == 0:
-            return [(gauss_profile.gauss_profile(mu, sigma), 0) 
+            return [(gauss_profile.gauss_profile(mu, sigma), 0)
                     for mu,sigma,si in zip(mus, sigmas, s)]
-        return [(gauss_profile.gauss_profile(mu, sigma), si/s.sum()) 
+        return [(gauss_profile.gauss_profile(mu, sigma), si/s.sum())
                 for mu,sigma,si in zip(mus, sigmas, s)]
