@@ -281,6 +281,7 @@ class ps_flare_llh(object):
 
             # Pick the signal events
             total = reduced_sim['weight'].sum()
+
             n_signal_observed = scipy.stats.poisson.rvs(total)
             signal = np.random.choice(reduced_sim, n_signal_observed,
                                       p = reduced_sim['weight']/total,
