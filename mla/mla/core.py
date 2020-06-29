@@ -104,7 +104,7 @@ class LLH_point_source(object):
         self.spatial = signal/self.background_pdf()  
         return
         
-    def updata_spectrum(self,spectrum):
+    def update_spectrum(self,spectrum):
         ''' update the spectrum'''
         self.spectrum = spectrum
         self.update_energy_histogram()
