@@ -85,9 +85,11 @@ class LLH_point_source(object):
         self.sample_size = 0
         return
     
-    def update_position(self,ra,dec):
+    def update_position(self,ra,dec, sampling_width = np.radians(1)):
         self.ra = ra
         self.dec = dec
+        self.sim = scale_and_weight_trueDec(self.fullsim , dec , sampling_width = sampling_width)# Notice that this is for expected signal calculation
+        self.sim_dec = scale_and_weight_dec(self.fullsim , dec , sampling_width = sampling_width)#
         self.update_spatial()
         return
     
