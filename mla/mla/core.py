@@ -52,7 +52,7 @@ def scale_and_weight_dec(sim , source_dec , sampling_width = np.radians(1)):
     
     return reduced_sim
     
-def build_bkg_2dhistogram(data , bins=[np.linspace(-1,1,100),np.linspace(1,8,100)]):
+def build_bkg_2dhistogram(data , bins=[np.linspace(-1,1,300),np.linspace(1,8,100)]):
     ''' build the background 2d histogram for energy S/B'''
     bg_w=np.ones(len(data),dtype=float)
     
@@ -65,7 +65,7 @@ def build_bkg_2dhistogram(data , bins=[np.linspace(-1,1,100),np.linspace(1,8,100
     
 class LLH_point_source(object):
     '''The class for point source'''
-    def __init__(self , ra , dec , data , sim , livetime , spectrum , bkg_bins=np.linspace(-1.0, 1.0, 501) , sampling_width = np.radians(1) , bkg_2dbins=[np.linspace(-1,1,300),np.linspace(1,8,100)]):
+    def __init__(self , ra , dec , data , sim , livetime , spectrum , fit_position=False , bkg_bins=np.linspace(-1.0, 1.0, 501) , sampling_width = np.radians(1) , bkg_2dbins=[np.linspace(-1,1,300),np.linspace(1,8,100)]):
         ''' Constructor of the class'''
         self.ra = ra
         self.dec = dec
@@ -75,24 +75,40 @@ class LLH_point_source(object):
         self.sim_dec = scale_and_weight_dec(sim , dec , sampling_width = sampling_width)# This is for Energy S/B ratio calculation
         self.fullsim = sim #The full simulation set,this is for the overall normalization of the Energy S/B ratio
         self.N = len(data) #The len of the data
+        self.fit_position = fit_position
         self.spectrum = spectrum
         self.data = data
         self.livetime = livetime
         self.update_spatial() #Calculating the spatial llh and drop all data with zero signal spatial llh
+        self.update_energy_histogram()
+        self.update_energy_weight()
         self.sample_size = 0
         return
-       
+    
+    def update_position(self,ra,dec):
+        self.ra = ra
+        self.dec = dec
+        self.update_spatial()
+        return
+    
+    
+
+    
     def update_spatial(self):
         '''Calculating the spatial llh and drop data with zero spatial llh'''
         signal = self.signal_pdf()
         mask = signal!=0
-        self.data = self.data[mask]
-        self.spatial = signal[mask]/self.background_pdf()  
+        if self.fit_position==True:
+            self.data = self.data[mask]
+            signal = signal[mask]
+        self.spatial = signal/self.background_pdf()  
         return
         
     def updata_spectrum(self,spectrum):
         ''' update the spectrum'''
         self.spectrum = spectrum
+        self.update_energy_histogram()
+        self.update_energy_weight()
         return
         
         
@@ -102,14 +118,16 @@ class LLH_point_source(object):
         self.data = data[mask]
         self.N = len(data)
         self.update_spatial()
+        self.update_energy_weight()        
         return
         
-    def update_data(self , data ,livetime):
+    def update_data(self , data ,livetime , drop=True):
         '''Change the data'''
         self.data = data
         self.livetime = livetime
         self.N = len(data)
-        self.update_spatial()
+        if drop: self.update_spatial()
+        self.update_energy_weight()
         return
         
     def signal_pdf(self):
@@ -126,10 +144,8 @@ class LLH_point_source(object):
         background_likelihood = (1/(2*np.pi))*self.bkg_spline(np.sin(self.data['dec']))
         return background_likelihood
     
-    def energy_weight(self):
+    def update_energy_histogram(self):
         '''enegy weight calculation. This is slow if you choose a large sample width'''
-        i=np.searchsorted(self.energybins[0],np.sin(self.data['dec']))-1
-        j=np.searchsorted(self.energybins[1],self.data['logE'])-1
         sig_w=self.sim_dec['ow'] * self.spectrum(self.sim_dec['trueE'])
         sig_w/=np.sum(self.fullsim['ow'] * self.spectrum(self.fullsim['trueE']))
         sig_h,xedges,yedges=np.histogram2d(np.sin(self.sim_dec['dec']),self.sim_dec['logE'],bins=self.energybins,weights=sig_w)
@@ -145,19 +161,24 @@ class LLH_point_source(object):
                 ratio[k]=y
             else:
                 ratio[k]=0
-        return ratio[i,j]
+        self.ratio=ratio
+        return
+        
+    def update_energy_weight(self):
+        i = np.searchsorted(self.energybins[0],np.sin(self.data['dec']))-1
+        j = np.searchsorted(self.energybins[1],self.data['logE'])-1
+        self.energy = self.ratio[i,j]
+        return
         
     def eval_llh(self):
         '''Calculating the llh using the spectrum'''
         ns = (self.sim['ow'] * self.spectrum(self.sim['trueE']) * self.livetime * 24 * 3600).sum()     
-        energy = self.energy_weight()
-        ts =( ns/self.N * (energy*self.spatial - 1))+1
+        ts =( ns/self.N * (self.energy*self.spatial - 1))+1
         return ns,2*np.sum(np.log(ts))
     
     def eval_llh_ns(self,ns):     
         '''Calculating the llh with user-input ns'''
-        energy = self.energy_weight()
-        ts =( ns/self.N * (energy*self.spatial - 1))+1
+        ts =( ns/self.N * (self.energy*self.spatial - 1))+1
         return ns,2*np.sum(np.log(ts))
     
     def add_injection(self,sample):
@@ -165,9 +186,10 @@ class LLH_point_source(object):
         self.sample_size = len(sample)+self.sample_size
         sample = rf.drop_fields(sample, [n for n in sample.dtype.names \
                          if not n in self.data.dtype.names])
-        self.data = np.concatenate((self.data,sample))
+        self.data = np.concatenate([self.data,sample])
         self.N = len(self.data)
         self.update_spatial()
+        self.update_energy_weight()
         return
     
     def remove_injection(self):
@@ -175,6 +197,7 @@ class LLH_point_source(object):
         self.data = self.data[:len(self.data)-self.sample_size]
         self.N = len(self.data)
         self.update_spatial()
+        self.update_energy_weight()
         return
         
     def modify_injection(self,sample):
