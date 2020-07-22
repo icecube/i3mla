@@ -4,15 +4,25 @@ from __future__ import print_function, division
 import numpy as np
 import numpy.lib.recfunctions as rf
 from mla.spectral import *
+from mla.timing import *
 import scipy.stats
 from mla import tools
 
 class PSinjector(object):
     r'''injector of point source'''
-    def __init__(self, spectrum, mc):
-        r'''initial the injector with a spectum'''
+    def __init__(self, spectrum, mc , signal_time_profile = None , background_time_profile = (0,1)):
+        r'''initial the injector with a spectum and signal_time_profile. background_time_profile can be generic_profile or the time range'''
         self.spectrum = spectrum
         self.mc = mc
+        if isinstance(background_time_profile,generic_profile):
+            self.background_time_profile = background_time_profile
+        else:
+            self.background_time_profile = uniform_profile(background_time_profile[0],background_time_profile[1])
+        if signal_time_profile == None:
+            self.signal_time_profile = self.background_time_profile
+        else:
+            self.signal_time_profile = signal_time_profile
+        return
     
     def _select_and_weight(self, ra, dec ,sampling_width = np.radians(1)):
         r'''Prune the simulation set to only events close to a given source and calculate the
@@ -45,11 +55,11 @@ class PSinjector(object):
         self.dec = dec
         self.reduce_mc = self._select_and_weight(ra, dec, sampling_width)
     
-    def sample_from_spectrum(self,livetime,seed=None,poisson=True):
+    def sample_from_spectrum(self,seed=None,poisson=True):
         r''' Sample events from spectrum'''
     
         if seed != None: np.random.seed(seed)
-        self.reduce_mc['weight']=self.spectrum(self.reduce_mc['trueE'])*self.reduce_mc['ow']*livetime * 24 * 3600.
+        self.reduce_mc['weight']=self.spectrum(self.reduce_mc['trueE'])*self.reduce_mc['ow']*self.signal_profile.effective_exposure() * 24 * 3600.
 
         total = self.reduce_mc['weight'].sum()
         if poisson:
@@ -78,6 +88,11 @@ class PSinjector(object):
                                                                signal['trueRa'],
                                                                signal['trueDec'])
 
+        signal['time'] = self.signal_time_profile.random(len(signal))
+        bgrange = self.background_time_profile.get_range()
+        contained_in_background = ((signal['time'] >= bgrange[0]) &\
+                                   (signal['time'] < bgrange[1]))
+        signal = signal[contained_in_background]
         
         return signal
      
@@ -106,6 +121,11 @@ class PSinjector(object):
                                                                signal['trueRa'],
                                                                signal['trueDec'])
 
+        signal['time'] = self.signal_time_profile.random(len(signal))
+        bgrange = self.background_time_profile.get_range()
+        contained_in_background = ((signal['time'] >= bgrange[0]) &\
+                                   (signal['time'] < bgrange[1]))
+        signal = signal[contained_in_background]
         
         return signal
         

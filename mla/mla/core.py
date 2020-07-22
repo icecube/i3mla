@@ -7,7 +7,10 @@ from math import pi
 import numpy.lib.recfunctions as rf
 from mla.spectral import *
 from mla.tools import *
+from mla.timing import *
 import scipy.stats
+from copy import deepcopy
+
 
 def build_bkg_spline(data , bins=np.linspace(-1.0, 1.0, 501) , file_name=None): 
     ''' build the dec-background spline '''
@@ -65,31 +68,38 @@ def build_bkg_2dhistogram(data , bins=[np.linspace(-1,1,300),np.linspace(1,8,100
     
 class LLH_point_source(object):
     '''The class for point source'''
-    def __init__(self , ra , dec , data , sim , livetime , spectrum , fit_position=False , bkg_bins=np.linspace(-1.0, 1.0, 501) , sampling_width = np.radians(1) , bkg_2dbins=[np.linspace(-1,1,300),np.linspace(1,8,100)]):
+    def __init__(self , ra , dec , data , sim , livetime , spectrum , signal_time_profile = None , background_time_profile = (0,1) , fit_position=False , bkg_bins=np.linspace(-1.0, 1.0, 501) , sampling_width = np.radians(1) , bkg_2dbins=[np.linspace(-1,1,300),np.linspace(1,8,100)]):
         ''' Constructor of the class'''
-        self.ra = ra
-        self.dec = dec
-        self.bg_h,self.energybins = build_bkg_2dhistogram(data , bins = bkg_2dbins)
-        self.bkg_spline = build_bkg_spline(data , bins = bkg_bins)
-        self.sim = scale_and_weight_trueDec(sim , dec , sampling_width = sampling_width)# Notice that this is for expected signal calculation
-        self.sim_dec = scale_and_weight_dec(sim , dec , sampling_width = sampling_width)# This is for Energy S/B ratio calculation
-        self.fullsim = sim #The full simulation set,this is for the overall normalization of the Energy S/B ratio
-        self.N = len(data) #The len of the data
-        self.fit_position = fit_position
+        self.energybins = bkg_2dbins
         self.spectrum = spectrum
         self.data = data
+        self.fit_position = fit_position
         self.livetime = livetime
-        self.update_spatial() #Calculating the spatial llh and drop all data with zero signal spatial llh
+        self.fullsim = sim #The full simulation set,this is for the overall normalization of the Energy S/B ratio
+        self.bkg_spline = build_bkg_spline(data , bins = bkg_bins)
+        self.update_position(ra,dec,sampling_width)
+        self.bg_h,self.energybins = build_bkg_2dhistogram(data , bins = bkg_2dbins)
+        self.N = len(data) #The len of the data
+        if isinstance(background_time_profile,generic_profile):
+            self.background_time_profile = background_time_profile
+        else:
+            self.background_time_profile = uniform_profile(background_time_profile[0],background_time_profile[1])
+        if signal_time_profile is None:
+            self.signal_time_profile = deepcopy(self.background_time_profile)
+        else:
+            self.signal_time_profile = signal_time_profile
         self.update_energy_histogram()
         self.update_energy_weight()
         self.sample_size = 0
+        self.update_time_weight()
         return
     
     def update_position(self,ra,dec, sampling_width = np.radians(1)):
         self.ra = ra
         self.dec = dec
+        self.edge_point = (np.searchsorted(self.energybins[0],np.sin(dec+sampling_width))-1,np.searchsorted(self.energybins[0],np.sin(dec-sampling_width))-1)
         self.sim = scale_and_weight_trueDec(self.fullsim , dec , sampling_width = sampling_width)# Notice that this is for expected signal calculation
-        self.sim_dec = scale_and_weight_dec(self.fullsim , dec , sampling_width = sampling_width)#
+        self.sim_dec = scale_and_weight_dec(self.fullsim , dec , sampling_width = sampling_width)# This is for Energy S/B ratio calculation
         self.update_spatial()
         return
     
@@ -120,16 +130,18 @@ class LLH_point_source(object):
         self.data = data[mask]
         self.N = len(data)
         self.update_spatial()
-        self.update_energy_weight()        
+        self.update_energy_weight()
+        self.update_time_weight()        
         return
         
-    def update_data(self , data ,livetime , drop=True):
+    def update_data(self , data , livetime , drop=True):
         '''Change the data'''
         self.data = data
         self.livetime = livetime
         self.N = len(data)
         if drop: self.update_spatial()
         self.update_energy_weight()
+        self.update_time_weight()
         return
         
     def signal_pdf(self):
@@ -146,12 +158,28 @@ class LLH_point_source(object):
         background_likelihood = (1/(2*np.pi))*self.bkg_spline(np.sin(self.data['dec']))
         return background_likelihood
     
+    def update_background_time_profile(profile):
+        self.background_time_profile = profile
+        return
+     
+    def update_signal_time_profile(profile):
+        self.signal_time_profile = profile
+        return
+    
+    def update_time_weight(self):
+        
+        signal_lh_ratio = self.signal_time_profile.pdf(self.data['time'])
+        background_lh_ratio = self.background_time_profile.pdf(self.data['time'])
+        self.t_lh_ratio = np.nan_to_num(signal_lh_ratio/background_lh_ratio) #replace nan with zero
+        return
+    
     def update_energy_histogram(self):
         '''enegy weight calculation. This is slow if you choose a large sample width'''
         sig_w=self.sim_dec['ow'] * self.spectrum(self.sim_dec['trueE'])
         sig_w/=np.sum(self.fullsim['ow'] * self.spectrum(self.fullsim['trueE']))
         sig_h,xedges,yedges=np.histogram2d(np.sin(self.sim_dec['dec']),self.sim_dec['logE'],bins=self.energybins,weights=sig_w)
-        ratio=sig_h/self.bg_h
+        with np.errstate(divide='ignore'):
+            ratio=sig_h/self.bg_h
         for k in range(ratio.shape[0]):
             values=ratio[k]
             good=np.isfinite(values)&(values>0)
@@ -169,18 +197,20 @@ class LLH_point_source(object):
     def update_energy_weight(self):
         i = np.searchsorted(self.energybins[0],np.sin(self.data['dec']))-1
         j = np.searchsorted(self.energybins[1],self.data['logE'])-1
+        i[i<self.edge_point[0]] = self.edge_point[0]
+        i[i>self.edge_point[1]] = self.edge_point[1]
         self.energy = self.ratio[i,j]
         return
         
     def eval_llh(self):
         '''Calculating the llh using the spectrum'''
         ns = (self.sim['ow'] * self.spectrum(self.sim['trueE']) * self.livetime * 24 * 3600).sum()     
-        ts =( ns/self.N * (self.energy*self.spatial - 1))+1
+        ts =( ns/self.N * (self.energy*self.spatial*self.t_lh_ratio - 1))+1
         return ns,2*np.sum(np.log(ts))
     
     def eval_llh_ns(self,ns):     
         '''Calculating the llh with user-input ns'''
-        ts =( ns/self.N * (self.energy*self.spatial - 1))+1
+        ts =( ns/self.N * (self.energy*self.spatial*self.t_lh_ratio - 1))+1
         return ns,2*np.sum(np.log(ts))
     
     def add_injection(self,sample):
@@ -192,19 +222,22 @@ class LLH_point_source(object):
         self.N = len(self.data)
         self.update_spatial()
         self.update_energy_weight()
+        self.update_time_weight()
         return
     
-    def remove_injection(self):
+    def remove_injection(self,update=True):
         '''remove injected sample'''
         self.data = self.data[:len(self.data)-self.sample_size]
         self.N = len(self.data)
-        self.update_spatial()
-        self.update_energy_weight()
+        if update:
+            self.update_spatial()
+            self.update_energy_weight()
+            self.update_time_weight()
         return
         
     def modify_injection(self,sample):
         '''modify injected sample'''
-        self.remove_injection()
+        self.remove_injection(update=False)
         self.add_injection(sample)
         return 
         

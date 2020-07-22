@@ -1,0 +1,140 @@
+crab (point source):
+
+  position:
+
+    ra:
+
+      value: 83.63
+
+      desc: Right Ascension
+
+      min_value: 0.0
+
+      max_value: 360.0
+
+      unit: deg
+
+      is_normalization: false
+
+      delta: 8.363
+
+      free: false
+
+    dec:
+
+      value: 22.02
+
+      desc: Declination
+
+      min_value: -90.0
+
+      max_value: 90.0
+
+      unit: deg
+
+      is_normalization: false
+
+      delta: 2.202
+
+      free: false
+
+    equinox: J2000
+
+  spectrum:
+
+    main:
+
+      Log_parabola:
+
+        K:
+
+          value: 2.540507290662483e-22
+
+          desc: Normalization
+
+          min_value: 1.0000000000000001e-44
+
+          max_value: 1.0000000000000001e-19
+
+          unit: keV-1 s-1 cm-2
+
+          is_normalization: true
+
+          delta: 2.5e-24
+
+          free: true
+
+        piv:
+
+          value: 7000000000.0
+
+          desc: Pivot (keep this fixed)
+
+          min_value: null
+
+          max_value: null
+
+          unit: keV
+
+          is_normalization: false
+
+          delta: 0.1
+
+          free: false
+
+        alpha:
+
+          value: -2.645922411782605
+
+          desc: index
+
+          min_value: -4.0
+
+          max_value: 2.0
+
+          unit: ''
+
+          is_normalization: false
+
+          delta: 0.2
+
+          free: true
+
+        beta:
+
+          value: 0.10389519025054561
+
+          desc: curvature (positive is concave, negative is convex)
+
+          min_value: -4.0
+
+          max_value: 2.0
+
+          unit: ''
+
+          is_normalization: false
+
+          delta: 0.1
+
+          free: true
+
+      polarization: {}
+
+HAWC_bkg_renorm (Parameter):
+
+  value: 1.0
+
+  desc: Renormalization for background map
+
+  min_value: 0.5
+
+  max_value: 1.5
+
+  unit: ''
+
+  is_normalization: false
+
+  delta: 0.01
+
+  free: false
+
