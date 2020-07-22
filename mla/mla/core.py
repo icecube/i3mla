@@ -97,7 +97,7 @@ class LLH_point_source(object):
     def update_position(self,ra,dec, sampling_width = np.radians(1)):
         self.ra = ra
         self.dec = dec
-        self.edge_point = (np.searchsorted(self.energybins[0],np.sin(dec+sampling_width))-1,np.searchsorted(self.energybins[0],np.sin(dec-sampling_width))-1)
+        self.edge_point = (np.searchsorted(self.energybins[0],np.sin(dec-sampling_width))-1,np.searchsorted(self.energybins[0],np.sin(dec+sampling_width))-1)
         self.sim = scale_and_weight_trueDec(self.fullsim , dec , sampling_width = sampling_width)# Notice that this is for expected signal calculation
         self.sim_dec = scale_and_weight_dec(self.fullsim , dec , sampling_width = sampling_width)# This is for Energy S/B ratio calculation
         self.update_spatial()
