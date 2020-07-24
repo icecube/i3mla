@@ -4,6 +4,7 @@ from __future__ import print_function, division
 import numpy as np
 import scipy
 import abc
+import scipy.stats
 
 class generic_profile(object):
     r""" A generic base class to standardize the methods for the
@@ -153,7 +154,7 @@ class custom_profile(generic_profile):
         hist = self.pdf(self.grid[:-1])
         peak = self.grid[np.argmax(hist)]
         self.norm = 1/peak
-        return scipy.stats.rv_histogram(hist,self.grid)
+        return scipy.stats.rv_histogram((hist,self.grid))
     
     def pdf(self, times):
         r""" Calculates the probability for each time
@@ -161,7 +162,7 @@ class custom_profile(generic_profile):
         args:
             times: A numpy list of times to evaluate
         """
-        return self.pdf(times)
+        return self.dist.pdf(times)
     
     def logpdf(self, times):
         r""" Calculates the log(probability) for each time
@@ -169,7 +170,7 @@ class custom_profile(generic_profile):
         args:
             times: A numpy list of times to evaluate
         """
-        return np.log(self.pdf(times))
+        return self.dist.logpdf(times)
         
     def random(self, n=1): 
         r""" Return random values following the custom distribution
@@ -189,3 +190,5 @@ class custom_profile(generic_profile):
         r""" Return the min/max values for the distribution 
         """
         return [self.range[0], self.range[1]]
+        
+        
