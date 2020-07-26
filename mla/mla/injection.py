@@ -24,6 +24,20 @@ class PSinjector(object):
             self.signal_time_profile = signal_time_profile
         return
     
+    
+    def add_background(self, background ,grl):
+        r''' Add Background data into the injector such that it can also inject background event'''
+        self.background = background
+        self.background_rate = len(background)/np.sum(grl['livetime'])
+    
+    def produce_background(self,time_window):
+        r''' Sample background given the time_window'''
+        n_background = self.background_rate*time_window
+        n_background_observed = scipy.stats.poisson.rvs(n_background)
+        background = np.random.choice(data, n_background_observed)
+        background['time'] = self.background_time_profile.random(len(background))
+        returnbackground
+    
     def _select_and_weight(self, ra, dec ,sampling_width = np.radians(1)):
         r'''Prune the simulation set to only events close to a given source and calculate the
             weight for each event. Add the weights as a new column to the simulation set
