@@ -29,6 +29,9 @@ class generic_profile(object):
     @abc.abstractmethod
     def get_range(self): pass
     
+    @abc.abstractmethod
+    def change_offset(self): pass
+    
 
 class uniform_profile(generic_profile):
     r"""Time profile class for a uniform distribution."""
@@ -38,13 +41,14 @@ class uniform_profile(generic_profile):
         self.start_time = start_time
         self.end_time = end_time
         self.norm = 1.0/(end_time-start_time)
+        self.offset = 0
         return
     
     def pdf(self, times):
         r""" Calculates the probability for each time."""
         output = np.zeros_like(times)
-        output[(times>=self.start_time) &\
-               (times<self.end_time)] = self.norm
+        output[(times-self.offset>=self.start_time) &\
+               (times-self.offset<self.end_time)] = self.norm
         return output
     
     def logpdf(self, times):
@@ -57,8 +61,8 @@ class uniform_profile(generic_profile):
         args:
             n: The number of random values to return
         """
-        return np.random.uniform(self.start_time,
-                                 self.end_time,
+        return np.random.uniform(self.start_time+self.offset,
+                                 self.end_time+self.offset,
                                  n)
     
     def effective_exposure(self): 
@@ -70,8 +74,12 @@ class uniform_profile(generic_profile):
     def get_range(self): 
         r""" Return the min/max values for the distribution 
         """
-        return [self.start_time, self.end_time]
+        return [self.start_time+self.offset, self.end_time+self.offset]
     
+    def change_offset(self, offset):
+        r'''Change the offset'''
+        self.offset = offset
+        return
 
 class gauss_profile(generic_profile):
     r"""Time profile class for a gaussian distribution. Use this
@@ -88,6 +96,7 @@ class gauss_profile(generic_profile):
         self.sigma = sigma
         self.scipy_dist = scipy.stats.norm(mean, sigma)
         self.norm = 1.0/np.sqrt(2*np.pi*sigma**2)
+        self.offset = 0
         return
     
     def pdf(self, times):
@@ -125,12 +134,16 @@ class gauss_profile(generic_profile):
         """
         return [-np.inf, np.inf]
         
-        
+    def change_offset(self, offset):
+        r"""Change the offset of gaussian(add the offset to mean"""
+        self.offset = offset
+        self.scipy_dist = scipy.stats.norm(mean + self.offset, sigma)
+        return
         
 class custom_profile(generic_profile):
     r"""Time profile class for a user-defined pdf. Notice that the pdf have to be normalized. The effective_exposure is chosen such that the peak of the profile is 1.
     """
-    def __init__(self, time_pdf , range , grid = None , size = 10000):
+    def __init__(self, time_pdf , range , grid = None , size = 10000 ):
         r""" Constructor for the class.
 
         args:
@@ -140,12 +153,13 @@ class custom_profile(generic_profile):
             size : the number of time points that will be evaluated with linear spacing
         """
         self.pdf = time_pdf
-        self.range = range
+        self.range = range 
         if grid is None:
             self.grid = np.linspace(range[0],range[1], size) #grid size 
         else :
             self.grid = grid
         self.dist = self.build_rv()
+        self.offset = 0
         return
     
     def build_rv(self):
@@ -162,7 +176,7 @@ class custom_profile(generic_profile):
         args:
             times: A numpy list of times to evaluate
         """
-        return self.dist.pdf(times)
+        return self.dist.pdf(times-self.offset)
     
     def logpdf(self, times):
         r""" Calculates the log(probability) for each time
@@ -170,7 +184,7 @@ class custom_profile(generic_profile):
         args:
             times: A numpy list of times to evaluate
         """
-        return self.dist.logpdf(times)
+        return self.dist.logpdf(times-self.offset)
         
     def random(self, n=1): 
         r""" Return random values following the custom distribution
@@ -178,7 +192,7 @@ class custom_profile(generic_profile):
         args:
             n: The number of random values to return
         """
-        return self.dist.rvs(size=n)
+        return self.dist.rvs(size=n) + self.offset
     
     def effective_exposure(self): 
         r""" Calculate the weight associated with each
@@ -190,5 +204,11 @@ class custom_profile(generic_profile):
         r""" Return the min/max values for the distribution 
         """
         return [self.range[0], self.range[1]]
+    
+    def change_offset(self, offset):
+        r"""Change the offset of gaussian(add the offset to mean"""
+        self.offset = offset
+        self.range = [ self.range[0] + offset, self.range[1] + offset ]
+        return
         
         
