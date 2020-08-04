@@ -3,7 +3,7 @@
 import numpy as np
 
 def read(filelist):
-    '''Read in and concatenate a list of numpy files'''
+    r'''Read in and concatenate a list of numpy files'''
     data = []
     for f in sorted(filelist):
         x = np.load(f)
@@ -12,13 +12,13 @@ def read(filelist):
     return data
 
 def to_unit_vector(ra, dec):
-    '''Convert location on unit sphere to rectangular coordinates'''
+    r'''Convert location on unit sphere to rectangular coordinates'''
     return np.array([np.cos(ra)*np.cos(dec),
                      np.sin(ra)*np.cos(dec),
                      np.sin(dec)])
 
 def angular_distance(ra_A, dec_A, ra_B, dec_B):
-    '''Calculate the angle between two points on the unit sphere'''
+    r'''Calculate the angle between two points on the unit sphere'''
     unit_A = to_unit_vector(ra_A, dec_A)
     unit_B = to_unit_vector(ra_B, dec_B)
 
