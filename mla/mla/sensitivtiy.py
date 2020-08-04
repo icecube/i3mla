@@ -260,8 +260,8 @@ class PS_sensitivity():
         r'''save plot to file_name
         '''
         fig, ax = plt.subplots(figsize = (12,12))
-        ax.scatter(self.list_N,self.result[:,0],label = 'sensitiviy point',color='r')
-        ax.scatter(self.list_N,self.result[:,1],label = 'potential point',color='b')
+        ax.scatter(self.list_N,self.result[:,1],label = 'sensitiviy point',color='r')
+        ax.scatter(self.list_N,self.result[:,0],label = 'potential point',color='b')
         ax.set_xlim(self.list_N[0],self.list_N[-1])
         ax.plot(np.linspace(self.list_N[0],self.list_N[-1],1000),self.spline_sen(np.linspace(self.list_N[0],self.list_N[-1],1000)),label = 'sensitiviy spline',color='r')
         ax.plot(np.linspace(self.list_N[0],self.list_N[-1],1000),self.spline_sigma(np.linspace(self.list_N[0],self.list_N[-1],1000)),label = 'potential spline',color='b')
