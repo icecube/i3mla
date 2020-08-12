@@ -209,6 +209,8 @@ class LLH_point_source(object):
         '''
         if background is None:
             self.background = data
+        else:
+            self.background = background
         self.data = data
         self.energybins = bkg_2dbins
         self.N = len(data) #The len of the data
