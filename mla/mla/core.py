@@ -29,7 +29,9 @@ def build_bkg_spline(data , bins=np.linspace(-1.0, 1.0, 501) , file_name = None)
     
     hist, bins = np.histogram(sin_dec, 
                         bins=bins, 
-                        weights=np.ones_like(data['dec'])/len(data['dec']))
+                        weights=np.ones_like(data['dec'])/len(data['dec']),
+                        density=True
+                        )
                         
     bg_p_dec = interpolate.UnivariateSpline(bins[:-1]+np.diff(bins)/2., 
                                         hist,
@@ -227,7 +229,7 @@ class LLH_point_source(object):
             self.signal_time_profile = signal_time_profile
             
         self.sample_size = 0
-        self.update_time_weight()
+        
         
         if bkg_dec_spline is None:
             self.bkg_spline = build_bkg_spline(self.background , bins = bkg_bins)
@@ -262,7 +264,8 @@ class LLH_point_source(object):
                 self.bg_h = bkg_maps
             self.update_position(ra,dec,sampling_width)
             self.update_energy_histogram()
-        
+            
+        self.update_time_weight()
         self.update_energy_weight()
         
         return
@@ -289,9 +292,12 @@ class LLH_point_source(object):
         r'''Calculating the spatial llh and drop data with zero spatial llh'''
         signal = self.signal_pdf()
         mask = signal!=0
-        if self.fit_position==True:
+        if self.fit_position==False:
             self.data = self.data[mask]
             signal = signal[mask]
+            self.drop = self.N - mask.sum()
+        else:
+            self.drop = 0
         self.spatial = signal/self.background_pdf()  
         return
         
@@ -470,10 +476,11 @@ class LLH_point_source(object):
         r'''Calculating the llh using the spectrum'''
         if self.N == 0:
             return 0,0
-        ns = (self.sim['ow'] * self.spectrum(self.sim['trueE']) * self.signal_time_profile.effective_exposure() * 24 * 3600).sum()     
+        ns = (self.sim['ow'] * self.spectrum(self.sim['trueE']) * self.signal_time_profile.effective_exposure() *24*3600).sum()     
         ts =( ns/self.N * (self.energy*self.spatial*self.t_lh_ratio - 1))+1
-        ts_value = 2*np.sum(np.log(ts))
-        if ts_value < 0 or np.isnan(ts_value):
+        ts_value = 2*(np.sum(np.log(ts))+self.drop*np.log(1-ns/self.N))
+        #if ts_value < 0 or np.isnan(ts_value):
+        if np.isnan(ts_value) :
             ns = 0
             ts_value = 0
         return ns,ts_value
@@ -483,8 +490,8 @@ class LLH_point_source(object):
         if self.N == 0:
             return 0,0
         ts =( ns/self.N * (self.energy*self.spatial*self.t_lh_ratio - 1))+1
-        ts_value = 2*np.sum(np.log(ts))
-        if ts_value < 0 or np.isnan(ts_value):
+        ts_value = 2*(np.sum(np.log(ts))+self.drop*np.log(1-ns/self.N))
+        if np.isnan(ts_value):
             ns = 0
             ts_value = 0
         return ns,ts_value
@@ -496,7 +503,7 @@ class LLH_point_source(object):
         bounds= [[0, self.N ],]
         def get_ts(ns):   
             ts =( ns/self.N * (self.energy*self.spatial*self.t_lh_ratio - 1))+1
-            return -2*np.sum(np.log(ts))
+            return -2*(np.sum(np.log(ts))+self.drop*np.log(1-ns/self.N))
         result = scipy.optimize.minimize(get_ts,
                     x0 = [1,],
                     bounds = bounds,
@@ -504,7 +511,7 @@ class LLH_point_source(object):
                     )
         self.fit_ns = result.x[0]
         self.fit_ts = -1*result.fun
-        if self.fit_ts < 0 or np.isnan(self.fit_ts):
+        if np.isnan(self.fit_ts):
             self.fit_ts = 0
             self.fit_ns = 0
         return self.fit_ns,self.fit_ts
@@ -524,8 +531,8 @@ class LLH_point_source(object):
         self.data = np.concatenate([self.data,sample])
         self.N = len(self.data)
         self.update_spatial()
-        self.update_energy_weight()
         self.update_time_weight()
+        self.update_energy_weight()
         return
     
     def remove_injection(self,update=True):
@@ -537,8 +544,8 @@ class LLH_point_source(object):
         self.N = len(self.data)
         if update:
             self.update_spatial()
-            self.update_energy_weight()
             self.update_time_weight()
+            self.update_energy_weight()
         return
         
     def modify_injection(self,sample):

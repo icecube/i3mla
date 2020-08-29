@@ -31,6 +31,44 @@ class PSinjector(object):
             self.signal_time_profile = signal_time_profile
         return
     
+    def set_backround(self, background ,grl ,background_window = 14):
+        r'''Setting the background information which will later be used when drawing data as background
+        args:
+        background:Background data
+        grl:The good run list
+        background_window: The time window(days) that will be used to estimated the background rate and drawn sample from.Default is 14 days
+        '''
+        start_time = self.background_time_profile.get_range()[0]
+        fully_contained = (grl['start'] >= start_time-background_window) &\
+                            (grl['stop'] < start_time)
+        start_contained = (grl['start'] < start_time-background_window) &\
+                            (grl['stop'] > start_time-background_window)
+        background_runs = (fully_contained | start_contained)
+        if not np.any(background_runs):
+            print("ERROR: No runs found in GRL for calculation of "
+                  "background rates!")
+            raise RuntimeError
+        background_grl = grl[background_runs]
+            
+        # Get the number of events we see from these runs and scale 
+        # it to the number we expect for our search livetime.
+        n_background = background_grl['events'].sum()
+        n_background /= background_grl['livetime'].sum()
+        n_background *= self.background_time_profile.effective_exposure()
+        self.n_background = n_background
+        self.background = background
+        return
+
+    def draw_data(self):
+        r'''Draw data sample
+        return:
+        background: background sample
+        '''
+        n_background_observed = np.random.poisson(self.n_background)
+        background = np.random.choice(self.background, n_background_observed).copy()
+        background['time'] = self.background_time_profile.random(len(background))
+        return background        
+    
     def update_spectrum(self, spectrum):
         r"""Updating the injection spectrum.
         args:
