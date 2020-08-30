@@ -469,8 +469,6 @@ class LLH_point_source(object):
         j = np.searchsorted(self.energybins[1], self.data['logE']) - 1
         return self.ratio[i,j]
     
-    
-
         
     def eval_llh(self):
         r'''Calculating the llh using the spectrum'''
