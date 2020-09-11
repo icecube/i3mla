@@ -5,6 +5,7 @@ import os, sys, glob, numpy as np, matplotlib, scipy,  time
 from scipy import stats, interpolate, optimize
 from math import pi
 import numpy.lib.recfunctions as rf
+import mla
 from mla.spectral import *
 from mla.tools import *
 from mla.timing import *
@@ -339,12 +340,12 @@ class LLH_point_source(object):
         return:
         Signal spatial pdf
         '''
-        distance = angular_distance(self.data['ra'], 
+        distance = mla.tools.angular_distance(self.data['ra'], 
                                     self.data['dec'], 
                                     self.ra, 
                                     self.dec)
         sigma = self.data['angErr']
-        return (1.0)/(2*np.pi*sigma**2)**0.5 * np.exp(-(distance)**2/(2*sigma**2))
+        return (1.0)/(2*np.pi*sigma**2) * np.exp(-(distance)**2/(2*sigma**2))
 
     def background_pdf(self):
         r'''Computer the background spatial pdf
@@ -527,7 +528,7 @@ class LLH_point_source(object):
         sample = rf.drop_fields(sample, [n for n in sample.dtype.names \
                          if not n in self.data.dtype.names])
         self.data = np.concatenate([self.data,sample])
-        self.N = len(self.data)
+        self.N = self.N+len(sample)
         self.update_spatial()
         self.update_time_weight()
         self.update_energy_weight()
@@ -539,7 +540,8 @@ class LLH_point_source(object):
         update: Whether updating all the weighting.Default is True.
         '''
         self.data = self.data[:len(self.data)-self.sample_size]
-        self.N = len(self.data)
+        self.N =  self.N-self.sample_size
+        self.sample_size = 0
         if update:
             self.update_spatial()
             self.update_time_weight()
