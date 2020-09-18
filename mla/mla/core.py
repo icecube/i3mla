@@ -214,11 +214,20 @@ class LLH_point_source(object):
             self.background = data
         else:
             self.background = background
-        self.data = data
+        
+        try:
+            self.data = rf.append_fields(data,'sindec',np.sin(data['dec']),usemask=False)#The full simulation set,this is for the overall normalization of the Energy S/B ratio
+        except ValueError: #sindec already exist
+            pass
+                    
         self.energybins = bkg_2dbins
         self.N = len(data) #The len of the data
         self.fit_position = fit_position
-        self.fullsim = sim #The full simulation set,this is for the overall normalization of the Energy S/B ratio 
+        try:
+            self.fullsim = rf.append_fields(sim,'sindec',np.sin(sim['dec']),usemask=False)#The full simulation set,this is for the overall normalization of the Energy S/B ratio
+        except ValueError: #sindec already exist
+            pass
+            
         
         if isinstance(background_time_profile,generic_profile):
             self.background_time_profile = background_time_profile
@@ -328,8 +337,13 @@ class LLH_point_source(object):
         args:
         data: new data
         '''
+        try:
+            self.data = rf.append_fields(data,'sindec',np.sin(data['dec']),usemask=False)#The full simulation set,this is for the overall normalization of the Energy S/B ratio
+        except ValueError: #sindec already exist
+            pass
         self.data = data
-        self.N = len(data)            
+        self.N = len(data)   
+        self.sample_size = 0       
         self.update_spatial()
         self.update_time_weight()
         self.update_energy_weight()
@@ -382,7 +396,7 @@ class LLH_point_source(object):
         '''enegy weight calculation. This is slow if you choose a large sample width'''
         sig_w=self.sim_dec['ow'] * self.spectrum(self.sim_dec['trueE'])
         sig_w/=np.sum(self.fullsim['ow'] * self.spectrum(self.fullsim['trueE']))
-        sig_h,xedges,yedges=np.histogram2d(np.sin(self.sim_dec['dec']),self.sim_dec['logE'],bins=self.energybins,weights=sig_w)
+        sig_h,xedges,yedges=np.histogram2d(self.sim_dec['sindec'],self.sim_dec['logE'],bins=self.energybins,weights=sig_w)
         with np.errstate(divide='ignore'):
             ratio=sig_h/self.bg_h
         for k in range(ratio.shape[0]):
@@ -525,6 +539,10 @@ class LLH_point_source(object):
         sample: The injection sample
         '''
         self.sample_size = len(sample)+self.sample_size
+        try:
+            sample = rf.append_fields(sample,'sindec',np.sin(sample['dec']),usemask=False)
+        except ValueError: #sindec already exist
+            pass
         sample = rf.drop_fields(sample, [n for n in sample.dtype.names \
                          if not n in self.data.dtype.names])
         self.data = np.concatenate([self.data,sample])
