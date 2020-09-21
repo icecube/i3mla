@@ -239,7 +239,7 @@ class LLH_point_source(object):
             self.signal_time_profile = signal_time_profile
             
         self.sample_size = 0
-        
+        self.sampling_width = sampling_width
         
         if bkg_dec_spline is None:
             self.bkg_spline = build_bkg_spline(self.background , bins = bkg_bins)
@@ -260,7 +260,7 @@ class LLH_point_source(object):
                 
             else:
                 self.ratio = sob_maps
-            self.update_position(ra,dec,sampling_width)
+            self.update_position(ra,dec)
         else:
             self.spectrum = spectrum
             
@@ -272,7 +272,7 @@ class LLH_point_source(object):
                 
             else:
                 self.bg_h = bkg_maps
-            self.update_position(ra,dec,sampling_width)
+            self.update_position(ra,dec)
             self.update_energy_histogram()
             
         self.update_time_weight()
@@ -280,18 +280,17 @@ class LLH_point_source(object):
         
         return
     
-    def update_position(self, ra, dec, sampling_width = np.radians(1)):
+    def update_position(self, ra, dec):
         r'''update the position of the point source
         args:
         ra: RA of the source in rad
         dec: Declination of the source in rad
-        sampling_width: The sampling width(in rad) for Monte Carlo simulation.Only simulation events within the sampling width will be used.Default is 1 degree.
         '''
         self.ra = ra
         self.dec = dec
-        self.edge_point = (np.searchsorted(self.energybins[0],np.sin(dec-sampling_width))-1,np.searchsorted(self.energybins[0],np.sin(dec+sampling_width))-1)
-        self.sim = scale_and_weight_trueDec(self.fullsim , dec , sampling_width = sampling_width)# Notice that this is for expected signal calculation
-        self.sim_dec = scale_and_weight_dec(self.fullsim , dec , sampling_width = sampling_width)# This is for Energy S/B ratio calculation
+        self.edge_point = (np.searchsorted(self.energybins[0],np.sin(dec-self.sampling_width))-1,np.searchsorted(self.energybins[0],np.sin(dec+self.sampling_width))-1)
+        self.sim = scale_and_weight_trueDec(self.fullsim , dec , sampling_width = self.sampling_width)# Notice that this is for expected signal calculation
+        self.sim_dec = scale_and_weight_dec(self.fullsim , dec , sampling_width = self.sampling_width)# This is for Energy S/B ratio calculation
         self.update_spatial()
         return
     
@@ -531,7 +530,7 @@ class LLH_point_source(object):
     
     def get_fit_result(self):
         r'''return the fit result, Only meaningful when the spectrum is PowerLaw object.'''
-        return self.gamma,self.fit_ns,self.fit_ts
+        return self.gamma_best_fit,self.fit_ns,self.fit_ts
     
     def add_injection(self,sample):
         r'''Add injected sample
