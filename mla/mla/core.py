@@ -441,22 +441,25 @@ class LLH_point_source(object):
                                             ext = 'raise')
                 sob_spline[i] = spline
             with np.errstate(divide='ignore', invalid='ignore'):
-                def inner_ts(gamma):
+                def inner_ts(parameter):
+                    gamma = parameter[0]
+                    ns = parameter[1]
                     e_lh_ratio = self.get_energy_sob(gamma, sob_spline)
-                    ts = ( 1/self.N * (e_lh_ratio*self.spatial*self.t_lh_ratio - 1))+1
-                    return -2*np.sum(np.log(ts))
+                    ts = ( ns/self.N * (e_lh_ratio*self.spatial*self.t_lh_ratio - 1))+1
+                    return -2*(np.sum(np.log(ts))+self.drop*np.log(1-ns/self.N))
                 if gamma is not None:
-                    bounds= [[gamma, gamma],]
+                    bounds= [[gamma, gamma],[0,self.N]]
                     self.gamma_best_fit = gamma
                 else:
-                    bounds= [[self.gamma_point[0], self.gamma_point[-1]],]
+                    bounds= [[self.gamma_point[0], self.gamma_point[-1]],[0,self.N]]
                 bf_params = scipy.optimize.minimize(inner_ts,
-                                    x0 = [-2,],
+                                    x0 = [-2,1],
                                     bounds = bounds,
                                     method = 'SLSQP',
                                     )
                 self.energy = self.get_energy_sob(bf_params.x[0],sob_spline)
                 self.gamma_best_fit = bf_params.x[0]
+                self.ns_best_fit = bf_params.x[1]
         return
     
     def get_energy_sob(self, gamma, splines):
@@ -509,7 +512,7 @@ class LLH_point_source(object):
         return ns,ts_value
     
     def eval_llh_fit_ns(self):        
-        r'''Calculating the llh with ns floating'''
+        r'''Calculating the llh with ns floating(discarded)'''
         if self.N == 0:
             return 0,0
         bounds= [[0, self.N ],]
@@ -527,10 +530,16 @@ class LLH_point_source(object):
             self.fit_ts = 0
             self.fit_ns = 0
         return self.fit_ns,self.fit_ts
+        
+    def eval_llh_fit(self):        
+        r'''Calculating the llh with scipy optimize result'''
+        ts =( self.ns_best_fit/self.N * (self.energy*self.spatial*self.t_lh_ratio - 1))+1
+        self.fit_ts = -2*(np.sum(np.log(ts))+self.drop*np.log(1-self.ns_best_fit/self.N))
+        return self.ns_best_fit,self.fit_ts
     
     def get_fit_result(self):
         r'''return the fit result, Only meaningful when the spectrum is PowerLaw object.'''
-        return self.gamma_best_fit,self.fit_ns,self.fit_ts
+        return self.gamma_best_fit,self.ns_best_fit,self.fit_ts
     
     def add_injection(self,sample):
         r'''Add injected sample
