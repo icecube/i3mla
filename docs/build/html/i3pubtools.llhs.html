@@ -194,16 +194,19 @@ and for some given time profiles for signal and background</p>
 <dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_trial">
 <code class="sig-name descname">produce_trial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">{'dec': 0.5235987755982988, 'ra': 1.5707963267948966}</span></em>, <em class="sig-param"><span class="n">signal_time_profiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_time_profile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_window</span><span class="o">=</span><span class="default_value">14</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">signal_weights</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sims</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_signal_weights</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="o">=</span><span class="default_value">0.017453292519943295</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_trial" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produces a single trial of background+signal events based on input parameters</p>
-<dl class="simple">
-<dt>keyword arguments:</dt><dd><p>gamma
-source
-signal_time_profile
-background_time_profile
-sampling_width
-background_window
-random_seed
-signal_weights
-return_signal_weights</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>gamma</strong> – </p></li>
+<li><p><strong>source</strong> – </p></li>
+<li><p><strong>signal_time_profile</strong> – </p></li>
+<li><p><strong>background_time_profile</strong> – </p></li>
+<li><p><strong>sampling_width</strong> – </p></li>
+<li><p><strong>background_window</strong> – </p></li>
+<li><p><strong>random_seed</strong> – </p></li>
+<li><p><strong>signal_weights</strong> – </p></li>
+<li><p><strong>return_signal_weights</strong> – </p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -226,9 +229,14 @@ return_signal_weights</p>
 <dt>Calculates the test statistic for some collection of events at a given location</dt><dd><p>and for some given time profiles for signal and background. Assumes gaussian
 signal profile.</p>
 </dd>
-<dt>Args:</dt><dd><p>events ():
-ns ():
-gamma ():</p>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>)</strong> (<em>gamma</em>) – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+</ul>
 </dd>
 </dl>
 <p>Returns:</p>
@@ -238,16 +246,19 @@ gamma ():</p>
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_n_trials">
 <code class="sig-name descname">produce_n_trials</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ntrials</span></em>, <em class="sig-param"><span class="n">background_window</span><span class="o">=</span><span class="default_value">14</span></em>, <em class="sig-param"><span class="n">test_ns</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">test_gamma</span><span class="o">=</span><span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="o">=</span><span class="default_value">0.017453292519943295</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_n_trials" title="Permalink to this definition">¶</a></dt>
 <dd><p>produce n trials and calculate a test statistic for each trial</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>ntrials ():
-background_window ():
-test_ns ():
-test_gamma ():
-random_seed ():
-verbose ():
-N ():
-gamma ():
-sampling_width ():</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>)</strong> (<em>sampling_width</em>) – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+</ul>
 </dd>
 </dl>
 <p>Returns:</p>
@@ -257,13 +268,16 @@ sampling_width ():</p>
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_trial">
 <code class="sig-name descname">produce_trial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reduced_sim</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="o">=</span><span class="default_value">0.017453292519943295</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_window</span><span class="o">=</span><span class="default_value">14</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_trial" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produces a single trial of background+signal events based on input parameters</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>reduced_sim ():
-N ():
-gamma ():
-sampling_width ():
-random_seed ():
-background_window ():</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>(</strong><strong>)</strong> (<em>background_window</em>) – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>(</strong><strong>)</strong> – </p></li>
+</ul>
 </dd>
 </dl>
 <p>Returns:</p>
