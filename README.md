@@ -1,2 +1,3 @@
-# cluster_analysis
-A time dependent analysis of source catalogs using HDBSCAN
+# Public IceCube Analysis Tools
+
+Documentation: https://i3pubtools.readthedocs.io/en/latest/
