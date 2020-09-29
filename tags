@@ -1126,6 +1126,7 @@ $t	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&
 .nav .wy-menu-vertical li span.toctree-expand	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 .nav .wy-menu-vertical li.current>a span.toctree-expand	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 .nav .wy-menu-vertical li.on a span.toctree-expand	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
+.note code	docs/_static/classic.css	/^.note code {$/;"	s
 .optional	docs/_static/basic.css	/^.optional {$/;"	c
 .pull-left	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 .pull-left.icon	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
@@ -1888,10 +1889,12 @@ $t	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&
 .tablet-hide	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 .versionmodified	docs/_static/basic.css	/^.versionmodified {$/;"	c
 .viewcode-back	docs/_static/basic.css	/^.viewcode-back {$/;"	c
+.viewcode-back	docs/_static/classic.css	/^.viewcode-back {$/;"	c
 .viewcode-link	docs/_static/basic.css	/^.viewcode-link {$/;"	c
 .visuallyhidden	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	c
 .visuallyhidden.focusable:active	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	c
 .visuallyhidden.focusable:focus	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	c
+.warning code	docs/_static/classic.css	/^.warning code {$/;"	s
 .wy-affix	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 .wy-alert	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 .wy-alert	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	c
@@ -2405,6 +2408,9 @@ AnonymousFunction50702cc50800	docs/_static/doctools.js	/^    var togglers = $('i
 AnonymousFunction50702cc50900	docs/_static/doctools.js	/^    $.each(DOCUMENTATION_OPTIONS.URL_ROOT.split(\/\\\/\/), function() {$/;"	f
 AnonymousFunction50702cc50a00	docs/_static/doctools.js	/^    $(document).keydown(function(event) {$/;"	f
 AnonymousFunction50702cc50b00	docs/_static/doctools.js	/^$(document).ready(function() {$/;"	f
+AnonymousFunction5a10cfd80100	docs/_static/sidebar.js	/^$(function() {$/;"	f
+AnonymousFunction5a10cfd80200	docs/_static/sidebar.js	/^      function () {$/;"	f
+AnonymousFunction5a10cfd80300	docs/_static/sidebar.js	/^      function () {$/;"	f
 AnonymousFunction9800e75e0100	docs/_static/js/badge_only.js	/^!function(e){var t={};function r(n){if(t[n])return t[n].exports;var o=t[n]={i:n,l:!1,exports:{}}/;"	f	function:r.t
 AnonymousFunctiona55ee83d0100	docs/_static/js/theme.js	/^!function(n){var e={};function t(i){if(e[i])return e[i].exports;var o=e[i]={i:i,l:!1,exports:{}}/;"	f	function:t.t
 AnonymousFunctionb030af400100	docs/_static/jquery-3.5.1.js	/^} )( typeof window !== "undefined" ? window : this, function( window, noGlobal ) {$/;"	f
@@ -3500,6 +3506,7 @@ PowerLaw	mla/mla/spectral.py	/^class PowerLaw(BaseSpectrum):$/;"	c
 Prerequisites	test3ml/workshop/README.md	/^# Prerequisites$/;"	c
 PsFlareLLH	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^class PsFlareLLH:$/;"	c
 PsFlareLLH	i3pubtools/llhs/ps_flare_llh.py	/^class PsFlareLLH:$/;"	c
+Public IceCube Analysis Tools	README.md	/^# Public IceCube Analysis Tools$/;"	c
 Python Module Index	docs/py-modindex.html	/^   <h1>Python Module Index<\/h1>$/;"	h
 R	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 R	docs/genindex.html	/^<h2 id="R">R<\/h2>$/;"	I
@@ -3741,6 +3748,7 @@ _signal_pdf	i3pubtools/llhs/ps_flare_llh.py	/^    def _signal_pdf(self, events: 
 _simulated_spectrum	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def _simulated_spectrum(x):$/;"	m	class:VERITASRun
 _simulated_spectrum_f	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def _simulated_spectrum_f(e1, e2):$/;"	m	class:VERITASRun
 _trees_in_run	test3ml/workshop/joint_fit_example/VERITASLike.py	/^_trees_in_run = ['data_on',  # Event list in the source region$/;"	v
+a	docs/_static/classic.css	/^a {$/;"	s
 a	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 a	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 a	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	c	class:AnonymousFunctionc74c453ead00
@@ -3777,14 +3785,18 @@ a.biglink	docs/_static/basic.css	/^a.biglink {$/;"	c
 a.brackets:after	docs/_static/basic.css	/^a.brackets:after,$/;"	c
 a.brackets:before	docs/_static/basic.css	/^a.brackets:before,$/;"	c
 a.headerlink	docs/_static/basic.css	/^a.headerlink {$/;"	c
+a.headerlink	docs/_static/classic.css	/^a.headerlink {$/;"	c
+a.headerlink:hover	docs/_static/classic.css	/^a.headerlink:hover {$/;"	c
 a.wy-text-danger:hover	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 a.wy-text-info:hover	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 a.wy-text-neutral:hover	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 a.wy-text-success:hover	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 a.wy-text-warning:hover	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 a:active	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
+a:hover	docs/_static/classic.css	/^a:hover {$/;"	s
 a:hover	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 a:hover	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
+a:visited	docs/_static/classic.css	/^a:visited {$/;"	s
 a:visited	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 a:visited	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 a[href^="#"] :after	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
@@ -3809,6 +3821,7 @@ addToPrefiltersOrTransports	docs/_static/jquery-3.5.1.js	/^function addToPrefilt
 addToWrapper	docs/_static/underscore-1.3.1.js	/^  var addToWrapper = function(name, func) {$/;"	f
 addTranslations	docs/_static/doctools.js	/^  addTranslations : function(catalog) {$/;"	m	class:Documentation
 add_injection	mla/mla/core.py	/^    def add_injection(self,sample):$/;"	m	class:LLH_point_source
+add_sidebar_button	docs/_static/sidebar.js	/^  function add_sidebar_button() {$/;"	f	function:AnonymousFunction5a10cfd80100
 adjustCSS	docs/_static/jquery-3.5.1.js	/^function adjustCSS( elem, prop, valueParts, tween ) {$/;"	f
 adoptValue	docs/_static/jquery-3.5.1.js	/^function adoptValue( value, resolve, reject, noValue ) {$/;"	f
 after	docs/_static/underscore-1.3.1.js	/^  _.after = function(times, func) {$/;"	f	function:_
@@ -3875,6 +3888,7 @@ bli	docs/_static/language_data.js	/^    bli: 'ble',$/;"	p	class:Stemmer.step2lis
 blockquote	docs/_static/basic.css	/^div.admonition, div.topic, blockquote {$/;"	s
 blockquote	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 blockquote::after	docs/_static/basic.css	/^blockquote::after {$/;"	s
+body	docs/_static/classic.css	/^body {$/;"	s
 body	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 body	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 borderimage	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
@@ -3926,15 +3940,16 @@ classesToArray	docs/_static/jquery-3.5.1.js	/^function classesToArray( value ) {
 clone	docs/_static/underscore-1.3.1.js	/^  _.clone = function(obj) {$/;"	f	function:_
 clone	docs/_static/underscore.js	/^1),function(b){for(var d in b)a[d]==null&&(a[d]=b[d])});return a};b.clone=function(a){return!b.i/;"	f	function:b
 cloneCopyEvent	docs/_static/jquery-3.5.1.js	/^function cloneCopyEvent( src, dest ) {$/;"	f
-cluster_analysis	README.md	/^# cluster_analysis$/;"	c
 cluster_multiflare_llh	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^class cluster_multiflare_llh(object):$/;"	c
 cluster_multiflare_llh	i3pubtools/llhs/cluster_multiflare_llh.py	/^class cluster_multiflare_llh(object):$/;"	c
+code	docs/_static/classic.css	/^code {$/;"	s
 code	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 code	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 code.code-large	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 code.descclassname	docs/_static/basic.css	/^code.descclassname {$/;"	c
 code.descname	docs/_static/basic.css	/^code.descname {$/;"	c
 code.xref	docs/_static/basic.css	/^code.xref, a code {$/;"	c
+collapse_sidebar	docs/_static/sidebar.js	/^  function collapse_sidebar() {$/;"	f	function:AnonymousFunction5a10cfd80100
 compact	docs/_static/underscore-1.3.1.js	/^  _.compact = function(array) {$/;"	f	function:_
 compact	docs/_static/underscore.js	/^b.tail=function(a,b,d){return i.call(a,b==null||d?1:b)};b.compact=function(a){return b.filter(a,/;"	f	function:b
 complete	docs/_static/jquery-3.5.1.js	/^	opt.complete = function() {$/;"	f	function:opt
@@ -4049,19 +4064,43 @@ div.admonition	docs/_static/basic.css	/^div.admonition {$/;"	c
 div.admonition	docs/_static/basic.css	/^div.admonition, div.topic, blockquote {$/;"	c
 div.admonition > :last-child	docs/_static/basic.css	/^div.admonition > :last-child {$/;"	s
 div.admonition dt	docs/_static/basic.css	/^div.admonition dt {$/;"	s
+div.admonition ol	docs/_static/classic.css	/^div.admonition ul, div.admonition ol {$/;"	s
+div.admonition p	docs/_static/classic.css	/^div.admonition p {$/;"	s
+div.admonition p.admonition-title + p	docs/_static/classic.css	/^div.admonition p.admonition-title + p {$/;"	s
+div.admonition pre	docs/_static/classic.css	/^div.admonition pre {$/;"	s
+div.admonition ul	docs/_static/classic.css	/^div.admonition ul, div.admonition ol {$/;"	s
 div.admonition::after	docs/_static/basic.css	/^div.admonition::after,$/;"	c
 div.body	docs/_static/basic.css	/^div.body {$/;"	c
+div.body	docs/_static/classic.css	/^div.body {$/;"	c
 div.body blockquote	docs/_static/basic.css	/^div.body p, div.body dd, div.body li, div.body blockquote {$/;"	s
+div.body blockquote	docs/_static/classic.css	/^div.body p, div.body dd, div.body li, div.body blockquote {$/;"	s
 div.body dd	docs/_static/basic.css	/^div.body p, div.body dd, div.body li, div.body blockquote {$/;"	s
+div.body dd	docs/_static/classic.css	/^div.body p, div.body dd, div.body li, div.body blockquote {$/;"	s
 div.body div.math p	docs/_static/basic.css	/^div.body div.math p {$/;"	s
+div.body h1	docs/_static/classic.css	/^div.body h1 { margin-top: 0; font-size: 200%; }$/;"	s
+div.body h1	docs/_static/classic.css	/^div.body h1,$/;"	s
+div.body h2	docs/_static/classic.css	/^div.body h2 { font-size: 160%; }$/;"	s
+div.body h2	docs/_static/classic.css	/^div.body h2,$/;"	s
+div.body h3	docs/_static/classic.css	/^div.body h3 { font-size: 140%; }$/;"	s
+div.body h3	docs/_static/classic.css	/^div.body h3,$/;"	s
+div.body h4	docs/_static/classic.css	/^div.body h4 { font-size: 120%; }$/;"	s
+div.body h4	docs/_static/classic.css	/^div.body h4,$/;"	s
+div.body h5	docs/_static/classic.css	/^div.body h5 { font-size: 110%; }$/;"	s
+div.body h5	docs/_static/classic.css	/^div.body h5,$/;"	s
+div.body h6	docs/_static/classic.css	/^div.body h6 { font-size: 100%; }$/;"	s
+div.body h6	docs/_static/classic.css	/^div.body h6 {$/;"	s
 div.body li	docs/_static/basic.css	/^div.body p, div.body dd, div.body li, div.body blockquote {$/;"	s
+div.body li	docs/_static/classic.css	/^div.body p, div.body dd, div.body li, div.body blockquote {$/;"	s
 div.body p	docs/_static/basic.css	/^div.body p, div.body dd, div.body li, div.body blockquote {$/;"	s
+div.body p	docs/_static/classic.css	/^div.body p, div.body dd, div.body li, div.body blockquote {$/;"	s
 div.body p.caption	docs/_static/basic.css	/^div.body p.caption {$/;"	c
 div.body p.centered	docs/_static/basic.css	/^div.body p.centered {$/;"	c
 div.body td	docs/_static/basic.css	/^div.body td {$/;"	s
 div.bodywrapper	docs/_static/basic.css	/^    div.bodywrapper {$/;"	c
+div.bodywrapper	docs/_static/classic.css	/^div.bodywrapper {$/;"	c
 div.clearer	docs/_static/basic.css	/^div.clearer {$/;"	c
 div.code-block-caption	docs/_static/basic.css	/^div.code-block-caption {$/;"	c
+div.code-block-caption	docs/_static/classic.css	/^div.code-block-caption {$/;"	c
 div.code-block-caption + div	docs/_static/basic.css	/^div.code-block-caption + div {$/;"	s
 div.code-block-caption code	docs/_static/basic.css	/^div.code-block-caption code {$/;"	s
 div.code-block-caption span.caption-number	docs/_static/basic.css	/^div.code-block-caption span.caption-number {$/;"	c
@@ -4069,44 +4108,64 @@ div.code-block-caption span.caption-text	docs/_static/basic.css	/^div.code-block
 div.code-block-caption:hover > a.headerlink	docs/_static/basic.css	/^div.code-block-caption:hover > a.headerlink {$/;"	c
 div.doctest > div.highlight span.gp	docs/_static/basic.css	/^div.doctest > div.highlight span.gp {  \/* gp: Generic.Prompt *\/$/;"	c
 div.document	docs/_static/basic.css	/^    div.document,$/;"	c
+div.document	docs/_static/classic.css	/^div.document {$/;"	c
 div.documentwrapper	docs/_static/basic.css	/^    div.documentwrapper,$/;"	c
+div.documentwrapper	docs/_static/classic.css	/^div.documentwrapper {$/;"	c
 div.figure	docs/_static/basic.css	/^div.figure {$/;"	c
 div.figure p.caption	docs/_static/basic.css	/^div.figure p.caption {$/;"	c
 div.figure p.caption span.caption-number	docs/_static/basic.css	/^div.figure p.caption span.caption-number {$/;"	c
 div.figure p.caption span.caption-text	docs/_static/basic.css	/^div.figure p.caption span.caption-text {$/;"	c
 div.footer	docs/_static/basic.css	/^    div.footer,$/;"	c
+div.footer	docs/_static/classic.css	/^div.footer {$/;"	c
+div.footer a	docs/_static/classic.css	/^div.footer a {$/;"	s
 div.genindex-jumpbox	docs/_static/basic.css	/^div.genindex-jumpbox {$/;"	c
 div.highlight pre	docs/_static/basic.css	/^div.highlight pre,$/;"	s
 div.literal-block-wrapper	docs/_static/basic.css	/^div.literal-block-wrapper {$/;"	c
 div.math:hover a.headerlink	docs/_static/basic.css	/^div.math:hover a.headerlink {$/;"	c
 div.modindex-jumpbox	docs/_static/basic.css	/^div.modindex-jumpbox {$/;"	c
+div.note	docs/_static/classic.css	/^div.note {$/;"	c
 div.related	docs/_static/basic.css	/^    div.related,$/;"	c
 div.related	docs/_static/basic.css	/^div.related {$/;"	c
+div.related	docs/_static/classic.css	/^div.related {$/;"	c
+div.related a	docs/_static/classic.css	/^div.related a {$/;"	s
 div.related h3	docs/_static/basic.css	/^div.related h3 {$/;"	s
 div.related li	docs/_static/basic.css	/^div.related li {$/;"	s
 div.related li.right	docs/_static/basic.css	/^div.related li.right {$/;"	c
 div.related ul	docs/_static/basic.css	/^div.related ul {$/;"	s
 div.section::after	docs/_static/basic.css	/^div.section::after {$/;"	c
+div.seealso	docs/_static/classic.css	/^div.seealso {$/;"	c
 div.sidebar	docs/_static/basic.css	/^div.sidebar {$/;"	c
 div.sidebar > :last-child	docs/_static/basic.css	/^div.sidebar > :last-child,$/;"	s
 div.sidebar::after	docs/_static/basic.css	/^div.sidebar::after,$/;"	c
 div.sphinxsidebar	docs/_static/basic.css	/^    div.sphinxsidebar,$/;"	c
 div.sphinxsidebar	docs/_static/basic.css	/^div.sphinxsidebar {$/;"	c
+div.sphinxsidebar	docs/_static/classic.css	/^div.sphinxsidebar {$/;"	c
 div.sphinxsidebar #searchbox form.search	docs/_static/basic.css	/^div.sphinxsidebar #searchbox form.search {$/;"	c
 div.sphinxsidebar #searchbox input[type="submit"]	docs/_static/basic.css	/^div.sphinxsidebar #searchbox input[type="submit"] {$/;"	s
 div.sphinxsidebar #searchbox input[type="text"]	docs/_static/basic.css	/^div.sphinxsidebar #searchbox input[type="text"] {$/;"	s
+div.sphinxsidebar a	docs/_static/classic.css	/^div.sphinxsidebar a {$/;"	s
 div.sphinxsidebar form	docs/_static/basic.css	/^div.sphinxsidebar form {$/;"	s
+div.sphinxsidebar h3	docs/_static/classic.css	/^div.sphinxsidebar h3 {$/;"	s
+div.sphinxsidebar h3 a	docs/_static/classic.css	/^div.sphinxsidebar h3 a {$/;"	s
+div.sphinxsidebar h4	docs/_static/classic.css	/^div.sphinxsidebar h4 {$/;"	s
 div.sphinxsidebar input	docs/_static/basic.css	/^div.sphinxsidebar input {$/;"	s
+div.sphinxsidebar input	docs/_static/classic.css	/^div.sphinxsidebar input {$/;"	s
+div.sphinxsidebar p	docs/_static/classic.css	/^div.sphinxsidebar p {$/;"	s
+div.sphinxsidebar p.topless	docs/_static/classic.css	/^div.sphinxsidebar p.topless {$/;"	c
 div.sphinxsidebar ul	docs/_static/basic.css	/^div.sphinxsidebar ul {$/;"	s
+div.sphinxsidebar ul	docs/_static/classic.css	/^div.sphinxsidebar ul {$/;"	s
 div.sphinxsidebar ul ul	docs/_static/basic.css	/^div.sphinxsidebar ul ul {$/;"	s
 div.sphinxsidebar ul ul	docs/_static/basic.css	/^div.sphinxsidebar ul ul,$/;"	s
 div.sphinxsidebar ul.want-points	docs/_static/basic.css	/^div.sphinxsidebar ul.want-points {$/;"	c
 div.sphinxsidebarwrapper	docs/_static/basic.css	/^div.sphinxsidebarwrapper {$/;"	c
 div.topic	docs/_static/basic.css	/^div.admonition, div.topic, blockquote {$/;"	c
 div.topic	docs/_static/basic.css	/^div.topic {$/;"	c
+div.topic	docs/_static/classic.css	/^div.topic {$/;"	c
 div.topic > :last-child	docs/_static/basic.css	/^div.topic > :last-child,$/;"	s
 div.topic::after	docs/_static/basic.css	/^div.topic::after,$/;"	c
 div.viewcode-block:target	docs/_static/basic.css	/^div.viewcode-block:target {$/;"	c
+div.viewcode-block:target	docs/_static/classic.css	/^div.viewcode-block:target {$/;"	c
+div.warning	docs/_static/classic.css	/^div.warning {$/;"	c
 div[class*="highlight-"]	docs/_static/basic.css	/^div[class*="highlight-"] {$/;"	s
 div[class*="highlight-"]	docs/_static/basic.css	/^pre, div[class*="highlight-"] {$/;"	s
 dl	docs/_static/basic.css	/^dl {$/;"	s
@@ -4119,6 +4178,7 @@ dl.citation > dt	docs/_static/basic.css	/^dl.citation > dt {$/;"	s
 dl.field-list	docs/_static/basic.css	/^dl.field-list {$/;"	c
 dl.field-list > dd	docs/_static/basic.css	/^dl.field-list > dd {$/;"	s
 dl.field-list > dt	docs/_static/basic.css	/^dl.field-list > dt {$/;"	s
+dl.field-list > dt	docs/_static/classic.css	/^th, dl.field-list > dt {$/;"	s
 dl.field-list > dt:after	docs/_static/basic.css	/^dl.field-list > dt:after {$/;"	s
 dl.footnote > dd	docs/_static/basic.css	/^dl.footnote > dd,$/;"	s
 dl.footnote > dd:after	docs/_static/basic.css	/^dl.footnote > dd:after,$/;"	s
@@ -4195,6 +4255,7 @@ evaluate_ts	i3pubtools/llhs/ps_flare_llh.py	/^    def evaluate_ts(self,$/;"	m	cl
 exclude_patterns	docs/source/conf.py	/^exclude_patterns = []$/;"	v
 expand	docs/_static/jquery-3.5.1.js	/^		expand: function( value ) {$/;"	m	class:jQuery.cssHooks
 expand	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	m	class:S.cssHooks
+expand_sidebar	docs/_static/sidebar.js	/^  function expand_sidebar() {$/;"	f	function:AnonymousFunction5a10cfd80100
 expectSync	docs/_static/jquery-3.5.1.js	/^function expectSync( elem, type ) {$/;"	f
 extend	docs/_static/underscore-1.3.1.js	/^  _.extend = function(obj) {$/;"	f	function:_
 extend	docs/_static/underscore.js	/^b.after=function(a,b){return a<=0?b():function(){if(--a<1)return b.apply(this,arguments)}};b.key/;"	f	function:b
@@ -4352,6 +4413,7 @@ history	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){fun
 hp	mla/mla/core.py	/^import os, sys, glob, numpy as np, matplotlib, scipy, healpy as hp, time$/;"	I
 hr	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 hsla	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+html	docs/_static/classic.css	/^html {$/;"	s
 html	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 html	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 html.writer-html4 .rst-content dl:not(.docutils)	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
@@ -4906,6 +4968,8 @@ p	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function 
 p	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 p	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 p.admonition-title	docs/_static/basic.css	/^p.admonition-title {$/;"	c
+p.admonition-title	docs/_static/classic.css	/^p.admonition-title {$/;"	c
+p.admonition-title:after	docs/_static/classic.css	/^p.admonition-title:after {$/;"	c
 p.caption:hover > a.headerlink	docs/_static/basic.css	/^p.caption:hover > a.headerlink,$/;"	c
 p.rubric	docs/_static/basic.css	/^p.rubric {$/;"	c
 p.sidebar-title	docs/_static/basic.css	/^p.sidebar-title {$/;"	c
@@ -4944,6 +5008,7 @@ pluck	docs/_static/underscore.js	/^e&&c.call(b,a,g,h)))return n});return e};var 
 postmessage	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 pre	docs/_static/basic.css	/^pre {$/;"	s
 pre	docs/_static/basic.css	/^pre, div[class*="highlight-"] {$/;"	s
+pre	docs/_static/classic.css	/^pre {$/;"	s
 pre	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 pre	docs/_static/pygments.css	/^pre { line-height: 125%; margin: 0; }$/;"	s
 prefixed	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:e
@@ -5093,12 +5158,14 @@ setPositiveNumber	docs/_static/jquery-3.5.1.js	/^function setPositiveNumber( _el
 setRequestHeader	docs/_static/jquery-3.5.1.js	/^				setRequestHeader: function( name, value ) {$/;"	m	class:AnonymousFunctionb030af4017200.jqXHR
 setRequestHeader	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	m	class:AnonymousFunctionc74c453e18500.T
 set_model	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def set_model(self, likelihood_model_instance):$/;"	m	class:VERITASLike
+set_position_from_cookie	docs/_static/sidebar.js	/^  function set_position_from_cookie() {$/;"	f	function:AnonymousFunction5a10cfd80100
 set_source_location	i3pubtools/.ipynb_checkpoints/injection-checkpoint.py	/^    def set_source_location(self, ra, dec, sampling_width = np.radians(1)):$/;"	m	class:PSinjector
 set_source_location	i3pubtools/injection.py	/^    def set_source_location(self, ra, dec, sampling_width = np.radians(1)):$/;"	m	class:PSinjector
 set_source_location	mla/mla/injection.py	/^    def set_source_location(self, ra, dec, sampling_width = np.radians(1)):$/;"	m	class:PSinjector
 setup	docs/_static/jquery-3.5.1.js	/^			setup: function() {$/;"	m	class:jQuery.event.special
 setup	docs/_static/jquery-3.5.1.js	/^		setup: function() {$/;"	m	class:jQuery.event.special
 setup	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	m	class:S.event.special
+setup	docs/source/conf.py	/^def setup(app):$/;"	f
 shivCSS	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:y
 shivCSS	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:t
 shivCSS	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:r
@@ -5113,6 +5180,7 @@ shuffle	docs/_static/underscore-1.3.1.js	/^  _.shuffle = function(obj) {$/;"	f	f
 shuffle	docs/_static/underscore.js	/^return e.value};b.shuffle=function(a){var b=[],d;j(a,function(a,f){f==0?b[0]=a:(d=Math.floor(Mat/;"	f	function:b
 sibling	docs/_static/jquery-3.5.1.js	/^function sibling( cur, dir ) {$/;"	f
 siblingCheck	docs/_static/jquery-3.5.1.js	/^function siblingCheck( a, b ) {$/;"	f
+sidebar_is_collapsed	docs/_static/sidebar.js	/^  function sidebar_is_collapsed() {$/;"	f	function:AnonymousFunction5a10cfd80100
 signal_pdf	mla/mla/core.py	/^    def signal_pdf(self):$/;"	m	class:LLH_point_source
 sim_dtype	i3pubtools/.,/.ipynb_checkpoints/test_data-checkpoint.py	/^sim_dtype = [$/;"	v
 sim_dtype	i3pubtools/.,/test_data.py	/^sim_dtype = [$/;"	v
@@ -5254,6 +5322,7 @@ textarea[disabled]	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontA
 textarea[readonly]	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 textshadow	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 th	docs/_static/basic.css	/^th {$/;"	s
+th	docs/_static/classic.css	/^th, dl.field-list > dt {$/;"	s
 th > :first-child	docs/_static/basic.css	/^th > :first-child,$/;"	s
 th > :last-child	docs/_static/basic.css	/^th > :last-child,$/;"	s
 thead	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
@@ -5276,6 +5345,7 @@ to_unit_vector	i3pubtools/.ipynb_checkpoints/tools-checkpoint.py	/^def to_unit_v
 to_unit_vector	i3pubtools/tools.py	/^def to_unit_vector(ra, dec):$/;"	f
 to_unit_vector	mla/mla/tools.py	/^def to_unit_vector(ra, dec):$/;"	f
 toggle-1	docs/py-modindex.html	/^              id="toggle-1" style="display: none" alt="-" \/><\/td>$/;"	I
+toggle_sidebar	docs/_static/sidebar.js	/^  function toggle_sidebar() {$/;"	f	function:AnonymousFunction5a10cfd80100
 top	docs/_static/jquery-3.5.1.js	/^			parentOffset = { top: 0, left: 0 };$/;"	p	class:AnonymousFunctionb030af4019d00.parentOffset
 top	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	p	class:AnonymousFunctionc74c453e1b200.i
 total_background_counts	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def total_background_counts(self):$/;"	m	class:VERITASRun
