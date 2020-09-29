@@ -1,0 +1,448 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>i3pubtools.time_profiles package &mdash; i3pubtools 0.0.1 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> i3pubtools
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">i3pubtools.time_profiles package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+<li><a class="reference internal" href="#module-i3pubtools.time_profiles.gauss_profile">i3pubtools.time_profiles.gauss_profile module</a></li>
+<li><a class="reference internal" href="#module-i3pubtools.time_profiles.generic_profile">i3pubtools.time_profiles.generic_profile module</a></li>
+<li><a class="reference internal" href="#module-i3pubtools.time_profiles.uniform_profile">i3pubtools.time_profiles.uniform_profile module</a></li>
+<li><a class="reference internal" href="#module-i3pubtools.time_profiles">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">i3pubtools</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>i3pubtools.time_profiles package</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/i3pubtools.time_profiles.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="i3pubtools-time-profiles-package">
+<h1>i3pubtools.time_profiles package<a class="headerlink" href="#i3pubtools-time-profiles-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-i3pubtools.time_profiles.gauss_profile">
+<span id="i3pubtools-time-profiles-gauss-profile-module"></span><h2>i3pubtools.time_profiles.gauss_profile module<a class="headerlink" href="#module-i3pubtools.time_profiles.gauss_profile" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile">
+<em class="property">class </em><code class="sig-prename descclassname">i3pubtools.time_profiles.gauss_profile.</code><code class="sig-name descname">GaussProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mean</span></em>, <em class="sig-param"><span class="n">sigma</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'gauss_tp'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#i3pubtools.time_profiles.generic_profile.GenericProfile" title="i3pubtools.time_profiles.generic_profile.GenericProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">i3pubtools.time_profiles.generic_profile.GenericProfile</span></code></a></p>
+<p>Time profile class for a gaussian distribution. Use this
+to produce gaussian-distributed times for your source.</p>
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.bounds">
+<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>time_profile(generic_profile.GenericProfile):</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.default_params">
+<em class="property">property </em><code class="sig-name descname">default_params</code><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.default_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.effective_exposure">
+<code class="sig-name descname">effective_exposure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.effective_exposure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the weight associated with each event time.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.get_range">
+<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the min/max values for the distribution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.logpdf">
+<code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.logpdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the log(probability) for each time.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>times (np.array): A numpy list of times to evaluate</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.param_dtype">
+<em class="property">property </em><code class="sig-name descname">param_dtype</code><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.param_dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.pdf">
+<code class="sig-name descname">pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.pdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the probability for each time.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>times (np.array): A numpy list of times to evaluate</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.random">
+<code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.random" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns random values following the gaussian distribution.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>n (int, optional): The number of random values to return</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.x0">
+<code class="sig-name descname">x0</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.x0" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>times (np.array):</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-i3pubtools.time_profiles.generic_profile">
+<span id="i3pubtools-time-profiles-generic-profile-module"></span><h2>i3pubtools.time_profiles.generic_profile module<a class="headerlink" href="#module-i3pubtools.time_profiles.generic_profile" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile">
+<em class="property">class </em><code class="sig-prename descclassname">i3pubtools.time_profiles.generic_profile.</code><code class="sig-name descname">GenericProfile</code><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A generic base class to standardize the methods for the
+time profiles. While I’m only currently using scipy-based
+probability distributions, you can write your own if you
+want. Just be sure to define these methods and ensure that
+the PDF is normalized!</p>
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.bounds">
+<em class="property">abstract </em><code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.default_params">
+<em class="property">abstract property </em><code class="sig-name descname">default_params</code><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.default_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.effective_exposure">
+<em class="property">abstract </em><code class="sig-name descname">effective_exposure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.effective_exposure" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.get_range">
+<em class="property">abstract </em><code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.logpdf">
+<em class="property">abstract </em><code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.logpdf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.param_dtype">
+<em class="property">abstract property </em><code class="sig-name descname">param_dtype</code><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.param_dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.pdf">
+<em class="property">abstract </em><code class="sig-name descname">pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.pdf" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.random">
+<em class="property">abstract </em><code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.random" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.x0">
+<em class="property">abstract </em><code class="sig-name descname">x0</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.x0" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-i3pubtools.time_profiles.uniform_profile">
+<span id="i3pubtools-time-profiles-uniform-profile-module"></span><h2>i3pubtools.time_profiles.uniform_profile module<a class="headerlink" href="#module-i3pubtools.time_profiles.uniform_profile" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile">
+<em class="property">class </em><code class="sig-prename descclassname">i3pubtools.time_profiles.uniform_profile.</code><code class="sig-name descname">UniformProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">end</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'uniform_tp'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#i3pubtools.time_profiles.generic_profile.GenericProfile" title="i3pubtools.time_profiles.generic_profile.GenericProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">i3pubtools.time_profiles.generic_profile.GenericProfile</span></code></a></p>
+<p>Time profile class for a uniform distribution. Use this
+for background or if you want to assume a steady signal from
+your source.</p>
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.bounds">
+<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given some other profile, returns allowable ranges for parameters.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>time_profile (generic_profile.GenericProfile):</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.default_params">
+<em class="property">property </em><code class="sig-name descname">default_params</code><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.default_params" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.effective_exposure">
+<code class="sig-name descname">effective_exposure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.effective_exposure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the weight associated with each event time.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.get_range">
+<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the min/max values for the distribution.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.logpdf">
+<code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.logpdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the log(probability) for each time.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>times (np.array): A numpy list of times to evaluate</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.norm">
+<em class="property">property </em><code class="sig-name descname">norm</code><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.norm" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.param_dtype">
+<em class="property">property </em><code class="sig-name descname">param_dtype</code><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.param_dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.pdf">
+<code class="sig-name descname">pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.pdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the probability for each time.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>times (np.array): A numpy list of times to evaluate</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.random">
+<code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.random" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns random values following the uniform distribution.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>n (int, optional): The number of random values to return</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.window">
+<em class="property">property </em><code class="sig-name descname">window</code><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.window" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.x0">
+<code class="sig-name descname">x0</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.x0" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Args:</dt><dd><p>times (np.array):</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-i3pubtools.time_profiles">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-i3pubtools.time_profiles" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, John Evans, Jason Fan, Michael Larson
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
