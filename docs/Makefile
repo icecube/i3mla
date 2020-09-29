@@ -15,6 +15,7 @@ help:
 .PHONY: help Makefile
 
 github:
+	@sphinx-apidoc -o "$(SOURCEDIR)" ..
 	@make html
 	@cp -a build/html/. ../docs
 

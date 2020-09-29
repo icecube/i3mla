@@ -1,20 +1,33 @@
+__author__ = 'John Evans'
+__copyright__ = ''
+__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
+__license__ = 'Apache License 2.0'
+__version__ = '0.0.1'
+__maintainer__ = 'John Evans'
+__email__ = 'jevans96@umd.edu'
+__status__ = 'Development'
+
+"""
+Docstring
+"""
+
 import numpy as np
 import scipy
 from i3pubtools.time_profiles import generic_profile
 
 class GaussProfile(generic_profile.GenericProfile):
-    '''Time profile class for a gaussian distribution. Use this
+    """Time profile class for a gaussian distribution. Use this
     to produce gaussian-distributed times for your source.
-    '''
+    """
 
     def __init__(self, mean, sigma, name = 'gauss_tp'):
-        '''Constructs the object.
+        """Constructs the object.
 
         Args:
             mean (float): The center form the distribution
             sigma (float): The width for the distribution
             name (string, optional): prefix for printing parameters
-        '''
+        """
         self.mean = mean
         self.sigma = sigma
         self.scipy_dist = scipy.stats.norm(mean, sigma)
@@ -24,54 +37,54 @@ class GaussProfile(generic_profile.GenericProfile):
         return
 
     def pdf(self, times):
-        '''Calculates the probability for each time.
+        """Calculates the probability for each time.
 
         Args:
             times (np.array): A numpy list of times to evaluate
-        '''
+        """
         return self.scipy_dist.pdf(times)
 
     def logpdf(self, times):
-        '''Calculates the log(probability) for each time.
+        """Calculates the log(probability) for each time.
 
         Args:
             times (np.array): A numpy list of times to evaluate
-        '''
+        """
         return self.scipy_dist.logpdf(times)
 
     def random(self, n=1):
-        '''Returns random values following the gaussian distribution.
+        """Returns random values following the gaussian distribution.
 
         Args:
             n (int, optional): The number of random values to return
-        '''
+        """
         return self.scipy_dist.rvs(size=n)
 
     def effective_exposure(self):
-        '''Calculates the weight associated with each event time.'''
+        """Calculates the weight associated with each event time."""
         return 1.0/self.norm
 
     def get_range(self):
-        '''Returns the min/max values for the distribution.'''
+        """Returns the min/max values for the distribution."""
         return [-np.inf, np.inf]
     
     def x0(self, times):
-        '''
+        """
         
         Args:
             times (np.array):
-        '''
+        """
         x0_mean = np.average(times)
         x0_sigma = np.std(times)
         return x0_mean, x0_sigma
         
         
     def bounds(self, time_profile):
-        '''
+        """
         
         Args:
             time_profile(generic_profile.GenericProfile):
-        '''
+        """
         return [time_profile.get_range(), [0, time_profile.effective_exposure()]]
     
     @property

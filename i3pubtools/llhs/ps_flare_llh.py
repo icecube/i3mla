@@ -1,37 +1,65 @@
-from i3pubtools import tools
+__author__ = 'John Evans'
+__copyright__ = ''
+__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
+__license__ = 'Apache License 2.0'
+__version__ = '0.0.1'
+__maintainer__ = 'John Evans'
+__email__ = 'jevans96@umd.edu'
+__status__ = 'Development'
+
+"""
+Docstring
+"""
+
+from typing import Dict, Optional
+
 import scipy
+import numpy as np
+from tqdm import tqdm
+from i3pubtools import tools
+
 import numpy.lib.recfunctions as rf
 from i3pubtools.time_profiles import gauss_profile
 from i3pubtools.time_profiles import uniform_profile
-from tqdm import tqdm
-import numpy as np
+from i3pubtools.time_profiles import generic_profile
+
 
 class PsFlareLLH:
-    '''Performs an point-source analysis assuming some single-flaring behavior to the signal.
+    """Performs an point-source analysis assuming some single-flaring behavior to the signal.
     
-    To use:
-        
-    '''
+    More class info...
+    
+    Attributes:
+        data: Real neutrino event data.
+        sim: Simulated neutrino events.
+        grl: A list of runs/times when the detector was working properly.
+        bins: Bin edges for dec and logE for generating sob maps.
+        gammas: Gamma steps for generating sob maps.
+        signal_time_profile: A time profile for the background distribution.
+        background_time_profile: A time profile for the signal distribution.
+        source: Where to look for neutrinos.
+    """
 
-    def __init__(self, data, sim, grl, gammas, bins, 
-                 infile = None, outfile = None,
-                 signal_time_profile = None,
-                 background_time_profile = None,
-                 source = {'ra':np.pi/2, 'dec':np.pi/6}):
-        '''Constructs the object, calculates sob maps.
+    def __init__(self, 
+                 data: np.ndarray, 
+                 sim: np.ndarray, 
+                 grl: np.ndarray, 
+                 gammas: np.ndarray, 
+                 bins: np.ndarray, 
+                 signal_time_profile: Optional[generic_profile.GenericProfile] = None,
+                 background_time_profile: Optional[generic_profile.GenericProfile] = None,
+                 source: Dict[float, float] = {'ra':np.pi/2, 'dec':np.pi/6},
+                 infile: Optional[str] = None, 
+                 outfile: Optional[str] = None
+    ) -> None:
+        """Inits PsFlareLLH and calculates sob maps.
+        
+        More function info...
 
         Args:
-            data (np.ndarray):
-            sim (np.ndarray):
-            grl (np.ndarray):
-            gammas ():
-            bins ():
-            infile (string, optional):
-            outfile (string, optional):
-            signal_time_profile (GenericProfile, optional):
-            background_time_profile (GenericProfile, optional):
-            source (dict, optional):
-        '''
+            infile: A numpy file of precomputed maps from another PSFlareLLH object.
+            outfile: Where to save the computed maps.
+        """
         
         if signal_time_profile is None:
             signal_time_profile = gauss_profile.GaussProfile(np.average(data['time']), np.std(data['time'])),
@@ -55,31 +83,31 @@ class PsFlareLLH:
             self.sob_maps = np.zeros((len(bins[0])-1, len(bins[1])-1, len(gammas)))
             self.bg_p_dec = self._create_bg_p_dec()
             for i,gamma in enumerate(tqdm(gammas)):
-                self.sob_maps[:,:,i],_ = self._create_interpolated_ratio(gamma, bins)
+                self.sob_maps[:,:,i] = self._create_interpolated_ratio(gamma)
         
         if outfile is not None:
-            np.save(outfile, np.array([self.sob_maps, self.bg_p_dec]))
-        return
+            np.save(outfile, np.array([self.sob_maps, self.bg_p_dec], dtype=object))
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------
 # init helper functions
 #-------------------------------------------------------------------------------------------------------------------------------------------------
-    def _create_interpolated_ratio(self, gamma, bins):
-        '''Generates a 2D histogram from splines of sig/bg vs dec at a range of energies.
-            
+    def _create_interpolated_ratio(self, gamma: np.ndarray) -> np.ndarray:
+        """Generates a 2D histogram from splines of sig/bg vs dec at a range of energies.
+        
+        More function info...
+        
         Args:
-            gamma ():
-            bins ():
+            gamma: Assumed gamma for weighting.
             
         Returns:
-            
-        '''
+            Signal-over-background ratios.
+        """
         # background
         bg_w = np.ones(len(self.data), dtype=float)
         bg_w /= np.sum(bg_w)
         bg_h, xedges, yedges  = np.histogram2d(np.sin(self.data['dec']),
                                                self.data['logE'],
-                                               bins=bins,
+                                               bins=self.bins,
                                                weights = bg_w)
 
         # signal
@@ -87,7 +115,7 @@ class PsFlareLLH:
         sig_w /= np.sum(sig_w)
         sig_h, xedges, yedges = np.histogram2d(np.sin(self.sim['dec']),
                                                self.sim['logE'],
-                                               bins=bins,
+                                               bins=self.bins,
                                                weights = sig_w)
 
         ratio = sig_h / bg_h
@@ -96,31 +124,33 @@ class PsFlareLLH:
             # We explicitly want to avoid NaNs and infinities
             values = ratio[i]
             good = np.isfinite(values) & (values>0)
-            x, y = bins[1][:-1][good], values[good]
+            x, y = self.bins[1][:-1][good], values[good]
 
             # Do a linear interpolation across the energy range
-            spline = scipy.interpolate.UnivariateSpline(x, y,
-                                                        k = 1,
-                                                        s = 0,
-                                                        ext = 3)
+            spline = scipy.interpolate.UnivariateSpline(x, y, k = 1, s = 0, ext = 3)
 
             # And store the interpolated values
-            ratio[i] = spline(bins[1,:-1])
+            ratio[i] = spline(self.bins[1,:-1])
 
-        return ratio, bins
+        return ratio
 
-    def _create_bg_p_dec(self,):
-        '''Generates a spline of neutrino flux vs declination.
+    def _create_bg_p_dec(self, steps: int = 501) -> scipy.interpolate.UnivariateSpline:
+        """Generates a spline of neutrino flux vs declination.
+        
+        More function info...
+        
+        Args:
+            steps: Number of steps to bin sin(dec) into.
         
         Returns:
-            
-        '''
+            A spline function representing the sin(dec) histogram.
+        """
         # Our background PDF only depends on declination.
         # In order for us to capture the dec-dependent
         # behavior, we first take a look at the dec values
         # in the data. We can do this by histogramming them.
         sin_dec = np.sin(self.data['dec'])
-        bins = np.linspace(-1.0, 1.0, 501)
+        bins = np.linspace(-1.0, 1.0, steps)
 
         # Make the background histogram. Note that we do NOT
         # want to use density=True here, since that would mean
@@ -149,59 +179,65 @@ class PsFlareLLH:
 #-------------------------------------------------------------------------------------------------------------------------------------------------
 # spatial pdfs
 #-------------------------------------------------------------------------------------------------------------------------------------------------
-    def _signal_pdf(self, event):
-        '''Calculates the signal probability of an event based on it's angular distance from a source.
+    def _signal_pdf(self, events: np.ndarray) -> np.array:
+        """Calculates the signal probability of events based on their angular distance from a source.
+        
+        More function info...
         
         Args:
-            event ():
+            events: An array of events including their positional data.
             
         Returns:
-            
-        '''
-        sigma = event['angErr']
-        x = tools.angular_distance(event['ra'], event['dec'],
+            The value for the signal space pdf for the given events angular distances.
+        """
+        sigma = events['angErr']
+        x = tools.angular_distance(events['ra'], events['dec'],
                                    self.source['ra'], self.source['dec'])
         return (1.0/(2*np.pi*sigma**2))*np.exp(-x**2/(2*sigma**2))
 
-    def _background_pdf(self, event):
-        '''calculate the background probability of an event based on it's declination
+    def _background_pdf(self, events: np.ndarray) -> np.array:
+        """Calculates the background probability of events based on their declination.
+        
+        More function info...
         
         Args:
-            event ():
+            events: An array of events including their declination.
             
         Returns:
-            
-        '''
-        background_likelihood = (1/(2*np.pi))*self.bg_p_dec(np.sin(event['dec']))
+            The value for the background space pdf for the given events declinations.
+        """
+        background_likelihood = (1/(2*np.pi))*self.bg_p_dec(np.sin(events['dec']))
         return background_likelihood
 
     # signal/background
-    def _evaluate_interpolated_ratios(self, events):
-        '''Use calculated interpolated ratios to quickly retrieve signal/background for given
-            events
+    def _evaluate_interpolated_ratios(self, events: np.ndarray) -> np.ndarray:
+        """Uses calculated interpolated ratios to quickly retrieve signal/background for given events.
+        
+        More function info...
         
         Args:
-            events ():
+            events: An array of events including their positional data.
         
         Returns:
-            
-        '''
+            Signal-over-Background ratios at each gamma at each event location.
+        """
         # Get the bin that each event belongs to
-        i = np.searchsorted(self.bins[0], np.sin(events['dec'])) - 1
-        j = np.searchsorted(self.bins[1], events['logE']) - 1
+        sin_dec_idx = np.searchsorted(self.bins[0], np.sin(events['dec'])) - 1
+        logE_idx = np.searchsorted(self.bins[1], events['logE']) - 1
 
-        return self.sob_maps[i,j]
+        return self.sob_maps[sin_dec_idx,logE_idx]
 
-    def _get_energy_splines(self, events):
-        '''Spline signal/background vs gamma at a set of locations using calculated interpolated
-            ratios
+    def _get_energy_splines(self, events: np.ndarray) -> np.ndarray:
+        """Splines signal/background vs gamma at a set of locations using calculated interpolated ratios.
+        
+        More function info...
         
         Args:
-            events ():
+            events: An array of events including their positional data.
             
         Returns:
-            
-        '''
+            An array of splines of Signal-over-Background vs gamma for each event.
+        """
         # Get the values for each event
         sob_ratios = self._evaluate_interpolated_ratios(events)
 
@@ -218,17 +254,23 @@ class PsFlareLLH:
             sob_splines[i] = spline
         return sob_splines
 
-    def _get_energy_sob(self, events, gamma, splines):
-        '''Get signal/background at given locations and gamma from calculated energy splines
+    def _get_energy_sob(self, 
+                        events: np.ndarray, 
+                        gamma: float, 
+                        splines: scipy.interpolate.UnivariateSpline
+    ) -> np.array:
+        """Gets signal-over-background at given locations and gamma from calculated energy splines.
+        
+        More function info...
         
         Args:
-            events ():
-            gamma ():
-            splines ():
+            events: An array of events including their positional data.
+            gamma: Some spectral index to evaluate the splines at.
+            splines: Signal-over-Background splines as functions of gamma.
             
         Returns:
-            
-        '''
+            An array of the spline evaluations for each event.
+        """
         final_sob_ratios = np.ones_like(events, dtype=float)
         for i, spline in enumerate(splines):
             final_sob_ratios[i] = np.exp(spline(gamma))
@@ -238,20 +280,24 @@ class PsFlareLLH:
 #-------------------------------------------------------------------------------------------------------------------------------------------------
 # get events for trials
 #-------------------------------------------------------------------------------------------------------------------------------------------------
-    def _select_and_weight(self, N=0, gamma=-2, sampling_width = np.radians(1)):
-        '''Prune the simulation set to only events close to a given source and calculate the
-            weight for each event. Add the weights as a new column to the simulation set
+    def _select_and_weight(self, 
+                           flux_norm: float = 0, 
+                           gamma: float = -2, 
+                           sampling_width: float = np.radians(1)
+    ) -> np.ndarray:
+        """Short function info...
+        
+        Prunes the simulation set to only events close to a given source and calculate the
+        weight for each event. Adds the weights as a new column to the simulation set.
             
         Args:
-            N ():
-            gamma ():
-            sampling_width ():
+            flux_norm: A flux normaliization to adjust weights.
+            gamma: A spectral index to adjust weights.
+            sampling_width: The bandwidth around the source declination to cut events.
         
         Returns:
-            
-        '''
-        assert('ow' in self.sim.dtype.names)
-
+            A reweighted simulation set around the source declination.
+        """
         # Pick out only those events that are close in
         # declination. We only want to sample from those.
         sindec_dist = np.abs(self.source['dec']-self.sim['trueDec'])
@@ -267,7 +313,7 @@ class PsFlareLLH:
         # shape, talk to me and we can work it out.
         effective_livetime = self.signal_time_profile.effective_exposure()
         reduced_sim['weight'] = reduced_sim['ow'] *\
-                        N * (reduced_sim['trueE']/100.e3)**gamma *\
+                        flux_norm * (reduced_sim['trueE']/100.e3)**gamma *\
                         effective_livetime * 24 * 3600.
 
         # Apply the sampling width, which ensures that we
@@ -279,15 +325,21 @@ class PsFlareLLH:
         reduced_sim['weight'] /= omega
         return reduced_sim
 
-    def _get_background_events(self, background_window):
-        '''
+    def _inject_background_events(self, background_window: float) -> np.ndarray:
+        """Short function info...
+        
+        More function info...
         
         Args:
-            background_window ():
+            background_window: The time window to inject events into (unit: days).
         
         Returns:
+            An array of injected background events.
             
-        '''
+        Raises:
+            AssertionError: The background window was not greater-than zero seconds.
+            RuntimeError: When the GRL is applied, there are no runs left.
+        """
         assert(background_window > 0)
         
         # Start by calculating the background rate. For this, we'll
@@ -327,19 +379,17 @@ class PsFlareLLH:
         
         return background
     
-    def _inject_signal_events(self, reduced_sim, N):
-        '''
+    def _inject_signal_events(self, reduced_sim: np.ndarray) -> np.ndarray:
+        """Short function info...
+        
+        More function info...
         
         Args:
-            reduced_sim ():
+            reduced_sim: Reweighted and pruned simulated events near the source declination.
             
         Returns:
-            
-        '''
-        
-        if N <= 0:
-            return np.empty(0, dtype=background.dtype)
-
+            An array of injected signal events.
+        """
         # Pick the signal events
         total = reduced_sim['weight'].sum()
 
@@ -363,45 +413,54 @@ class PsFlareLLH:
         if n_signal_observed > 0:
             ones = np.ones_like(signal['trueRa'])
 
-            signal['ra'], signal['dec'] = tools.rotate(signal['trueRa'],
-                                                       signal['trueDec'],
-                                                       ones*self.source['ra'],
-                                                       ones*self.source['dec'],
-                                                       signal['ra'],
-                                                       signal['dec'])
-            signal['trueRa'], signal['trueDec'] = tools.rotate(signal['trueRa'],
-                                                               signal['trueDec'],
-                                                               ones*self.source['ra'],
-                                                               ones*self.source['dec'],
-                                                               signal['trueRa'],
-                                                               signal['trueDec'])
+            signal['ra'], signal['dec'] = tools.rotate(signal['trueRa'], signal['trueDec'],
+                                                       ones*self.source['ra'], ones*self.source['dec'],
+                                                       signal['ra'], signal['dec'])
+            signal['trueRa'], signal['trueDec'] = tools.rotate(signal['trueRa'], signal['trueDec'],
+                                                               ones*self.source['ra'], ones*self.source['dec'],
+                                                               signal['trueRa'], signal['trueDec'])
         
         return signal
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------
 # calculate test statistics (user facing functions)
 #-------------------------------------------------------------------------------------------------------------------------------------------------
-    def produce_trial(self, reduced_sim=None, N=0, gamma=-2, sampling_width=np.radians(1), random_seed=None, background_window=14): # days
-
-        '''Produces a single trial of background+signal events based on input parameters
+    def produce_trial(self, 
+                      reduced_sim: Optional[np.ndarray] = None, 
+                      flux_norm: float = 0, 
+                      gamma: float = -2, 
+                      sampling_width: float = np.radians(1), 
+                      random_seed: Optional[int] = None, 
+                      background_window: float = 14
+    ) -> np.ndarray:
+        """Produces a single trial of background+signal events based on input parameters.
+        
+        More function info...
 
         Args:
-            reduced_sim ():
-            N ():
-            gamma ():
-            sampling_width ():
-            random_seed ():
-            background_window ():
+            reduced_sim: Reweighted and pruned simulated events near the source declination.
+            flux_norm: A flux normaliization to adjust weights.
+            gamma: A spectral index to adjust weights.
+            sampling_width: The bandwidth around the source declination to cut events.
+            random_seed: A seed value for the numpy RNG.
+            background_window: The time window to inject events into (unit: days).
             
         Returns:
-            
-        '''
-        if random_seed != None: np.random.seed(random_seed)
+            An array of combined signal and background events.
+        """
+        if random_seed is not None: np.random.seed(random_seed)
         
-        if reduced_sim is None: reduced_sim = self._select_and_weight(N=N, gamma=gamma, sampling_width=sampling_width)
+        if reduced_sim is None: 
+            reduced_sim = self._select_and_weight(flux_norm=flux_norm, 
+                                                  gamma=gamma, 
+                                                  sampling_width=sampling_width)
 
-        background = self._get_background_events(background_window)
-        signal = self._inject_signal_events(reduced_sim, N)
+        background = self._inject_background_events(background_window)
+        
+        if flux_norm > 0:
+            signal = self._inject_signal_events(reduced_sim)
+        else:
+            signal = np.empty(0, dtype=background.dtype)
         
         # Because we want to return the entire event and not just the
         # number of events, we need to do some numpy magic. Specifically,
@@ -426,31 +485,37 @@ class PsFlareLLH:
 
         return events
 
-    def evaluate_ts(self, events, ns = 0, gamma = -2):
-        '''Calculates the test statistic for some collection of events at a given location
-            and for some given time profiles for signal and background. Assumes gaussian
-            signal profile.
+    def evaluate_ts(self,
+                    events: np.ndarray,
+                    ns: float = 0,
+                    gamma: float = -2
+    ) -> Dict:
+        """Short function info...
+        
+        Calculates the test statistic for some collection of events at a given location
+        and for some given time profiles for signal and background. Assumes gaussian
+        signal profile.
             
         Args:
-            events ():
-            ns ():
-            gamma ():
+            events: An array of signal and background events.
+            ns: A guess for the number of signal events.
+            gamma: A guess for best fit spectral index of the signal.
             
         Returns:
-            
-        '''
+            A dictionary of the test statistic (TS) and the best fit parameters for the TS.
+        """
         # structure to store our output
         output = {'ts':np.nan,
                   'ns':ns,
                   'gamma':gamma,
                   **self.signal_time_profile.default_params}
-        N = len(events)
-        if N==0:
-            return output
+        flux_norm = len(events)
+        
+        if flux_norm == 0: return output
 
-        # Check: ns cannot be larger than N.
-        if ns >= N:
-            ns = N - 0.00001
+        # Check: ns cannot be larger than flux_norm
+        if ns >= flux_norm:
+            ns = flux_norm - 0.00001
             
         S = self._signal_pdf(events)
         B = self._background_pdf(events)
@@ -458,25 +523,25 @@ class PsFlareLLH:
         splines = self._get_energy_splines(events)
         t_lh_bg = self.background_time_profile.pdf(events['time'])
         
-        drop = N - sum(S != 0)
+        drop = flux_norm - np.sum(S != 0)
         
         def get_ts(ns, gamma, params):
                 e_lh_ratio = self._get_energy_sob(events, gamma, splines)
                 t_lh_sig = self.signal_time_profile(*params).pdf(events['time'])
                 sob = S/B*e_lh_ratio * (t_lh_sig/t_lh_bg)
-                ts = (ns/N*(sob - 1))+1
-                return -2*(np.sum(np.log(ts)) + drop*np.log(1-ns/N))
+                ts = (ns/flux_norm*(sob - 1))+1
+                return -2*(np.sum(np.log(ts)) + drop*np.log(1-ns/flux_norm))
 
         with np.errstate(divide='ignore', invalid='ignore'):
             # Set the seed values, which tell the minimizer
             # where to start, and the bounds. First do the
             # shape parameters (just gamma, in this case).
             x0 = [ns, gamma, *self.signal_time_profile.x0(events['time'])]
-            bounds = [[0,N],
+            bounds = [[0, flux_norm],
                       [-4, -1], # gamma [min, max]
                       *self.signal_time_profile.bounds(self.background_time_profile)]
 
-            result = scipy.optimize.minimize(get_ts, x0 = x0, bounds = bounds, method = 'L-BFGS-B')
+            result = scipy.optimize.minimize(get_ts, x0=x0, bounds=bounds, method='L-BFGS-B')
 
             # Store the results in the output array
             output['ts'] = -1*result.fun
@@ -487,44 +552,37 @@ class PsFlareLLH:
 
             return output
 
-    def produce_n_trials(self, ntrials,
-
-                         # Estimate the background rate over this many days
-                         background_window = 14,
-
-                         # Parameters to control where/when you look
-                         test_ns = 1,
-                         test_gamma = -2,
-
-                         # Other
-                         random_seed = None,
-                         verbose=True,
-
-                         # Signal flux parameters
-                         N=0,
-                         gamma=-2,
-                         sampling_width = np.radians(1)):
-        '''produce n trials and calculate a test statistic for each trial
+    def produce_n_trials(self, 
+                         ntrials: int,
+                         background_window: float = 14,
+                         test_ns: float = 1,
+                         test_gamma: float = -2,
+                         random_seed: Optional[int] = None,
+                         flux_norm: float = 0,
+                         gamma: float = -2,
+                         sampling_width: float = np.radians(1)
+    ) -> np.ndarray:
+        """Produces n trials and calculate a test statistic for each trial.
+        
+        More function info...
         
         Args:
-            ntrials ():
-            background_window ():
-            test_ns ():
-            test_gamma ():
-            random_seed ():
-            verbose ():
-            N ():
-            gamma ():
-            sampling_width ():
+            ntrials: The number of times to repeat the trial + evaluate_ts process.
+            background_window: Estimate the background rate over this many days (unit: days).
+            test_ns: A guess for the number of signal events.
+            test_gamma: A guess for best fit spectral index of the signal.
+            random_seed: A seed value for the numpy RNG.
+            flux_norm: A flux normaliization to adjust weights.
+            gamma: A guess for best fit spectral index of the signal.
+            sampling_width: The bandwidth around the source declination to cut events.
             
         Returns:
-            
-        '''
-        if random_seed:
-            np.random.seed(random_seed)
+            An array of test statistic values and their best-fit parameters for each trial.
+        """
+        if random_seed: np.random.seed(random_seed)
 
         if background_window < 1:
-            print("WARN: Your window for estimating the backgroud rate is"
+            print("WARflux_norm: Your window for estimating the backgroud rate is"
                   " {} and is less than 1 day. You may run into large"
                   " statistical uncertainties on the background rates which"
                   " may lead to unreliable trials. Increase your"
@@ -532,7 +590,7 @@ class PsFlareLLH:
                   " these issues.")
 
         if self.background_time_profile.effective_exposure() > background_window:
-            print("WARN: Going to estimate the background from a window"
+            print("WARflux_norm: Going to estimate the background from a window"
                   " of {} days, but producing a trial of {} days. Upscaling"
                   " can be a bit dangerous, since you run the risk of missing"
                   " impacts from seasonal fluctuations. Just keep it in mind"
@@ -541,7 +599,7 @@ class PsFlareLLH:
         # Cut down the sim. We're going to be using the same
         # source and weights each time, so this stops us from
         # needing to recalculate over and over again.
-        reduced_sim = self._select_and_weight(N = N, gamma = gamma, sampling_width = sampling_width)
+        reduced_sim = self._select_and_weight(flux_norm=flux_norm, gamma=gamma, sampling_width=sampling_width)
 
         # Build a place to store information for the trial
         dtype = np.dtype([('ts', np.float32),
@@ -557,15 +615,15 @@ class PsFlareLLH:
         signal_weights = None
 
         for i in tqdm(range(ntrials),
-                      desc='Running Trials (N={:3.2e}, gamma={:2.1f})'.format(N, gamma),
+                      desc='Running Trials (N={:3.2e}, gamma={:2.1f})'.format(flux_norm, gamma),
                       unit=' trials',
                       position=0,
                       ncols = 800):
 
             # Produce the trial events
             trial = self.produce_trial(reduced_sim,
-                                       N = N,
-                                       gamma = gamma,
+                                       flux_norm=flux_norm,
+                                       gamma=gamma,
                                        background_window=background_window,
                                        random_seed=random_seed)
 
@@ -574,7 +632,7 @@ class PsFlareLLH:
 
             fit_info['ts'][i] = bestfit['ts']
             fit_info['ntot'][i] = len(trial)
-            fit_info['ninj'][i] = (trial['run']>200000).sum()
+            fit_info['ninj'][i] = (trial['run'] > 200000).sum()
             fit_info['ns'][i] = bestfit['ns']
             fit_info['gamma'][i] = bestfit['gamma']
             for j, key in enumerate(self.signal_time_profile.default_params):

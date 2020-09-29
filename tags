@@ -3528,6 +3528,16 @@ Z	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&
 Ze	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 _	docs/_static/underscore-1.3.1.js	/^  _.prototype = wrapper.prototype;$/;"	c
 _	docs/_static/underscore-1.3.1.js	/^  var _ = function(obj) { return new wrapper(obj); };$/;"	f
+__author__	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^__author__ = 'John Evans'$/;"	v
+__author__	i3pubtools/llhs/cluster_multiflare_llh.py	/^__author__ = 'John Evans'$/;"	v
+__author__	i3pubtools/llhs/ps_flare_llh.py	/^__author__ = 'John Evans'$/;"	v
+__author__	i3pubtools/time_profiles/.ipynb_checkpoints/gauss_profile-checkpoint.py	/^__author__ = 'John Evans'$/;"	v
+__author__	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^__author__ = 'John Evans'$/;"	v
+__author__	i3pubtools/time_profiles/.ipynb_checkpoints/uniform_profile-checkpoint.py	/^__author__ = 'John Evans'$/;"	v
+__author__	i3pubtools/time_profiles/gauss_profile.py	/^__author__ = 'John Evans'$/;"	v
+__author__	i3pubtools/time_profiles/generic_profile.py	/^__author__ = 'John Evans'$/;"	v
+__author__	i3pubtools/time_profiles/uniform_profile.py	/^__author__ = 'John Evans'$/;"	v
+__author__	test/test_data.py	/^__author__ = 'John Evans'$/;"	v
 __author__	test3ml/workshop/joint_fit_example/VERITASLike.py	/^__author__ = 'giacomov'$/;"	v
 __call__	i3pubtools/.ipynb_checkpoints/spectral-checkpoint.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:BaseSpectrum
 __call__	i3pubtools/.ipynb_checkpoints/spectral-checkpoint.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:CustomSpectrum
@@ -3538,15 +3548,45 @@ __call__	i3pubtools/spectral.py	/^    def __call__(self, E, **kwargs):$/;"	m	cla
 __call__	mla/mla/spectral.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:BaseSpectrum
 __call__	mla/mla/spectral.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:CustomSpectrum
 __call__	mla/mla/spectral.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:PowerLaw
+__copyright__	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^__copyright__ = ''$/;"	v
+__copyright__	i3pubtools/llhs/cluster_multiflare_llh.py	/^__copyright__ = ''$/;"	v
+__copyright__	i3pubtools/llhs/ps_flare_llh.py	/^__copyright__ = ''$/;"	v
+__copyright__	i3pubtools/time_profiles/.ipynb_checkpoints/gauss_profile-checkpoint.py	/^__copyright__ = ''$/;"	v
+__copyright__	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^__copyright__ = ''$/;"	v
+__copyright__	i3pubtools/time_profiles/.ipynb_checkpoints/uniform_profile-checkpoint.py	/^__copyright__ = ''$/;"	v
+__copyright__	i3pubtools/time_profiles/gauss_profile.py	/^__copyright__ = ''$/;"	v
+__copyright__	i3pubtools/time_profiles/generic_profile.py	/^__copyright__ = ''$/;"	v
+__copyright__	i3pubtools/time_profiles/uniform_profile.py	/^__copyright__ = ''$/;"	v
+__copyright__	test/test_data.py	/^__copyright__ = ''$/;"	v
+__credits__	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	i3pubtools/llhs/cluster_multiflare_llh.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	i3pubtools/llhs/ps_flare_llh.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	i3pubtools/time_profiles/.ipynb_checkpoints/gauss_profile-checkpoint.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	i3pubtools/time_profiles/.ipynb_checkpoints/uniform_profile-checkpoint.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	i3pubtools/time_profiles/gauss_profile.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	i3pubtools/time_profiles/generic_profile.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	i3pubtools/time_profiles/uniform_profile.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	test/test_data.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__email__	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^__email__ = 'jevans96@umd.edu'$/;"	v
+__email__	i3pubtools/llhs/cluster_multiflare_llh.py	/^__email__ = 'jevans96@umd.edu'$/;"	v
+__email__	i3pubtools/llhs/ps_flare_llh.py	/^__email__ = 'jevans96@umd.edu'$/;"	v
+__email__	i3pubtools/time_profiles/.ipynb_checkpoints/gauss_profile-checkpoint.py	/^__email__ = 'jevans96@umd.edu'$/;"	v
+__email__	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^__email__ = 'jevans96@umd.edu'$/;"	v
+__email__	i3pubtools/time_profiles/.ipynb_checkpoints/uniform_profile-checkpoint.py	/^__email__ = 'jevans96@umd.edu'$/;"	v
+__email__	i3pubtools/time_profiles/gauss_profile.py	/^__email__ = 'jevans96@umd.edu'$/;"	v
+__email__	i3pubtools/time_profiles/generic_profile.py	/^__email__ = 'jevans96@umd.edu'$/;"	v
+__email__	i3pubtools/time_profiles/uniform_profile.py	/^__email__ = 'jevans96@umd.edu'$/;"	v
+__email__	test/test_data.py	/^__email__ = 'jevans96@umd.edu'$/;"	v
 __init__	i3pubtools/.ipynb_checkpoints/injection-checkpoint.py	/^    def __init__(self, spectrum, mc):$/;"	m	class:PSinjector
 __init__	i3pubtools/.ipynb_checkpoints/spectral-checkpoint.py	/^    def __init__(self):$/;"	m	class:BaseSpectrum
 __init__	i3pubtools/.ipynb_checkpoints/spectral-checkpoint.py	/^    def __init__(self, E0, A, gamma, Ecut=None):$/;"	m	class:PowerLaw
 __init__	i3pubtools/.ipynb_checkpoints/spectral-checkpoint.py	/^    def __init__(self,likelihood_model_instance):$/;"	m	class:CustomSpectrum
 __init__	i3pubtools/injection.py	/^    def __init__(self, spectrum, mc):$/;"	m	class:PSinjector
 __init__	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def __init__(self, data, sim, grl, gammas, bins, infile = None, outfile = None):$/;"	m	class:cluster_multiflare_llh
-__init__	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def __init__(self, data, sim, grl, gammas, bins, $/;"	m	class:PsFlareLLH
+__init__	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def __init__(self, $/;"	m	class:PsFlareLLH
 __init__	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def __init__(self, data, sim, grl, gammas, bins, infile = None, outfile = None):$/;"	m	class:cluster_multiflare_llh
-__init__	i3pubtools/llhs/ps_flare_llh.py	/^    def __init__(self, data, sim, grl, gammas, bins, $/;"	m	class:PsFlareLLH
+__init__	i3pubtools/llhs/ps_flare_llh.py	/^    def __init__(self, $/;"	m	class:PsFlareLLH
 __init__	i3pubtools/spectral.py	/^    def __init__(self):$/;"	m	class:BaseSpectrum
 __init__	i3pubtools/spectral.py	/^    def __init__(self, E0, A, gamma, Ecut=None):$/;"	m	class:PowerLaw
 __init__	i3pubtools/spectral.py	/^    def __init__(self,likelihood_model_instance):$/;"	m	class:CustomSpectrum
@@ -3567,9 +3607,39 @@ __init__	mla/mla/timing.py	/^    def __init__(self,): pass$/;"	m	class:generic_p
 __init__	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def __init__(self, name, veritas_root_data):$/;"	m	class:VERITASLike
 __init__	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def __init__(self, root_file, run_name):$/;"	m	class:VERITASRun
 __instrument_name	test3ml/workshop/joint_fit_example/VERITASLike.py	/^__instrument_name = "VERITAS"$/;"	v
+__license__	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	i3pubtools/llhs/cluster_multiflare_llh.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	i3pubtools/llhs/ps_flare_llh.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	i3pubtools/time_profiles/.ipynb_checkpoints/gauss_profile-checkpoint.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	i3pubtools/time_profiles/.ipynb_checkpoints/uniform_profile-checkpoint.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	i3pubtools/time_profiles/gauss_profile.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	i3pubtools/time_profiles/generic_profile.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	i3pubtools/time_profiles/uniform_profile.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	test/test_data.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__maintainer__	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	i3pubtools/llhs/cluster_multiflare_llh.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	i3pubtools/llhs/ps_flare_llh.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	i3pubtools/time_profiles/.ipynb_checkpoints/gauss_profile-checkpoint.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	i3pubtools/time_profiles/.ipynb_checkpoints/uniform_profile-checkpoint.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	i3pubtools/time_profiles/gauss_profile.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	i3pubtools/time_profiles/generic_profile.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	i3pubtools/time_profiles/uniform_profile.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	test/test_data.py	/^__maintainer__ = 'John Evans'$/;"	v
 __metaclass__	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:GenericProfile	file:
 __metaclass__	i3pubtools/time_profiles/generic_profile.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:GenericProfile	file:
 __metaclass__	mla/mla/timing.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:generic_profile	file:
+__status__	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^__status__ = 'Development'$/;"	v
+__status__	i3pubtools/llhs/cluster_multiflare_llh.py	/^__status__ = 'Development'$/;"	v
+__status__	i3pubtools/llhs/ps_flare_llh.py	/^__status__ = 'Development'$/;"	v
+__status__	i3pubtools/time_profiles/.ipynb_checkpoints/gauss_profile-checkpoint.py	/^__status__ = 'Development'$/;"	v
+__status__	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^__status__ = 'Development'$/;"	v
+__status__	i3pubtools/time_profiles/.ipynb_checkpoints/uniform_profile-checkpoint.py	/^__status__ = 'Development'$/;"	v
+__status__	i3pubtools/time_profiles/gauss_profile.py	/^__status__ = 'Development'$/;"	v
+__status__	i3pubtools/time_profiles/generic_profile.py	/^__status__ = 'Development'$/;"	v
+__status__	i3pubtools/time_profiles/uniform_profile.py	/^__status__ = 'Development'$/;"	v
+__status__	test/test_data.py	/^__status__ = 'Development'$/;"	v
 __str__	i3pubtools/.ipynb_checkpoints/spectral-checkpoint.py	/^    def __str__(self):$/;"	m	class:BaseSpectrum
 __str__	i3pubtools/.ipynb_checkpoints/spectral-checkpoint.py	/^    def __str__(self):$/;"	m	class:CustomSpectrum
 __str__	i3pubtools/.ipynb_checkpoints/spectral-checkpoint.py	/^    def __str__(self):$/;"	m	class:PowerLaw
@@ -3579,38 +3649,48 @@ __str__	i3pubtools/spectral.py	/^    def __str__(self):$/;"	m	class:PowerLaw
 __str__	mla/mla/spectral.py	/^    def __str__(self):$/;"	m	class:BaseSpectrum
 __str__	mla/mla/spectral.py	/^    def __str__(self):$/;"	m	class:CustomSpectrum
 __str__	mla/mla/spectral.py	/^    def __str__(self):$/;"	m	class:PowerLaw
+__version__	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^__version__ = '0.0.1'$/;"	v
+__version__	i3pubtools/llhs/cluster_multiflare_llh.py	/^__version__ = '0.0.1'$/;"	v
+__version__	i3pubtools/llhs/ps_flare_llh.py	/^__version__ = '0.0.1'$/;"	v
+__version__	i3pubtools/time_profiles/.ipynb_checkpoints/gauss_profile-checkpoint.py	/^__version__ = '0.0.1'$/;"	v
+__version__	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^__version__ = '0.0.1'$/;"	v
+__version__	i3pubtools/time_profiles/.ipynb_checkpoints/uniform_profile-checkpoint.py	/^__version__ = '0.0.1'$/;"	v
+__version__	i3pubtools/time_profiles/gauss_profile.py	/^__version__ = '0.0.1'$/;"	v
+__version__	i3pubtools/time_profiles/generic_profile.py	/^__version__ = '0.0.1'$/;"	v
+__version__	i3pubtools/time_profiles/uniform_profile.py	/^__version__ = '0.0.1'$/;"	v
+__version__	test/test_data.py	/^__version__ = '0.0.1'$/;"	v
 _background_pdf	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def _background_pdf(self, event, source):$/;"	m	class:cluster_multiflare_llh
-_background_pdf	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _background_pdf(self, event):$/;"	m	class:PsFlareLLH
+_background_pdf	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _background_pdf(self, events: np.ndarray) -> np.array:$/;"	m	class:PsFlareLLH
 _background_pdf	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def _background_pdf(self, event, source):$/;"	m	class:cluster_multiflare_llh
-_background_pdf	i3pubtools/llhs/ps_flare_llh.py	/^    def _background_pdf(self, event):$/;"	m	class:PsFlareLLH
+_background_pdf	i3pubtools/llhs/ps_flare_llh.py	/^    def _background_pdf(self, events: np.ndarray) -> np.array:$/;"	m	class:PsFlareLLH
 _bin_counts_log	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def _bin_counts_log(counts, log_bins):$/;"	m	class:VERITASRun
 _columns_in_data_tree	test3ml/workshop/joint_fit_example/VERITASLike.py	/^_columns_in_data_tree = ['Time',  # it is the MJD of individual events$/;"	v
 _create_bg_p_dec	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def _create_bg_p_dec(self,):$/;"	m	class:cluster_multiflare_llh
-_create_bg_p_dec	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _create_bg_p_dec(self,):$/;"	m	class:PsFlareLLH
+_create_bg_p_dec	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _create_bg_p_dec(self, steps: int = 501) -> scipy.interpolate.UnivariateSpline:$/;"	m	class:PsFlareLLH
 _create_bg_p_dec	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def _create_bg_p_dec(self,):$/;"	m	class:cluster_multiflare_llh
-_create_bg_p_dec	i3pubtools/llhs/ps_flare_llh.py	/^    def _create_bg_p_dec(self,):$/;"	m	class:PsFlareLLH
+_create_bg_p_dec	i3pubtools/llhs/ps_flare_llh.py	/^    def _create_bg_p_dec(self, steps: int = 501) -> scipy.interpolate.UnivariateSpline:$/;"	m	class:PsFlareLLH
 _create_interpolated_ratio	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def _create_interpolated_ratio(self, gamma, bins):$/;"	m	class:cluster_multiflare_llh
-_create_interpolated_ratio	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _create_interpolated_ratio(self, gamma, bins):$/;"	m	class:PsFlareLLH
+_create_interpolated_ratio	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _create_interpolated_ratio(self, gamma: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _create_interpolated_ratio	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def _create_interpolated_ratio(self, gamma, bins):$/;"	m	class:cluster_multiflare_llh
-_create_interpolated_ratio	i3pubtools/llhs/ps_flare_llh.py	/^    def _create_interpolated_ratio(self, gamma, bins):$/;"	m	class:PsFlareLLH
+_create_interpolated_ratio	i3pubtools/llhs/ps_flare_llh.py	/^    def _create_interpolated_ratio(self, gamma: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _evaluate_interpolated_ratios	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def _evaluate_interpolated_ratios(self, events):$/;"	m	class:cluster_multiflare_llh
-_evaluate_interpolated_ratios	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _evaluate_interpolated_ratios(self, events):$/;"	m	class:PsFlareLLH
+_evaluate_interpolated_ratios	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _evaluate_interpolated_ratios(self, events: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _evaluate_interpolated_ratios	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def _evaluate_interpolated_ratios(self, events):$/;"	m	class:cluster_multiflare_llh
-_evaluate_interpolated_ratios	i3pubtools/llhs/ps_flare_llh.py	/^    def _evaluate_interpolated_ratios(self, events):$/;"	m	class:PsFlareLLH
-_get_background_events	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _get_background_events(self, background_window):$/;"	m	class:PsFlareLLH
-_get_background_events	i3pubtools/llhs/ps_flare_llh.py	/^    def _get_background_events(self, background_window):$/;"	m	class:PsFlareLLH
+_evaluate_interpolated_ratios	i3pubtools/llhs/ps_flare_llh.py	/^    def _evaluate_interpolated_ratios(self, events: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _get_diff_flux_and_integral	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def _get_diff_flux_and_integral(self, like_model):$/;"	m	class:VERITASRun
 _get_energy_sob	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def _get_energy_sob(self, events, gamma, splines):$/;"	m	class:cluster_multiflare_llh
-_get_energy_sob	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _get_energy_sob(self, events, gamma, splines):$/;"	m	class:PsFlareLLH
+_get_energy_sob	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _get_energy_sob(self, $/;"	m	class:PsFlareLLH
 _get_energy_sob	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def _get_energy_sob(self, events, gamma, splines):$/;"	m	class:cluster_multiflare_llh
-_get_energy_sob	i3pubtools/llhs/ps_flare_llh.py	/^    def _get_energy_sob(self, events, gamma, splines):$/;"	m	class:PsFlareLLH
+_get_energy_sob	i3pubtools/llhs/ps_flare_llh.py	/^    def _get_energy_sob(self, $/;"	m	class:PsFlareLLH
 _get_energy_splines	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def _get_energy_splines(self, events):$/;"	m	class:cluster_multiflare_llh
-_get_energy_splines	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _get_energy_splines(self, events):$/;"	m	class:PsFlareLLH
+_get_energy_splines	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _get_energy_splines(self, events: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _get_energy_splines	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def _get_energy_splines(self, events):$/;"	m	class:cluster_multiflare_llh
-_get_energy_splines	i3pubtools/llhs/ps_flare_llh.py	/^    def _get_energy_splines(self, events):$/;"	m	class:PsFlareLLH
+_get_energy_splines	i3pubtools/llhs/ps_flare_llh.py	/^    def _get_energy_splines(self, events: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _index	docs/_static/searchtools.js	/^  _index : null,$/;"	p	class:Search
-_inject_signal_events	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _inject_signal_events(self, reduced_sim, N):$/;"	m	class:PsFlareLLH
-_inject_signal_events	i3pubtools/llhs/ps_flare_llh.py	/^    def _inject_signal_events(self, reduced_sim, N):$/;"	m	class:PsFlareLLH
+_inject_background_events	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _inject_background_events(self, background_window: float) -> np.ndarray:$/;"	m	class:PsFlareLLH
+_inject_background_events	i3pubtools/llhs/ps_flare_llh.py	/^    def _inject_background_events(self, background_window: float) -> np.ndarray:$/;"	m	class:PsFlareLLH
+_inject_signal_events	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _inject_signal_events(self, reduced_sim: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
+_inject_signal_events	i3pubtools/llhs/ps_flare_llh.py	/^    def _inject_signal_events(self, reduced_sim: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _integrate	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def _integrate(function, e1, e2):$/;"	m	class:VERITASRun
 _pulse_status	docs/_static/searchtools.js	/^  _pulse_status : -1,$/;"	p	class:Search
 _queued_query	docs/_static/searchtools.js	/^  _queued_query : null,$/;"	p	class:Search
@@ -3618,14 +3698,14 @@ _renorm_hMigration	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def _
 _select_and_weight	i3pubtools/.ipynb_checkpoints/injection-checkpoint.py	/^    def _select_and_weight(self, ra, dec ,sampling_width = np.radians(1)):$/;"	m	class:PSinjector
 _select_and_weight	i3pubtools/injection.py	/^    def _select_and_weight(self, ra, dec ,sampling_width = np.radians(1)):$/;"	m	class:PSinjector
 _select_and_weight	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def _select_and_weight(self, gamma=-2, source = {'ra':np.pi\/2, 'dec':np.pi\/6},$/;"	m	class:cluster_multiflare_llh
-_select_and_weight	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _select_and_weight(self, N=0, gamma=-2, sampling_width = np.radians(1)):$/;"	m	class:PsFlareLLH
+_select_and_weight	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _select_and_weight(self, $/;"	m	class:PsFlareLLH
 _select_and_weight	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def _select_and_weight(self, gamma=-2, source = {'ra':np.pi\/2, 'dec':np.pi\/6},$/;"	m	class:cluster_multiflare_llh
-_select_and_weight	i3pubtools/llhs/ps_flare_llh.py	/^    def _select_and_weight(self, N=0, gamma=-2, sampling_width = np.radians(1)):$/;"	m	class:PsFlareLLH
+_select_and_weight	i3pubtools/llhs/ps_flare_llh.py	/^    def _select_and_weight(self, $/;"	m	class:PsFlareLLH
 _select_and_weight	mla/mla/injection.py	/^    def _select_and_weight(self, ra, dec ,sampling_width = np.radians(1)):$/;"	m	class:PSinjector
 _signal_pdf	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def _signal_pdf(self, event, source):$/;"	m	class:cluster_multiflare_llh
-_signal_pdf	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _signal_pdf(self, event):$/;"	m	class:PsFlareLLH
+_signal_pdf	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _signal_pdf(self, events: np.ndarray) -> np.array:$/;"	m	class:PsFlareLLH
 _signal_pdf	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def _signal_pdf(self, event, source):$/;"	m	class:cluster_multiflare_llh
-_signal_pdf	i3pubtools/llhs/ps_flare_llh.py	/^    def _signal_pdf(self, event):$/;"	m	class:PsFlareLLH
+_signal_pdf	i3pubtools/llhs/ps_flare_llh.py	/^    def _signal_pdf(self, events: np.ndarray) -> np.array:$/;"	m	class:PsFlareLLH
 _simulated_spectrum	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def _simulated_spectrum(x):$/;"	m	class:VERITASRun
 _simulated_spectrum_f	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def _simulated_spectrum_f(e1, e2):$/;"	m	class:VERITASRun
 _trees_in_run	test3ml/workshop/joint_fit_example/VERITASLike.py	/^_trees_in_run = ['data_on',  # Event list in the source region$/;"	v
@@ -3858,6 +3938,7 @@ data-menu-wrap	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAweso
 dataAttr	docs/_static/jquery-3.5.1.js	/^function dataAttr( elem, key, data ) {$/;"	f
 data_dtype	i3pubtools/.,/.ipynb_checkpoints/test_data-checkpoint.py	/^data_dtype = [$/;"	v
 data_dtype	i3pubtools/.,/test_data.py	/^data_dtype = [$/;"	v
+data_dtype	test/test_data.py	/^data_dtype = [$/;"	v
 data_radius	test3ml/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^data_radius = 3.0$/;"	v
 data_radius	test3ml/workshop/hawc_fit/crab_fit_logparabola.py	/^data_radius = 3.0$/;"	v
 dd	docs/_static/basic.css	/^dd {$/;"	s
@@ -4036,9 +4117,9 @@ evaluate	docs/_static/underscore.js	/^function(c){K(c,b[c]=a[c])})};var L=0;b.un
 evaluate_sob_per_event	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def evaluate_sob_per_event(self, events, source, gamma = -2):$/;"	m	class:cluster_multiflare_llh
 evaluate_sob_per_event	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def evaluate_sob_per_event(self, events, source, gamma = -2):$/;"	m	class:cluster_multiflare_llh
 evaluate_ts	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def evaluate_ts(self, events, source, bg_time_profile, sig_time_profile, ns = 0,$/;"	m	class:cluster_multiflare_llh
-evaluate_ts	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def evaluate_ts(self, events, ns = 0, gamma = -2):$/;"	m	class:PsFlareLLH
+evaluate_ts	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def evaluate_ts(self,$/;"	m	class:PsFlareLLH
 evaluate_ts	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def evaluate_ts(self, events, source, bg_time_profile, sig_time_profile, ns = 0,$/;"	m	class:cluster_multiflare_llh
-evaluate_ts	i3pubtools/llhs/ps_flare_llh.py	/^    def evaluate_ts(self, events, ns = 0, gamma = -2):$/;"	m	class:PsFlareLLH
+evaluate_ts	i3pubtools/llhs/ps_flare_llh.py	/^    def evaluate_ts(self,$/;"	m	class:PsFlareLLH
 exclude_patterns	docs/source/conf.py	/^exclude_patterns = []$/;"	v
 expand	docs/_static/jquery-3.5.1.js	/^		expand: function( value ) {$/;"	m	class:jQuery.cssHooks
 expand	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	m	class:S.cssHooks
@@ -4111,10 +4192,13 @@ get_log_like	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def get_log
 get_log_like	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def get_log_like(self, like_model, fast=True):$/;"	m	class:VERITASRun
 get_random_data	i3pubtools/.,/.ipynb_checkpoints/test_data-checkpoint.py	/^def get_random_data(length):$/;"	f
 get_random_data	i3pubtools/.,/test_data.py	/^def get_random_data(length):$/;"	f
+get_random_data	test/test_data.py	/^def get_random_data(length):$/;"	f
 get_random_grl	i3pubtools/.,/.ipynb_checkpoints/test_data-checkpoint.py	/^def get_random_grl(data):$/;"	f
 get_random_grl	i3pubtools/.,/test_data.py	/^def get_random_grl(data):$/;"	f
+get_random_grl	test/test_data.py	/^def get_random_grl(data):$/;"	f
 get_random_sim	i3pubtools/.,/.ipynb_checkpoints/test_data-checkpoint.py	/^def get_random_sim(length):$/;"	f
 get_random_sim	i3pubtools/.,/test_data.py	/^def get_random_sim(length):$/;"	f
+get_random_sim	test/test_data.py	/^def get_random_sim(length):$/;"	f
 get_range	i3pubtools/time_profiles/.ipynb_checkpoints/gauss_profile-checkpoint.py	/^    def get_range(self):$/;"	m	class:GaussProfile
 get_range	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^    def get_range(self): pass$/;"	m	class:GenericProfile
 get_range	i3pubtools/time_profiles/.ipynb_checkpoints/uniform_profile-checkpoint.py	/^    def get_range(self):$/;"	m	class:UniformProfile
@@ -4134,6 +4218,7 @@ gettext	docs/_static/doctools.js	/^  gettext : function(string) {$/;"	m	class:Do
 github	docs/Makefile	/^github:$/;"	t
 grl_dtype	i3pubtools/.,/.ipynb_checkpoints/test_data-checkpoint.py	/^grl_dtype = [$/;"	v
 grl_dtype	i3pubtools/.,/test_data.py	/^grl_dtype = [$/;"	v
+grl_dtype	test/test_data.py	/^grl_dtype = [$/;"	v
 groupBy	docs/_static/underscore-1.3.1.js	/^  _.groupBy = function(obj, val) {$/;"	f	function:_
 groupBy	docs/_static/underscore.js	/^return e.value};b.shuffle=function(a){var b=[],d;j(a,function(a,f){f==0?b[0]=a:(d=Math.floor(Mat/;"	f	function:b
 h	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
@@ -4656,6 +4741,7 @@ np	mla/mla/injection.py	/^import numpy as np$/;"	I
 np	mla/mla/spectral.py	/^import numpy as np$/;"	I
 np	mla/mla/timing.py	/^import numpy as np$/;"	I
 np	mla/mla/tools.py	/^import numpy as np$/;"	I
+np	test/test_data.py	/^import numpy as np$/;"	I
 np	test3ml/workshop/joint_fit_example/VERITASLike.py	/^import numpy as np$/;"	I
 np	test3ml/workshop/joint_fit_example/example_joint.py	/^import numpy as np$/;"	I
 o	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:AnonymousFunctionc74c453e19d00
@@ -4737,13 +4823,13 @@ pre	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box
 preservedScriptAttributes	docs/_static/jquery-3.5.1.js	/^	var preservedScriptAttributes = {$/;"	c	class:AnonymousFunctionb030af400100
 previousUnderscore	docs/_static/underscore-1.3.1.js	/^  var previousUnderscore = root._;$/;"	v
 produce_n_trials	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def produce_n_trials(self, ntrials,$/;"	m	class:cluster_multiflare_llh
-produce_n_trials	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def produce_n_trials(self, ntrials,$/;"	m	class:PsFlareLLH
+produce_n_trials	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def produce_n_trials(self, $/;"	m	class:PsFlareLLH
 produce_n_trials	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def produce_n_trials(self, ntrials,$/;"	m	class:cluster_multiflare_llh
-produce_n_trials	i3pubtools/llhs/ps_flare_llh.py	/^    def produce_n_trials(self, ntrials,$/;"	m	class:PsFlareLLH
+produce_n_trials	i3pubtools/llhs/ps_flare_llh.py	/^    def produce_n_trials(self, $/;"	m	class:PsFlareLLH
 produce_trial	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def produce_trial(self, gamma=-2, source = {'ra':np.pi\/2, 'dec':np.pi\/6},$/;"	m	class:cluster_multiflare_llh
-produce_trial	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def produce_trial(self, reduced_sim=None, N=0, gamma=-2, sampling_width=np.radians(1), rando/;"	m	class:PsFlareLLH
+produce_trial	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def produce_trial(self, $/;"	m	class:PsFlareLLH
 produce_trial	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def produce_trial(self, gamma=-2, source = {'ra':np.pi\/2, 'dec':np.pi\/6},$/;"	m	class:cluster_multiflare_llh
-produce_trial	i3pubtools/llhs/ps_flare_llh.py	/^    def produce_trial(self, reduced_sim=None, N=0, gamma=-2, sampling_width=np.radians(1), rando/;"	m	class:PsFlareLLH
+produce_trial	i3pubtools/llhs/ps_flare_llh.py	/^    def produce_trial(self, $/;"	m	class:PsFlareLLH
 project	docs/source/conf.py	/^project = 'i3pubtools'$/;"	v
 promise	docs/_static/jquery-3.5.1.js	/^			promise = {$/;"	c	class:AnonymousFunctionb030af409f00
 propFilter	docs/_static/jquery-3.5.1.js	/^function propFilter( props, specialEasing ) {$/;"	f
@@ -4888,6 +4974,7 @@ siblingCheck	docs/_static/jquery-3.5.1.js	/^function siblingCheck( a, b ) {$/;"	
 signal_pdf	mla/mla/core.py	/^    def signal_pdf(self):$/;"	m	class:LLH_point_source
 sim_dtype	i3pubtools/.,/.ipynb_checkpoints/test_data-checkpoint.py	/^sim_dtype = [$/;"	v
 sim_dtype	i3pubtools/.,/test_data.py	/^sim_dtype = [$/;"	v
+sim_dtype	test/test_data.py	/^sim_dtype = [$/;"	v
 size	docs/_static/underscore-1.3.1.js	/^  _.size = function(obj) {$/;"	f	function:_
 size	docs/_static/underscore.js	/^c,d){d||(d=b.identity);for(var e=0,f=a.length;e<f;){var g=e+f>>1;d(a[g])<d(c)?e=g+1:f=g}return e/;"	f	function:b
 slice	docs/_static/underscore-1.3.1.js	/^  var slice            = ArrayProto.slice,$/;"	v

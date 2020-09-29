@@ -1,13 +1,13 @@
-'''A dictionary of sources and functions to convert their locations to radians'''
+"""A dictionary of sources and functions to convert their locations to radians"""
 
 import numpy as np
 
 def ra(h, m, s):
-    '''Convert right ascension to radians'''
+    """Convert right ascension to radians"""
     return (h*15 + m/4 + s/240)*np.pi/180
 
 def dec(sign, deg, m, s):
-    '''Convert declination to radians'''
+    """Convert declination to radians"""
     return sign*(deg + m/60 + s/3600)*np.pi/180
 
 # dict of sources

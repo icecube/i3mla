@@ -218,69 +218,123 @@ and for some given time profiles for signal and background</p>
 <span id="i3pubtools-llhs-ps-flare-llh-module"></span><h2>i3pubtools.llhs.ps_flare_llh module<a class="headerlink" href="#module-i3pubtools.llhs.ps_flare_llh" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH">
-<em class="property">class </em><code class="sig-prename descclassname">i3pubtools.llhs.ps_flare_llh.</code><code class="sig-name descname">PsFlareLLH</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">grl</span></em>, <em class="sig-param"><span class="n">gammas</span></em>, <em class="sig-param"><span class="n">bins</span></em>, <em class="sig-param"><span class="n">infile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">outfile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">signal_time_profile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_time_profile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">{'dec': 0.5235987755982988, 'ra': 1.5707963267948966}</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">i3pubtools.llhs.ps_flare_llh.</code><code class="sig-name descname">PsFlareLLH</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">sim</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">grl</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">gammas</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">bins</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">signal_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="i3pubtools.time_profiles.html#i3pubtools.time_profiles.generic_profile.GenericProfile" title="i3pubtools.time_profiles.generic_profile.GenericProfile">i3pubtools.time_profiles.generic_profile.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="i3pubtools.time_profiles.html#i3pubtools.time_profiles.generic_profile.GenericProfile" title="i3pubtools.time_profiles.generic_profile.GenericProfile">i3pubtools.time_profiles.generic_profile.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">source</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">{'dec': 0.5235987755982988, 'ra': 1.5707963267948966}</span></em>, <em class="sig-param"><span class="n">infile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">outfile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Performs an point-source analysis assuming some single-flaring behavior to the signal.</p>
-<p>To use:</p>
+<p>More class info…</p>
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.data">
+<code class="sig-name descname">data</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Real neutrino event data.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.sim">
+<code class="sig-name descname">sim</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulated neutrino events.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.grl">
+<code class="sig-name descname">grl</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.grl" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of runs/times when the detector was working properly.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.bins">
+<code class="sig-name descname">bins</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.bins" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bin edges for dec and logE for generating sob maps.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.gammas">
+<code class="sig-name descname">gammas</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.gammas" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gamma steps for generating sob maps.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.signal_time_profile">
+<code class="sig-name descname">signal_time_profile</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.signal_time_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>A time profile for the background distribution.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.background_time_profile">
+<code class="sig-name descname">background_time_profile</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.background_time_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>A time profile for the signal distribution.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.source">
+<code class="sig-name descname">source</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.source" title="Permalink to this definition">¶</a></dt>
+<dd><p>Where to look for neutrinos.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.evaluate_ts">
-<code class="sig-name descname">evaluate_ts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span></em>, <em class="sig-param"><span class="n">ns</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">- 2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.evaluate_ts" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Calculates the test statistic for some collection of events at a given location</dt><dd><p>and for some given time profiles for signal and background. Assumes gaussian
+<code class="sig-name descname">evaluate_ts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ns</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">- 2</span></em><span class="sig-paren">)</span> &#x2192; Dict<a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.evaluate_ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Short function info…</p>
+<p>Calculates the test statistic for some collection of events at a given location
+and for some given time profiles for signal and background. Assumes gaussian
 signal profile.</p>
-</dd>
-</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong><strong>)</strong> (<em>gamma</em>) – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>events</strong> – An array of signal and background events.</p></li>
+<li><p><strong>ns</strong> – A guess for the number of signal events.</p></li>
+<li><p><strong>gamma</strong> – A guess for best fit spectral index of the signal.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dictionary of the test statistic (TS) and the best fit parameters for the TS.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_n_trials">
-<code class="sig-name descname">produce_n_trials</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ntrials</span></em>, <em class="sig-param"><span class="n">background_window</span><span class="o">=</span><span class="default_value">14</span></em>, <em class="sig-param"><span class="n">test_ns</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">test_gamma</span><span class="o">=</span><span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="o">=</span><span class="default_value">0.017453292519943295</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_n_trials" title="Permalink to this definition">¶</a></dt>
-<dd><p>produce n trials and calculate a test statistic for each trial</p>
+<code class="sig-name descname">produce_n_trials</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ntrials</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">background_window</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">14</span></em>, <em class="sig-param"><span class="n">test_ns</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">test_gamma</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flux_norm</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.017453292519943295</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_n_trials" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produces n trials and calculate a test statistic for each trial.</p>
+<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong><strong>)</strong> (<em>sampling_width</em>) – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>ntrials</strong> – The number of times to repeat the trial + evaluate_ts process.</p></li>
+<li><p><strong>background_window</strong> – Estimate the background rate over this many days (unit: days).</p></li>
+<li><p><strong>test_ns</strong> – A guess for the number of signal events.</p></li>
+<li><p><strong>test_gamma</strong> – A guess for best fit spectral index of the signal.</p></li>
+<li><p><strong>random_seed</strong> – A seed value for the numpy RNG.</p></li>
+<li><p><strong>flux_norm</strong> – A flux normaliization to adjust weights.</p></li>
+<li><p><strong>gamma</strong> – A guess for best fit spectral index of the signal.</p></li>
+<li><p><strong>sampling_width</strong> – The bandwidth around the source declination to cut events.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of test statistic values and their best-fit parameters for each trial.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_trial">
-<code class="sig-name descname">produce_trial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reduced_sim</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="o">=</span><span class="default_value">0.017453292519943295</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_window</span><span class="o">=</span><span class="default_value">14</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_trial" title="Permalink to this definition">¶</a></dt>
-<dd><p>Produces a single trial of background+signal events based on input parameters</p>
+<code class="sig-name descname">produce_trial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reduced_sim</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flux_norm</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.017453292519943295</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_window</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">14</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_trial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produces a single trial of background+signal events based on input parameters.</p>
+<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>(</strong><strong>)</strong> (<em>background_window</em>) – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
-<li><p><strong>(</strong><strong>)</strong> – </p></li>
+<li><p><strong>reduced_sim</strong> – Reweighted and pruned simulated events near the source declination.</p></li>
+<li><p><strong>flux_norm</strong> – A flux normaliization to adjust weights.</p></li>
+<li><p><strong>gamma</strong> – A spectral index to adjust weights.</p></li>
+<li><p><strong>sampling_width</strong> – The bandwidth around the source declination to cut events.</p></li>
+<li><p><strong>random_seed</strong> – A seed value for the numpy RNG.</p></li>
+<li><p><strong>background_window</strong> – The time window to inject events into (unit: days).</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of combined signal and background events.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 </dd></dl>
