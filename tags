@@ -4563,6 +4563,7 @@ maptree	test3ml/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkp
 maptree	test3ml/workshop/hawc_fit/crab_fit_logparabola.py	/^maptree = "..\/data\/HAWC_9bin_507days_crab_data.hd5"$/;"	v
 mark	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 markFunction	docs/_static/jquery-3.5.1.js	/^function markFunction( fn ) {$/;"	f
+master_doc	docs/source/conf.py	/^master_doc = 'index'$/;"	v
 matcherFromGroupMatchers	docs/_static/jquery-3.5.1.js	/^function matcherFromGroupMatchers( elementMatchers, setMatchers ) {$/;"	f
 matcherFromTokens	docs/_static/jquery-3.5.1.js	/^function matcherFromTokens( tokens ) {$/;"	f
 max	docs/_static/underscore-1.3.1.js	/^  _.max = function(obj, iterator, context) {$/;"	f	function:_
