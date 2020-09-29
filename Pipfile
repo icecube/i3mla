@@ -10,6 +10,8 @@ bluepy = "*"
 numpy = "*"
 scipy = "*"
 tqdm = "*"
+sphinx-rtd-theme = "*"
+sphinx-autodoc-typehints = "*"
 
 [requires]
 python_version = "3.8"

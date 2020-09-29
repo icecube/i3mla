@@ -971,7 +971,7 @@ $t	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&
 .genindextable li>ul	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 .guilabel	docs/_static/basic.css	/^.guilabel, .menuselection {$/;"	c
 .hidden	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	c
-.highlight	docs/_static/pygments.css	/^.highlight  { background: #f8f8f8; }$/;"	c
+.highlight	docs/_static/pygments.css	/^.highlight { background: #f8f8f8; }$/;"	c
 .highlight .bp	docs/_static/pygments.css	/^.highlight .bp { color: #008000 } \/* Name.Builtin.Pseudo *\/$/;"	c
 .highlight .c	docs/_static/pygments.css	/^.highlight .c { color: #408080; font-style: italic } \/* Comment *\/$/;"	c
 .highlight .c1	docs/_static/pygments.css	/^.highlight .c1 { color: #408080; font-style: italic } \/* Comment.Single *\/$/;"	c
@@ -2351,12 +2351,32 @@ $t	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&
 :root .fa-rotate-90	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 A	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 A	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+A	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+A	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 A	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 A	docs/genindex.html	/^<h2 id="A">A<\/h2>$/;"	I
 A	docs/genindex.html	/^<h2 id="A">A<\/h2>$/;"	i
 About threeML	test3ml/workshop/README.md	/^# About threeML$/;"	c
 Ae	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 Animation	docs/_static/jquery-3.5.1.js	/^function Animation( elem, properties, options ) {$/;"	f
+AnonymousFunction25ce0e960100	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:z
+AnonymousFunction25ce0e960200	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+AnonymousFunction25ce0e960300	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+AnonymousFunction25ce0e960400	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+AnonymousFunction25ce0e960500	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s.fontface
+AnonymousFunction25ce0e960600	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s.generatedcontent
+AnonymousFunction25ce0e960700	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+AnonymousFunction25ce0e960800	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+AnonymousFunction25ce0e960900	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+AnonymousFunction25ce0e960a00	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:i.k
+AnonymousFunction25ce0e960b00	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+AnonymousFunction25ce0e960c00	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:h.c
+AnonymousFunction25ce0e960d00	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:h.c
+AnonymousFunction25ce0e960e00	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:h.c
+AnonymousFunction25ce0e960f00	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:h.c
+AnonymousFunction25ce0e961000	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:h.c.AnonymousFunction25ce0e960f00
+AnonymousFunction25ce0e961100	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+AnonymousFunction25ce0e961200	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
 AnonymousFunction2ac13a140100	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 AnonymousFunction2ac13a140200	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 AnonymousFunction2ac13a140300	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
@@ -3364,6 +3384,7 @@ AnonymousFunctiondf6f78b82900	docs/_static/underscore.js	/^function(){var a=i.ca
 ArrayProto	docs/_static/underscore-1.3.1.js	/^  var ArrayProto = Array.prototype, ObjProto = Object.prototype, FuncProto = Function.prototype;$/;"	v
 B	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 B	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+B	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 B	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 B	docs/genindex.html	/^<h2 id="B">B<\/h2>$/;"	I
 B	docs/genindex.html	/^<h2 id="B">B<\/h2>$/;"	i
@@ -3385,6 +3406,7 @@ CustomSpectrum	i3pubtools/spectral.py	/^class CustomSpectrum(BaseSpectrum):$/;"	
 CustomSpectrum	mla/mla/spectral.py	/^class CustomSpectrum(BaseSpectrum):$/;"	c
 D	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 D	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:AnonymousFunctionc74c453e2000
+D	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:window.Modernizr
 D	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 D	docs/genindex.html	/^<h2 id="D">D<\/h2>$/;"	I
 D	docs/genindex.html	/^<h2 id="D">D<\/h2>$/;"	i
@@ -3393,18 +3415,23 @@ DOMEval	docs/_static/jquery-3.5.1.js	/^	function DOMEval( code, node, doc ) {$/;
 Data	docs/_static/jquery-3.5.1.js	/^function Data() {$/;"	c
 Documentation	docs/_static/doctools.js	/^var Documentation = {$/;"	c
 Dt	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
+E	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:window.Modernizr
 E	docs/genindex.html	/^<h2 id="E">E<\/h2>$/;"	I
 E	docs/genindex.html	/^<h2 id="E">E<\/h2>$/;"	i
 EOM	test3ml/workshop/install_everything.sh	/^cat > $HOME\/init_conda_hal.sh <<- EOM$/;"	h
 EOM	test3ml/workshop/install_from_conda.sh	/^cat > $HOME\/init_conda_fvh.sh <<- EOM$/;"	h
 Ee	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
+F	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:window.Modernizr
 F	docs/_static/underscore.js	/^var F=function(){};b.bind=function(a,c){var d,e;if(a.bind===s&&s)return s.apply(a,i.call(argumen/;"	c
 F	docs/_static/underscore.js	/^var F=function(){};b.bind=function(a,c){var d,e;if(a.bind===s&&s)return s.apply(a,i.call(argumen/;"	f
 FILE_SUFFIX	docs/_static/documentation_options.js	/^    FILE_SUFFIX: '.html',$/;"	p	class:DOCUMENTATION_OPTIONS
 FontAwesome	docs/_static/css/fonts/fontawesome-webfont.svg	/^<font id="FontAwesome" horiz-adv-x="1536" >$/;"	d
 FontAwesome	docs/_static/css/fonts/fontawesome-webfont.svg	/^<font id="FontAwesome" horiz-adv-x="1536" >$/;"	i
+FontAwesome	docs/_static/fonts/fontawesome-webfont.svg	/^<font id="FontAwesome" horiz-adv-x="1536" >$/;"	d
+FontAwesome	docs/_static/fonts/fontawesome-webfont.svg	/^<font id="FontAwesome" horiz-adv-x="1536" >$/;"	i
 Ft	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 G	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	c
+G	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:window.Modernizr
 G	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 G	docs/genindex.html	/^<h2 id="G">G<\/h2>$/;"	I
 G	docs/genindex.html	/^<h2 id="G">G<\/h2>$/;"	i
@@ -3413,11 +3440,13 @@ GaussProfile	i3pubtools/time_profiles/gauss_profile.py	/^class GaussProfile(gene
 GenericProfile	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^class GenericProfile:$/;"	c
 GenericProfile	i3pubtools/time_profiles/generic_profile.py	/^class GenericProfile:$/;"	c
 Getting the data	test3ml/workshop/README.md	/^# Getting the data$/;"	c
+H	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:window.Modernizr
 H	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 HAS_SOURCE	docs/_static/documentation_options.js	/^    HAS_SOURCE: true,$/;"	p	class:DOCUMENTATION_OPTIONS
 HAWC Crab example	test3ml/workshop/README.md	/^# HAWC Crab example$/;"	c
 He	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 I	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
+I	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:window.Modernizr
 I	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 I	docs/genindex.html	/^<h2 id="I">I<\/h2>$/;"	I
 I	docs/genindex.html	/^<h2 id="I">I<\/h2>$/;"	i
@@ -3427,8 +3456,10 @@ Indices and tables	docs/source/index.rst	/^Indices and tables$/;"	c
 Indices and tables¶	docs/.ipynb_checkpoints/index-checkpoint.html	/^<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this /;"	h
 Indices and tables¶	docs/index.html	/^<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this /;"	h
 Installation	test3ml/workshop/README.md	/^# Installation$/;"	c
+J	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:window.Modernizr
 Je	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 Joint Crab example	test3ml/workshop/README.md	/^# Joint Crab example$/;"	c
+K	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:window.Modernizr
 K	docs/_static/underscore.js	/^u(b)+"),'"}).replace(d.interpolate||t,function(a,b){return"',"+u(b)+",'"}).replace(d.evaluate||t/;"	f
 Ke	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 L	docs/_static/underscore.js	/^function(c){K(c,b[c]=a[c])})};var L=0;b.uniqueId=function(a){var b=L++;return a?a+b:b};b.templat/;"	v
@@ -3443,6 +3474,7 @@ M	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&
 M	docs/genindex.html	/^<h2 id="M">M<\/h2>$/;"	I
 M	docs/genindex.html	/^<h2 id="M">M<\/h2>$/;"	i
 MacOS:	test3ml/workshop/README.md	/^## MacOS:$/;"	s	chapter:Prerequisites
+Modernizr	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:window
 Module contents	docs/source/i3pubtools.llhs.rst	/^Module contents$/;"	s	chapter:i3pubtools.llhs package
 Module contents	docs/source/i3pubtools.rst	/^Module contents$/;"	s	chapter:i3pubtools package
 Module contents	docs/source/i3pubtools.time_profiles.rst	/^Module contents$/;"	s	chapter:i3pubtools.time\\_profiles package
@@ -3717,6 +3749,10 @@ a	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&
 a	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:AnonymousFunctionc74c453eb400
 a	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
 a	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+a	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	c
+a	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	c	class:A
+a	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:AnonymousFunction25ce0e960200.e
+a	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:i.u
 a .fa	docs/_static/css/badge_only.css	/^.fa:before{-webkit-font-smoothing:antialiased}.clearfix{*zoom:1}.clearfix:after,.clearfix:before/;"	c
 a .fa	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 a .icon	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
@@ -3757,14 +3793,18 @@ abbr	docs/_static/basic.css	/^abbr, acronym {$/;"	s
 abbr[title]	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 abort	docs/_static/jquery-3.5.1.js	/^				abort: function( statusText ) {$/;"	m	class:AnonymousFunctionb030af4017200.jqXHR
 abort	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	m	class:AnonymousFunctionc74c453e18500.T
+abort	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:A.a
 acronym	docs/_static/basic.css	/^abbr, acronym {$/;"	s
 add	docs/_static/jquery-3.5.1.js	/^		add = function( key, valueOrFunction ) {$/;"	f	function:AnonymousFunctionb030af4016700
 addCombinator	docs/_static/jquery-3.5.1.js	/^function addCombinator( matcher, combinator, base ) {$/;"	f
 addContextElements	docs/_static/doctools.js	/^  addContextElements : function() {$/;"	m	class:Documentation
 addElements	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:y
 addElements	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:t
+addFilter	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:B
 addGetHookIf	docs/_static/jquery-3.5.1.js	/^function addGetHookIf( conditionFn, hookFn ) {$/;"	f
 addHandle	docs/_static/jquery-3.5.1.js	/^function addHandle( attrs, handler ) {$/;"	f
+addPrefix	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:B
+addTest	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:e
 addToPrefiltersOrTransports	docs/_static/jquery-3.5.1.js	/^function addToPrefiltersOrTransports( structure ) {$/;"	f
 addToWrapper	docs/_static/underscore-1.3.1.js	/^  var addToWrapper = function(name, func) {$/;"	f
 addTranslations	docs/_static/doctools.js	/^  addTranslations : function(catalog) {$/;"	m	class:Documentation
@@ -3786,6 +3826,7 @@ anci	docs/_static/language_data.js	/^    anci: 'ance',$/;"	p	class:Stemmer.step2
 angular_distance	i3pubtools/.ipynb_checkpoints/tools-checkpoint.py	/^def angular_distance(ra_A, dec_A, ra_B, dec_B):$/;"	f
 angular_distance	i3pubtools/tools.py	/^def angular_distance(ra_A, dec_A, ra_B, dec_B):$/;"	f
 angular_distance	mla/mla/tools.py	/^def angular_distance(ra_A, dec_A, ra_B, dec_B):$/;"	f
+applicationcache	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 article	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 article ol	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 article ol li	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
@@ -3808,15 +3849,18 @@ ator	docs/_static/language_data.js	/^    ator: 'ate',$/;"	p	class:Stemmer.step2l
 attrHandle	docs/_static/jquery-3.5.1.js	/^	attrHandle[ name ] = function( elem, name, isXML ) {$/;"	f	function:AnonymousFunctionb030af4014600
 attrs	docs/_static/jquery-3.5.1.js	/^		attrs = { height: type };$/;"	c	class:genFx
 audio	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
+audio	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 audio:not([controls] )	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 author	docs/source/conf.py	/^author = 'John Evans, Jason Fan, Michael Larson'$/;"	v
 b	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 b	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 b	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f	function:o
+b	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:function
 b	docs/_static/underscore.js	/^e&&c.call(b,a,g,h)))return n});return e};var E=b.some=b.any=function(a,c,d){c||(c=b.identity);va/;"	v
 b	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	f
 b	docs/_static/underscore.js	/^u(b)+"),'"}).replace(d.interpolate||t,function(a,b){return"',"+u(b)+",'"}).replace(d.evaluate||t/;"	c
 background_pdf	mla/mla/core.py	/^    def background_pdf(self):$/;"	m	class:LLH_point_source
+backgroundsize	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 be	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 big	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 biliti	docs/_static/language_data.js	/^    biliti: 'ble',$/;"	p	class:Stemmer.step2list
@@ -3833,6 +3877,8 @@ blockquote	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:bef
 blockquote::after	docs/_static/basic.css	/^blockquote::after {$/;"	s
 body	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 body	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
+borderimage	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+borderradius	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 bound	docs/_static/underscore-1.3.1.js	/^    return bound = function() {$/;"	f	function:_.bind
 bounds	i3pubtools/time_profiles/.ipynb_checkpoints/gauss_profile-checkpoint.py	/^    def bounds(self, time_profile):$/;"	m	class:GaussProfile
 bounds	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^    def bounds(self, time_profile): pass$/;"	m	class:GenericProfile
@@ -3841,6 +3887,7 @@ bounds	i3pubtools/time_profiles/gauss_profile.py	/^    def bounds(self, time_pro
 bounds	i3pubtools/time_profiles/generic_profile.py	/^    def bounds(self, time_profile): pass$/;"	m	class:GenericProfile
 bounds	i3pubtools/time_profiles/uniform_profile.py	/^    def bounds(self, time_profile):$/;"	m	class:UniformProfile
 boxModelAdjustment	docs/_static/jquery-3.5.1.js	/^function boxModelAdjustment( elem, dimension, box, isBorderBox, styles, computedVal ) {$/;"	f
+boxshadow	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 breaker	docs/_static/underscore-1.3.1.js	/^  var breaker = {};$/;"	v
 buildFragment	docs/_static/jquery-3.5.1.js	/^function buildFragment( elems, context, scripts, selection, ignored ) {$/;"	f
 buildParams	docs/_static/jquery-3.5.1.js	/^function buildParams( prefix, obj, traditional, add ) {$/;"	f
@@ -3855,12 +3902,16 @@ c	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&
 c	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 c	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
 c	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
+c	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	c	class:function.b
+c	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:h
 c	docs/_static/underscore.js	/^b.after=function(a,b){return a<=0?b():function(){if(--a<1)return b.apply(this,arguments)}};b.key/;"	v
 c	docs/_static/underscore.js	/^return e};b.union=function(){return b.uniq(b.flatten(arguments,true))};b.intersection=b.intersec/;"	v
 cache	docs/_static/jquery-3.5.1.js	/^	function cache( key, value ) {$/;"	f	function:createCache
 callback	docs/_static/jquery-3.5.1.js	/^				callback = function( type ) {$/;"	f	function:AnonymousFunctionb030af4018700
 camelCase	docs/_static/jquery-3.5.1.js	/^function camelCase( string ) {$/;"	f
 canvas	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
+canvas	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+canvastext	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 cap-i	docs/py-modindex.html	/^     <tr class="cap" id="cap-i"><td><\/td><td>$/;"	I
 caption:hover > a.headerlink	docs/_static/basic.css	/^caption:hover > a.headerlink,$/;"	c
 catch	docs/_static/jquery-3.5.1.js	/^				"catch": function( fn ) {$/;"	m	class:AnonymousFunctionb030af409f00.promise
@@ -3870,6 +3921,7 @@ chain	docs/_static/underscore-1.3.1.js	/^  _.chain = function(obj) {$/;"	f	funct
 chain	docs/_static/underscore-1.3.1.js	/^  wrapper.prototype.chain = function() {$/;"	m	class:wrapper
 chain	docs/_static/underscore.js	/^function(){var a=i.call(arguments);H.call(a,this._wrapped);return v(c.apply(b,a),this._chain)}};/;"	m	class:m
 chain	docs/_static/underscore.js	/^u(b)+"),'"}).replace(d.interpolate||t,function(a,b){return"',"+u(b)+",'"}).replace(d.evaluate||t/;"	f	function:b
+change	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:A.a
 classesToArray	docs/_static/jquery-3.5.1.js	/^function classesToArray( value ) {$/;"	f
 clone	docs/_static/underscore-1.3.1.js	/^  _.clone = function(obj) {$/;"	f	function:_
 clone	docs/_static/underscore.js	/^1),function(b){for(var d in b)a[d]==null&&(a[d]=b[d])});return a};b.clone=function(a){return!b.i/;"	f	function:b
@@ -3906,10 +3958,13 @@ createCache	docs/_static/jquery-3.5.1.js	/^function createCache() {$/;"	f
 createDisabledPseudo	docs/_static/jquery-3.5.1.js	/^function createDisabledPseudo( disabled ) {$/;"	f
 createDocumentFragment	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:y
 createDocumentFragment	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:t
+createDocumentFragment	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:r
 createElement	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f	function:a
 createElement	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:y
 createElement	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f	function:a
 createElement	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:t
+createElement	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:a
+createElement	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:r
 createFxNow	docs/_static/jquery-3.5.1.js	/^function createFxNow() {$/;"	f
 createInputPseudo	docs/_static/jquery-3.5.1.js	/^function createInputPseudo( type ) {$/;"	f
 createOptions	docs/_static/jquery-3.5.1.js	/^function createOptions( options ) {$/;"	f
@@ -3920,6 +3975,13 @@ cross_matrix	i3pubtools/tools.py	/^def cross_matrix(x):$/;"	f
 cross_matrix	mla/mla/tools.py	/^    def cross_matrix(x):$/;"	f	function:rotate	file:
 cssHooks	docs/_static/jquery-3.5.1.js	/^	jQuery.cssHooks[ prefix + suffix ] = {$/;"	c	class:jQuery
 cssHooks	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	c	class:S
+cssanimations	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+csscolumns	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+cssgradients	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+cssreflections	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+csstransforms	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+csstransforms3d	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+csstransitions	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 ct	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 ctor	docs/_static/underscore-1.3.1.js	/^      ctor.prototype = func.prototype;$/;"	c
 ctor	docs/_static/underscore-1.3.1.js	/^  var ctor = function(){};$/;"	f
@@ -3928,6 +3990,9 @@ cut_data	mla/mla/core.py	/^    def cut_data(self , data , time_range ):$/;"	m	cl
 d	docs/_static/js/badge_only.js	/^!function(e){var t={};function r(n){if(t[n])return t[n].exports;var o=t[n]={i:n,l:!1,exports:{}}/;"	f	function:r
 d	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 d	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
+d	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+d	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:A
+d	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 d	docs/_static/js/theme.js	/^!function(n){var e={};function t(i){if(e[i])return e[i].exports;var o=e[i]={i:i,l:!1,exports:{}}/;"	f	function:t
 d	docs/_static/underscore.js	/^b.after=function(a,b){return a<=0?b():function(){if(--a<1)return b.apply(this,arguments)}};b.key/;"	v
 d	docs/_static/underscore.js	/^b.tail=function(a,b,d){return i.call(a,b==null||d?1:b)};b.compact=function(a){return b.filter(a,/;"	v
@@ -4042,8 +4107,8 @@ div.topic	docs/_static/basic.css	/^div.topic {$/;"	c
 div.topic > :last-child	docs/_static/basic.css	/^div.topic > :last-child,$/;"	s
 div.topic::after	docs/_static/basic.css	/^div.topic::after,$/;"	c
 div.viewcode-block:target	docs/_static/basic.css	/^div.viewcode-block:target {$/;"	c
-div[class^="highlight-"]	docs/_static/basic.css	/^div[class^="highlight-"] {$/;"	s
-div[class|="highlight"]	docs/_static/basic.css	/^pre, div[class|="highlight"] {$/;"	s
+div[class*="highlight-"]	docs/_static/basic.css	/^div[class*="highlight-"] {$/;"	s
+div[class*="highlight-"]	docs/_static/basic.css	/^pre, div[class*="highlight-"] {$/;"	s
 dl	docs/_static/basic.css	/^dl {$/;"	s
 dl	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 dl > dd:last-child	docs/_static/basic.css	/^dl > dd:last-child,$/;"	s
@@ -4073,6 +4138,7 @@ documentation_options	docs/py-modindex.html	/^      <script type="text\/javascri
 documentation_options	docs/search.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
 domManip	docs/_static/jquery-3.5.1.js	/^function domManip( collection, args, callback, ignored ) {$/;"	f
 done	docs/_static/jquery-3.5.1.js	/^		function done( status, nativeStatusText, responses, headers ) {$/;"	f	function:AnonymousFunctionb030af4017200
+draganddrop	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 dt	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:AnonymousFunctionc74c453e15800
 dt:hover > a.headerlink	docs/_static/basic.css	/^dt:hover > a.headerlink,$/;"	c
 dt:target	docs/_static/basic.css	/^dt:target, span.highlighted {$/;"	s
@@ -4081,6 +4147,10 @@ e	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&
 e	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:ue
 e	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 e	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
+e	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+e	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:AnonymousFunction25ce0e960200
+e	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:i.u
+e	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 e	docs/_static/js/theme.js	/^!function(n){var e={};function t(i){if(e[i])return e[i].exports;var o=e[i]={i:i,l:!1,exports:{}}/;"	v
 e	docs/_static/underscore.js	/^b.forEach=function(a,c,d){if(a!=null)if(w&&a.forEach===w)a.forEach(c,d);else if(a.length===+a.le/;"	v
 e	docs/_static/underscore.js	/^b.tail=function(a,b,d){return i.call(a,b==null||d?1:b)};b.compact=function(a){return b.filter(a,/;"	v
@@ -4100,11 +4170,13 @@ effective_exposure	mla/mla/timing.py	/^    def effective_exposure(self, times): 
 elementMatcher	docs/_static/jquery-3.5.1.js	/^function elementMatcher( matchers ) {$/;"	f
 elements	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:y
 elements	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:t
+elements	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:r
 eli	docs/_static/language_data.js	/^    eli: 'e',$/;"	p	class:Stemmer.step2list
 enci	docs/_static/language_data.js	/^    enci: 'ence',$/;"	p	class:Stemmer.step2list
 end	docs/make.bat	/^:end$/;"	l
 entli	docs/_static/language_data.js	/^    entli: 'ent',$/;"	p	class:Stemmer.step2list
 eq	docs/_static/underscore-1.3.1.js	/^  function eq(a, b, stack) {$/;"	f
+error	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:A.a
 escape	docs/_static/underscore-1.3.1.js	/^    escape      : \/<%-([\\s\\S]+?)%>\/g$/;"	p	class:_.templateSettings
 escape	docs/_static/underscore-1.3.1.js	/^  _.escape = function(string) {$/;"	f	function:_
 escape	docs/_static/underscore.js	/^b.isRegExp=function(a){return l.call(a)=="[object RegExp]"};b.isNull=function(a){return a===null/;"	f	function:b
@@ -4129,6 +4201,8 @@ extend	docs/_static/underscore.js	/^b.after=function(a,b){return a<=0?b():functi
 extensions	docs/source/conf.py	/^extensions = [$/;"	v
 f	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 f	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
+f	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+f	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 f	docs/_static/underscore.js	/^b.forEach=function(a,c,d){if(a!=null)if(w&&a.forEach===w)a.forEach(c,d);else if(a.length===+a.le/;"	v
 f	docs/_static/underscore.js	/^null&&(a=[]);if(y&&a.reduce===y)return e&&(c=b.bind(c,e)),f?a.reduce(c,d):a.reduce(c);j(a,functi/;"	v
 fallback	docs/search.html	/^  <div id="fallback" class="admonition warning">$/;"	I
@@ -4155,10 +4229,12 @@ fixFirefoxAnchorBug	docs/_static/doctools.js	/^  fixFirefoxAnchorBug : function(
 fixInput	docs/_static/jquery-3.5.1.js	/^function fixInput( src, dest ) {$/;"	f
 flatten	docs/_static/underscore-1.3.1.js	/^  _.flatten = function(array, shallow) {$/;"	f	function:_
 flatten	docs/_static/underscore.js	/^b.tail=function(a,b,d){return i.call(a,b==null||d?1:b)};b.compact=function(a){return b.filter(a,/;"	f	function:b
+flexbox	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 fn	docs/_static/jquery-3.5.1.js	/^				fn = function( elem, _key, value ) {$/;"	f	function:AnonymousFunctionb030af40af00
 fn	docs/_static/jquery-3.5.1.js	/^		fn = function( event ) {$/;"	f	function:on
 fn	docs/_static/jquery-3.5.1.js	/^	jQuery.fn[ name ] = function( until, selector ) {$/;"	f	function:jQuery
 fn	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:S
+fontface	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 footer	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 footer	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 footer p	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
@@ -4169,12 +4245,17 @@ found	docs/_static/underscore-1.3.1.js	/^    var found = false;$/;"	v
 ft	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 ful	docs/_static/language_data.js	/^    ful: '',$/;"	p	class:Stemmer.step3list
 fulness	docs/_static/language_data.js	/^    fulness: 'ful',$/;"	p	class:Stemmer.step2list
+function	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
 g	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 g	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
+g	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+g	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 gauss_profile	mla/mla/timing.py	/^class gauss_profile(generic_profile):$/;"	c
 ge	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 genFx	docs/_static/jquery-3.5.1.js	/^function genFx( type, includeWidth ) {$/;"	f
+generatedcontent	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 generic_profile	mla/mla/timing.py	/^class generic_profile(object):$/;"	c
+geolocation	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 getAll	docs/_static/jquery-3.5.1.js	/^function getAll( context, tag ) {$/;"	f
 getAllResponseHeaders	docs/_static/jquery-3.5.1.js	/^				getAllResponseHeaders: function() {$/;"	m	class:AnonymousFunctionb030af4017200.jqXHR
 getAllResponseHeaders	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	m	class:AnonymousFunctionc74c453e18500.T
@@ -4223,6 +4304,8 @@ groupBy	docs/_static/underscore-1.3.1.js	/^  _.groupBy = function(obj, val) {$/;
 groupBy	docs/_static/underscore.js	/^return e.value};b.shuffle=function(a){var b=[],d;j(a,function(a,f){f==0?b[0]=a:(d=Math.floor(Mat/;"	f	function:b
 h	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 h	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
+h	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+h	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 h1	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 h1 code	docs/_static/basic.css	/^h1 code, h2 code, h3 code, h4 code, h5 code, h6 code {$/;"	s
 h1:hover > a.headerlink	docs/_static/basic.css	/^h1:hover > a.headerlink,$/;"	c
@@ -4250,6 +4333,7 @@ has	docs/_static/underscore-1.3.1.js	/^  _.has = function(obj, key) {$/;"	f	func
 has	docs/_static/underscore.js	/^b.isRegExp=function(a){return l.call(a)=="[object RegExp]"};b.isNull=function(a){return a===null/;"	f	function:b
 hasIndex	docs/_static/searchtools.js	/^  hasIndex : function() {$/;"	m	class:Search
 hasOwnProperty	docs/_static/underscore-1.3.1.js	/^      hasOwnProperty   = ObjProto.hasOwnProperty;$/;"	v
+hashchange	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 hawc	test3ml/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^hawc = HAL("HAWC",$/;"	v
 hawc	test3ml/workshop/hawc_fit/crab_fit_logparabola.py	/^hawc = HAL("HAWC",$/;"	v
 he	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
@@ -4264,8 +4348,10 @@ hideSearchWords	docs/_static/doctools.js	/^  hideSearchWords : function() {$/;"	
 highlight	docs/_static/doctools.js	/^  function highlight(node, addItems) {$/;"	f	function:jQuery.fn.highlightText
 highlightSearchWords	docs/_static/doctools.js	/^  highlightSearchWords : function() {$/;"	m	class:Documentation
 highlightText	docs/_static/doctools.js	/^jQuery.fn.highlightText = function(text, className) {$/;"	f	function:jQuery.fn
+history	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 hp	mla/mla/core.py	/^import os, sys, glob, numpy as np, matplotlib, scipy, healpy as hp, time$/;"	I
 hr	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
+hsla	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 html	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 html	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 html.writer-html4 .rst-content dl:not(.docutils)	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
@@ -4337,6 +4423,9 @@ i	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&
 i	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:AnonymousFunctionc74c453e17a00
 i	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 i	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
+i	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+i	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:a.loader
+i	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 i	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 i3pubtools package	docs/source/i3pubtools.rst	/^i3pubtools package$/;"	c
 i3pubtools package¶	docs/i3pubtools.html	/^<h1>i3pubtools package<a class="headerlink" href="#i3pubtools-package" title="Permalink to this /;"	h
@@ -4472,6 +4561,7 @@ img.toggler	docs/_static/basic.css	/^img.toggler {$/;"	c
 index	docs/genindex.html	/^<h1 id="index">Index<\/h1>$/;"	I
 indexOf	docs/_static/underscore-1.3.1.js	/^  _.indexOf = function(array, item, isSorted) {$/;"	f	function:_
 indexOf	docs/_static/underscore.js	/^return e};b.union=function(){return b.uniq(b.flatten(arguments,true))};b.intersection=b.intersec/;"	f	function:b
+indexedDB	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 indices-and-tables	docs/.ipynb_checkpoints/index-checkpoint.html	/^<div class="section" id="indices-and-tables">$/;"	I
 indices-and-tables	docs/index.html	/^<div class="section" id="indices-and-tables">$/;"	I
 init	docs/_static/doctools.js	/^  init : function() {$/;"	m	class:Documentation
@@ -4482,9 +4572,13 @@ initial	docs/_static/underscore-1.3.1.js	/^    var initial = arguments.length > 
 initial	docs/_static/underscore-1.3.1.js	/^    var initial = iterator ? _.map(array, iterator) : array;$/;"	v
 initial	docs/_static/underscore-1.3.1.js	/^  _.initial = function(array, n, guard) {$/;"	f	function:_
 initial	docs/_static/underscore.js	/^c,d){d||(d=b.identity);for(var e=0,f=a.length;e<f;){var g=e+f>>1;d(a[g])<d(c)?e=g+1:f=g}return e/;"	f	function:b
+injectCss	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:a.yepnope
+injectJs	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:a.yepnope
+inlinesvg	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 inner_fit	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def inner_fit(self):$/;"	m	class:VERITASLike
 input	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 input	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
+input	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:e
 input.no-focus:focus	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 input.wy-input-large	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	c
 input::-moz-focus-inner	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
@@ -4551,6 +4645,7 @@ input[type=url] :focus	docs/_static/css/theme.css	/^ *\/@font-face{font-family:F
 input[type=week]	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 input[type=week]	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 input[type=week] :focus	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
+inputtypes	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:e
 ins	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 inspect	docs/_static/jquery-3.5.1.js	/^	function inspect( dataType ) {$/;"	f
 inspectPrefiltersOrTransports	docs/_static/jquery-3.5.1.js	/^function inspectPrefiltersOrTransports( structure, options, originalOptions, jqXHR ) {$/;"	f
@@ -4597,6 +4692,8 @@ ization	docs/_static/language_data.js	/^    ization: 'ize',$/;"	p	class:Stemmer.
 izer	docs/_static/language_data.js	/^    izer: 'ize',$/;"	p	class:Stemmer.step2list
 j	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 j	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
+j	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+j	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 jQuery	docs/_static/jquery-3.5.1.js	/^	jQuery = function( selector, context ) {$/;"	f	function:AnonymousFunctionb030af400100
 jQuery	docs/_static/jquery-3.5.1.js	/^	jQuery[ method ] = function( url, data, callback, type ) {$/;"	f	function:AnonymousFunctionb030af4017600
 jl	test3ml/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^jl = JointLikelihood(model, data, verbose=False)$/;"	v
@@ -4604,6 +4701,8 @@ jl	test3ml/workshop/hawc_fit/crab_fit_logparabola.py	/^jl = JointLikelihood(mode
 jqXHR	docs/_static/jquery-3.5.1.js	/^			jqXHR = {$/;"	c	class:AnonymousFunctionb030af4017200
 k	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 k	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+k	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+k	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:i
 k	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 kbd	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 ke	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
@@ -4612,6 +4711,8 @@ l	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&
 l	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:AnonymousFunctionc74c453ead00.a.then
 l	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:Bt
 l	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+l	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+l	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 l	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 label	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 label	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
@@ -4631,7 +4732,12 @@ li .fa	docs/_static/css/badge_only.css	/^.fa:before{-webkit-font-smoothing:antia
 li .fa-large:before	docs/_static/css/badge_only.css	/^.fa:before{-webkit-font-smoothing:antialiased}.clearfix{*zoom:1}.clearfix:after,.clearfix:before/;"	c
 like_df	test3ml/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^param_df, like_df = jl.fit()$/;"	v
 like_df	test3ml/workshop/hawc_fit/crab_fit_logparabola.py	/^param_df, like_df = jl.fit()$/;"	v
+load	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:Modernizr
+load	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:A.a
+load	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:a.loader
 loadIndex	docs/_static/searchtools.js	/^  loadIndex : function(url) {$/;"	m	class:Search
+loader	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	c	class:a
+localstorage	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 logi	docs/_static/language_data.js	/^    logi: 'log'$/;"	p	class:Stemmer.step2list
 logpdf	i3pubtools/time_profiles/.ipynb_checkpoints/gauss_profile-checkpoint.py	/^    def logpdf(self, times):$/;"	m	class:GaussProfile
 logpdf	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^    def logpdf(self, times): pass$/;"	m	class:GenericProfile
@@ -4646,6 +4752,7 @@ lt	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&
 m	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:AnonymousFunctionc74c453e0100
 m	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 m	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+m	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
 m	docs/_static/underscore.js	/^u(b)+"),'"}).replace(d.interpolate||t,function(a,b){return"',"+u(b)+",'"}).replace(d.evaluate||t/;"	c
 m	docs/_static/underscore.js	/^u(b)+"),'"}).replace(d.interpolate||t,function(a,b){return"',"+u(b)+",'"}).replace(d.evaluate||t/;"	f
 main	test3ml/workshop/joint_fit_example/example_joint.py	/^def main():$/;"	f
@@ -4696,10 +4803,13 @@ module-i3pubtools.time_profiles.uniform_profile	docs/i3pubtools.time_profiles.ht
 module-i3pubtools.tools	docs/i3pubtools.html	/^<div class="section" id="module-i3pubtools.tools">$/;"	I
 mt	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 multipleContexts	docs/_static/jquery-3.5.1.js	/^function multipleContexts( selector, contexts, results ) {$/;"	f
+multiplebgs	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 n	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:AnonymousFunctionc74c453ea000
 n	docs/_static/js/badge_only.js	/^!function(e){var t={};function r(n){if(t[n])return t[n].exports;var o=t[n]={i:n,l:!1,exports:{}}/;"	f	function:r
 n	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 n	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+n	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+n	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 n	docs/_static/js/theme.js	/^!function(n){var e={};function t(i){if(e[i])return e[i].exports;var o=e[i]={i:i,l:!1,exports:{}}/;"	f	function:t
 n	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 names	docs/_static/underscore-1.3.1.js	/^    var names = [];$/;"	v
@@ -4756,6 +4866,8 @@ o	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&
 o	docs/_static/js/badge_only.js	/^!function(e){var t={};function r(n){if(t[n])return t[n].exports;var o=t[n]={i:n,l:!1,exports:{}}/;"	f	function:r
 o	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
 o	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+o	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+o	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 o	docs/_static/js/theme.js	/^!function(n){var e={};function t(i){if(e[i])return e[i].exports;var o=e[i]={i:i,l:!1,exports:{}}/;"	f	function:t
 o	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 objNameMatch	docs/_static/searchtools.js	/^    objNameMatch: 11,$/;"	p	class:Scorer
@@ -4779,6 +4891,8 @@ on	docs/_static/jquery-3.5.1.js	/^function on( elem, types, selector, data, fn, 
 once	docs/_static/underscore-1.3.1.js	/^  _.once = function(func) {$/;"	f	function:_
 once	docs/_static/underscore.js	/^a.apply(d,e);i();g=true}};b.debounce=function(a,b){var d;return function(){var e=this,f=argument/;"	f	function:b
 onreadystatechange	docs/_static/jquery-3.5.1.js	/^					xhr.onreadystatechange = function() {$/;"	f	function:xhr
+opacity	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+origUrl	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:function.b.c
 ousli	docs/_static/language_data.js	/^    ousli: 'ous',$/;"	p	class:Stemmer.step2list
 ousness	docs/_static/language_data.js	/^    ousness: 'ous',$/;"	p	class:Stemmer.step2list
 overrideMimeType	docs/_static/jquery-3.5.1.js	/^				overrideMimeType: function( type ) {$/;"	m	class:AnonymousFunctionb030af4017200.jqXHR
@@ -4788,6 +4902,8 @@ p	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-s
 p	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 p	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
 p	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+p	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+p	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 p	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 p.admonition-title	docs/_static/basic.css	/^p.admonition-title {$/;"	c
 p.caption:hover > a.headerlink	docs/_static/basic.css	/^p.caption:hover > a.headerlink,$/;"	c
@@ -4825,9 +4941,13 @@ plt	test3ml/workshop/hawc_fit/crab_fit_logparabola.py	/^import matplotlib.pyplot
 plt	test3ml/workshop/joint_fit_example/example_joint.py	/^import matplotlib.pyplot as plt$/;"	I
 pluck	docs/_static/underscore-1.3.1.js	/^  _.pluck = function(obj, key) {$/;"	f	function:_
 pluck	docs/_static/underscore.js	/^e&&c.call(b,a,g,h)))return n});return e};var E=b.some=b.any=function(a,c,d){c||(c=b.identity);va/;"	f	function:b
+postmessage	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 pre	docs/_static/basic.css	/^pre {$/;"	s
-pre	docs/_static/basic.css	/^pre, div[class|="highlight"] {$/;"	s
+pre	docs/_static/basic.css	/^pre, div[class*="highlight-"] {$/;"	s
 pre	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
+pre	docs/_static/pygments.css	/^pre { line-height: 125%; margin: 0; }$/;"	s
+prefixed	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:e
+prefixes	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:function.b.c
 preservedScriptAttributes	docs/_static/jquery-3.5.1.js	/^	var preservedScriptAttributes = {$/;"	c	class:AnonymousFunctionb030af400100
 previousUnderscore	docs/_static/underscore-1.3.1.js	/^  var previousUnderscore = root._;$/;"	v
 produce_n_trials	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def produce_n_trials(self, ntrials,$/;"	m	class:cluster_multiflare_llh
@@ -4846,6 +4966,8 @@ pulse	docs/_static/searchtools.js	/^    function pulse() {$/;"	f	function:Search
 q	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 q	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
 q	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+q	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
+q	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 q	docs/_static/underscore.js	/^(function(){function q(a,c,d){if(a===c)return a!==0||1\/a==1\/c;if(a==null||c==null)return a===c/;"	f
 q:after	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 q:before	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
@@ -4855,6 +4977,9 @@ r	docs/_static/js/badge_only.js	/^!function(e){var t={};function r(n){if(t[n])re
 r	docs/_static/js/badge_only.js	/^!function(e){var t={};function r(n){if(t[n])return t[n].exports;var o=t[n]={i:n,l:!1,exports:{}}/;"	f	function:r
 r	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
 r	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+r	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	c
+r	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	c	class:window.Modernizr
+r	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 r	docs/_static/js/theme.js	/^!function(n){var e={};function t(i){if(e[i])return e[i].exports;var o=e[i]={i:i,l:!1,exports:{}}/;"	f	function:t
 ra	i3pubtools/.ipynb_checkpoints/sources-checkpoint.py	/^def ra(h, m, s):$/;"	f
 ra	i3pubtools/sources.py	/^def ra(h, m, s):$/;"	f
@@ -4884,6 +5009,7 @@ reject	docs/_static/underscore.js	/^function(a,c,b){var e;E(a,function(a,g,h){if
 release	docs/source/conf.py	/^release = '0.0.1'$/;"	v
 remove	docs/_static/jquery-3.5.1.js	/^function remove( elem, selector, keepData ) {$/;"	f
 remove_injection	mla/mla/core.py	/^    def remove_injection(self,update=True):$/;"	m	class:LLH_point_source
+reset	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:A.a
 resolve	docs/_static/jquery-3.5.1.js	/^					function resolve( depth, deferred, handler, special ) {$/;"	f	function:AnonymousFunctionb030af409f00.promise.then
 resolve	docs/_static/jquery-3.5.1.js	/^			resolve = function() {$/;"	f	function:AnonymousFunctionb030af40cb00
 response	test3ml/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^response = "..\/data\/HAWC_9bin_507days_crab_response.hd5"$/;"	v
@@ -4910,6 +5036,7 @@ rf	i3pubtools/llhs/cluster_multiflare_llh.py	/^import numpy.lib.recfunctions as 
 rf	i3pubtools/llhs/ps_flare_llh.py	/^import numpy.lib.recfunctions as rf$/;"	I
 rf	mla/mla/core.py	/^import numpy.lib.recfunctions as rf$/;"	I
 rf	mla/mla/injection.py	/^import numpy.lib.recfunctions as rf$/;"	I
+rgba	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 roi	test3ml/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^roi = HealpixConeROI(data_radius=data_radius,$/;"	v
 roi	test3ml/workshop/hawc_fit/crab_fit_logparabola.py	/^roi = HealpixConeROI(data_radius=data_radius,$/;"	v
 rotate	i3pubtools/.ipynb_checkpoints/tools-checkpoint.py	/^def rotate(ra1, dec1, ra2, dec2, ra3, dec3):$/;"	f
@@ -4931,6 +5058,8 @@ s	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&
 s	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:AnonymousFunctionc74c453ed900
 s	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
 s	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+s	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:i.u
+s	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 safeActiveElement	docs/_static/jquery-3.5.1.js	/^function safeActiveElement() {$/;"	f
 samp	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 sample_from_spectrum	i3pubtools/.ipynb_checkpoints/injection-checkpoint.py	/^    def sample_from_spectrum(self,livetime,seed=None,poisson=True):$/;"	m	class:PSinjector
@@ -4948,12 +5077,14 @@ searchindexloader	docs/search.html	/^  <script type="text\/javascript" id="searc
 section	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 select	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 select	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
+select	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:A.a
 select:focus	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 select:focus:invalid	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 select:focus:invalid:focus	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 select[disabled]	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 select[multiple]	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 select[readonly]	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
+sessionstorage	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 setFilters	docs/_static/jquery-3.5.1.js	/^function setFilters() {}$/;"	f
 setGlobalEval	docs/_static/jquery-3.5.1.js	/^function setGlobalEval( elems, refElements ) {$/;"	f
 setIndex	docs/_static/searchtools.js	/^  setIndex : function(index) {$/;"	m	class:Search
@@ -4970,10 +5101,13 @@ setup	docs/_static/jquery-3.5.1.js	/^		setup: function() {$/;"	m	class:jQuery.ev
 setup	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	m	class:S.event.special
 shivCSS	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:y
 shivCSS	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:t
+shivCSS	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:r
 shivDocument	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:y
 shivDocument	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:t
+shivDocument	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:r
 shivMethods	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:y
 shivMethods	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:t
+shivMethods	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:r
 showHide	docs/_static/jquery-3.5.1.js	/^function showHide( elements, show ) {$/;"	f
 shuffle	docs/_static/underscore-1.3.1.js	/^  _.shuffle = function(obj) {$/;"	f	function:_
 shuffle	docs/_static/underscore.js	/^return e.value};b.shuffle=function(a){var b=[],d;j(a,function(a,f){f==0?b[0]=a:(d=Math.floor(Mat/;"	f	function:b
@@ -4988,6 +5122,7 @@ size	docs/_static/underscore.js	/^c,d){d||(d=b.identity);for(var e=0,f=a.length;
 slice	docs/_static/underscore-1.3.1.js	/^  var slice            = ArrayProto.slice,$/;"	v
 small	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 small	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
+smil	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 sortBy	docs/_static/underscore-1.3.1.js	/^  _.sortBy = function(obj, iterator, context) {$/;"	f	function:_
 sortBy	docs/_static/underscore.js	/^return e.value};b.shuffle=function(a){var b=[],d;j(a,function(a,f){f==0?b[0]=a:(d=Math.floor(Mat/;"	f	function:b
 sortOrder	docs/_static/jquery-3.5.1.js	/^	sortOrder = function( a, b ) {$/;"	f	function:AnonymousFunctionb030af401e00
@@ -5002,6 +5137,8 @@ span.brackets > a:before	docs/_static/basic.css	/^span.brackets > a:before{$/;"	
 span.eqno	docs/_static/basic.css	/^span.eqno {$/;"	c
 span.eqno a.headerlink	docs/_static/basic.css	/^span.eqno a.headerlink {$/;"	c
 span.highlighted	docs/_static/basic.css	/^dt:target, span.highlighted {$/;"	c
+span.linenos	docs/_static/pygments.css	/^span.linenos { color: #000000; background-color: #f0f0f0; padding: 0 5px 0 5px; }$/;"	c
+span.linenos.special	docs/_static/pygments.css	/^span.linenos.special { color: #000000; background-color: #ffffc0; padding: 0 5px 0 5px; }$/;"	c
 span.linkdescr	docs/_static/basic.css	/^span.linkdescr {$/;"	c
 span.pre	docs/_static/basic.css	/^span.pre {$/;"	c
 span[id*=MathJax-Span]	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
@@ -5032,6 +5169,7 @@ stopwords	docs/_static/language_data.js	/^var stopwords = ["a","and","are","as",
 stripAndCollapse	docs/_static/jquery-3.5.1.js	/^	function stripAndCollapse( value ) {$/;"	f
 strong	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 sub	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
+submit	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:A.a
 submodules	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<div class="section" id="submodules">$/;"	I
 submodules	docs/i3pubtools.html	/^<div class="section" id="submodules">$/;"	I
 submodules	docs/i3pubtools.llhs.html	/^<div class="section" id="submodules">$/;"	I
@@ -5041,12 +5179,18 @@ sup	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box
 superMatcher	docs/_static/jquery-3.5.1.js	/^		superMatcher = function( seed, context, xml, results, outermost ) {$/;"	f	function:matcherFromGroupMatchers
 supportsUnknownElements	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:y
 supportsUnknownElements	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:t
+supportsUnknownElements	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:r
+svg	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+svg	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:window.Modernizr.r
 svg:not(:root)	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
+svgclippaths	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 t	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 t	docs/_static/js/badge_only.js	/^!function(e){var t={};function r(n){if(t[n])return t[n].exports;var o=t[n]={i:n,l:!1,exports:{}}/;"	f	function:r
 t	docs/_static/js/badge_only.js	/^!function(e){var t={};function r(n){if(t[n])return t[n].exports;var o=t[n]={i:n,l:!1,exports:{}}/;"	v
 t	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
 t	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	c
+t	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:i.u
+t	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 t	docs/_static/js/theme.js	/^!function(n){var e={};function t(i){if(e[i])return e[i].exports;var o=e[i]={i:i,l:!1,exports:{}}/;"	f
 t	docs/_static/js/theme.js	/^!function(n){var e={};function t(i){if(e[i])return e[i].exports;var o=e[i]={i:i,l:!1,exports:{}}/;"	f	function:t
 t	docs/_static/underscore.js	/^function(c){K(c,b[c]=a[c])})};var L=0;b.uniqueId=function(a){var b=L++;return a?a+b:b};b.templat/;"	v
@@ -5089,6 +5233,8 @@ td	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-
 td > :first-child	docs/_static/basic.css	/^td > :first-child {$/;"	s
 td > :last-child	docs/_static/basic.css	/^td > :last-child {$/;"	s
 td.linenos pre	docs/_static/basic.css	/^td.linenos pre {$/;"	s
+td.linenos pre	docs/_static/pygments.css	/^td.linenos pre { color: #000000; background-color: #f0f0f0; padding: 0 5px 0 5px; }$/;"	s
+td.linenos pre.special	docs/_static/pygments.css	/^td.linenos pre.special { color: #000000; background-color: #ffffc0; padding: 0 5px 0 5px; }$/;"	c
 teardown	docs/_static/jquery-3.5.1.js	/^			teardown: function() {$/;"	m	class:jQuery.event.special
 teardown	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	m	class:S.event.special
 template	docs/_static/underscore-1.3.1.js	/^  _.template = function(str, data) {$/;"	f	function:_
@@ -5098,6 +5244,7 @@ templateSettings	docs/_static/underscore.js	/^function(c){K(c,b[c]=a[c])})};var 
 templates_path	docs/source/conf.py	/^templates_path = ['_templates']$/;"	v
 term	docs/_static/searchtools.js	/^    term: 5,$/;"	p	class:Scorer
 testContext	docs/_static/jquery-3.5.1.js	/^function testContext( context ) {$/;"	f
+testProp	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:e
 textarea	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 textarea	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 textarea:focus	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
@@ -5105,6 +5252,7 @@ textarea:focus:invalid	docs/_static/css/theme.css	/^ *\/@font-face{font-family:F
 textarea:focus:invalid:focus	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 textarea[disabled]	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 textarea[readonly]	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
+textshadow	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 th	docs/_static/basic.css	/^th {$/;"	s
 th > :first-child	docs/_static/basic.css	/^th > :first-child,$/;"	s
 th > :last-child	docs/_static/basic.css	/^th > :last-child,$/;"	s
@@ -5114,6 +5262,7 @@ then	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof modul
 throttle	docs/_static/underscore-1.3.1.js	/^  _.throttle = function(func, wait) {$/;"	f	function:_
 throttle	docs/_static/underscore.js	/^c){var d={};c||(c=b.identity);return function(){var e=c.apply(this,arguments);return b.has(d,e)?/;"	f	function:b
 tick	docs/_static/jquery-3.5.1.js	/^		tick = function() {$/;"	f	function:Animation
+timeout	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	m	class:z
 times	docs/_static/underscore-1.3.1.js	/^  _.times = function (n, iterator, context) {$/;"	f	function:_
 times	docs/_static/underscore.js	/^b.isRegExp=function(a){return l.call(a)=="[object RegExp]"};b.isNull=function(a){return a===null/;"	f	function:b
 tional	docs/_static/language_data.js	/^    tional: 'tion',$/;"	p	class:Stemmer.step2list
@@ -5131,14 +5280,18 @@ top	docs/_static/jquery-3.5.1.js	/^			parentOffset = { top: 0, left: 0 };$/;"	p	
 top	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	p	class:AnonymousFunctionc74c453e1b200.i
 total_background_counts	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def total_background_counts(self):$/;"	m	class:VERITASRun
 total_counts	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def total_counts(self):$/;"	m	class:VERITASRun
+touch	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 tr	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 trigger	docs/_static/jquery-3.5.1.js	/^		trigger: function() {$/;"	m	class:jQuery.event.special
 trigger	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	m	class:S.event.special
 type	docs/_static/jquery-3.5.1.js	/^		type: true,$/;"	p	class:AnonymousFunctionb030af400100.preservedScriptAttributes
 type	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:y
 type	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:t
+type	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:r
 u	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:ft
 u	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+u	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	c	class:i
+u	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 u	docs/_static/underscore.js	/^function(c){K(c,b[c]=a[c])})};var L=0;b.uniqueId=function(a){var b=L++;return a?a+b:b};b.templat/;"	f
 u	test3ml/workshop/joint_fit_example/example_joint.py	/^from astropy import units as u$/;"	x
 uaMatch	docs/_static/doctools.js	/^  jQuery.uaMatch = function(ua) {$/;"	f	function:jQuery
@@ -5178,6 +5331,7 @@ update_signal_time_profile	mla/mla/core.py	/^    def update_signal_time_profile(
 update_spatial	mla/mla/core.py	/^    def update_spatial(self):$/;"	m	class:LLH_point_source
 update_spectrum	mla/mla/core.py	/^    def update_spectrum(self,spectrum):$/;"	m	class:LLH_point_source
 update_time_weight	mla/mla/core.py	/^    def update_time_weight(self):$/;"	m	class:LLH_point_source
+url	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:function.b.c
 urldecode	docs/_static/doctools.js	/^jQuery.urldecode = function(x) {$/;"	f	function:jQuery
 ut	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 v	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
@@ -5192,11 +5346,17 @@ vendorPropName	docs/_static/jquery-3.5.1.js	/^function vendorPropName( name ) {$
 version	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:y
 version	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:t
 video	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
+video	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 vt	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 w	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 w	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+w	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 w	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 we	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
+webgl	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+websockets	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+websqldatabase	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+webworkers	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 welcome-to-i3pubtools-s-documentation	docs/.ipynb_checkpoints/index-checkpoint.html	/^  <div class="section" id="welcome-to-i3pubtools-s-documentation">$/;"	I
 welcome-to-i3pubtools-s-documentation	docs/index.html	/^  <div class="section" id="welcome-to-i3pubtools-s-documentation">$/;"	I
 window	docs/_static/jquery-3.5.1.js	/^		window[ callbackName ] = function() {$/;"	f	function:AnonymousFunctionb030af4019000
@@ -5212,6 +5372,8 @@ wrap	docs/_static/underscore.js	/^a.apply(d,e);i();g=true}};b.debounce=function(
 wrapper	docs/_static/underscore-1.3.1.js	/^    wrapper.prototype[name] = function() {$/;"	f
 wrapper	docs/_static/underscore-1.3.1.js	/^  var wrapper = function(obj) { this._wrapped = obj; };$/;"	c
 x	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+x	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:i.u
+x	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 x	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 x0	i3pubtools/time_profiles/.ipynb_checkpoints/gauss_profile-checkpoint.py	/^    def x0(self, times):$/;"	m	class:GaussProfile
 x0	i3pubtools/time_profiles/.ipynb_checkpoints/generic_profile-checkpoint.py	/^    def x0(self, times): pass$/;"	m	class:GenericProfile
@@ -5221,10 +5383,14 @@ x0	i3pubtools/time_profiles/generic_profile.py	/^    def x0(self, times): pass$/
 x0	i3pubtools/time_profiles/uniform_profile.py	/^    def x0(self, times):$/;"	m	class:UniformProfile
 xe	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 y	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	c
+y	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:window.Modernizr
+y	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	v
 y	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 ye	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 yt	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 z	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
+z	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	c
+z	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
 z	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 zip	docs/_static/underscore-1.3.1.js	/^  _.zip = function() {$/;"	f	function:_
 zip	docs/_static/underscore.js	/^return e};b.union=function(){return b.uniq(b.flatten(arguments,true))};b.intersection=b.intersec/;"	f	function:b
