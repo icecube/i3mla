@@ -19,8 +19,8 @@ class GaussProfile(generic_profile.GenericProfile):
         self.sigma = sigma
         self.scipy_dist = scipy.stats.norm(mean, sigma)
         self.norm = 1.0/np.sqrt(2*np.pi*sigma**2)
-        self._default_params = {'_'.join(name, 'mean'):mean, '_'.join(name, 'sigma'):sigma}
-        self._param_dtype = [(np.float32),(np.float32)]
+        self._default_params = {'_'.join([name, 'mean']):mean, '_'.join([name, 'sigma']):sigma}
+        self._param_dtype = [('_'.join([name, 'mean']), np.float32),('_'.join([name, 'sigma']), np.float32)]
         return
 
     def pdf(self, times):

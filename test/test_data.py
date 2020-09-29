@@ -97,17 +97,15 @@ def get_random_sim(length):
 def get_random_grl(data):
     '''
     '''
-#     runs = np.unique(data['run'])
-#     length = len(runs)
-#     grl = np.empty(length, dtype=grl_dtype)
-#     for run in runs:
-#         print(run)
-# #         grl[i]['run'] = run
-# #         print(data[data['run'][:] == run])
-# #         grl[i]['start'] = np.min(data[data['run'] == run])
-# #         grl[i]['stop'] = np.max(data[data['run'] == run])
-# #         grl[i]['livetime'] = grl[i]['stop'] - grl[i]['start']
-# #         grl[i]['events'] = np.sum(data['run'] == run)
-#     return grl
+    runs = np.unique(data['run'])
+    length = len(runs)
+    grl = np.empty(length, dtype=grl_dtype)
+    for i, run in enumerate(runs):
+        grl[i]['run'] = run
+        grl[i]['start'] = np.min(data[data['run'] == run]['time'])
+        grl[i]['stop'] = np.max(data[data['run'] == run]['time'])
+        grl[i]['livetime'] = grl[i]['stop'] - grl[i]['start'] + .001
+        grl[i]['events'] = len(data[data['run'] == run])
+    return grl
     pass
     

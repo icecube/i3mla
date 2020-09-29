@@ -236,7 +236,7 @@ class PsFlareLLH:
         return final_sob_ratios
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------
-# prune simulation around source
+# get events for trials
 #-------------------------------------------------------------------------------------------------------------------------------------------------
     def _select_and_weight(self, N=0, gamma=-2, sampling_width = np.radians(1)):
         '''Prune the simulation set to only events close to a given source and calculate the
@@ -279,9 +279,6 @@ class PsFlareLLH:
         reduced_sim['weight'] /= omega
         return reduced_sim
 
-#-------------------------------------------------------------------------------------------------------------------------------------------------
-# get events for trials
-#-------------------------------------------------------------------------------------------------------------------------------------------------
     def _get_background_events(self, background_window):
         '''
         
@@ -330,7 +327,7 @@ class PsFlareLLH:
         
         return background
     
-    def _inject_signal_events(self, reduced_sim):
+    def _inject_signal_events(self, reduced_sim, N):
         '''
         
         Args:
@@ -384,24 +381,27 @@ class PsFlareLLH:
 #-------------------------------------------------------------------------------------------------------------------------------------------------
 # calculate test statistics (user facing functions)
 #-------------------------------------------------------------------------------------------------------------------------------------------------
-    def produce_trial(self, N=0, gamma=-2, random_seed = None, reduced_sim = None, background_window = 14): # days
+    def produce_trial(self, reduced_sim=None, N=0, gamma=-2, sampling_width=np.radians(1), random_seed=None, background_window=14): # days
 
         '''Produces a single trial of background+signal events based on input parameters
 
         Args:
+            reduced_sim ():
             N ():
             gamma ():
+            sampling_width ():
             random_seed ():
-            reduced_sim ():
             background_window ():
             
         Returns:
             
         '''
         if random_seed != None: np.random.seed(random_seed)
+        
+        if reduced_sim is None: reduced_sim = self._select_and_weight(N=N, gamma=gamma, sampling_width=sampling_width)
 
         background = self._get_background_events(background_window)
-        signal = self._inject_signal_events(reduced_sim)
+        signal = self._inject_signal_events(reduced_sim, N)
         
         # Because we want to return the entire event and not just the
         # number of events, we need to do some numpy magic. Specifically,
@@ -549,7 +549,7 @@ class PsFlareLLH:
                           ('ninj', np.int),
                           ('ns', np.float32),
                           ('gamma', np.float32),
-                          *self.signal_time_profile.param_dytpe])
+                          *self.signal_time_profile.param_dtype])
         fit_info = np.empty(ntrials, dtype=dtype)
 
         # We're going to cache the signal weights, which will
@@ -563,9 +563,9 @@ class PsFlareLLH:
                       ncols = 800):
 
             # Produce the trial events
-            trial = self.produce_trial(N = N,
+            trial = self.produce_trial(reduced_sim,
+                                       N = N,
                                        gamma = gamma,
-                                       reduced_sim = reduced_sim,
                                        background_window=background_window,
                                        random_seed=random_seed)
 

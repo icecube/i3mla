@@ -17,8 +17,9 @@ class UniformProfile(generic_profile.GenericProfile):
             name (string, optional): prefix for parameters
         '''
         self._window = [start, end]
-        self._default_params = {'_'.join(name, 'start'):self._window[0], '_'.join(name, 'end'):self._window[1]}
-        self._param_dtype = [(np.float32),(np.float32)]
+        self._norm = 1.0/(self._window[1]-self._window[0])
+        self._default_params = {'_'.join([name, 'start']):self._window[0], '_'.join([name, 'end']):self._window[1]}
+        self._param_dtype = [('_'.join([name, 'start']), np.float32),('_'.join([name, 'end']), np.float32)]
         return
 
     def pdf(self, times):
@@ -96,4 +97,8 @@ class UniformProfile(generic_profile.GenericProfile):
         assert(new_window[1] > new_window[0])
         self._window = new_window
         self._norm = 1.0/(self._window[1]-self._window[0])
+        
+    @property
+    def norm(self):
+        return self._norm
         
