@@ -1,6 +1,6 @@
 import abc
 
-class generic_profile(object):
+class GenericProfile:
     '''A generic base class to standardize the methods for the
     time profiles. While I'm only currently using scipy-based
     probability distributions, you can write your own if you
@@ -27,3 +27,17 @@ class generic_profile(object):
 
     @abc.abstractmethod
     def get_range(self): pass
+    
+    @abc.abstractmethod
+    def x0(self, times): pass
+    
+    @abc.abstractmethod
+    def bounds(self, time_profile): pass
+
+    @property
+    @abc.abstractmethod
+    def default_params(self): pass
+    
+    @property
+    @abc.abstractmethod
+    def param_dtype(self): pass

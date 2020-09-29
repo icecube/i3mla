@@ -27,17 +27,17 @@ def angular_distance(ra_A, dec_A, ra_B, dec_B):
     else:
         return np.arccos(np.dot(unit_A, unit_B))
 
-def rotate(ra1, dec1, ra2, dec2, ra3, dec3):
-    '''Rotation matrix for rotation of (ra1, dec1) onto (ra2, dec2).
-    The rotation is performed on (ra3, dec3).
-    '''
-    def cross_matrix(x):
+def cross_matrix(x):
         '''Calculate cross product matrix
         A[ij] = x_i * y_j - y_i * x_j
         '''
         skv = np.roll(np.roll(np.diag(x.ravel()), 1, 1), -1, 0)
         return skv - skv.T
 
+def rotate(ra1, dec1, ra2, dec2, ra3, dec3):
+    '''Rotation matrix for rotation of (ra1, dec1) onto (ra2, dec2).
+    The rotation is performed on (ra3, dec3).
+    '''
     ra1 = np.atleast_1d(ra1)
     dec1 = np.atleast_1d(dec1)
     ra2 = np.atleast_1d(ra2)
