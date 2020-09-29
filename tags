@@ -30,6 +30,9 @@ Installation	test3ml/workshop/README.md	/^# Installation$/;"	c
 Joint Crab example	test3ml/workshop/README.md	/^# Joint Crab example$/;"	c
 LLH_point_source	mla/mla/core.py	/^class LLH_point_source(object):$/;"	c
 MacOS:	test3ml/workshop/README.md	/^## MacOS:$/;"	s	chapter:Prerequisites
+Module contents	docs/source/i3pubtools.llhs.rst	/^Module contents$/;"	s	chapter:i3pubtools.llhs package
+Module contents	docs/source/i3pubtools.rst	/^Module contents$/;"	s	chapter:i3pubtools package
+Module contents	docs/source/i3pubtools.time_profiles.rst	/^Module contents$/;"	s	chapter:i3pubtools.time\\_profiles package
 PSinjector	i3pubtools/.ipynb_checkpoints/injection-checkpoint.py	/^class PSinjector(object):$/;"	c
 PSinjector	i3pubtools/injection.py	/^class PSinjector(object):$/;"	c
 PSinjector	mla/mla/injection.py	/^class PSinjector(object):$/;"	c
@@ -44,6 +47,10 @@ SOURCEDIR	docs/make.bat	/^set SOURCEDIR=source$/;"	v
 SPHINXBUILD	docs/Makefile	/^SPHINXBUILD   ?= sphinx-build$/;"	m
 SPHINXBUILD	docs/make.bat	/^	set SPHINXBUILD=sphinx-build$/;"	v
 SPHINXOPTS	docs/Makefile	/^SPHINXOPTS    ?=$/;"	m
+Submodules	docs/source/i3pubtools.llhs.rst	/^Submodules$/;"	s	chapter:i3pubtools.llhs package
+Submodules	docs/source/i3pubtools.rst	/^Submodules$/;"	s	chapter:i3pubtools package
+Submodules	docs/source/i3pubtools.time_profiles.rst	/^Submodules$/;"	s	chapter:i3pubtools.time\\_profiles package
+Subpackages	docs/source/i3pubtools.rst	/^Subpackages$/;"	s	chapter:i3pubtools package
 TS	test3ml/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^TS = jl.compute_TS("crab", like_df)$/;"	v
 TS	test3ml/workshop/hawc_fit/crab_fit_logparabola.py	/^TS = jl.compute_TS("crab", like_df)$/;"	v
 Testing the your setup	test3ml/workshop/README.md	/^# Testing the your setup$/;"	c
@@ -249,6 +256,7 @@ get_ts	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/
 get_ts	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^        def get_ts(ns, gamma, params):$/;"	f	member:PsFlareLLH.evaluate_ts	file:
 get_ts	i3pubtools/llhs/cluster_multiflare_llh.py	/^            def get_ts(ns, params):$/;"	f	member:cluster_multiflare_llh.evaluate_ts	file:
 get_ts	i3pubtools/llhs/ps_flare_llh.py	/^        def get_ts(ns, gamma, params):$/;"	f	member:PsFlareLLH.evaluate_ts	file:
+github	docs/Makefile	/^github:$/;"	t
 grl_dtype	i3pubtools/.,/.ipynb_checkpoints/test_data-checkpoint.py	/^grl_dtype = [$/;"	v
 grl_dtype	i3pubtools/.,/test_data.py	/^grl_dtype = [$/;"	v
 hawc	test3ml/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^hawc = HAL("HAWC",$/;"	v
@@ -258,6 +266,18 @@ help	docs/make.bat	/^:help$/;"	l
 hp	mla/mla/core.py	/^import os, sys, glob, numpy as np, matplotlib, scipy, healpy as hp, time$/;"	I
 html_static_path	docs/source/conf.py	/^html_static_path = ['_static']$/;"	v
 html_theme	docs/source/conf.py	/^html_theme = 'sphinx_rtd_theme'$/;"	v
+i3pubtools package	docs/source/i3pubtools.rst	/^i3pubtools package$/;"	c
+i3pubtools.injection module	docs/source/i3pubtools.rst	/^i3pubtools.injection module$/;"	s	chapter:i3pubtools package
+i3pubtools.llhs package	docs/source/i3pubtools.llhs.rst	/^i3pubtools.llhs package$/;"	c
+i3pubtools.llhs.cluster\\_multiflare\\_llh module	docs/source/i3pubtools.llhs.rst	/^i3pubtools.llhs.cluster\\_multiflare\\_llh module$/;"	s	chapter:i3pubtools.llhs package
+i3pubtools.llhs.ps\\_flare\\_llh module	docs/source/i3pubtools.llhs.rst	/^i3pubtools.llhs.ps\\_flare\\_llh module$/;"	s	chapter:i3pubtools.llhs package
+i3pubtools.sources module	docs/source/i3pubtools.rst	/^i3pubtools.sources module$/;"	s	chapter:i3pubtools package
+i3pubtools.spectral module	docs/source/i3pubtools.rst	/^i3pubtools.spectral module$/;"	s	chapter:i3pubtools package
+i3pubtools.time\\_profiles package	docs/source/i3pubtools.time_profiles.rst	/^i3pubtools.time\\_profiles package$/;"	c
+i3pubtools.time\\_profiles.gauss\\_profile module	docs/source/i3pubtools.time_profiles.rst	/^i3pubtools.time\\_profiles.gauss\\_profile module$/;"	s	chapter:i3pubtools.time\\_profiles package
+i3pubtools.time\\_profiles.generic\\_profile module	docs/source/i3pubtools.time_profiles.rst	/^i3pubtools.time\\_profiles.generic\\_profile module$/;"	s	chapter:i3pubtools.time\\_profiles package
+i3pubtools.time\\_profiles.uniform\\_profile module	docs/source/i3pubtools.time_profiles.rst	/^i3pubtools.time\\_profiles.uniform\\_profile module$/;"	s	chapter:i3pubtools.time\\_profiles package
+i3pubtools.tools module	docs/source/i3pubtools.rst	/^i3pubtools.tools module$/;"	s	chapter:i3pubtools package
 inner_fit	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def inner_fit(self):$/;"	m	class:VERITASLike
 integral	test3ml/workshop/joint_fit_example/VERITASLike.py	/^        def integral(e1, e2):$/;"	f	member:VERITASRun._get_diff_flux_and_integral	file:
 integral_f	test3ml/workshop/joint_fit_example/VERITASLike.py	/^        integral_f = lambda x: -3.0 \/ (x**0.5)$/;"	f	member:VERITASRun._simulated_spectrum_f	file:
@@ -404,6 +424,7 @@ to_unit_vector	mla/mla/tools.py	/^def to_unit_vector(ra, dec):$/;"	f
 total_background_counts	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def total_background_counts(self):$/;"	m	class:VERITASRun
 total_counts	test3ml/workshop/joint_fit_example/VERITASLike.py	/^    def total_counts(self):$/;"	m	class:VERITASRun
 u	test3ml/workshop/joint_fit_example/example_joint.py	/^from astropy import units as u$/;"	x
+umd_icecube_analysis_tutorial	docs/source/modules.rst	/^umd_icecube_analysis_tutorial$/;"	c
 uniform_profile	mla/mla/timing.py	/^class uniform_profile(generic_profile):$/;"	c
 update_background_time_profile	mla/mla/core.py	/^    def update_background_time_profile(profile):$/;"	m	class:LLH_point_source
 update_data	mla/mla/core.py	/^    def update_data(self , data , livetime , drop=True):$/;"	m	class:LLH_point_source
