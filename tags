@@ -3424,6 +3424,7 @@ I	docs/genindex.html	/^<h2 id="I">I<\/h2>$/;"	i
 Identity	docs/_static/jquery-3.5.1.js	/^function Identity( v ) {$/;"	f
 Index	docs/genindex.html	/^<h1 id="index">Index<\/h1>$/;"	h
 Indices and tables	docs/source/index.rst	/^Indices and tables$/;"	c
+Indices and tables¶	docs/.ipynb_checkpoints/index-checkpoint.html	/^<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this /;"	h
 Indices and tables¶	docs/index.html	/^<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this /;"	h
 Installation	test3ml/workshop/README.md	/^# Installation$/;"	c
 Je	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
@@ -3445,6 +3446,7 @@ MacOS:	test3ml/workshop/README.md	/^## MacOS:$/;"	s	chapter:Prerequisites
 Module contents	docs/source/i3pubtools.llhs.rst	/^Module contents$/;"	s	chapter:i3pubtools.llhs package
 Module contents	docs/source/i3pubtools.rst	/^Module contents$/;"	s	chapter:i3pubtools package
 Module contents	docs/source/i3pubtools.time_profiles.rst	/^Module contents$/;"	s	chapter:i3pubtools.time\\_profiles package
+Module contents¶	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	i
 Module contents¶	docs/i3pubtools.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	i
 Module contents¶	docs/i3pubtools.llhs.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	i
 Module contents¶	docs/i3pubtools.time_profiles.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	i
@@ -3488,6 +3490,7 @@ Stemmer	docs/_static/language_data.js	/^var Stemmer = function() {$/;"	c
 Submodules	docs/source/i3pubtools.llhs.rst	/^Submodules$/;"	s	chapter:i3pubtools.llhs package
 Submodules	docs/source/i3pubtools.rst	/^Submodules$/;"	s	chapter:i3pubtools package
 Submodules	docs/source/i3pubtools.time_profiles.rst	/^Submodules$/;"	s	chapter:i3pubtools.time\\_profiles package
+Submodules¶	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶<\/a/;"	i
 Submodules¶	docs/i3pubtools.html	/^<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶<\/a/;"	i
 Submodules¶	docs/i3pubtools.llhs.html	/^<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶<\/a/;"	i
 Submodules¶	docs/i3pubtools.time_profiles.html	/^<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶<\/a/;"	i
@@ -3515,6 +3518,7 @@ VERSION	docs/_static/documentation_options.js	/^    VERSION: '0.0.1',$/;"	p	clas
 W	docs/genindex.html	/^<h2 id="W">W<\/h2>$/;"	I
 W	docs/genindex.html	/^<h2 id="W">W<\/h2>$/;"	i
 Welcome to i3pubtools's documentation!	docs/source/index.rst	/^Welcome to i3pubtools's documentation!$/;"	c
+Welcome to i3pubtools’s documentation!¶	docs/.ipynb_checkpoints/index-checkpoint.html	/^<h1>Welcome to i3pubtools’s documentation!<a class="headerlink" href="#welcome-to-i3pubtools-s/;"	h
 Welcome to i3pubtools’s documentation!¶	docs/index.html	/^<h1>Welcome to i3pubtools’s documentation!<a class="headerlink" href="#welcome-to-i3pubtools-s/;"	h
 X	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 X	docs/genindex.html	/^<h2 id="X">X<\/h2>$/;"	I
@@ -3975,6 +3979,9 @@ dl.footnote > dd:after	docs/_static/basic.css	/^dl.footnote > dd:after,$/;"	s
 dl.footnote > dt	docs/_static/basic.css	/^dl.footnote > dt,$/;"	s
 dl.glossary dt	docs/_static/basic.css	/^dl.glossary dt {$/;"	s
 doAnimation	docs/_static/jquery-3.5.1.js	/^			doAnimation = function() {$/;"	f	function:AnonymousFunctionb030af4013100
+documentation_options	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
+documentation_options	docs/.ipynb_checkpoints/index-checkpoint.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
+documentation_options	docs/.ipynb_checkpoints/modules-checkpoint.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
 documentation_options	docs/genindex.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
 documentation_options	docs/i3pubtools.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
 documentation_options	docs/i3pubtools.llhs.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
@@ -4249,8 +4256,11 @@ i	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,
 i3pubtools package	docs/source/i3pubtools.rst	/^i3pubtools package$/;"	c
 i3pubtools package¶	docs/i3pubtools.html	/^<h1>i3pubtools package<a class="headerlink" href="#i3pubtools-package" title="Permalink to this /;"	h
 i3pubtools-injection-module	docs/i3pubtools.html	/^<span id="i3pubtools-injection-module"><\/span><h2>i3pubtools.injection module<a class="headerli/;"	I
+i3pubtools-llhs-cluster-multiflare-llh-module	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<span id="i3pubtools-llhs-cluster-multiflare-llh-module"><\/span><h2>i3pubtools.llhs.cluster_mul/;"	I
 i3pubtools-llhs-cluster-multiflare-llh-module	docs/i3pubtools.llhs.html	/^<span id="i3pubtools-llhs-cluster-multiflare-llh-module"><\/span><h2>i3pubtools.llhs.cluster_mul/;"	I
+i3pubtools-llhs-package	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^  <div class="section" id="i3pubtools-llhs-package">$/;"	I
 i3pubtools-llhs-package	docs/i3pubtools.llhs.html	/^  <div class="section" id="i3pubtools-llhs-package">$/;"	I
+i3pubtools-llhs-ps-flare-llh-module	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<span id="i3pubtools-llhs-ps-flare-llh-module"><\/span><h2>i3pubtools.llhs.ps_flare_llh module<a/;"	I
 i3pubtools-llhs-ps-flare-llh-module	docs/i3pubtools.llhs.html	/^<span id="i3pubtools-llhs-ps-flare-llh-module"><\/span><h2>i3pubtools.llhs.ps_flare_llh module<a/;"	I
 i3pubtools-package	docs/i3pubtools.html	/^  <div class="section" id="i3pubtools-package">$/;"	I
 i3pubtools-sources-module	docs/i3pubtools.html	/^<span id="i3pubtools-sources-module"><\/span><h2>i3pubtools.sources module<a class="headerlink" /;"	I
@@ -4267,20 +4277,33 @@ i3pubtools.injection.PSinjector.sample_from_spectrum	docs/i3pubtools.html	/^<dt 
 i3pubtools.injection.PSinjector.sample_nevents	docs/i3pubtools.html	/^<dt id="i3pubtools.injection.PSinjector.sample_nevents">$/;"	I
 i3pubtools.injection.PSinjector.set_source_location	docs/i3pubtools.html	/^<dt id="i3pubtools.injection.PSinjector.set_source_location">$/;"	I
 i3pubtools.llhs package	docs/source/i3pubtools.llhs.rst	/^i3pubtools.llhs package$/;"	c
+i3pubtools.llhs package¶	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<h1>i3pubtools.llhs package<a class="headerlink" href="#i3pubtools-llhs-package" title="Permalin/;"	h
 i3pubtools.llhs package¶	docs/i3pubtools.llhs.html	/^<h1>i3pubtools.llhs package<a class="headerlink" href="#i3pubtools-llhs-package" title="Permalin/;"	h
 i3pubtools.llhs.cluster\\_multiflare\\_llh module	docs/source/i3pubtools.llhs.rst	/^i3pubtools.llhs.cluster\\_multiflare\\_llh module$/;"	s	chapter:i3pubtools.llhs package
+i3pubtools.llhs.cluster_multiflare_llh module¶	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<span id="i3pubtools-llhs-cluster-multiflare-llh-module"><\/span><h2>i3pubtools.llhs.cluster_mul/;"	i
 i3pubtools.llhs.cluster_multiflare_llh module¶	docs/i3pubtools.llhs.html	/^<span id="i3pubtools-llhs-cluster-multiflare-llh-module"><\/span><h2>i3pubtools.llhs.cluster_mul/;"	i
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh">$/;"	I
 i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_sob_per_event	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_sob_per_event">$/;"	I
 i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_sob_per_event	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_sob_per_event">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_ts	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_ts">$/;"	I
 i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_ts	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_ts">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.get_signal_time_profiles	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.get_signal_time_profiles">$/;"	I
 i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.get_signal_time_profiles	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.get_signal_time_profiles">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_n_trials	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_n_trials">$/;"	I
 i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_n_trials	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_n_trials">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_trial	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_trial">$/;"	I
 i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_trial	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_trial">$/;"	I
 i3pubtools.llhs.ps\\_flare\\_llh module	docs/source/i3pubtools.llhs.rst	/^i3pubtools.llhs.ps\\_flare\\_llh module$/;"	s	chapter:i3pubtools.llhs package
+i3pubtools.llhs.ps_flare_llh module¶	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<span id="i3pubtools-llhs-ps-flare-llh-module"><\/span><h2>i3pubtools.llhs.ps_flare_llh module<a/;"	i
 i3pubtools.llhs.ps_flare_llh module¶	docs/i3pubtools.llhs.html	/^<span id="i3pubtools-llhs-ps-flare-llh-module"><\/span><h2>i3pubtools.llhs.ps_flare_llh module<a/;"	i
+i3pubtools.llhs.ps_flare_llh.PsFlareLLH	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH">$/;"	I
 i3pubtools.llhs.ps_flare_llh.PsFlareLLH	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH">$/;"	I
+i3pubtools.llhs.ps_flare_llh.PsFlareLLH.evaluate_ts	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.evaluate_ts">$/;"	I
 i3pubtools.llhs.ps_flare_llh.PsFlareLLH.evaluate_ts	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.evaluate_ts">$/;"	I
+i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_n_trials	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_n_trials">$/;"	I
 i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_n_trials	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_n_trials">$/;"	I
+i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_trial	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_trial">$/;"	I
 i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_trial	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_trial">$/;"	I
 i3pubtools.sources module	docs/source/i3pubtools.rst	/^i3pubtools.sources module$/;"	s	chapter:i3pubtools package
 i3pubtools.sources module¶	docs/i3pubtools.html	/^<span id="i3pubtools-sources-module"><\/span><h2>i3pubtools.sources module<a class="headerlink" /;"	i
@@ -4356,6 +4379,7 @@ img.toggler	docs/_static/basic.css	/^img.toggler {$/;"	c
 index	docs/genindex.html	/^<h1 id="index">Index<\/h1>$/;"	I
 indexOf	docs/_static/underscore-1.3.1.js	/^  _.indexOf = function(array, item, isSorted) {$/;"	f	function:_
 indexOf	docs/_static/underscore.js	/^return e};b.union=function(){return b.uniq(b.flatten(arguments,true))};b.intersection=b.intersec/;"	f	function:b
+indices-and-tables	docs/.ipynb_checkpoints/index-checkpoint.html	/^<div class="section" id="indices-and-tables">$/;"	I
 indices-and-tables	docs/index.html	/^<div class="section" id="indices-and-tables">$/;"	I
 init	docs/_static/doctools.js	/^  init : function() {$/;"	m	class:Documentation
 init	docs/_static/searchtools.js	/^  init : function() {$/;"	m	class:Search
@@ -4557,13 +4581,17 @@ model	test3ml/workshop/hawc_fit/crab_fit_logparabola.py	/^model = Model(source)$
 model_radius	test3ml/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^model_radius = 8.0$/;"	v
 model_radius	test3ml/workshop/hawc_fit/crab_fit_logparabola.py	/^model_radius = 8.0$/;"	v
 modify_injection	mla/mla/core.py	/^    def modify_injection(self,sample):$/;"	m	class:LLH_point_source
+module-contents	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	I
 module-contents	docs/i3pubtools.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	I
 module-contents	docs/i3pubtools.llhs.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	I
 module-contents	docs/i3pubtools.time_profiles.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	I
 module-i3pubtools	docs/i3pubtools.html	/^<div class="section" id="module-i3pubtools">$/;"	I
 module-i3pubtools.injection	docs/i3pubtools.html	/^<div class="section" id="module-i3pubtools.injection">$/;"	I
+module-i3pubtools.llhs	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<div class="section" id="module-i3pubtools.llhs">$/;"	I
 module-i3pubtools.llhs	docs/i3pubtools.llhs.html	/^<div class="section" id="module-i3pubtools.llhs">$/;"	I
+module-i3pubtools.llhs.cluster_multiflare_llh	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<div class="section" id="module-i3pubtools.llhs.cluster_multiflare_llh">$/;"	I
 module-i3pubtools.llhs.cluster_multiflare_llh	docs/i3pubtools.llhs.html	/^<div class="section" id="module-i3pubtools.llhs.cluster_multiflare_llh">$/;"	I
+module-i3pubtools.llhs.ps_flare_llh	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<div class="section" id="module-i3pubtools.llhs.ps_flare_llh">$/;"	I
 module-i3pubtools.llhs.ps_flare_llh	docs/i3pubtools.llhs.html	/^<div class="section" id="module-i3pubtools.llhs.ps_flare_llh">$/;"	I
 module-i3pubtools.sources	docs/i3pubtools.html	/^<div class="section" id="module-i3pubtools.sources">$/;"	I
 module-i3pubtools.spectral	docs/i3pubtools.html	/^<div class="section" id="module-i3pubtools.spectral">$/;"	I
@@ -4793,6 +4821,9 @@ rotate	i3pubtools/.ipynb_checkpoints/tools-checkpoint.py	/^def rotate(ra1, dec1,
 rotate	i3pubtools/tools.py	/^def rotate(ra1, dec1, ra2, dec2, ra3, dec3):$/;"	f
 rotate	mla/mla/tools.py	/^def rotate(ra1, dec1, ra2, dec2, ra3, dec3):$/;"	f
 roundPixelMeasures	docs/_static/jquery-3.5.1.js	/^	function roundPixelMeasures( measure ) {$/;"	f	function:AnonymousFunctionb030af4010a00
+rtd-search-form	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
+rtd-search-form	docs/.ipynb_checkpoints/index-checkpoint.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
+rtd-search-form	docs/.ipynb_checkpoints/modules-checkpoint.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
 rtd-search-form	docs/genindex.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
 rtd-search-form	docs/i3pubtools.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
 rtd-search-form	docs/i3pubtools.llhs.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
@@ -4905,6 +4936,7 @@ stopwords	docs/_static/language_data.js	/^var stopwords = ["a","and","are","as",
 stripAndCollapse	docs/_static/jquery-3.5.1.js	/^	function stripAndCollapse( value ) {$/;"	f
 strong	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 sub	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
+submodules	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<div class="section" id="submodules">$/;"	I
 submodules	docs/i3pubtools.html	/^<div class="section" id="submodules">$/;"	I
 submodules	docs/i3pubtools.llhs.html	/^<div class="section" id="submodules">$/;"	I
 submodules	docs/i3pubtools.time_profiles.html	/^<div class="section" id="submodules">$/;"	I
@@ -5028,8 +5060,10 @@ ul.simple > li:not(:first-child) > p	docs/_static/basic.css	/^ul.simple > li:not
 ul.simple ol p	docs/_static/basic.css	/^ul.simple ol p,$/;"	s
 ul.simple p	docs/_static/basic.css	/^ul.simple p {$/;"	s
 ul.simple ul p	docs/_static/basic.css	/^ul.simple ul p {$/;"	s
+umd-icecube-analysis-tutorial	docs/.ipynb_checkpoints/modules-checkpoint.html	/^  <div class="section" id="umd-icecube-analysis-tutorial">$/;"	I
 umd-icecube-analysis-tutorial	docs/modules.html	/^  <div class="section" id="umd-icecube-analysis-tutorial">$/;"	I
 umd_icecube_analysis_tutorial	docs/source/modules.rst	/^umd_icecube_analysis_tutorial$/;"	c
+umd_icecube_analysis_tutorial¶	docs/.ipynb_checkpoints/modules-checkpoint.html	/^<h1>umd_icecube_analysis_tutorial<a class="headerlink" href="#umd-icecube-analysis-tutorial" tit/;"	h
 umd_icecube_analysis_tutorial¶	docs/modules.html	/^<h1>umd_icecube_analysis_tutorial<a class="headerlink" href="#umd-icecube-analysis-tutorial" tit/;"	h
 unescape	docs/_static/underscore-1.3.1.js	/^  var unescape = function(code) {$/;"	f
 uniform_profile	mla/mla/timing.py	/^class uniform_profile(generic_profile):$/;"	c
@@ -5067,6 +5101,7 @@ w	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&
 w	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
 w	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 we	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
+welcome-to-i3pubtools-s-documentation	docs/.ipynb_checkpoints/index-checkpoint.html	/^  <div class="section" id="welcome-to-i3pubtools-s-documentation">$/;"	I
 welcome-to-i3pubtools-s-documentation	docs/index.html	/^  <div class="section" id="welcome-to-i3pubtools-s-documentation">$/;"	I
 window	docs/_static/jquery-3.5.1.js	/^		window[ callbackName ] = function() {$/;"	f	function:AnonymousFunctionb030af4019000
 window	i3pubtools/time_profiles/.ipynb_checkpoints/uniform_profile-checkpoint.py	/^    def window(self):$/;"	m	class:UniformProfile
