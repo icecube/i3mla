@@ -9,7 +9,7 @@ __status__ = 'Development'
 
 """Functions that are generic enough to not belong in any class"""
 
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 
@@ -31,7 +31,7 @@ def read(filelist: List[str]) -> np.ndarray:
         else: data = np.concatenate([data, x])
     return data
 
-def to_unit_vector(ra: float, dec: float):
+def to_unit_vector(ra: float, dec: float) -> np.array:
     """Converts location on unit sphere to rectangular coordinates.
     
     More function info...
@@ -47,8 +47,20 @@ def to_unit_vector(ra: float, dec: float):
                      np.sin(ra)*np.cos(dec),
                      np.sin(dec)])
 
-def angular_distance(ra_A, dec_A, ra_B, dec_B):
-    """Calculate the angle between two points on the unit sphere"""
+def angular_distance(ra_A: float, dec_A: float, ra_B: float, dec_B: float) -> float:
+    """Calculates the angle between two points on the unit sphere.
+    
+    More function info...
+    
+    Args:
+        ra_A:
+        dec_A:
+        ra_B:
+        dec_B:
+        
+    Returns:
+        
+    """
     unit_A = to_unit_vector(ra_A, dec_A)
     unit_B = to_unit_vector(ra_B, dec_B)
 
@@ -57,16 +69,36 @@ def angular_distance(ra_A, dec_A, ra_B, dec_B):
     else:
         return np.arccos(np.dot(unit_A, unit_B))
 
-def cross_matrix(x):
-        """Calculate cross product matrix
+def cross_matrix(mat: np.ndarray) -> np.ndarray:
+        """Calculate cross product matrix.
+        
         A[ij] = x_i * y_j - y_i * x_j
+        
+        Args:
+            mat: 
+            
+        Returns:
+            
         """
-        skv = np.roll(np.roll(np.diag(x.ravel()), 1, 1), -1, 0)
+        skv = np.roll(np.roll(np.diag(mat.ravel()), 1, 1), -1, 0)
         return skv - skv.T
 
-def rotate(ra1, dec1, ra2, dec2, ra3, dec3):
+def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
+           ra3: float, dec3: float) -> Tuple[float, float]:
     """Rotation matrix for rotation of (ra1, dec1) onto (ra2, dec2).
+    
     The rotation is performed on (ra3, dec3).
+    
+    Args:
+        ra1:
+        dec1:
+        ra2:
+        dec2:
+        ra3:
+        dec3:
+    
+    Returns:
+        
     """
     ra1 = np.atleast_1d(ra1)
     dec1 = np.atleast_1d(dec1)

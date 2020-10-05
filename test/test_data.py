@@ -51,11 +51,11 @@ grl_dtype = [
     ('events', '<i8')
 ]
 
-def get_random_data(length):
+def get_random_data(length: int) -> np.ndarray:
     """generate junk data of a given length
     
     Args:
-        length (int): length of data
+        length: length of data
         
     Returns:
         np array of type data_dtype
@@ -75,11 +75,11 @@ def get_random_data(length):
 
     return data
 
-def get_random_sim(length):
+def get_random_sim(length: int) -> np.ndarray:
     """generate junk sim of a given length
     
     Args:
-        length (int): length of sim
+        length: length of sim
         
     Returns:
         np array of type sim_dtype
@@ -104,17 +104,23 @@ def get_random_sim(length):
 
     return sim
 
-def get_random_grl(data):
-    """
+def get_random_grl(data: np.ndarray) -> np.ndarray:
+    """generate junk grl based on data
+    
+    Args:
+        data: A data array to build this GRL from
+        
+    Returns:
+        np array of type grl_dtype
     """
     runs = np.unique(data['run'])
     length = len(runs)
     grl = np.empty(length, dtype=grl_dtype)
     for i, run in enumerate(runs):
         grl[i]['run'] = run
-        grl[i]['start'] = np.min(data[data['run'] == run]['time'])
-        grl[i]['stop'] = np.max(data[data['run'] == run]['time'])
-        grl[i]['livetime'] = grl[i]['stop'] - grl[i]['start'] + .001
+        grl[i]['start'] = np.min(data[data['run'] == run]['time']) - .001
+        grl[i]['stop'] = np.max(data[data['run'] == run]['time']) + .001
+        grl[i]['livetime'] = grl[i]['stop'] - grl[i]['start']
         grl[i]['events'] = len(data[data['run'] == run])
     return grl
     pass

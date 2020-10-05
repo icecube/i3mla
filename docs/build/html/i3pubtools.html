@@ -226,17 +226,49 @@
 </div>
 <div class="section" id="module-i3pubtools.sources">
 <span id="i3pubtools-sources-module"></span><h2>i3pubtools.sources module<a class="headerlink" href="#module-i3pubtools.sources" title="Permalink to this headline">¶</a></h2>
-<p>A dictionary of sources and functions to convert their locations to radians</p>
 <dl class="py function">
 <dt id="i3pubtools.sources.dec">
-<code class="sig-prename descclassname">i3pubtools.sources.</code><code class="sig-name descname">dec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sign</span></em>, <em class="sig-param"><span class="n">deg</span></em>, <em class="sig-param"><span class="n">m</span></em>, <em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.sources.dec" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert declination to radians</p>
+<code class="sig-prename descclassname">i3pubtools.sources.</code><code class="sig-name descname">dec</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sign</span></em>, <em class="sig-param"><span class="n">deg</span></em>, <em class="sig-param"><span class="n">mins</span></em>, <em class="sig-param"><span class="n">secs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.sources.dec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts declination to radians.</p>
+<p>More function info…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sign</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code>) – A positive integer for a positive sign, a negative integer for a negative sign.</p></li>
+<li><p><strong>deg</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Degrees.</p></li>
+<li><p><strong>mins</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Minutes.</p></li>
+<li><p><strong>secs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Seconds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Radian representation of declination.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="i3pubtools.sources.ra">
-<code class="sig-prename descclassname">i3pubtools.sources.</code><code class="sig-name descname">ra</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">h</span></em>, <em class="sig-param"><span class="n">m</span></em>, <em class="sig-param"><span class="n">s</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.sources.ra" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert right ascension to radians</p>
+<code class="sig-prename descclassname">i3pubtools.sources.</code><code class="sig-name descname">ra</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hrs</span></em>, <em class="sig-param"><span class="n">mins</span></em>, <em class="sig-param"><span class="n">secs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.sources.ra" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts right ascension to radians.</p>
+<p>More function info…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hrs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Hours.</p></li>
+<li><p><strong>mins</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Minutes.</p></li>
+<li><p><strong>secs</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – Seconds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Radian representation of right ascension.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -273,37 +305,109 @@
 </div>
 <div class="section" id="module-i3pubtools.tools">
 <span id="i3pubtools-tools-module"></span><h2>i3pubtools.tools module<a class="headerlink" href="#module-i3pubtools.tools" title="Permalink to this headline">¶</a></h2>
-<p>Functions that are generic enough to not belong in any class</p>
 <dl class="py function">
 <dt id="i3pubtools.tools.angular_distance">
 <code class="sig-prename descclassname">i3pubtools.tools.</code><code class="sig-name descname">angular_distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ra_A</span></em>, <em class="sig-param"><span class="n">dec_A</span></em>, <em class="sig-param"><span class="n">ra_B</span></em>, <em class="sig-param"><span class="n">dec_B</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.tools.angular_distance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the angle between two points on the unit sphere</p>
+<dd><p>Calculates the angle between two points on the unit sphere.</p>
+<p>More function info…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ra_A</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – </p></li>
+<li><p><strong>dec_A</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – </p></li>
+<li><p><strong>ra_B</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – </p></li>
+<li><p><strong>dec_B</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="i3pubtools.tools.cross_matrix">
-<code class="sig-prename descclassname">i3pubtools.tools.</code><code class="sig-name descname">cross_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.tools.cross_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate cross product matrix
-A[ij] = x_i * y_j - y_i * x_j</p>
+<code class="sig-prename descclassname">i3pubtools.tools.</code><code class="sig-name descname">cross_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mat</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.tools.cross_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate cross product matrix.</p>
+<p>A[ij] = x_i * y_j - y_i * x_j</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>mat</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>) – </p>
+</dd>
+</dl>
+<p>Returns:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="i3pubtools.tools.read">
 <code class="sig-prename descclassname">i3pubtools.tools.</code><code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filelist</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.tools.read" title="Permalink to this definition">¶</a></dt>
-<dd><p>Read in and concatenate a list of numpy files</p>
+<dd><p>Reads in and concatenate a list of numpy files.</p>
+<p>More function info…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>fileList</strong> – A list of .npy file paths as strings.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An array of data events.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="i3pubtools.tools.rotate">
 <code class="sig-prename descclassname">i3pubtools.tools.</code><code class="sig-name descname">rotate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ra1</span></em>, <em class="sig-param"><span class="n">dec1</span></em>, <em class="sig-param"><span class="n">ra2</span></em>, <em class="sig-param"><span class="n">dec2</span></em>, <em class="sig-param"><span class="n">ra3</span></em>, <em class="sig-param"><span class="n">dec3</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.tools.rotate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rotation matrix for rotation of (ra1, dec1) onto (ra2, dec2).
-The rotation is performed on (ra3, dec3).</p>
+<dd><p>Rotation matrix for rotation of (ra1, dec1) onto (ra2, dec2).</p>
+<p>The rotation is performed on (ra3, dec3).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ra1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – </p></li>
+<li><p><strong>dec1</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – </p></li>
+<li><p><strong>ra2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – </p></li>
+<li><p><strong>dec2</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – </p></li>
+<li><p><strong>ra3</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – </p></li>
+<li><p><strong>dec3</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt id="i3pubtools.tools.to_unit_vector">
 <code class="sig-prename descclassname">i3pubtools.tools.</code><code class="sig-name descname">to_unit_vector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ra</span></em>, <em class="sig-param"><span class="n">dec</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.tools.to_unit_vector" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert location on unit sphere to rectangular coordinates</p>
+<dd><p>Converts location on unit sphere to rectangular coordinates.</p>
+<p>More function info…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ra</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – </p></li>
+<li><p><strong>dec</strong> (<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>) – </p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code></p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>

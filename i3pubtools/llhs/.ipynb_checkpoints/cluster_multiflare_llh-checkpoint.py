@@ -1,3 +1,18 @@
+__author__ = 'John Evans'
+__copyright__ = ''
+__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
+__license__ = 'Apache License 2.0'
+__version__ = '0.0.1'
+__maintainer__ = 'John Evans'
+__email__ = 'john.evans@icecube.wisc.edu'
+__status__ = 'Development'
+
+"""
+Docstring
+"""
+
+from typing import Tuple
+
 from i3pubtools import tools
 import scipy
 import numpy.lib.recfunctions as rf
@@ -6,20 +21,41 @@ from tqdm.notebook import tqdm
 import numpy as np
 
 class cluster_multiflare_llh(object):
-    '''Software to perform an point-source analysis assuming some single-flaring behavior
-    to the signal
-    '''
+    """Software to perform an point-source analysis assuming some single-flaring behavior
+    to the signal.
+    
+    Attributes:
+        data ():
+        sim ():
+        grl ():
+        gammas ():
+        bins ():
+        sob_maps ():
+        bg_p_dec ():
+    """
 
-    def __init__(self, data, sim, grl, gammas, bins, infile = None, outfile = None):
-        '''Constructor for the class
-
-        Arguments:
-            data
-            sim
-            grl
-            gammas
-            bins
-        '''
+    def __init__(self,
+                 data: np.ndarray,
+                 sim: np.ndarray,
+                 grl: np.ndarray,
+                 gammas: np.array,
+                 bins: np.ndarray,
+                 infile: str = None,
+                 outfile: str = None,
+    ) -> None:
+        """Constructs the class.
+        
+        More function info...
+        
+        Args:
+            data:
+            sim:
+            grl:
+            gammas:
+            bins:
+            infile:
+            outfile:
+        """
         self.data     = data
         self.sim      = sim
         self.grl      = grl
@@ -41,10 +77,19 @@ class cluster_multiflare_llh(object):
         return
 
     # init helper functions
-    def _create_interpolated_ratio(self, gamma, bins):
-        '''Generate a 2D histogram from splines of signal/background vs declination at a range
-            of energies.
-        '''
+    def _create_interpolated_ratio(self, gamma: float, bins: np.ndarray,
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """Generates a 2D histogram from splines.
+        
+        Signal/background vs declination at a range of energies.
+        
+        Args:
+            gamma:
+            bins:
+        
+        Returns:
+            
+        """
         # background
         bg_w = np.ones(len(self.data), dtype=float)
         bg_w /= np.sum(bg_w)
@@ -80,8 +125,14 @@ class cluster_multiflare_llh(object):
 
         return ratio, bins
 
-    def _create_bg_p_dec(self,):
-        '''Generates a spline of neutrino flux vs declination'''
+    def _create_bg_p_dec(self) -> scipy.interpolate.UnivariateSpline:
+        """Generates a spline of neutrino flux vs declination.
+        
+        More function info...
+        
+        Returns:
+            
+            """
         # Our background PDF only depends on declination.
         # In order for us to capture the dec-dependent
         # behavior, we first take a look at the dec values
@@ -116,25 +167,25 @@ class cluster_multiflare_llh(object):
 
     # spatial pdfs
     def _signal_pdf(self, event, source):
-        '''calculate the signal probability of an event based on it's angular distance
+        """calculate the signal probability of an event based on it's angular distance
         from a source
-        '''
+        """
         sigma = event['angErr']
         x = tools.angular_distance(event['ra'], event['dec'],
                              source['ra'], source['dec'])
         return (1.0/(2*np.pi*sigma**2))*np.exp(-x**2/(2*sigma**2))
 
     def _background_pdf(self, event, source):
-        '''calculate the background probability of an event based on it's declination
-        '''
+        """calculate the background probability of an event based on it's declination
+        """
         background_likelihood = (1/(2*np.pi))*self.bg_p_dec(np.sin(event['dec']))
         return background_likelihood
 
     # signal/background
     def _evaluate_interpolated_ratios(self, events):
-        '''Use calculated interpolated ratios to quickly retrieve signal/background for given
+        """Use calculated interpolated ratios to quickly retrieve signal/background for given
         events
-        '''
+        """
         # Get the bin that each event belongs to
         i = np.searchsorted(self.bins[0], np.sin(events['dec'])) - 1
         j = np.searchsorted(self.bins[1], events['logE']) - 1
@@ -142,9 +193,9 @@ class cluster_multiflare_llh(object):
         return self.sob_maps[i,j]
 
     def _get_energy_splines(self, events):
-        '''Spline signal/background vs gamma at a set of locations using calculated interpolated
+        """Spline signal/background vs gamma at a set of locations using calculated interpolated
         ratios
-        '''
+        """
         # Get the values for each event
         sob_ratios = self._evaluate_interpolated_ratios(events)
 
@@ -162,7 +213,7 @@ class cluster_multiflare_llh(object):
         return sob_splines
 
     def _get_energy_sob(self, events, gamma, splines):
-        '''Get signal/background at given locations and gamma from calculated energy splines'''
+        """Get signal/background at given locations and gamma from calculated energy splines"""
         final_sob_ratios = np.ones_like(events, dtype=float)
         for i, spline in enumerate(splines):
             final_sob_ratios[i] = np.exp(spline(gamma))
@@ -172,13 +223,13 @@ class cluster_multiflare_llh(object):
     # prune simulation around source
     def _select_and_weight(self, gamma=-2, source = {'ra':np.pi/2, 'dec':np.pi/6},
                           time_profiles = None, sampling_width = np.radians(1)):
-        '''Prune the simulation set to only events close to a given source and calculate the
+        """Prune the simulation set to only events close to a given source and calculate the
             weight for each event. Add the weights as a new column to the simulation set
 
             time_profiles should be a list of tuples. the first element in each tuple
             should be a time profile, and the second should be the proportion of total
             events in that time profile.
-        '''
+        """
         assert('ow' in self.sim.dtype.names)
         assert(time_profiles != None)
 
@@ -222,7 +273,7 @@ class cluster_multiflare_llh(object):
                       background_window = 14, # days
                       random_seed = None, signal_weights = None, sims = None,
                       return_signal_weights = False, sampling_width = np.radians(1)):
-        '''Produces a single trial of background+signal events based on input parameters
+        """Produces a single trial of background+signal events based on input parameters
 
         keyword arguments:
             gamma
@@ -234,7 +285,7 @@ class cluster_multiflare_llh(object):
             random_seed
             signal_weights
             return_signal_weights
-        '''
+        """
         assert(background_window > 0)
         assert(background_time_profile != None)
 
@@ -367,8 +418,8 @@ class cluster_multiflare_llh(object):
             return events
 
     def evaluate_sob_per_event(self, events, source, gamma = -2):
-        '''
-        '''
+        """
+        """
         S = self._signal_pdf(events, source)
         B = self._background_pdf(events, source)
 
@@ -379,9 +430,9 @@ class cluster_multiflare_llh(object):
 
     def evaluate_ts(self, events, source, bg_time_profile, sig_time_profile, ns = 0,
                     gamma = -2, minimize = True):
-        '''Calculate the test statistic for some collection of events at a given location
+        """Calculate the test statistic for some collection of events at a given location
         and for some given time profiles for signal and background
-        '''
+        """
         # structure to store our output
         output = {'ts':np.nan,
                   'ns':ns,
@@ -498,7 +549,7 @@ class cluster_multiflare_llh(object):
                          gamma=-2,
                          source = {'ra':np.pi/2, 'dec':np.pi/6},
                          sampling_width = np.radians(1)):
-        '''produce n trials and calculate a test statistic for each trial'''
+        """produce n trials and calculate a test statistic for each trial"""
         if random_seed:
             np.random.seed(random_seed)
 
@@ -580,8 +631,8 @@ class cluster_multiflare_llh(object):
 
     # generate signal time profiles
     def get_signal_time_profiles(self, Am, alpha, time_mu_dist, time_sigma_dist):
-        '''
-        '''
+        """
+        """
         s = scipy.stats.zipf.rvs(alpha, size=Am)
         s = scipy.stats.poisson.rvs(s)
         mus = time_mu_dist.rvs(size=Am)

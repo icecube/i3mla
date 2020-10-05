@@ -40,7 +40,7 @@ def dec(sign: int, deg: float, mins: float, secs: float) -> float:
     Returns:
         Radian representation of declination.
     """
-    return sign/np.abs(sign)*(deg + m/60 + s/3600)*np.pi/180
+    return sign/np.abs(sign)*(deg + mins/60 + secs/3600)*np.pi/180
 
 # dict of sources
 sources = {'crab_nebula':{'ra':ra(5, 34, 31.94), 'dec':dec(1, 22, 0, 52.2)},

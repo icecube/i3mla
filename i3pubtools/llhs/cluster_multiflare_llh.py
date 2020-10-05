@@ -11,6 +11,8 @@ __status__ = 'Development'
 Docstring
 """
 
+from typing import Tuple
+
 from i3pubtools import tools
 import scipy
 import numpy.lib.recfunctions as rf
@@ -20,18 +22,39 @@ import numpy as np
 
 class cluster_multiflare_llh(object):
     """Software to perform an point-source analysis assuming some single-flaring behavior
-    to the signal
+    to the signal.
+    
+    Attributes:
+        data ():
+        sim ():
+        grl ():
+        gammas ():
+        bins ():
+        sob_maps ():
+        bg_p_dec ():
     """
 
-    def __init__(self, data, sim, grl, gammas, bins, infile = None, outfile = None):
-        """Constructor for the class
-
-        Arguments:
-            data
-            sim
-            grl
-            gammas
-            bins
+    def __init__(self,
+                 data: np.ndarray,
+                 sim: np.ndarray,
+                 grl: np.ndarray,
+                 gammas: np.array,
+                 bins: np.ndarray,
+                 infile: str = None,
+                 outfile: str = None,
+    ) -> None:
+        """Constructs the class.
+        
+        More function info...
+        
+        Args:
+            data:
+            sim:
+            grl:
+            gammas:
+            bins:
+            infile:
+            outfile:
         """
         self.data     = data
         self.sim      = sim
@@ -54,9 +77,18 @@ class cluster_multiflare_llh(object):
         return
 
     # init helper functions
-    def _create_interpolated_ratio(self, gamma, bins):
-        """Generate a 2D histogram from splines of signal/background vs declination at a range
-            of energies.
+    def _create_interpolated_ratio(self, gamma: float, bins: np.ndarray,
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """Generates a 2D histogram from splines.
+        
+        Signal/background vs declination at a range of energies.
+        
+        Args:
+            gamma:
+            bins:
+        
+        Returns:
+            
         """
         # background
         bg_w = np.ones(len(self.data), dtype=float)
@@ -93,8 +125,14 @@ class cluster_multiflare_llh(object):
 
         return ratio, bins
 
-    def _create_bg_p_dec(self,):
-        """Generates a spline of neutrino flux vs declination"""
+    def _create_bg_p_dec(self) -> scipy.interpolate.UnivariateSpline:
+        """Generates a spline of neutrino flux vs declination.
+        
+        More function info...
+        
+        Returns:
+            
+            """
         # Our background PDF only depends on declination.
         # In order for us to capture the dec-dependent
         # behavior, we first take a look at the dec values

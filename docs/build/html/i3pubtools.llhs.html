@@ -183,7 +183,42 @@
 <em class="property">class </em><code class="sig-prename descclassname">i3pubtools.llhs.cluster_multiflare_llh.</code><code class="sig-name descname">cluster_multiflare_llh</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">grl</span></em>, <em class="sig-param"><span class="n">gammas</span></em>, <em class="sig-param"><span class="n">bins</span></em>, <em class="sig-param"><span class="n">infile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">outfile</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Software to perform an point-source analysis assuming some single-flaring behavior
-to the signal</p>
+to the signal.</p>
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.data">
+<code class="sig-name descname">data</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.sim">
+<code class="sig-name descname">sim</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.sim" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.grl">
+<code class="sig-name descname">grl</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.grl" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.gammas">
+<code class="sig-name descname">gammas</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.gammas" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.bins">
+<code class="sig-name descname">bins</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.bins" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.sob_maps">
+<code class="sig-name descname">sob_maps</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.sob_maps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.bg_p_dec">
+<code class="sig-name descname">bg_p_dec</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.bg_p_dec" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_sob_per_event">
 <code class="sig-name descname">evaluate_sob_per_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span></em>, <em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">- 2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_sob_per_event" title="Permalink to this definition">¶</a></dt>
@@ -243,48 +278,88 @@ and for some given time profiles for signal and background</p>
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.data">
 <code class="sig-name descname">data</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Real neutrino event data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.sim">
 <code class="sig-name descname">sim</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.sim" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simulated neutrino events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.grl">
 <code class="sig-name descname">grl</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.grl" title="Permalink to this definition">¶</a></dt>
 <dd><p>A list of runs/times when the detector was working properly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.bins">
 <code class="sig-name descname">bins</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.bins" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bin edges for dec and logE for generating sob maps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.gammas">
 <code class="sig-name descname">gammas</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.gammas" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gamma steps for generating sob maps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>np.array</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.signal_time_profile">
 <code class="sig-name descname">signal_time_profile</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.signal_time_profile" title="Permalink to this definition">¶</a></dt>
 <dd><p>A time profile for the background distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="i3pubtools.time_profiles.html#i3pubtools.time_profiles.generic_profile.GenericProfile" title="i3pubtools.time_profiles.generic_profile.GenericProfile">generic_profile.GenericProfile</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.background_time_profile">
 <code class="sig-name descname">background_time_profile</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.background_time_profile" title="Permalink to this definition">¶</a></dt>
 <dd><p>A time profile for the signal distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="i3pubtools.time_profiles.html#i3pubtools.time_profiles.generic_profile.GenericProfile" title="i3pubtools.time_profiles.generic_profile.GenericProfile">generic_profile.GenericProfile</a></p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py attribute">
 <dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.source">
 <code class="sig-name descname">source</code><a class="headerlink" href="#i3pubtools.llhs.ps_flare_llh.PsFlareLLH.source" title="Permalink to this definition">¶</a></dt>
 <dd><p>Where to look for neutrinos.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
