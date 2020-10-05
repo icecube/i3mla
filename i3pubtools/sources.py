@@ -1,14 +1,46 @@
+__author__ = 'John Evans'
+__copyright__ = ''
+__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
+__license__ = 'Apache License 2.0'
+__version__ = '0.0.1'
+__maintainer__ = 'John Evans'
+__email__ = 'john.evans@icecube.wisc.edu'
+__status__ = 'Development'
+
 """A dictionary of sources and functions to convert their locations to radians"""
 
 import numpy as np
 
-def ra(h, m, s):
-    """Convert right ascension to radians"""
-    return (h*15 + m/4 + s/240)*np.pi/180
+def ra(hrs: float, mins: float, secs: float) -> float:
+    """Converts right ascension to radians.
+    
+    More function info...
+    
+    Args:
+        hrs: Hours.
+        mins: Minutes.
+        secs: Seconds.
+    
+    Returns:
+        Radian representation of right ascension.
+    """
+    return (hrs*15 + mins/4 + secs/240)*np.pi/180
 
-def dec(sign, deg, m, s):
-    """Convert declination to radians"""
-    return sign*(deg + m/60 + s/3600)*np.pi/180
+def dec(sign: int, deg: float, mins: float, secs: float) -> float:
+    """Converts declination to radians.
+    
+    More function info...
+    
+    Args:
+        sign: A positive integer for a positive sign, a negative integer for a negative sign. 
+        deg: Degrees.
+        mins: Minutes.
+        secs: Seconds.
+        
+    Returns:
+        Radian representation of declination.
+    """
+    return sign/np.abs(sign)*(deg + m/60 + s/3600)*np.pi/180
 
 # dict of sources
 sources = {'crab_nebula':{'ra':ra(5, 34, 31.94), 'dec':dec(1, 22, 0, 52.2)},

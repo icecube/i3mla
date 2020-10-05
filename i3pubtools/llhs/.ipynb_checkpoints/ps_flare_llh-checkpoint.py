@@ -30,14 +30,14 @@ class PsFlareLLH:
     More class info...
     
     Attributes:
-        data: Real neutrino event data.
-        sim: Simulated neutrino events.
-        grl: A list of runs/times when the detector was working properly.
-        bins: Bin edges for dec and logE for generating sob maps.
-        gammas: Gamma steps for generating sob maps.
-        signal_time_profile: A time profile for the background distribution.
-        background_time_profile: A time profile for the signal distribution.
-        source: Where to look for neutrinos.
+        data (np.ndarray): Real neutrino event data.
+        sim (np.ndarray): Simulated neutrino events.
+        grl (np.ndarray): A list of runs/times when the detector was working properly.
+        bins (np.ndarray): Bin edges for dec and logE for generating sob maps.
+        gammas (np.array): Gamma steps for generating sob maps.
+        signal_time_profile (generic_profile.GenericProfile): A time profile for the background distribution.
+        background_time_profile (generic_profile.GenericProfile): A time profile for the signal distribution.
+        source (dict): Where to look for neutrinos.
     """
 
     def __init__(self, 

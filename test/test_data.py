@@ -4,7 +4,7 @@ __credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
 __license__ = 'Apache License 2.0'
 __version__ = '0.0.1'
 __maintainer__ = 'John Evans'
-__email__ = 'jevans96@umd.edu'
+__email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 """

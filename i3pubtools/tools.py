@@ -1,9 +1,29 @@
+__author__ = 'John Evans'
+__copyright__ = ''
+__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
+__license__ = 'Apache License 2.0'
+__version__ = '0.0.1'
+__maintainer__ = 'John Evans'
+__email__ = 'john.evans@icecube.wisc.edu'
+__status__ = 'Development'
+
 """Functions that are generic enough to not belong in any class"""
+
+from typing import List
 
 import numpy as np
 
-def read(filelist):
-    """Read in and concatenate a list of numpy files"""
+def read(filelist: List[str]) -> np.ndarray:
+    """Reads in and concatenate a list of numpy files.
+    
+    More function info...
+    
+    Args:
+        fileList: A list of .npy file paths as strings.
+        
+    Returns:
+        An array of data events.
+    """
     data = []
     for f in sorted(filelist):
         x = np.load(f)
@@ -11,8 +31,18 @@ def read(filelist):
         else: data = np.concatenate([data, x])
     return data
 
-def to_unit_vector(ra, dec):
-    """Convert location on unit sphere to rectangular coordinates"""
+def to_unit_vector(ra: float, dec: float):
+    """Converts location on unit sphere to rectangular coordinates.
+    
+    More function info...
+    
+    Args:
+        ra:
+        dec:
+    
+    Returns:
+        
+    """
     return np.array([np.cos(ra)*np.cos(dec),
                      np.sin(ra)*np.cos(dec),
                      np.sin(dec)])
