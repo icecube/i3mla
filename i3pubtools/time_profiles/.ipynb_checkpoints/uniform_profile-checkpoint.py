@@ -131,7 +131,7 @@ class UniformProfile(generic_profile.GenericProfile):
     
     @property
     def window(self) -> List[float]:
-        return self._window
+        return tuple(self._window)
     
     @window.setter
     def window(self, new_window: List[float]) -> None:

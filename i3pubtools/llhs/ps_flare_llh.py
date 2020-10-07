@@ -529,21 +529,28 @@ class PsFlareLLH:
         
         drop = flux_norm - np.sum(S != 0)
         
-        def get_ts(ns, gamma, params):
-                e_lh_ratio = self._get_energy_sob(events, gamma, splines)
-                t_lh_sig = self.signal_time_profile(*params).pdf(events['time'])
-                sob = S/B*e_lh_ratio * (t_lh_sig/t_lh_bg)
-                ts = (ns/flux_norm*(sob - 1))+1
-                return -2*(np.sum(np.log(ts)) + drop*np.log(1-ns/flux_norm))
+        def get_ts(args):
+            params = []
+            ns = args[0]
+            gamma = args[1]
+            if len(args) > 2:
+                params = args[2:]
+                
+            e_lh_ratio = self._get_energy_sob(events, gamma, splines)
+            sig_t_pro = self.signal_time_profile.__class__(*params)
+            t_lh_sig = sig_t_pro.pdf(events['time'])
+            sob = S/B*e_lh_ratio * (t_lh_sig/t_lh_bg)
+            ts = (ns/flux_norm*(sob - 1))+1
+            return -2*(np.sum(np.log(ts)) + drop*np.log(1-ns/flux_norm))
 
         with np.errstate(divide='ignore', invalid='ignore'):
             # Set the seed values, which tell the minimizer
             # where to start, and the bounds. First do the
-            # shape parameters (just gamma, in this case).
-            x0 = [ns, gamma, self.signal_time_profile.x0(events['time'])]
+            # shape parameters.
+            x0 = [ns, gamma, *self.signal_time_profile.x0(events['time'])]
             bounds = [[0, flux_norm],
                       [-4, -1], # gamma [min, max]
-                      self.signal_time_profile.bounds(self.background_time_profile)]
+                      *self.signal_time_profile.bounds(self.background_time_profile)]
 
             result = scipy.optimize.minimize(get_ts, x0=x0, bounds=bounds, method='L-BFGS-B')
 
@@ -552,7 +559,7 @@ class PsFlareLLH:
             output['ns'] = result.x[0]
             output['gamma'] = result.x[1]
             for i, key in enumerate(self.signal_time_profile.default_params):
-                output[key] = result.x[2][i]
+                output[key] = result.x[2+i]
 
             return output
 
