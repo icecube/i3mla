@@ -3,7 +3,7 @@
 import numpy as np
 
 def read(filelist):
-    '''Read in and concatenate a list of numpy files'''
+    r'''Read in and concatenate a list of numpy files'''
     data = []
     for f in sorted(filelist):
         x = np.load(f)
@@ -12,20 +12,23 @@ def read(filelist):
     return data
 
 def to_unit_vector(ra, dec):
-    '''Convert location on unit sphere to rectangular coordinates'''
+    r'''Convert location on unit sphere to rectangular coordinates'''
     return np.array([np.cos(ra)*np.cos(dec),
                      np.sin(ra)*np.cos(dec),
                      np.sin(dec)])
 
-def angular_distance(ra_A, dec_A, ra_B, dec_B):
-    '''Calculate the angle between two points on the unit sphere'''
-    unit_A = to_unit_vector(ra_A, dec_A)
-    unit_B = to_unit_vector(ra_B, dec_B)
-
-    if len(unit_A.shape) != 1:
-        return np.arccos(np.dot(unit_A.T, unit_B))
-    else:
-        return np.arccos(np.dot(unit_A, unit_B))
+def angular_distance(src_ra, src_dec, ra, dec):
+    r""" Compute angular distance between source and location """
+    sinDec = np.sin(dec)
+    cos_dec = np.sqrt(1. - sinDec**2)
+    cosDist = np.array((
+        np.cos(src_ra - ra) * np.cos(src_dec) * cos_dec +
+        np.sin(src_dec) * sinDec
+    ))
+    # handle possible floating precision errors
+    cosDist[np.isclose(cosDist, -1.) & (cosDist < -1)] = -1.
+    cosDist[np.isclose(cosDist, 1.) & (cosDist > 1)] = 1.
+    return np.arccos(cosDist)
 
 def rotate(ra1, dec1, ra2, dec2, ra3, dec3):
     '''Rotation matrix for rotation of (ra1, dec1) onto (ra2, dec2).
