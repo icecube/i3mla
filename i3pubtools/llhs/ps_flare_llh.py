@@ -17,13 +17,10 @@ import scipy
 import numpy as np
 from tqdm import tqdm
 from i3pubtools import tools
+from i3pubtools import time_profiles
 
 import numpy.lib.recfunctions as rf
 import scipy.interpolate
-from i3pubtools.time_profiles import gauss_profile
-from i3pubtools.time_profiles import uniform_profile
-from i3pubtools.time_profiles import generic_profile
-
 
 class PsFlareLLH:
     """Performs an point-source analysis assuming some single-flaring behavior to the signal.
@@ -47,8 +44,8 @@ class PsFlareLLH:
                  grl: np.ndarray, 
                  gammas: np.ndarray, 
                  bins: np.ndarray, 
-                 signal_time_profile: Optional[generic_profile.GenericProfile] = None,
-                 background_time_profile: Optional[generic_profile.GenericProfile] = None,
+                 signal_time_profile: Optional[time_profiles.GenericProfile] = None,
+                 background_time_profile: Optional[time_profiles.GenericProfile] = None,
                  source: Dict[float, float] = {'ra':np.pi/2, 'dec':np.pi/6},
                  infile: Optional[str] = None, 
                  outfile: Optional[str] = None
@@ -63,9 +60,9 @@ class PsFlareLLH:
         """
         
         if signal_time_profile is None:
-            signal_time_profile = gauss_profile.GaussProfile(np.average(data['time']), np.std(data['time'])),
+            signal_time_profile = time_profiles.GaussProfile(np.average(data['time']), np.std(data['time'])),
         if background_time_profile is None:
-            background_time_profile = uniform_profile.UniformProfile(np.min(data['time']), np.max(data['time'])),
+            background_time_profile = time_profiles.UniformProfile(np.min(data['time']), np.max(data['time'])),
         
         self.data = data
         self.sim = sim

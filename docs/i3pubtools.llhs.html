@@ -176,95 +176,8 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-i3pubtools.llhs.cluster_multiflare_llh">
-<span id="i3pubtools-llhs-cluster-multiflare-llh-module"></span><h2>i3pubtools.llhs.cluster_multiflare_llh module<a class="headerlink" href="#module-i3pubtools.llhs.cluster_multiflare_llh" title="Permalink to this headline">¶</a></h2>
-<dl class="py class">
-<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh">
-<em class="property">class </em><code class="sig-prename descclassname">i3pubtools.llhs.cluster_multiflare_llh.</code><code class="sig-name descname">cluster_multiflare_llh</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span></em>, <em class="sig-param"><span class="n">sim</span></em>, <em class="sig-param"><span class="n">grl</span></em>, <em class="sig-param"><span class="n">gammas</span></em>, <em class="sig-param"><span class="n">bins</span></em>, <em class="sig-param"><span class="n">infile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">outfile</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Software to perform an point-source analysis assuming some single-flaring behavior
-to the signal.</p>
-<dl class="py attribute">
-<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.data">
-<code class="sig-name descname">data</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.data" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.sim">
-<code class="sig-name descname">sim</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.sim" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.grl">
-<code class="sig-name descname">grl</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.grl" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.gammas">
-<code class="sig-name descname">gammas</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.gammas" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.bins">
-<code class="sig-name descname">bins</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.bins" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.sob_maps">
-<code class="sig-name descname">sob_maps</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.sob_maps" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.bg_p_dec">
-<code class="sig-name descname">bg_p_dec</code><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.bg_p_dec" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_sob_per_event">
-<code class="sig-name descname">evaluate_sob_per_event</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span></em>, <em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">- 2</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_sob_per_event" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_ts">
-<code class="sig-name descname">evaluate_ts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span></em>, <em class="sig-param"><span class="n">source</span></em>, <em class="sig-param"><span class="n">bg_time_profile</span></em>, <em class="sig-param"><span class="n">sig_time_profile</span></em>, <em class="sig-param"><span class="n">ns</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">minimize</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_ts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate the test statistic for some collection of events at a given location
-and for some given time profiles for signal and background</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.get_signal_time_profiles">
-<code class="sig-name descname">get_signal_time_profiles</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Am</span></em>, <em class="sig-param"><span class="n">alpha</span></em>, <em class="sig-param"><span class="n">time_mu_dist</span></em>, <em class="sig-param"><span class="n">time_sigma_dist</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.get_signal_time_profiles" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_n_trials">
-<code class="sig-name descname">produce_n_trials</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ntrials</span></em>, <em class="sig-param"><span class="n">background_time_profile</span></em>, <em class="sig-param"><span class="n">signal_time_profile</span></em>, <em class="sig-param"><span class="n">background_window</span><span class="o">=</span><span class="default_value">14</span></em>, <em class="sig-param"><span class="n">test_ns</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">test_gamma</span><span class="o">=</span><span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">minimize</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">ncpus</span><span class="o">=</span><span class="default_value">4</span></em>, <em class="sig-param"><span class="n">N</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">{'dec': 0.5235987755982988, 'ra': 1.5707963267948966}</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="o">=</span><span class="default_value">0.017453292519943295</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_n_trials" title="Permalink to this definition">¶</a></dt>
-<dd><p>produce n trials and calculate a test statistic for each trial</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_trial">
-<code class="sig-name descname">produce_trial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gamma</span><span class="o">=</span><span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">source</span><span class="o">=</span><span class="default_value">{'dec': 0.5235987755982988, 'ra': 1.5707963267948966}</span></em>, <em class="sig-param"><span class="n">signal_time_profiles</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_time_profile</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_window</span><span class="o">=</span><span class="default_value">14</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">signal_weights</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sims</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">return_signal_weights</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="o">=</span><span class="default_value">0.017453292519943295</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_trial" title="Permalink to this definition">¶</a></dt>
-<dd><p>Produces a single trial of background+signal events based on input parameters</p>
-<dl class="field-list simple">
-<dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>gamma</strong> – </p></li>
-<li><p><strong>source</strong> – </p></li>
-<li><p><strong>signal_time_profile</strong> – </p></li>
-<li><p><strong>background_time_profile</strong> – </p></li>
-<li><p><strong>sampling_width</strong> – </p></li>
-<li><p><strong>background_window</strong> – </p></li>
-<li><p><strong>random_seed</strong> – </p></li>
-<li><p><strong>signal_weights</strong> – </p></li>
-<li><p><strong>return_signal_weights</strong> – </p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-</dd></dl>
-
+<div class="section" id="i3pubtools-llhs-cluster-multiflare-llh-module">
+<h2>i3pubtools.llhs.cluster_multiflare_llh module<a class="headerlink" href="#i3pubtools-llhs-cluster-multiflare-llh-module" title="Permalink to this headline">¶</a></h2>
 </div>
 <div class="section" id="module-i3pubtools.llhs.ps_flare_llh">
 <span id="i3pubtools-llhs-ps-flare-llh-module"></span><h2>i3pubtools.llhs.ps_flare_llh module<a class="headerlink" href="#module-i3pubtools.llhs.ps_flare_llh" title="Permalink to this headline">¶</a></h2>
@@ -335,7 +248,7 @@ and for some given time profiles for signal and background</p>
 <dd><p>A time profile for the background distribution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="i3pubtools.time_profiles.html#i3pubtools.time_profiles.generic_profile.GenericProfile" title="i3pubtools.time_profiles.generic_profile.GenericProfile">generic_profile.GenericProfile</a></p>
+<dd class="field-odd"><p>generic_profile.GenericProfile</p>
 </dd>
 </dl>
 </dd></dl>
@@ -346,7 +259,7 @@ and for some given time profiles for signal and background</p>
 <dd><p>A time profile for the signal distribution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p><a class="reference internal" href="i3pubtools.time_profiles.html#i3pubtools.time_profiles.generic_profile.GenericProfile" title="i3pubtools.time_profiles.generic_profile.GenericProfile">generic_profile.GenericProfile</a></p>
+<dd class="field-odd"><p>generic_profile.GenericProfile</p>
 </dd>
 </dl>
 </dd></dl>

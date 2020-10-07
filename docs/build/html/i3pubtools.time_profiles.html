@@ -175,17 +175,26 @@
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
-<div class="section" id="module-i3pubtools.time_profiles.gauss_profile">
-<span id="i3pubtools-time-profiles-gauss-profile-module"></span><h2>i3pubtools.time_profiles.gauss_profile module<a class="headerlink" href="#module-i3pubtools.time_profiles.gauss_profile" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="i3pubtools-time-profiles-gauss-profile-module">
+<h2>i3pubtools.time_profiles.gauss_profile module<a class="headerlink" href="#i3pubtools-time-profiles-gauss-profile-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="i3pubtools-time-profiles-generic-profile-module">
+<h2>i3pubtools.time_profiles.generic_profile module<a class="headerlink" href="#i3pubtools-time-profiles-generic-profile-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="i3pubtools-time-profiles-uniform-profile-module">
+<h2>i3pubtools.time_profiles.uniform_profile module<a class="headerlink" href="#i3pubtools-time-profiles-uniform-profile-module" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-i3pubtools.time_profiles">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-i3pubtools.time_profiles" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile">
-<em class="property">class </em><code class="sig-prename descclassname">i3pubtools.time_profiles.gauss_profile.</code><code class="sig-name descname">GaussProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mean</span></em>, <em class="sig-param"><span class="n">sigma</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'gauss_tp'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#i3pubtools.time_profiles.generic_profile.GenericProfile" title="i3pubtools.time_profiles.generic_profile.GenericProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">i3pubtools.time_profiles.generic_profile.GenericProfile</span></code></a></p>
+<dt id="i3pubtools.time_profiles.GaussProfile">
+<em class="property">class </em><code class="sig-prename descclassname">i3pubtools.time_profiles.</code><code class="sig-name descname">GaussProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mean</span></em>, <em class="sig-param"><span class="n">sigma</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'gauss_tp'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#i3pubtools.time_profiles.GenericProfile" title="i3pubtools.time_profiles.GenericProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">i3pubtools.time_profiles.GenericProfile</span></code></a></p>
 <p>Time profile class for a gaussian distribution.</p>
 <p>Use this to produce gaussian-distributed times for your source.</p>
 <dl class="py attribute">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.mean">
-<code class="sig-name descname">mean</code><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.mean" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GaussProfile.mean">
+<code class="sig-name descname">mean</code><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile.mean" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
@@ -194,8 +203,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.sigma">
-<code class="sig-name descname">sigma</code><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.sigma" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GaussProfile.sigma">
+<code class="sig-name descname">sigma</code><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile.sigma" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
@@ -204,8 +213,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.scipy_dist">
-<code class="sig-name descname">scipy_dist</code><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.scipy_dist" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GaussProfile.scipy_dist">
+<code class="sig-name descname">scipy_dist</code><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile.scipy_dist" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>scipy.stats.rv_continuous</p>
@@ -214,8 +223,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.norm">
-<code class="sig-name descname">norm</code><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.norm" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GaussProfile.norm">
+<code class="sig-name descname">norm</code><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile.norm" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
@@ -224,8 +233,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.default_params">
-<code class="sig-name descname">default_params</code><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.default_params" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GaussProfile.default_params">
+<code class="sig-name descname">default_params</code><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile.default_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>A dictionary of fitting parameters for this time profile.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -235,8 +244,8 @@
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.param_dtype">
-<code class="sig-name descname">param_dtype</code><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.param_dtype" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GaussProfile.param_dtype">
+<code class="sig-name descname">param_dtype</code><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile.param_dtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>The numpy dytpe for the fitting parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -246,13 +255,13 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.bounds">
-<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GaussProfile.bounds">
+<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Short function info…</p>
 <p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>time_profile</strong> (<a class="reference internal" href="#i3pubtools.time_profiles.generic_profile.GenericProfile" title="i3pubtools.time_profiles.generic_profile.GenericProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericProfile</span></code></a>) – </p>
+<dd class="field-odd"><p><strong>time_profile</strong> (<a class="reference internal" href="#i3pubtools.time_profiles.GenericProfile" title="i3pubtools.time_profiles.GenericProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericProfile</span></code></a>) – </p>
 </dd>
 </dl>
 <p>Returns:</p>
@@ -274,8 +283,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.effective_exposure">
-<code class="sig-name descname">effective_exposure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.effective_exposure" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GaussProfile.effective_exposure">
+<code class="sig-name descname">effective_exposure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile.effective_exposure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the weight associated with each event time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -285,8 +294,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.get_range">
-<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GaussProfile.get_range">
+<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile.get_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the min/max values for the distribution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -296,8 +305,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.logpdf">
-<code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.logpdf" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GaussProfile.logpdf">
+<code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile.logpdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the log(probability) for each time.</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -324,8 +333,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.pdf">
-<code class="sig-name descname">pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.pdf" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GaussProfile.pdf">
+<code class="sig-name descname">pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile.pdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the probability for each time.</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -342,8 +351,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.random">
-<code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.random" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GaussProfile.random">
+<code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile.random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns random values following the gaussian distribution.</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -360,8 +369,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.gauss_profile.GaussProfile.x0">
-<code class="sig-name descname">x0</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.gauss_profile.GaussProfile.x0" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GaussProfile.x0">
+<code class="sig-name descname">x0</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GaussProfile.x0" title="Permalink to this definition">¶</a></dt>
 <dd><p>Short function info…</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -379,12 +388,9 @@
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-i3pubtools.time_profiles.generic_profile">
-<span id="i3pubtools-time-profiles-generic-profile-module"></span><h2>i3pubtools.time_profiles.generic_profile module<a class="headerlink" href="#module-i3pubtools.time_profiles.generic_profile" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile">
-<em class="property">class </em><code class="sig-prename descclassname">i3pubtools.time_profiles.generic_profile.</code><code class="sig-name descname">GenericProfile</code><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GenericProfile">
+<em class="property">class </em><code class="sig-prename descclassname">i3pubtools.time_profiles.</code><code class="sig-name descname">GenericProfile</code><a class="headerlink" href="#i3pubtools.time_profiles.GenericProfile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A generic base class to standardize the methods for the time profiles.</p>
 <p>While I’m only currently using scipy-based
@@ -392,8 +398,8 @@ probability distributions, you can write your own if you
 want. Just be sure to define these methods and ensure that
 the PDF is normalized!</p>
 <dl class="py attribute">
-<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.default_params">
-<code class="sig-name descname">default_params</code><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.default_params" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GenericProfile.default_params">
+<code class="sig-name descname">default_params</code><a class="headerlink" href="#i3pubtools.time_profiles.GenericProfile.default_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>A dictionary of fitting parameters for this time profile.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -403,8 +409,8 @@ the PDF is normalized!</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.param_dtype">
-<code class="sig-name descname">param_dtype</code><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.param_dtype" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GenericProfile.param_dtype">
+<code class="sig-name descname">param_dtype</code><a class="headerlink" href="#i3pubtools.time_profiles.GenericProfile.param_dtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>The numpy dytpe for the fitting parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -414,8 +420,8 @@ the PDF is normalized!</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.bounds">
-<em class="property">abstract </em><code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GenericProfile.bounds">
+<em class="property">abstract </em><code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GenericProfile.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]</p>
@@ -434,8 +440,8 @@ the PDF is normalized!</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.effective_exposure">
-<em class="property">abstract </em><code class="sig-name descname">effective_exposure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.effective_exposure" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GenericProfile.effective_exposure">
+<em class="property">abstract </em><code class="sig-name descname">effective_exposure</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GenericProfile.effective_exposure" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
@@ -444,8 +450,8 @@ the PDF is normalized!</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.get_range">
-<em class="property">abstract </em><code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GenericProfile.get_range">
+<em class="property">abstract </em><code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GenericProfile.get_range" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
@@ -454,8 +460,8 @@ the PDF is normalized!</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.logpdf">
-<em class="property">abstract </em><code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.logpdf" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GenericProfile.logpdf">
+<em class="property">abstract </em><code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GenericProfile.logpdf" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code></p>
@@ -474,8 +480,8 @@ the PDF is normalized!</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.pdf">
-<em class="property">abstract </em><code class="sig-name descname">pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.pdf" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GenericProfile.pdf">
+<em class="property">abstract </em><code class="sig-name descname">pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GenericProfile.pdf" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code></p>
@@ -484,8 +490,8 @@ the PDF is normalized!</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.random">
-<em class="property">abstract </em><code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.random" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GenericProfile.random">
+<em class="property">abstract </em><code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GenericProfile.random" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">array</span></code></p>
@@ -494,8 +500,8 @@ the PDF is normalized!</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.generic_profile.GenericProfile.x0">
-<em class="property">abstract </em><code class="sig-name descname">x0</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.generic_profile.GenericProfile.x0" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.GenericProfile.x0">
+<em class="property">abstract </em><code class="sig-name descname">x0</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.GenericProfile.x0" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code></p>
@@ -505,19 +511,16 @@ the PDF is normalized!</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-i3pubtools.time_profiles.uniform_profile">
-<span id="i3pubtools-time-profiles-uniform-profile-module"></span><h2>i3pubtools.time_profiles.uniform_profile module<a class="headerlink" href="#module-i3pubtools.time_profiles.uniform_profile" title="Permalink to this headline">¶</a></h2>
 <dl class="py class">
-<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile">
-<em class="property">class </em><code class="sig-prename descclassname">i3pubtools.time_profiles.uniform_profile.</code><code class="sig-name descname">UniformProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">end</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'uniform_tp'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#i3pubtools.time_profiles.generic_profile.GenericProfile" title="i3pubtools.time_profiles.generic_profile.GenericProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">i3pubtools.time_profiles.generic_profile.GenericProfile</span></code></a></p>
+<dt id="i3pubtools.time_profiles.UniformProfile">
+<em class="property">class </em><code class="sig-prename descclassname">i3pubtools.time_profiles.</code><code class="sig-name descname">UniformProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span></em>, <em class="sig-param"><span class="n">end</span></em>, <em class="sig-param"><span class="n">name</span><span class="o">=</span><span class="default_value">'uniform_tp'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.UniformProfile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#i3pubtools.time_profiles.GenericProfile" title="i3pubtools.time_profiles.GenericProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">i3pubtools.time_profiles.GenericProfile</span></code></a></p>
 <p>Time profile class for a uniform distribution.</p>
 <p>Use this for background or if you want to assume a steady signal from
 your source.</p>
 <dl class="py attribute">
-<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.window">
-<code class="sig-name descname">window</code><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.window" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.UniformProfile.window">
+<code class="sig-name descname">window</code><a class="headerlink" href="#i3pubtools.time_profiles.UniformProfile.window" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>List[float]</p>
@@ -526,8 +529,8 @@ your source.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.norm">
-<code class="sig-name descname">norm</code><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.norm" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.UniformProfile.norm">
+<code class="sig-name descname">norm</code><a class="headerlink" href="#i3pubtools.time_profiles.UniformProfile.norm" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
@@ -536,8 +539,8 @@ your source.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.default_params">
-<code class="sig-name descname">default_params</code><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.default_params" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.UniformProfile.default_params">
+<code class="sig-name descname">default_params</code><a class="headerlink" href="#i3pubtools.time_profiles.UniformProfile.default_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>A dictionary of fitting parameters for this time profile.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -547,8 +550,8 @@ your source.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.param_dtype">
-<code class="sig-name descname">param_dtype</code><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.param_dtype" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.UniformProfile.param_dtype">
+<code class="sig-name descname">param_dtype</code><a class="headerlink" href="#i3pubtools.time_profiles.UniformProfile.param_dtype" title="Permalink to this definition">¶</a></dt>
 <dd><p>The numpy dytpe for the fitting parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
@@ -558,13 +561,13 @@ your source.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.bounds">
-<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.UniformProfile.bounds">
+<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.UniformProfile.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given some other profile, returns allowable ranges for parameters.</p>
 <p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>time_profile</strong> (<a class="reference internal" href="#i3pubtools.time_profiles.generic_profile.GenericProfile" title="i3pubtools.time_profiles.generic_profile.GenericProfile"><em>generic_profile.GenericProfile</em></a>) – </p>
+<dd class="field-odd"><p><strong>time_profile</strong> (<a class="reference internal" href="#i3pubtools.time_profiles.GenericProfile" title="i3pubtools.time_profiles.GenericProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">GenericProfile</span></code></a>) – </p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]]</p>
@@ -583,8 +586,8 @@ your source.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.effective_exposure">
-<code class="sig-name descname">effective_exposure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.effective_exposure" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.UniformProfile.effective_exposure">
+<code class="sig-name descname">effective_exposure</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.UniformProfile.effective_exposure" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the weight associated with each event time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -594,8 +597,8 @@ your source.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.get_range">
-<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.UniformProfile.get_range">
+<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.UniformProfile.get_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the min/max values for the distribution.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
@@ -605,8 +608,8 @@ your source.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.logpdf">
-<code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.logpdf" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.UniformProfile.logpdf">
+<code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.UniformProfile.logpdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the log(probability) for each time.</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -624,17 +627,7 @@ your source.</p>
 
 <dl class="py method">
 <dt id="id5">
-<em class="property">property </em><code class="sig-name descname">norm</code><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="id6">
-<em class="property">property </em><code class="sig-name descname">param_dtype</code><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
+<em class="property">property </em><code class="sig-name descname">param_dtype</code><a class="headerlink" href="#id5" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>]]</p>
@@ -643,8 +636,8 @@ your source.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.pdf">
-<code class="sig-name descname">pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.pdf" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.UniformProfile.pdf">
+<code class="sig-name descname">pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.UniformProfile.pdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the probability for each time.</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -661,8 +654,8 @@ your source.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.random">
-<code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.random" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.UniformProfile.random">
+<code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span><span class="o">=</span><span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.UniformProfile.random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns random values following the uniform distribution.</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -679,8 +672,8 @@ your source.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id7">
-<em class="property">property </em><code class="sig-name descname">window</code><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
+<dt id="id6">
+<em class="property">property </em><code class="sig-name descname">window</code><a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>]</p>
@@ -689,8 +682,8 @@ your source.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="i3pubtools.time_profiles.uniform_profile.UniformProfile.x0">
-<code class="sig-name descname">x0</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.uniform_profile.UniformProfile.x0" title="Permalink to this definition">¶</a></dt>
+<dt id="i3pubtools.time_profiles.UniformProfile.x0">
+<code class="sig-name descname">x0</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span></em><span class="sig-paren">)</span><a class="headerlink" href="#i3pubtools.time_profiles.UniformProfile.x0" title="Permalink to this definition">¶</a></dt>
 <dd><p>Short function info…</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -708,9 +701,6 @@ your source.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="module-i3pubtools.time_profiles">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-i3pubtools.time_profiles" title="Permalink to this headline">¶</a></h2>
 </div>
 </div>
 
