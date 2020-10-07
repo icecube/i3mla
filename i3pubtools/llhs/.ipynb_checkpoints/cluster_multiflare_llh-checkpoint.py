@@ -16,7 +16,7 @@ from typing import Tuple
 from i3pubtools import tools
 import scipy
 import numpy.lib.recfunctions as rf
-from i3pubtools.time_profiles import gauss_profile
+from i3pubtools import time_profiles
 from tqdm.notebook import tqdm
 import numpy as np
 
@@ -466,7 +466,7 @@ class cluster_multiflare_llh(object):
             def get_inner_ts(params):
                 gamma, mean, sigma = params
                 e_lh_ratio = self._get_energy_sob(events, gamma, splines)
-                t_lh_sig = gauss_profile.gauss_profile(mean, sigma).pdf(events['time'])
+                t_lh_sig = time_profiles.GaussProfile(mean, sigma).pdf(events['time'])
                 sob = S/B*e_lh_ratio * (t_lh_sig/t_lh_bg)
                 ts = (1/N*(sob - 1))+1
                 return -2*np.sum(np.log(ts))
@@ -496,7 +496,7 @@ class cluster_multiflare_llh(object):
                 x0 = [ns,]
                 bounds = [[0, N],]
                 e_lh_ratio = self._get_energy_sob(events, bf_params.x[0], splines)
-                t_lh_sig = gauss_profile.gauss_profile(bf_params.x[1],
+                t_lh_sig = time_profiles.GaussProfile(bf_params.x[1],
                                                        bf_params.x[2]).pdf(events['time'])
                 sob = S/B*e_lh_ratio * (t_lh_sig/t_lh_bg)
 
@@ -639,7 +639,7 @@ class cluster_multiflare_llh(object):
         sigmas = time_sigma_dist.rvs(size=Am)
 
         if s.sum() == 0:
-            return [(gauss_profile.gauss_profile(mu, sigma), 0)
+            return [(time_profiles.GaussProfile(mu, sigma), 0)
                     for mu,sigma,si in zip(mus, sigmas, s)]
-        return [(gauss_profile.gauss_profile(mu, sigma), si/s.sum())
+        return [(time_profiles.GaussProfile(mu, sigma), si/s.sum())
                 for mu,sigma,si in zip(mus, sigmas, s)]
