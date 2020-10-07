@@ -94,7 +94,7 @@ class GaussProfile(generic_profile.GenericProfile):
 
     def get_range(self) -> List[float]:
         """Returns the min/max values for the distribution."""
-        return [-np.inf, np.inf]
+        return [None, None]
     
     def x0(self, times: np.array) -> Tuple[float, float]:
         """Short function info...

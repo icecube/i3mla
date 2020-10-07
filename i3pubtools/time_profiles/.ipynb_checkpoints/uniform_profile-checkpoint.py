@@ -86,7 +86,7 @@ class UniformProfile(generic_profile.GenericProfile):
         Returns:
             
         """
-        return np.random.uniform(*self._window, n)
+        return np.random.uniform(*self._window, size)
 
     def effective_exposure(self) -> float:
         """Calculates the weight associated with each event time."""

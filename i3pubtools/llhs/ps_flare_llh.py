@@ -19,6 +19,7 @@ from tqdm import tqdm
 from i3pubtools import tools
 
 import numpy.lib.recfunctions as rf
+import scipy.interpolate
 from i3pubtools.time_profiles import gauss_profile
 from i3pubtools.time_profiles import uniform_profile
 from i3pubtools.time_profiles import generic_profile
@@ -223,9 +224,12 @@ class PsFlareLLH:
         """
         # Get the bin that each event belongs to
         sin_dec_idx = np.searchsorted(self.bins[0], np.sin(events['dec'])) - 1
-        logE_idx = np.searchsorted(self.bins[1], events['logE']) - 1
+        logE_idx = np.searchsorted(self.bins[1], events['logE'])
+        
+        for i in range(len(logE_idx)):
+            logE_idx[i] = min(logE_idx[i], self.sob_maps.shape[1] -1)
 
-        return self.sob_maps[sin_dec_idx,logE_idx]
+        return self.sob_maps[sin_dec_idx, logE_idx]
 
     def _get_energy_splines(self, events: np.ndarray) -> np.ndarray:
         """Splines signal/background vs gamma at a set of locations using calculated interpolated ratios.
@@ -536,10 +540,10 @@ class PsFlareLLH:
             # Set the seed values, which tell the minimizer
             # where to start, and the bounds. First do the
             # shape parameters (just gamma, in this case).
-            x0 = [ns, gamma, *self.signal_time_profile.x0(events['time'])]
+            x0 = [ns, gamma, self.signal_time_profile.x0(events['time'])]
             bounds = [[0, flux_norm],
                       [-4, -1], # gamma [min, max]
-                      *self.signal_time_profile.bounds(self.background_time_profile)]
+                      self.signal_time_profile.bounds(self.background_time_profile)]
 
             result = scipy.optimize.minimize(get_ts, x0=x0, bounds=bounds, method='L-BFGS-B')
 
@@ -548,7 +552,7 @@ class PsFlareLLH:
             output['ns'] = result.x[0]
             output['gamma'] = result.x[1]
             for i, key in enumerate(self.signal_time_profile.default_params):
-                output[key] = result.x[i + 2]
+                output[key] = result.x[2][i]
 
             return output
 
@@ -615,7 +619,7 @@ class PsFlareLLH:
         signal_weights = None
 
         for i in tqdm(range(ntrials),
-                      desc='Running Trials (N={:3.2e}, gamma={:2.1f})'.format(flux_norm, gamma),
+                      desc=f'Running Trials (N={flux_norm:3.2e}, gamma={gamma:2.1f})',
                       unit=' trials',
                       position=0,
                       ncols = 800):
