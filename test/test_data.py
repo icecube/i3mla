@@ -100,7 +100,7 @@ def get_random_sim(length: int) -> np.ndarray:
     sim['logE'] = np.random.random_sample(size=length) * 10
     sim['angErr'] = np.random.random_sample(size=length) * .1
     sim['ow'] = np.random.random_sample(size=length)
-    sim['ow'] *= np.random.random_sample(size=length) * 1000000000000000
+    sim['ow'] *= np.random.random_sample(size=length) * 1e15
 
     return sim
 
@@ -123,4 +123,3 @@ def get_random_grl(data: np.ndarray) -> np.ndarray:
         grl[i]['livetime'] = grl[i]['stop'] - grl[i]['start']
         grl[i]['events'] = len(data[data['run'] == run])
     return grl
-    pass
