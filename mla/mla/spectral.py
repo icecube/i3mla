@@ -28,41 +28,55 @@ class PowerLaw(BaseSpectrum):
     r"""Powerlaw spectrum"""
     
     def __init__(self, E0, A, gamma, Ecut=None):
+        r""" Constructor of PowerLaw object.
+        
+        args:
+        E0: Float
+        Normalize Energy
+        
+        A: Float
+        Flux Normalization
+        
+        gamma: Float
+        Spectral index
+        
+        Ecut(optional): Float
+        Powerlaw cutoff
+        """
         self.E0 = E0
         self.A = A
-        self.gamma=gamma
-        self.Ecut=Ecut
+        self.gamma = gamma
+        self.Ecut = Ecut
+        return
     
     def __call__(self, E, **kwargs):
         r"""Evaluate spectrum at energy E according to
 
-                 dN/dE = A (E / E0)^-gamma
+                 dN/dE = A (E / E0)^gamma
 
         where A has units of events / (GeV cm^2 s). We treat
         the 'events' in the numerator as implicit and say the
         units are [GeV^-1 cm^-2 s^-1]. Specifying Ecut provides
         an optional spectral cutoff according to
 
-                 dN/dE = A (E / E0)^-gamma * exp( -E/Ecut )
+                 dN/dE = A (E / E0)^gamma * exp( -E/Ecut )
 
-        Parameters
-        ----------
-        E : float
-            Evaluation energy [GeV]
+        args:
+        E : Float or array
+        Evaluation energy [GeV]
         \*\*kwargs
-            Additional arguments for over-riding member data
+        Additional arguments for over-riding member data
 
-        Returns
-        -------
-        flux : float
-            Flux at energy E in [GeV^-1cm^-2s^-1]
+        returns:
+        flux : Float or array
+        Flux at energy E in [GeV^-1cm^-2s^-1]
         """
         A = kwargs.pop("A", self.A)
         E0 = kwargs.pop("E0", self.E0)
         Ecut = kwargs.pop("Ecut", self.Ecut)
         gamma = kwargs.pop("gamma", self.gamma)
 
-        flux = A * (E / E0)**(-gamma)
+        flux = A * (E / E0)**(gamma)
 
         # apply optional exponential cutoff
         if Ecut is not None:
@@ -78,11 +92,25 @@ class PowerLaw(BaseSpectrum):
 class CustomSpectrum(BaseSpectrum):
     r'''Custom spectrum using astromodel'''
     def __init__(self,likelihood_model_instance):
+        r"""Constructor of CustomSpectrum object.
+        args:
+        likelihood_model_instance: 
+        Any astromodel's model object
+        """
         self.model = likelihood_model_instance
+        return
         
-    def __call__(self, E, **kwargs):
-        r"""Evaluate spectrum at E """
-        return self.model.get_point_source_fluxes(id=0,energies=E)
+    def __call__(self, E, id = 0):
+        r"""Evaluate spectrum at E 
+        args:
+        E: Float or array
+        Evaluation energy
+        
+        returns:
+        flux : Float or array
+        Flux at evaluation energy.
+        """
+        return self.model.get_point_source_fluxes(id = id,energies = E)
         
     def __str__(self):
         r"""String representation of class"""
