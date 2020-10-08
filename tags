@@ -3467,6 +3467,8 @@ K	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function 
 K	docs/_static/underscore.js	/^u(b)+"),'"}).replace(d.interpolate||t,function(a,b){return"',"+u(b)+",'"}).replace(d.evaluate||t/;"	f
 Ke	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 L	docs/_static/underscore.js	/^function(c){K(c,b[c]=a[c])})};var L=0;b.uniqueId=function(a){var b=L++;return a?a+b:b};b.templat/;"	v
+L	docs/genindex.html	/^<h2 id="L">L<\/h2>$/;"	I
+L	docs/genindex.html	/^<h2 id="L">L<\/h2>$/;"	i
 LANGUAGE	docs/_static/documentation_options.js	/^    LANGUAGE: 'None',$/;"	p	class:DOCUMENTATION_OPTIONS
 LINK_SUFFIX	docs/_static/documentation_options.js	/^    LINK_SUFFIX: '.html',$/;"	p	class:DOCUMENTATION_OPTIONS
 LLH_point_source	mla/mla/core.py	/^class LLH_point_source(object):$/;"	c
@@ -3483,6 +3485,8 @@ Module contents¶	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<spa
 Module contents¶	docs/i3pubtools.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	i
 Module contents¶	docs/i3pubtools.llhs.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	i
 Module contents¶	docs/i3pubtools.time_profiles.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	i
+N	docs/genindex.html	/^<h2 id="N">N<\/h2>$/;"	I
+N	docs/genindex.html	/^<h2 id="N">N<\/h2>$/;"	i
 NAVIGATION_WITH_KEYS	docs/_static/documentation_options.js	/^    NAVIGATION_WITH_KEYS: false$/;"	p	class:DOCUMENTATION_OPTIONS
 O	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 Oe	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
@@ -3537,16 +3541,22 @@ Testing the your setup	test/workshop/README.md	/^# Testing the your setup$/;"	c
 Thrower	docs/_static/jquery-3.5.1.js	/^function Thrower( ex ) {$/;"	f
 Tween	docs/_static/jquery-3.5.1.js	/^function Tween( elem, options, prop, end, easing ) {$/;"	f
 U	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
+U	docs/genindex.html	/^<h2 id="U">U<\/h2>$/;"	I
+U	docs/genindex.html	/^<h2 id="U">U<\/h2>$/;"	i
 URL_ROOT	docs/_static/documentation_options.js	/^    URL_ROOT: document.getElementById("documentation_options").getAttribute('data-url_root'),$/;"	p	class:DOCUMENTATION_OPTIONS
 UniformProfile	i3pubtools/.ipynb_checkpoints/time_profiles-checkpoint.py	/^class UniformProfile(GenericProfile):$/;"	c
 UniformProfile	i3pubtools/time_profiles.py	/^class UniformProfile(GenericProfile):$/;"	c
 VERITASLike	test/workshop/joint_fit_example/VERITASLike.py	/^class VERITASLike(PluginPrototype):$/;"	c
 VERITASRun	test/workshop/joint_fit_example/VERITASLike.py	/^class VERITASRun(object):$/;"	c
 VERSION	docs/_static/documentation_options.js	/^    VERSION: '0.0.1',$/;"	p	class:DOCUMENTATION_OPTIONS
+W	docs/genindex.html	/^<h2 id="W">W<\/h2>$/;"	I
+W	docs/genindex.html	/^<h2 id="W">W<\/h2>$/;"	i
 Welcome to i3pubtools's documentation!	docs/source/index.rst	/^Welcome to i3pubtools's documentation!$/;"	c
 Welcome to i3pubtools’s documentation!¶	docs/.ipynb_checkpoints/index-checkpoint.html	/^<h1>Welcome to i3pubtools’s documentation!<a class="headerlink" href="#welcome-to-i3pubtools-s/;"	h
 Welcome to i3pubtools’s documentation!¶	docs/index.html	/^<h1>Welcome to i3pubtools’s documentation!<a class="headerlink" href="#welcome-to-i3pubtools-s/;"	h
 X	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
+X	docs/genindex.html	/^<h2 id="X">X<\/h2>$/;"	I
+X	docs/genindex.html	/^<h2 id="X">X<\/h2>$/;"	i
 Xe	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 Z	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 Ze	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
@@ -4507,34 +4517,45 @@ i	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function 
 i	docs/_static/underscore.js	/^h)&&!f--)break;g=!f}}d.pop();return g}var r=this,G=r._,n={},k=Array.prototype,o=Object.prototype/;"	v
 i3pubtools package	docs/source/i3pubtools.rst	/^i3pubtools package$/;"	c
 i3pubtools package¶	docs/i3pubtools.html	/^<h1>i3pubtools package<a class="headerlink" href="#i3pubtools-package" title="Permalink to this /;"	h
-i3pubtools-injection-module	docs/i3pubtools.html	/^<div class="section" id="i3pubtools-injection-module">$/;"	I
 i3pubtools-llhs-cluster-multiflare-llh-module	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<span id="i3pubtools-llhs-cluster-multiflare-llh-module"><\/span><h2>i3pubtools.llhs.cluster_mul/;"	I
-i3pubtools-llhs-cluster-multiflare-llh-module	docs/i3pubtools.llhs.html	/^<div class="section" id="i3pubtools-llhs-cluster-multiflare-llh-module">$/;"	I
+i3pubtools-llhs-cluster-multiflare-llh-module	docs/i3pubtools.llhs.html	/^<span id="i3pubtools-llhs-cluster-multiflare-llh-module"><\/span><h2>i3pubtools.llhs.cluster_mul/;"	I
 i3pubtools-llhs-package	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^  <div class="section" id="i3pubtools-llhs-package">$/;"	I
 i3pubtools-llhs-package	docs/i3pubtools.llhs.html	/^  <div class="section" id="i3pubtools-llhs-package">$/;"	I
 i3pubtools-llhs-ps-flare-llh-module	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<span id="i3pubtools-llhs-ps-flare-llh-module"><\/span><h2>i3pubtools.llhs.ps_flare_llh module<a/;"	I
 i3pubtools-llhs-ps-flare-llh-module	docs/i3pubtools.llhs.html	/^<span id="i3pubtools-llhs-ps-flare-llh-module"><\/span><h2>i3pubtools.llhs.ps_flare_llh module<a/;"	I
 i3pubtools-package	docs/i3pubtools.html	/^  <div class="section" id="i3pubtools-package">$/;"	I
 i3pubtools-sources-module	docs/i3pubtools.html	/^<span id="i3pubtools-sources-module"><\/span><h2>i3pubtools.sources module<a class="headerlink" /;"	I
-i3pubtools-spectral-module	docs/i3pubtools.html	/^<div class="section" id="i3pubtools-spectral-module">$/;"	I
 i3pubtools-time-profiles-gauss-profile-module	docs/i3pubtools.time_profiles.html	/^<div class="section" id="i3pubtools-time-profiles-gauss-profile-module">$/;"	I
 i3pubtools-time-profiles-generic-profile-module	docs/i3pubtools.time_profiles.html	/^<div class="section" id="i3pubtools-time-profiles-generic-profile-module">$/;"	I
+i3pubtools-time-profiles-module	docs/i3pubtools.html	/^<span id="i3pubtools-time-profiles-module"><\/span><h2>i3pubtools.time_profiles module<a class="/;"	I
 i3pubtools-time-profiles-package	docs/i3pubtools.time_profiles.html	/^  <div class="section" id="i3pubtools-time-profiles-package">$/;"	I
 i3pubtools-time-profiles-uniform-profile-module	docs/i3pubtools.time_profiles.html	/^<div class="section" id="i3pubtools-time-profiles-uniform-profile-module">$/;"	I
 i3pubtools-tools-module	docs/i3pubtools.html	/^<span id="i3pubtools-tools-module"><\/span><h2>i3pubtools.tools module<a class="headerlink" href/;"	I
-i3pubtools.injection module¶	docs/i3pubtools.html	/^<h2>i3pubtools.injection module<a class="headerlink" href="#i3pubtools-injection-module" title="/;"	i
 i3pubtools.llhs package	docs/source/i3pubtools.llhs.rst	/^i3pubtools.llhs package$/;"	c
 i3pubtools.llhs package¶	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<h1>i3pubtools.llhs package<a class="headerlink" href="#i3pubtools-llhs-package" title="Permalin/;"	h
 i3pubtools.llhs package¶	docs/i3pubtools.llhs.html	/^<h1>i3pubtools.llhs package<a class="headerlink" href="#i3pubtools-llhs-package" title="Permalin/;"	h
 i3pubtools.llhs.cluster\\_multiflare\\_llh module	docs/source/i3pubtools.llhs.rst	/^i3pubtools.llhs.cluster\\_multiflare\\_llh module$/;"	s	chapter:i3pubtools.llhs package
 i3pubtools.llhs.cluster_multiflare_llh module¶	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<span id="i3pubtools-llhs-cluster-multiflare-llh-module"><\/span><h2>i3pubtools.llhs.cluster_mul/;"	i
-i3pubtools.llhs.cluster_multiflare_llh module¶	docs/i3pubtools.llhs.html	/^<h2>i3pubtools.llhs.cluster_multiflare_llh module<a class="headerlink" href="#i3pubtools-llhs-cl/;"	i
+i3pubtools.llhs.cluster_multiflare_llh module¶	docs/i3pubtools.llhs.html	/^<span id="i3pubtools-llhs-cluster-multiflare-llh-module"><\/span><h2>i3pubtools.llhs.cluster_mul/;"	i
 i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.bg_p_dec	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.bg_p_dec">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.bins	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.bins">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.data	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.data">$/;"	I
 i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_sob_per_event	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_sob_per_event">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_sob_per_event	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_sob_per_event">$/;"	I
 i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_ts	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_ts">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_ts	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.evaluate_ts">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.gammas	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.gammas">$/;"	I
 i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.get_signal_time_profiles	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.get_signal_time_profiles">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.get_signal_time_profiles	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.get_signal_time_profiles">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.grl	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.grl">$/;"	I
 i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_n_trials	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_n_trials">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_n_trials	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_n_trials">$/;"	I
 i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_trial	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_trial">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_trial	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.produce_trial">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.sim	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.sim">$/;"	I
+i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.sob_maps	docs/i3pubtools.llhs.html	/^<dt id="i3pubtools.llhs.cluster_multiflare_llh.cluster_multiflare_llh.sob_maps">$/;"	I
 i3pubtools.llhs.ps\\_flare\\_llh module	docs/source/i3pubtools.llhs.rst	/^i3pubtools.llhs.ps\\_flare\\_llh module$/;"	s	chapter:i3pubtools.llhs package
 i3pubtools.llhs.ps_flare_llh module¶	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<span id="i3pubtools-llhs-ps-flare-llh-module"><\/span><h2>i3pubtools.llhs.ps_flare_llh module<a/;"	i
 i3pubtools.llhs.ps_flare_llh module¶	docs/i3pubtools.llhs.html	/^<span id="i3pubtools-llhs-ps-flare-llh-module"><\/span><h2>i3pubtools.llhs.ps_flare_llh module<a/;"	i
@@ -4558,44 +4579,80 @@ i3pubtools.sources module	docs/source/i3pubtools.rst	/^i3pubtools.sources module
 i3pubtools.sources module¶	docs/i3pubtools.html	/^<span id="i3pubtools-sources-module"><\/span><h2>i3pubtools.sources module<a class="headerlink" /;"	i
 i3pubtools.sources.dec	docs/i3pubtools.html	/^<dt id="i3pubtools.sources.dec">$/;"	I
 i3pubtools.sources.ra	docs/i3pubtools.html	/^<dt id="i3pubtools.sources.ra">$/;"	I
-i3pubtools.spectral module¶	docs/i3pubtools.html	/^<h2>i3pubtools.spectral module<a class="headerlink" href="#i3pubtools-spectral-module" title="Pe/;"	i
 i3pubtools.time_profiles module	docs/source/i3pubtools.rst	/^i3pubtools.time_profiles module$/;"	s	chapter:i3pubtools package
+i3pubtools.time_profiles module¶	docs/i3pubtools.html	/^<span id="i3pubtools-time-profiles-module"><\/span><h2>i3pubtools.time_profiles module<a class="/;"	i
 i3pubtools.time_profiles package¶	docs/i3pubtools.time_profiles.html	/^<h1>i3pubtools.time_profiles package<a class="headerlink" href="#i3pubtools-time-profiles-packag/;"	h
+i3pubtools.time_profiles.GaussProfile	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile">$/;"	I
 i3pubtools.time_profiles.GaussProfile	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile">$/;"	I
+i3pubtools.time_profiles.GaussProfile.bounds	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.bounds">$/;"	I
 i3pubtools.time_profiles.GaussProfile.bounds	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.bounds">$/;"	I
+i3pubtools.time_profiles.GaussProfile.default_params	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.default_params">$/;"	I
 i3pubtools.time_profiles.GaussProfile.default_params	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.default_params">$/;"	I
+i3pubtools.time_profiles.GaussProfile.effective_exposure	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.effective_exposure">$/;"	I
 i3pubtools.time_profiles.GaussProfile.effective_exposure	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.effective_exposure">$/;"	I
+i3pubtools.time_profiles.GaussProfile.get_range	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.get_range">$/;"	I
 i3pubtools.time_profiles.GaussProfile.get_range	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.get_range">$/;"	I
+i3pubtools.time_profiles.GaussProfile.logpdf	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.logpdf">$/;"	I
 i3pubtools.time_profiles.GaussProfile.logpdf	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.logpdf">$/;"	I
+i3pubtools.time_profiles.GaussProfile.mean	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.mean">$/;"	I
 i3pubtools.time_profiles.GaussProfile.mean	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.mean">$/;"	I
+i3pubtools.time_profiles.GaussProfile.norm	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.norm">$/;"	I
 i3pubtools.time_profiles.GaussProfile.norm	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.norm">$/;"	I
+i3pubtools.time_profiles.GaussProfile.param_dtype	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.param_dtype">$/;"	I
 i3pubtools.time_profiles.GaussProfile.param_dtype	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.param_dtype">$/;"	I
+i3pubtools.time_profiles.GaussProfile.pdf	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.pdf">$/;"	I
 i3pubtools.time_profiles.GaussProfile.pdf	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.pdf">$/;"	I
+i3pubtools.time_profiles.GaussProfile.random	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.random">$/;"	I
 i3pubtools.time_profiles.GaussProfile.random	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.random">$/;"	I
+i3pubtools.time_profiles.GaussProfile.scipy_dist	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.scipy_dist">$/;"	I
 i3pubtools.time_profiles.GaussProfile.scipy_dist	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.scipy_dist">$/;"	I
+i3pubtools.time_profiles.GaussProfile.sigma	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.sigma">$/;"	I
 i3pubtools.time_profiles.GaussProfile.sigma	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.sigma">$/;"	I
+i3pubtools.time_profiles.GaussProfile.x0	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.x0">$/;"	I
 i3pubtools.time_profiles.GaussProfile.x0	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.x0">$/;"	I
+i3pubtools.time_profiles.GenericProfile	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GenericProfile">$/;"	I
 i3pubtools.time_profiles.GenericProfile	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile">$/;"	I
+i3pubtools.time_profiles.GenericProfile.bounds	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.bounds">$/;"	I
 i3pubtools.time_profiles.GenericProfile.bounds	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.bounds">$/;"	I
+i3pubtools.time_profiles.GenericProfile.default_params	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.default_params">$/;"	I
 i3pubtools.time_profiles.GenericProfile.default_params	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.default_params">$/;"	I
+i3pubtools.time_profiles.GenericProfile.effective_exposure	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.effective_exposure">$/;"	I
 i3pubtools.time_profiles.GenericProfile.effective_exposure	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.effective_exposure">$/;"	I
+i3pubtools.time_profiles.GenericProfile.get_range	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.get_range">$/;"	I
 i3pubtools.time_profiles.GenericProfile.get_range	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.get_range">$/;"	I
+i3pubtools.time_profiles.GenericProfile.logpdf	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.logpdf">$/;"	I
 i3pubtools.time_profiles.GenericProfile.logpdf	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.logpdf">$/;"	I
+i3pubtools.time_profiles.GenericProfile.param_dtype	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.param_dtype">$/;"	I
 i3pubtools.time_profiles.GenericProfile.param_dtype	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.param_dtype">$/;"	I
+i3pubtools.time_profiles.GenericProfile.pdf	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.pdf">$/;"	I
 i3pubtools.time_profiles.GenericProfile.pdf	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.pdf">$/;"	I
+i3pubtools.time_profiles.GenericProfile.random	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.random">$/;"	I
 i3pubtools.time_profiles.GenericProfile.random	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.random">$/;"	I
+i3pubtools.time_profiles.GenericProfile.x0	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.x0">$/;"	I
 i3pubtools.time_profiles.GenericProfile.x0	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.x0">$/;"	I
+i3pubtools.time_profiles.UniformProfile	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile">$/;"	I
 i3pubtools.time_profiles.UniformProfile	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile">$/;"	I
+i3pubtools.time_profiles.UniformProfile.bounds	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.bounds">$/;"	I
 i3pubtools.time_profiles.UniformProfile.bounds	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.bounds">$/;"	I
+i3pubtools.time_profiles.UniformProfile.default_params	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.default_params">$/;"	I
 i3pubtools.time_profiles.UniformProfile.default_params	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.default_params">$/;"	I
+i3pubtools.time_profiles.UniformProfile.effective_exposure	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.effective_exposure">$/;"	I
 i3pubtools.time_profiles.UniformProfile.effective_exposure	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.effective_exposure">$/;"	I
+i3pubtools.time_profiles.UniformProfile.get_range	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.get_range">$/;"	I
 i3pubtools.time_profiles.UniformProfile.get_range	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.get_range">$/;"	I
+i3pubtools.time_profiles.UniformProfile.logpdf	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.logpdf">$/;"	I
 i3pubtools.time_profiles.UniformProfile.logpdf	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.logpdf">$/;"	I
+i3pubtools.time_profiles.UniformProfile.norm	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.norm">$/;"	I
 i3pubtools.time_profiles.UniformProfile.norm	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.norm">$/;"	I
+i3pubtools.time_profiles.UniformProfile.param_dtype	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.param_dtype">$/;"	I
 i3pubtools.time_profiles.UniformProfile.param_dtype	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.param_dtype">$/;"	I
+i3pubtools.time_profiles.UniformProfile.pdf	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.pdf">$/;"	I
 i3pubtools.time_profiles.UniformProfile.pdf	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.pdf">$/;"	I
+i3pubtools.time_profiles.UniformProfile.random	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.random">$/;"	I
 i3pubtools.time_profiles.UniformProfile.random	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.random">$/;"	I
+i3pubtools.time_profiles.UniformProfile.window	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.window">$/;"	I
 i3pubtools.time_profiles.UniformProfile.window	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.window">$/;"	I
+i3pubtools.time_profiles.UniformProfile.x0	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.x0">$/;"	I
 i3pubtools.time_profiles.UniformProfile.x0	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.x0">$/;"	I
 i3pubtools.time_profiles.gauss_profile module¶	docs/i3pubtools.time_profiles.html	/^<h2>i3pubtools.time_profiles.gauss_profile module<a class="headerlink" href="#i3pubtools-time-pr/;"	i
 i3pubtools.time_profiles.generic_profile module¶	docs/i3pubtools.time_profiles.html	/^<h2>i3pubtools.time_profiles.generic_profile module<a class="headerlink" href="#i3pubtools-time-/;"	i
@@ -4610,12 +4667,19 @@ i3pubtools.tools.to_unit_vector	docs/i3pubtools.html	/^<dt id="i3pubtools.tools.
 ical	docs/_static/language_data.js	/^    ical: 'ic',$/;"	p	class:Stemmer.step3list
 icate	docs/_static/language_data.js	/^    icate: 'ic',$/;"	p	class:Stemmer.step3list
 iciti	docs/_static/language_data.js	/^    iciti: 'ic',$/;"	p	class:Stemmer.step3list
+id0	docs/i3pubtools.html	/^<dt id="id0">$/;"	I
 id0	docs/i3pubtools.time_profiles.html	/^<dt id="id0">$/;"	I
+id1	docs/i3pubtools.html	/^<dt id="id1">$/;"	I
 id1	docs/i3pubtools.time_profiles.html	/^<dt id="id1">$/;"	I
+id2	docs/i3pubtools.html	/^<dt id="id2">$/;"	I
 id2	docs/i3pubtools.time_profiles.html	/^<dt id="id2">$/;"	I
+id3	docs/i3pubtools.html	/^<dt id="id3">$/;"	I
 id3	docs/i3pubtools.time_profiles.html	/^<dt id="id3">$/;"	I
+id4	docs/i3pubtools.html	/^<dt id="id4">$/;"	I
 id4	docs/i3pubtools.time_profiles.html	/^<dt id="id4">$/;"	I
+id5	docs/i3pubtools.html	/^<dt id="id5">$/;"	I
 id5	docs/i3pubtools.time_profiles.html	/^<dt id="id5">$/;"	I
+id6	docs/i3pubtools.html	/^<dt id="id6">$/;"	I
 id6	docs/i3pubtools.time_profiles.html	/^<dt id="id6">$/;"	I
 idCounter	docs/_static/underscore-1.3.1.js	/^  var idCounter = 0;$/;"	v
 identity	docs/_static/underscore-1.3.1.js	/^  _.identity = function(value) {$/;"	f	function:_
@@ -4821,6 +4885,8 @@ logpdf	mla/mla/timing.py	/^    def logpdf(self, times): pass$/;"	m	class:generic
 logpdf	mla/mla/timing.py	/^    def logpdf(self, times):$/;"	m	class:custom_profile
 logpdf	mla/mla/timing.py	/^    def logpdf(self, times):$/;"	m	class:gauss_profile
 logpdf	mla/mla/timing.py	/^    def logpdf(self, times):$/;"	m	class:uniform_profile
+long_description	.ipynb_checkpoints/setup-checkpoint.py	/^    long_description = fh.read()$/;"	v
+long_description	setup.py	/^    long_description = fh.read()$/;"	v
 lt	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 m	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:AnonymousFunctionc74c453e0100
 m	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	f
@@ -4864,9 +4930,11 @@ module-i3pubtools	docs/i3pubtools.html	/^<div class="section" id="module-i3pubto
 module-i3pubtools.llhs	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<div class="section" id="module-i3pubtools.llhs">$/;"	I
 module-i3pubtools.llhs	docs/i3pubtools.llhs.html	/^<div class="section" id="module-i3pubtools.llhs">$/;"	I
 module-i3pubtools.llhs.cluster_multiflare_llh	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<div class="section" id="module-i3pubtools.llhs.cluster_multiflare_llh">$/;"	I
+module-i3pubtools.llhs.cluster_multiflare_llh	docs/i3pubtools.llhs.html	/^<div class="section" id="module-i3pubtools.llhs.cluster_multiflare_llh">$/;"	I
 module-i3pubtools.llhs.ps_flare_llh	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<div class="section" id="module-i3pubtools.llhs.ps_flare_llh">$/;"	I
 module-i3pubtools.llhs.ps_flare_llh	docs/i3pubtools.llhs.html	/^<div class="section" id="module-i3pubtools.llhs.ps_flare_llh">$/;"	I
 module-i3pubtools.sources	docs/i3pubtools.html	/^<div class="section" id="module-i3pubtools.sources">$/;"	I
+module-i3pubtools.time_profiles	docs/i3pubtools.html	/^<div class="section" id="module-i3pubtools.time_profiles">$/;"	I
 module-i3pubtools.time_profiles	docs/i3pubtools.time_profiles.html	/^<div class="section" id="module-i3pubtools.time_profiles">$/;"	I
 module-i3pubtools.tools	docs/i3pubtools.html	/^<div class="section" id="module-i3pubtools.tools">$/;"	I
 mt	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
