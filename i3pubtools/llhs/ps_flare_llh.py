@@ -312,10 +312,8 @@ class PsFlareLLH:
         # Assign the weights using the newly defined "time profile"
         # classes above. If you want to make this a more complicated
         # shape, talk to me and we can work it out.
-        effective_livetime = self.signal_time_profile.effective_exposure()
         reduced_sim['weight'] = reduced_sim['ow'] *\
-                        flux_norm * (reduced_sim['trueE']/100.e3)**gamma *\
-                        effective_livetime * 24 * 3600.
+                        flux_norm * (reduced_sim['trueE']/100.e3)**gamma
 
         # Apply the sampling width, which ensures that we
         # sample events from similar declinations.
@@ -326,46 +324,16 @@ class PsFlareLLH:
         reduced_sim['weight'] /= omega
         return reduced_sim
 
-    def _inject_background_events(self, background_window: float) -> np.ndarray:
+    def _inject_background_events(self) -> np.ndarray:
         """Short function info...
         
         More function info...
         
-        Args:
-            background_window: The time window to inject events into (unit: days).
-        
         Returns:
             An array of injected background events.
-            
-        Raises:
-            AssertionError: The background window was not greater-than zero seconds.
-            RuntimeError: When the GRL is applied, there are no runs left.
         """
-        assert(background_window > 0)
-        
-        # Start by calculating the background rate. For this, we'll
-        # look at the number of events observed in runs just before
-        # our start_time. We're picking this to exclude the start time,
-        # since we don't want to include our hypothesized signal in
-        # our background estimates
-        start_time = self.background_time_profile.get_range()[0]
-        fully_contained = (self.grl['start'] >= start_time-background_window) &\
-                            (self.grl['stop'] < start_time)
-        start_contained = (self.grl['start'] < start_time-background_window) &\
-                            (self.grl['stop'] > start_time-background_window)
-
-        background_runs = (fully_contained | start_contained)
-        if not np.any(background_runs):
-            print("ERROR: No runs found in GRL for calculation of "
-                  "background rates!")
-            raise RuntimeError
-        background_grl = self.grl[background_runs]
-
-        # Get the number of events we see from these runs and scale
-        # it to the number we expect for our search livetime.
-        n_background = background_grl['events'].sum()
-        n_background /= background_grl['livetime'].sum()
-        n_background *= self.background_time_profile.effective_exposure()
+        # Get the number of events we see from these runs
+        n_background = self.grl['events'].sum()
         n_background_observed = np.random.poisson(n_background)
 
         # How many events should we add in? This will now be based on the
@@ -431,8 +399,7 @@ class PsFlareLLH:
                       flux_norm: float = 0, 
                       gamma: float = -2, 
                       sampling_width: float = np.radians(1), 
-                      random_seed: Optional[int] = None, 
-                      background_window: float = 14
+                      random_seed: Optional[int] = None,
     ) -> np.ndarray:
         """Produces a single trial of background+signal events based on input parameters.
         
@@ -444,7 +411,6 @@ class PsFlareLLH:
             gamma: A spectral index to adjust weights.
             sampling_width: The bandwidth around the source declination to cut events.
             random_seed: A seed value for the numpy RNG.
-            background_window: The time window to inject events into (unit: days).
             
         Returns:
             An array of combined signal and background events.
@@ -456,7 +422,7 @@ class PsFlareLLH:
                                                   gamma=gamma, 
                                                   sampling_width=sampling_width)
 
-        background = self._inject_background_events(background_window)
+        background = self._inject_background_events()
         
         if flux_norm > 0:
             signal = self._inject_signal_events(reduced_sim)
@@ -506,10 +472,13 @@ class PsFlareLLH:
             A dictionary of the test statistic (TS) and the best fit parameters for the TS.
         """
         # structure to store our output
-        output = {'ts':np.nan,
-                  'ns':ns,
-                  'gamma':gamma,
-                  **self.signal_time_profile.default_params}
+        output = {
+            'ts':np.nan,
+            'ns':ns,
+            'gamma':gamma,
+            **self.signal_time_profile.default_params,
+        }
+        
         flux_norm = len(events)
         
         if flux_norm == 0: return output
@@ -562,7 +531,6 @@ class PsFlareLLH:
 
     def produce_n_trials(self, 
                          ntrials: int,
-                         background_window: float = 14,
                          test_ns: float = 1,
                          test_gamma: float = -2,
                          random_seed: Optional[int] = None,
@@ -576,7 +544,6 @@ class PsFlareLLH:
         
         Args:
             ntrials: The number of times to repeat the trial + evaluate_ts process.
-            background_window: Estimate the background rate over this many days (unit: days).
             test_ns: A guess for the number of signal events.
             test_gamma: A guess for best fit spectral index of the signal.
             random_seed: A seed value for the numpy RNG.
@@ -588,21 +555,6 @@ class PsFlareLLH:
             An array of test statistic values and their best-fit parameters for each trial.
         """
         if random_seed: np.random.seed(random_seed)
-
-        if background_window < 1:
-            print("WARflux_norm: Your window for estimating the backgroud rate is"
-                  " {} and is less than 1 day. You may run into large"
-                  " statistical uncertainties on the background rates which"
-                  " may lead to unreliable trials. Increase your"
-                  " background_window to at least a day or a week to reduce"
-                  " these issues.")
-
-        if self.background_time_profile.effective_exposure() > background_window:
-            print("WARflux_norm: Going to estimate the background from a window"
-                  " of {} days, but producing a trial of {} days. Upscaling"
-                  " can be a bit dangerous, since you run the risk of missing"
-                  " impacts from seasonal fluctuations. Just keep it in mind"
-                  " as you run.")
 
         # Cut down the sim. We're going to be using the same
         # source and weights each time, so this stops us from
@@ -632,7 +584,6 @@ class PsFlareLLH:
             trial = self.produce_trial(reduced_sim,
                                        flux_norm=flux_norm,
                                        gamma=gamma,
-                                       background_window=background_window,
                                        random_seed=random_seed)
 
             # And get the weights

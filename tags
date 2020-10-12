@@ -3729,8 +3729,8 @@ _get_energy_splines	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.p
 _get_energy_splines	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def _get_energy_splines(self, events):$/;"	m	class:cluster_multiflare_llh
 _get_energy_splines	i3pubtools/llhs/ps_flare_llh.py	/^    def _get_energy_splines(self, events: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _index	docs/_static/searchtools.js	/^  _index : null,$/;"	p	class:Search
-_inject_background_events	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _inject_background_events(self, background_window: float) -> np.ndarray:$/;"	m	class:PsFlareLLH
-_inject_background_events	i3pubtools/llhs/ps_flare_llh.py	/^    def _inject_background_events(self, background_window: float) -> np.ndarray:$/;"	m	class:PsFlareLLH
+_inject_background_events	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _inject_background_events(self) -> np.ndarray:$/;"	m	class:PsFlareLLH
+_inject_background_events	i3pubtools/llhs/ps_flare_llh.py	/^    def _inject_background_events(self) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _inject_signal_events	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _inject_signal_events(self, reduced_sim: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _inject_signal_events	i3pubtools/llhs/ps_flare_llh.py	/^    def _inject_signal_events(self, reduced_sim: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _integrate	test/workshop/joint_fit_example/VERITASLike.py	/^    def _integrate(function, e1, e2):$/;"	m	class:VERITASRun
@@ -4214,6 +4214,7 @@ documentation_options	docs/index.html	/^      <script type="text\/javascript" id
 documentation_options	docs/modules.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
 documentation_options	docs/py-modindex.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
 documentation_options	docs/search.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
+documentation_options	docs/setup.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
 domManip	docs/_static/jquery-3.5.1.js	/^function domManip( collection, args, callback, ignored ) {$/;"	f
 done	docs/_static/jquery-3.5.1.js	/^		function done( status, nativeStatusText, responses, headers ) {$/;"	f	function:AnonymousFunctionb030af4017200
 draganddrop	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
@@ -4239,12 +4240,6 @@ e	docs/_static/underscore.js	/^e&&c.call(b,a,g,h)))return n});return e};var E=b.
 e	docs/_static/underscore.js	/^function(a,c){return b.map(a,function(a){return a[c]})};b.max=function(a,c,d){if(!c&&b.isArray(a/;"	c	class:b.max
 e	docs/_static/underscore.js	/^function(a,c){return b.map(a,function(a){return a[c]})};b.max=function(a,c,d){if(!c&&b.isArray(a/;"	c	class:b.min
 e	docs/_static/underscore.js	/^function(a,c,b){var e;E(a,function(a,g,h){if(c.call(b,a,g,h))return e=a,true});return e};b.filte/;"	v
-effective_exposure	i3pubtools/.ipynb_checkpoints/time_profiles-checkpoint.py	/^    def effective_exposure(self) -> float:$/;"	m	class:GaussProfile
-effective_exposure	i3pubtools/.ipynb_checkpoints/time_profiles-checkpoint.py	/^    def effective_exposure(self) -> float:$/;"	m	class:UniformProfile
-effective_exposure	i3pubtools/.ipynb_checkpoints/time_profiles-checkpoint.py	/^    def effective_exposure(self, times: np.array) -> float: pass$/;"	m	class:GenericProfile
-effective_exposure	i3pubtools/time_profiles.py	/^    def effective_exposure(self) -> float:$/;"	m	class:GaussProfile
-effective_exposure	i3pubtools/time_profiles.py	/^    def effective_exposure(self) -> float:$/;"	m	class:UniformProfile
-effective_exposure	i3pubtools/time_profiles.py	/^    def effective_exposure(self, times: np.array) -> float: pass$/;"	m	class:GenericProfile
 effective_exposure	mla/mla/timing.py	/^    def effective_exposure(self): $/;"	m	class:custom_profile
 effective_exposure	mla/mla/timing.py	/^    def effective_exposure(self): $/;"	m	class:gauss_profile
 effective_exposure	mla/mla/timing.py	/^    def effective_exposure(self): $/;"	m	class:uniform_profile
@@ -5196,6 +5191,7 @@ rtd-search-form	docs/index.html	/^  <form id="rtd-search-form" class="wy-form" a
 rtd-search-form	docs/modules.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
 rtd-search-form	docs/py-modindex.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
 rtd-search-form	docs/search.html	/^  <form id="rtd-search-form" class="wy-form" action="#" method="get">$/;"	I
+rtd-search-form	docs/setup.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
 s	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 s	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f	function:AnonymousFunctionc74c453ed900
 s	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	v
@@ -5244,6 +5240,9 @@ setup	docs/_static/jquery-3.5.1.js	/^			setup: function() {$/;"	m	class:jQuery.e
 setup	docs/_static/jquery-3.5.1.js	/^		setup: function() {$/;"	m	class:jQuery.event.special
 setup	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	m	class:S.event.special
 setup	docs/source/conf.py	/^def setup(app):$/;"	f
+setup module	docs/source/setup.rst	/^setup module$/;"	c
+setup module¶	docs/setup.html	/^<h1>setup module<a class="headerlink" href="#setup-module" title="Permalink to this headline">¶/;"	h
+setup-module	docs/setup.html	/^  <div class="section" id="setup-module">$/;"	I
 shivCSS	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:y
 shivCSS	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:t
 shivCSS	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:r
@@ -5511,8 +5510,8 @@ webworkers	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){
 welcome-to-i3pubtools-s-documentation	docs/.ipynb_checkpoints/index-checkpoint.html	/^  <div class="section" id="welcome-to-i3pubtools-s-documentation">$/;"	I
 welcome-to-i3pubtools-s-documentation	docs/index.html	/^  <div class="section" id="welcome-to-i3pubtools-s-documentation">$/;"	I
 window	docs/_static/jquery-3.5.1.js	/^		window[ callbackName ] = function() {$/;"	f	function:AnonymousFunctionb030af4019000
-window	i3pubtools/.ipynb_checkpoints/time_profiles-checkpoint.py	/^    def window(self) -> List[float]:$/;"	m	class:UniformProfile
-window	i3pubtools/time_profiles.py	/^    def window(self) -> List[float]:$/;"	m	class:UniformProfile
+window	i3pubtools/.ipynb_checkpoints/time_profiles-checkpoint.py	/^    def window(self) -> Tuple[float]:$/;"	m	class:UniformProfile
+window	i3pubtools/time_profiles.py	/^    def window(self) -> Tuple[float]:$/;"	m	class:UniformProfile
 winnow	docs/_static/jquery-3.5.1.js	/^function winnow( elements, qualifier, not ) {$/;"	f
 without	docs/_static/underscore-1.3.1.js	/^  _.without = function(array) {$/;"	f	function:_
 without	docs/_static/underscore.js	/^b.tail=function(a,b,d){return i.call(a,b==null||d?1:b)};b.compact=function(a){return b.filter(a,/;"	f	function:b

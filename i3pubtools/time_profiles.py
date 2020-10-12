@@ -45,9 +45,6 @@ class GenericProfile:
     def random(self, size: int) -> np.array: pass
 
     @abc.abstractmethod
-    def effective_exposure(self, times: np.array) -> float: pass
-
-    @abc.abstractmethod
     def get_range(self) -> List[float]: pass
     
     @abc.abstractmethod
@@ -73,7 +70,6 @@ class GaussProfile(GenericProfile):
         mean (float): 
         sigma (float): 
         scipy_dist(scipy.stats.rv_continuous): 
-        norm (float): 
         default_params (Dict[float, float]): A dictionary of fitting parameters for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting parameters.
     """
@@ -91,7 +87,6 @@ class GaussProfile(GenericProfile):
         self.mean = mean
         self.sigma = sigma
         self.scipy_dist = scipy.stats.norm(mean, sigma)
-        self.norm = 1.0/np.sqrt(2*np.pi*sigma**2)
         self._default_params = {'_'.join([name, 'mean']):mean, '_'.join([name, 'sigma']):sigma}
         self._param_dtype = [('_'.join([name, 'mean']), np.float32),('_'.join([name, 'sigma']), np.float32)]
         return
@@ -135,10 +130,6 @@ class GaussProfile(GenericProfile):
         """
         return self.scipy_dist.rvs(size=size)
 
-    def effective_exposure(self) -> float:
-        """Calculates the weight associated with each event time."""
-        return 1.0/self.norm
-
     def get_range(self) -> List[float]:
         """Returns the min/max values for the distribution."""
         return [None, None]
@@ -170,7 +161,13 @@ class GaussProfile(GenericProfile):
         Returns:
             
         """
-        return [time_profile.get_range(), [0, time_profile.effective_exposure()]]
+        
+        if None in time_profile.get_range():
+            return [time_profile.get_range(), [0, None]]
+        
+        diff = time_profile.get_range()[1] - time_profile.get_range()[0]
+        
+        return [time_profile.get_range(), [0, diff]]
     
     @property
     def default_params(self) -> Dict[float, float]:
@@ -188,7 +185,6 @@ class UniformProfile(GenericProfile):
     
     Attributes:
         window (List[float]): 
-        norm (float): 
         default_params (Dict[float, float]): A dictionary of fitting parameters for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting parameters.
     """
@@ -204,7 +200,6 @@ class UniformProfile(GenericProfile):
             name: prefix for parameters.
         """
         self._window = [start, end]
-        self._norm = 1.0/(self._window[1]-self._window[0])
         self._default_params = {'_'.join([name, 'start']):self._window[0], '_'.join([name, 'end']):self._window[1]}
         self._param_dtype = [('_'.join([name, 'start']), np.float32),('_'.join([name, 'end']), np.float32)]
         return
@@ -222,7 +217,7 @@ class UniformProfile(GenericProfile):
         """
         output = np.zeros_like(times)
         output[(times>=self._window[0]) &\
-               (times<self._window[1])] = self._norm
+               (times<self._window[1])] = 1/(self._window[1] - self._window[0])
         return output
 
     def logpdf(self, times: np.array) -> np.array:
@@ -250,10 +245,6 @@ class UniformProfile(GenericProfile):
             
         """
         return np.random.uniform(*self._window, size)
-
-    def effective_exposure(self) -> float:
-        """Calculates the weight associated with each event time."""
-        return 1.0/self._norm
 
     def get_range(self) -> List[float]:
         """Returns the min/max values for the distribution."""
@@ -293,5 +284,5 @@ class UniformProfile(GenericProfile):
         return self._param_dtype
     
     @property
-    def window(self) -> List[float]:
+    def window(self) -> Tuple[float]:
         return tuple(self._window)
