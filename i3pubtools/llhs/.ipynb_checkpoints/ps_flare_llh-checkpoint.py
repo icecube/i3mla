@@ -48,7 +48,7 @@ class PsFlareLLH:
                  background_time_profile: Optional[time_profiles.GenericProfile] = None,
                  source: Dict[float, float] = {'ra':np.pi/2, 'dec':np.pi/6},
                  infile: Optional[str] = None, 
-                 outfile: Optional[str] = None
+                 outfile: Optional[str] = None,
     ) -> None:
         """Inits PsFlareLLH and calculates sob maps.
         
@@ -108,18 +108,22 @@ class PsFlareLLH:
         # background
         bg_w = np.ones(len(self.data), dtype=float)
         bg_w /= np.sum(bg_w)
-        bg_h, xedges, yedges  = np.histogram2d(np.sin(self.data['dec']),
-                                               self.data['logE'],
-                                               bins=self.bins,
-                                               weights = bg_w)
+        bg_h, xedges, yedges = np.histogram2d(
+            np.sin(self.data['dec']),
+            self.data['logE'],
+            bins=self.bins,
+            weights=bg_w,
+        )
 
         # signal
         sig_w = self.sim['ow'] * self.sim['trueE']**gamma
         sig_w /= np.sum(sig_w)
-        sig_h, xedges, yedges = np.histogram2d(np.sin(self.sim['dec']),
-                                               self.sim['logE'],
-                                               bins=self.bins,
-                                               weights = sig_w)
+        sig_h, xedges, yedges = np.histogram2d(
+            np.sin(self.sim['dec']),
+            self.sim['logE'],
+            bins=self.bins,
+            weights=sig_w,
+        )
 
         ratio = sig_h / bg_h
 
@@ -159,9 +163,11 @@ class PsFlareLLH:
         # Make the background histogram. Note that we do NOT
         # want to use density=True here, since that would mean
         # that our spline depends on the original bin widths!
-        hist, bins = np.histogram(sin_dec,
-                                  bins=bins,
-                                  weights=np.ones_like(self.data['dec'])/len(self.data['dec']))
+        hist, bins = np.histogram(
+            sin_dec,
+            bins=bins,
+            weights=np.ones_like(self.data['dec'])/len(self.data['dec']),
+        )
 
         # These values have a lot of "noise": they jump
         # up and down quite a lot. We could use fewer
@@ -173,11 +179,13 @@ class PsFlareLLH:
         # piecewise polynomial function to our data.
         # We can set a smoothing factor (s) to control
         # how smooth our spline is.
-        bg_p_dec = scipy.interpolate.UnivariateSpline(bins[:-1]+np.diff(bins)/2.,
-                                                      hist,
-                                                      bbox=[-1.0, 1.0],
-                                                      s=1.5e-5,
-                                                      ext=1)
+        bg_p_dec = scipy.interpolate.UnivariateSpline(
+            bins[:-1]+np.diff(bins)/2.,
+            hist,
+            bbox=[-1.0, 1.0],
+            s=1.5e-5,
+            ext=1,
+        )
         return bg_p_dec
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------
@@ -259,7 +267,7 @@ class PsFlareLLH:
     def _select_and_weight(self, 
                            flux_norm: float = 0, 
                            gamma: float = -2, 
-                           sampling_width: float = np.radians(1)
+                           sampling_width: float = np.radians(1),
     ) -> np.ndarray:
         """Short function info...
         
@@ -279,10 +287,12 @@ class PsFlareLLH:
         sindec_dist = np.abs(self.source['dec']-self.sim['trueDec'])
         close = sindec_dist < sampling_width
 
-        reduced_sim = rf.append_fields(self.sim[close].copy(),
-                                       'weight',
-                                       np.zeros(close.sum()),
-                                       dtypes=np.float32)
+        reduced_sim = rf.append_fields(
+            self.sim[close].copy(),
+            'weight',
+            np.zeros(close.sum()),
+            dtypes=np.float32,
+        )
 
         # Assign the weights using the newly defined "time profile"
         # classes above. If you want to make this a more complicated
@@ -338,9 +348,12 @@ class PsFlareLLH:
         total = reduced_sim['weight'].sum()
 
         n_signal_observed = scipy.stats.poisson.rvs(total)
-        signal = np.random.choice(reduced_sim, n_signal_observed,
-                                  p = reduced_sim['weight']/total,
-                                  replace = False).copy()
+        signal = np.random.choice(
+            reduced_sim, 
+            n_signal_observed,
+            p=reduced_sim['weight']/total,
+            replace = False,
+        ).copy()
 
         # Assign times to the signal using our time_profile class
         signal['time'] = self.signal_time_profile.random(len(signal))
@@ -357,12 +370,16 @@ class PsFlareLLH:
         if n_signal_observed > 0:
             ones = np.ones_like(signal['trueRa'])
 
-            signal['ra'], signal['dec'] = tools.rotate(signal['trueRa'], signal['trueDec'],
-                                                       ones*self.source['ra'], ones*self.source['dec'],
-                                                       signal['ra'], signal['dec'])
-            signal['trueRa'], signal['trueDec'] = tools.rotate(signal['trueRa'], signal['trueDec'],
-                                                               ones*self.source['ra'], ones*self.source['dec'],
-                                                               signal['trueRa'], signal['trueDec'])
+            signal['ra'], signal['dec'] = tools.rotate(
+                signal['trueRa'], signal['trueDec'],
+                ones*self.source['ra'], ones*self.source['dec'],
+                signal['ra'], signal['dec'],
+            )
+            signal['trueRa'], signal['trueDec'] = tools.rotate(
+                signal['trueRa'], signal['trueDec'],
+                ones*self.source['ra'], ones*self.source['dec'],
+                signal['trueRa'], signal['trueDec'],
+            )
         
         return signal
 
@@ -394,9 +411,11 @@ class PsFlareLLH:
         if random_seed is not None: np.random.seed(random_seed)
         
         if reduced_sim is None: 
-            reduced_sim = self._select_and_weight(flux_norm=flux_norm, 
-                                                  gamma=gamma, 
-                                                  sampling_width=sampling_width)
+            reduced_sim = self._select_and_weight(
+                flux_norm=flux_norm, 
+                gamma=gamma, 
+                sampling_width=sampling_width,
+            )
 
         background = self._inject_background_events()
         if flux_norm > 0:
@@ -490,9 +509,11 @@ class PsFlareLLH:
             # where to start, and the bounds. First do the
             # shape parameters.
             x0 = [ns, gamma, *self.signal_time_profile.x0(events['time'])]
-            bounds = [[0, flux_norm],
-                      [-4, -1], # gamma [min, max]
-                      *self.signal_time_profile.bounds(self.background_time_profile)]
+            bounds = [
+                [0, flux_norm],
+                [-4, -1], # gamma [min, max]
+                *self.signal_time_profile.bounds(self.background_time_profile),
+            ]
 
             result = scipy.optimize.minimize(get_ts, x0=x0, bounds=bounds, method='L-BFGS-B')
 
@@ -512,7 +533,7 @@ class PsFlareLLH:
                          random_seed: Optional[int] = None,
                          flux_norm: float = 0,
                          gamma: float = -2,
-                         sampling_width: float = np.radians(1)
+                         sampling_width: float = np.radians(1),
     ) -> np.ndarray:
         """Produces n trials and calculate a test statistic for each trial.
         
@@ -538,29 +559,35 @@ class PsFlareLLH:
         reduced_sim = self._select_and_weight(flux_norm=flux_norm, gamma=gamma, sampling_width=sampling_width)
 
         # Build a place to store information for the trial
-        dtype = np.dtype([('ts', np.float32),
-                          ('ntot', np.int),
-                          ('ninj', np.int),
-                          ('ns', np.float32),
-                          ('gamma', np.float32),
-                          *self.signal_time_profile.param_dtype])
+        dtype = np.dtype([
+            ('ts', np.float32),
+            ('ntot', np.int),
+            ('ninj', np.int),
+            ('ns', np.float32),
+            ('gamma', np.float32),
+            *self.signal_time_profile.param_dtype,
+        ])
         fit_info = np.empty(ntrials, dtype=dtype)
 
         # We're going to cache the signal weights, which will
         # speed up our signal generation significantly.
         signal_weights = None
 
-        for i in tqdm(range(ntrials),
-                      desc=f'Running Trials (N={flux_norm:3.2e}, gamma={gamma:2.1f})',
-                      unit=' trials',
-                      position=0,
-                      ncols = 800):
+        for i in tqdm(
+            range(ntrials),
+            desc=f'Running Trials (N={flux_norm:3.2e}, gamma={gamma:2.1f})',
+            unit=' trials',
+            position=0,
+            ncols = 800,
+        ):
 
             # Produce the trial events
-            trial = self.produce_trial(reduced_sim,
-                                       flux_norm=flux_norm,
-                                       gamma=gamma,
-                                       random_seed=random_seed)
+            trial = self.produce_trial(
+                reduced_sim,
+                flux_norm=flux_norm,
+                gamma=gamma,
+                random_seed=random_seed,
+            )
 
             # And get the weights
             bestfit = self.evaluate_ts(trial, ns = test_ns, gamma = test_gamma)

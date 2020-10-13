@@ -3485,8 +3485,6 @@ Module contents¶	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<spa
 Module contents¶	docs/i3pubtools.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	i
 Module contents¶	docs/i3pubtools.llhs.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	i
 Module contents¶	docs/i3pubtools.time_profiles.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	i
-N	docs/genindex.html	/^<h2 id="N">N<\/h2>$/;"	I
-N	docs/genindex.html	/^<h2 id="N">N<\/h2>$/;"	i
 NAVIGATION_WITH_KEYS	docs/_static/documentation_options.js	/^    NAVIGATION_WITH_KEYS: false$/;"	p	class:DOCUMENTATION_OPTIONS
 O	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 Oe	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
@@ -3716,18 +3714,16 @@ _create_interpolated_ratio	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-check
 _create_interpolated_ratio	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def _create_interpolated_ratio(self, gamma: float, bins: np.ndarray,$/;"	m	class:cluster_multiflare_llh
 _create_interpolated_ratio	i3pubtools/llhs/ps_flare_llh.py	/^    def _create_interpolated_ratio(self, gamma: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _evaluate_interpolated_ratios	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def _evaluate_interpolated_ratios(self, events):$/;"	m	class:cluster_multiflare_llh
-_evaluate_interpolated_ratios	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _evaluate_interpolated_ratios(self, events: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _evaluate_interpolated_ratios	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def _evaluate_interpolated_ratios(self, events):$/;"	m	class:cluster_multiflare_llh
-_evaluate_interpolated_ratios	i3pubtools/llhs/ps_flare_llh.py	/^    def _evaluate_interpolated_ratios(self, events: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _get_diff_flux_and_integral	test/workshop/joint_fit_example/VERITASLike.py	/^    def _get_diff_flux_and_integral(self, like_model):$/;"	m	class:VERITASRun
 _get_energy_sob	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def _get_energy_sob(self, events, gamma, splines):$/;"	m	class:cluster_multiflare_llh
 _get_energy_sob	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _get_energy_sob(self, $/;"	m	class:PsFlareLLH
 _get_energy_sob	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def _get_energy_sob(self, events, gamma, splines):$/;"	m	class:cluster_multiflare_llh
 _get_energy_sob	i3pubtools/llhs/ps_flare_llh.py	/^    def _get_energy_sob(self, $/;"	m	class:PsFlareLLH
 _get_energy_splines	i3pubtools/llhs/.ipynb_checkpoints/cluster_multiflare_llh-checkpoint.py	/^    def _get_energy_splines(self, events):$/;"	m	class:cluster_multiflare_llh
-_get_energy_splines	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _get_energy_splines(self, events: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
+_get_energy_splines	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _get_energy_splines(self, events: np.ndarray) -> List[scipy.interpolate.UnivariateSpline/;"	m	class:PsFlareLLH
 _get_energy_splines	i3pubtools/llhs/cluster_multiflare_llh.py	/^    def _get_energy_splines(self, events):$/;"	m	class:cluster_multiflare_llh
-_get_energy_splines	i3pubtools/llhs/ps_flare_llh.py	/^    def _get_energy_splines(self, events: np.ndarray) -> np.ndarray:$/;"	m	class:PsFlareLLH
+_get_energy_splines	i3pubtools/llhs/ps_flare_llh.py	/^    def _get_energy_splines(self, events: np.ndarray) -> List[scipy.interpolate.UnivariateSpline/;"	m	class:PsFlareLLH
 _index	docs/_static/searchtools.js	/^  _index : null,$/;"	p	class:Search
 _inject_background_events	i3pubtools/llhs/.ipynb_checkpoints/ps_flare_llh-checkpoint.py	/^    def _inject_background_events(self) -> np.ndarray:$/;"	m	class:PsFlareLLH
 _inject_background_events	i3pubtools/llhs/ps_flare_llh.py	/^    def _inject_background_events(self) -> np.ndarray:$/;"	m	class:PsFlareLLH
@@ -4583,7 +4579,6 @@ i3pubtools.time_profiles.GaussProfile.bounds	docs/i3pubtools.html	/^<dt id="i3pu
 i3pubtools.time_profiles.GaussProfile.bounds	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.bounds">$/;"	I
 i3pubtools.time_profiles.GaussProfile.default_params	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.default_params">$/;"	I
 i3pubtools.time_profiles.GaussProfile.default_params	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.default_params">$/;"	I
-i3pubtools.time_profiles.GaussProfile.effective_exposure	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.effective_exposure">$/;"	I
 i3pubtools.time_profiles.GaussProfile.effective_exposure	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.effective_exposure">$/;"	I
 i3pubtools.time_profiles.GaussProfile.get_range	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.get_range">$/;"	I
 i3pubtools.time_profiles.GaussProfile.get_range	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.get_range">$/;"	I
@@ -4591,7 +4586,6 @@ i3pubtools.time_profiles.GaussProfile.logpdf	docs/i3pubtools.html	/^<dt id="i3pu
 i3pubtools.time_profiles.GaussProfile.logpdf	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.logpdf">$/;"	I
 i3pubtools.time_profiles.GaussProfile.mean	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.mean">$/;"	I
 i3pubtools.time_profiles.GaussProfile.mean	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.mean">$/;"	I
-i3pubtools.time_profiles.GaussProfile.norm	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.norm">$/;"	I
 i3pubtools.time_profiles.GaussProfile.norm	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.norm">$/;"	I
 i3pubtools.time_profiles.GaussProfile.param_dtype	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.param_dtype">$/;"	I
 i3pubtools.time_profiles.GaussProfile.param_dtype	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GaussProfile.param_dtype">$/;"	I
@@ -4611,7 +4605,6 @@ i3pubtools.time_profiles.GenericProfile.bounds	docs/i3pubtools.html	/^<dt id="i3
 i3pubtools.time_profiles.GenericProfile.bounds	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.bounds">$/;"	I
 i3pubtools.time_profiles.GenericProfile.default_params	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.default_params">$/;"	I
 i3pubtools.time_profiles.GenericProfile.default_params	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.default_params">$/;"	I
-i3pubtools.time_profiles.GenericProfile.effective_exposure	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.effective_exposure">$/;"	I
 i3pubtools.time_profiles.GenericProfile.effective_exposure	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.effective_exposure">$/;"	I
 i3pubtools.time_profiles.GenericProfile.get_range	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.get_range">$/;"	I
 i3pubtools.time_profiles.GenericProfile.get_range	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.GenericProfile.get_range">$/;"	I
@@ -4631,13 +4624,11 @@ i3pubtools.time_profiles.UniformProfile.bounds	docs/i3pubtools.html	/^<dt id="i3
 i3pubtools.time_profiles.UniformProfile.bounds	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.bounds">$/;"	I
 i3pubtools.time_profiles.UniformProfile.default_params	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.default_params">$/;"	I
 i3pubtools.time_profiles.UniformProfile.default_params	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.default_params">$/;"	I
-i3pubtools.time_profiles.UniformProfile.effective_exposure	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.effective_exposure">$/;"	I
 i3pubtools.time_profiles.UniformProfile.effective_exposure	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.effective_exposure">$/;"	I
 i3pubtools.time_profiles.UniformProfile.get_range	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.get_range">$/;"	I
 i3pubtools.time_profiles.UniformProfile.get_range	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.get_range">$/;"	I
 i3pubtools.time_profiles.UniformProfile.logpdf	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.logpdf">$/;"	I
 i3pubtools.time_profiles.UniformProfile.logpdf	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.logpdf">$/;"	I
-i3pubtools.time_profiles.UniformProfile.norm	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.norm">$/;"	I
 i3pubtools.time_profiles.UniformProfile.norm	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.norm">$/;"	I
 i3pubtools.time_profiles.UniformProfile.param_dtype	docs/i3pubtools.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.param_dtype">$/;"	I
 i3pubtools.time_profiles.UniformProfile.param_dtype	docs/i3pubtools.time_profiles.html	/^<dt id="i3pubtools.time_profiles.UniformProfile.param_dtype">$/;"	I
