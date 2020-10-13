@@ -11,7 +11,7 @@ __status__ = 'Development'
 Docstring
 """
 
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 import scipy
 import numpy as np
@@ -66,7 +66,12 @@ class PsFlareLLH:
         
         self.data = data
         self.sim = sim
-        self.grl = grl
+        
+        min_mjd = np.min(data['time'])
+        max_mjd = np.max(data['time'])
+        reduced_grl = grl[(grl['start'] < max_mjd) & (grl['stop'] > min_mjd)]
+        self.grl = reduced_grl
+        
         self.bins = bins
         self.gammas = gammas
         self.signal_time_profile = signal_time_profile
@@ -117,6 +122,7 @@ class PsFlareLLH:
                                                weights = sig_w)
 
         ratio = sig_h / bg_h
+
         for i in range(ratio.shape[0]):
             # Pick out the values we want to use.
             # We explicitly want to avoid NaNs and infinities
@@ -207,28 +213,7 @@ class PsFlareLLH:
         background_likelihood = (1/(2*np.pi))*self.bg_p_dec(np.sin(events['dec']))
         return background_likelihood
 
-    # signal/background
-    def _evaluate_interpolated_ratios(self, events: np.ndarray) -> np.ndarray:
-        """Uses calculated interpolated ratios to quickly retrieve signal/background for given events.
-        
-        More function info...
-        
-        Args:
-            events: An array of events including their positional data.
-        
-        Returns:
-            Signal-over-Background ratios at each gamma at each event location.
-        """
-        # Get the bin that each event belongs to
-        sin_dec_idx = np.searchsorted(self.bins[0], np.sin(events['dec'])) - 1
-        logE_idx = np.searchsorted(self.bins[1], events['logE'])
-        
-        for i in range(len(logE_idx)):
-            logE_idx[i] = min(logE_idx[i], self.sob_maps.shape[1] -1)
-
-        return self.sob_maps[sin_dec_idx, logE_idx]
-
-    def _get_energy_splines(self, events: np.ndarray) -> np.ndarray:
+    def _get_energy_splines(self, events: np.ndarray) -> List[scipy.interpolate.UnivariateSpline]:
         """Splines signal/background vs gamma at a set of locations using calculated interpolated ratios.
         
         More function info...
@@ -239,26 +224,20 @@ class PsFlareLLH:
         Returns:
             An array of splines of Signal-over-Background vs gamma for each event.
         """
+        # Get the bin that each event belongs to
+        sin_dec_idx = np.searchsorted(self.bins[0], np.sin(events['dec'])) - 1
+        logE_idx = np.searchsorted(self.bins[1], events['logE'])
+        logE_idx = np.minimum(logE_idx, self.sob_maps.shape[1] - 1)
+        
         # Get the values for each event
-        sob_ratios = self._evaluate_interpolated_ratios(events)
+        log_ratios = np.log(self.sob_maps[sin_dec_idx, logE_idx])
 
-        # These are just values at this point. We need
-        # to interpolate them in order for this to give
-        # us reasonable values. Let's spline them in log-space
-        sob_splines = np.zeros(len(events), dtype=object)
-        for i in range(len(events)):
-            spline = scipy.interpolate.UnivariateSpline(self.gammas,
-                                                        np.log(sob_ratios[i]),
-                                                        k = 3,
-                                                        s = 0,
-                                                        ext = 'raise')
-            sob_splines[i] = spline
-        return sob_splines
+        return [scipy.interpolate.UnivariateSpline(self.gammas, log_ratio, k=3, s=0, ext='raise') for log_ratio in log_ratios]
 
     def _get_energy_sob(self, 
                         events: np.ndarray, 
                         gamma: float, 
-                        splines: scipy.interpolate.UnivariateSpline
+                        splines: List[scipy.interpolate.UnivariateSpline],
     ) -> np.array:
         """Gets signal-over-background at given locations and gamma from calculated energy splines.
         
@@ -272,11 +251,7 @@ class PsFlareLLH:
         Returns:
             An array of the spline evaluations for each event.
         """
-        final_sob_ratios = np.ones_like(events, dtype=float)
-        for i, spline in enumerate(splines):
-            final_sob_ratios[i] = np.exp(spline(gamma))
-
-        return final_sob_ratios
+        return np.exp([spline(gamma) for spline in splines])
 
 #-------------------------------------------------------------------------------------------------------------------------------------------------
 # get events for trials
@@ -400,6 +375,7 @@ class PsFlareLLH:
                       gamma: float = -2, 
                       sampling_width: float = np.radians(1), 
                       random_seed: Optional[int] = None,
+                      verbose: bool = False,
     ) -> np.ndarray:
         """Produces a single trial of background+signal events based on input parameters.
         
@@ -423,12 +399,13 @@ class PsFlareLLH:
                                                   sampling_width=sampling_width)
 
         background = self._inject_background_events()
-        
         if flux_norm > 0:
             signal = self._inject_signal_events(reduced_sim)
         else:
             signal = np.empty(0, dtype=background.dtype)
-        
+        if verbose:
+            print(f'number of background events: {len(background)}')
+            print(f'number of signal events: {len(signal)}')
         # Because we want to return the entire event and not just the
         # number of events, we need to do some numpy magic. Specifically,
         # we need to remove the fields in the simulated events that are
@@ -445,12 +422,11 @@ class PsFlareLLH:
         # We need to check to ensure that every event is contained within
         # a good run. If the event happened when we had deadtime (when we
         # were not taking data), then we need to remove it.
-        during_uptime = [np.any((self.grl['start'] <= t) & (self.grl['stop'] > t)) \
-                            for t in events['time']]
-        during_uptime = np.array(during_uptime, dtype=bool)
-        events = events[during_uptime]
+        after_start = np.less(self.grl['start'].reshape((1, len(self.grl))), events['time'].reshape(len(events), 1))
+        before_stop = np.less(events['time'].reshape(len(events), 1), self.grl['stop'].reshape((1, len(self.grl))))
+        during_uptime = np.any(after_start & before_stop, axis = 1)
 
-        return events
+        return events[during_uptime]
 
     def evaluate_ts(self,
                     events: np.ndarray,
