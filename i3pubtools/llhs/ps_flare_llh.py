@@ -450,7 +450,7 @@ class PsFlareLLH:
     def evaluate_ts(self,
                     events: np.ndarray,
                     ns: float = 0,
-                    gamma: float = -2
+                    gamma: float = -2,
     ) -> Dict:
         """Short function info...
         
@@ -474,13 +474,13 @@ class PsFlareLLH:
             **self.signal_time_profile.default_params,
         }
         
-        flux_norm = len(events)
+        n_events = len(events)
         
-        if flux_norm == 0: return output
+        if n_events == 0: return output
 
         # Check: ns cannot be larger than flux_norm
-        if ns >= flux_norm:
-            ns = flux_norm - 0.00001
+        if ns >= n_events:
+            ns = n_events - 0.00001
             
         S = self._signal_pdf(events)
         B = self._background_pdf(events)
@@ -488,7 +488,9 @@ class PsFlareLLH:
         splines = self._get_energy_splines(events)
         t_lh_bg = self.background_time_profile.pdf(events['time'])
         
-        drop = flux_norm - np.sum(S != 0)
+        drop = n_events - np.sum(S != 0)
+        
+        sob_pre = S/B/t_lh_bg
         
         def get_ts(args):
             params = []
@@ -500,9 +502,9 @@ class PsFlareLLH:
             e_lh_ratio = self._get_energy_sob(events, gamma, splines)
             sig_t_pro = self.signal_time_profile.__class__(*params)
             t_lh_sig = sig_t_pro.pdf(events['time'])
-            sob = S/B*e_lh_ratio * (t_lh_sig/t_lh_bg)
-            ts = (ns/flux_norm*(sob - 1))+1
-            return -2*(np.sum(np.log(ts)) + drop*np.log(1-ns/flux_norm))
+            sob = sob_pre * e_lh_ratio * t_lh_sig
+            ts = (ns/n_events*(sob - 1))+1
+            return -2*(np.sum(np.log(ts)) + drop*np.log(1-ns/n_events))
 
         with np.errstate(divide='ignore', invalid='ignore'):
             # Set the seed values, which tell the minimizer
@@ -510,7 +512,7 @@ class PsFlareLLH:
             # shape parameters.
             x0 = [ns, gamma, *self.signal_time_profile.x0(events['time'])]
             bounds = [
-                [0, flux_norm],
+                [0, n_events],
                 [-4, -1], # gamma [min, max]
                 *self.signal_time_profile.bounds(self.background_time_profile),
             ]

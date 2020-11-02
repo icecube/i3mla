@@ -11,7 +11,7 @@ __status__ = 'Development'
 Docstring
 """
 
-from typing import Dict, List, Tuple
+from typing import Callable, Dict, List, Tuple
 
 import abc
 import numpy as np
@@ -26,7 +26,7 @@ class GenericProfile:
     the PDF is normalized!
     
     Attributes:
-        default_params (Dict): A dictionary of fitting parameters for this time profile.
+        default_params (Dict[str, float]): A dictionary of fitting parameters for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting parameters. 
     """
 
@@ -55,7 +55,7 @@ class GenericProfile:
 
     @property
     @abc.abstractmethod
-    def default_params(self) -> Dict: pass
+    def default_params(self) -> Dict[str, float]: pass
     
     @property
     @abc.abstractmethod
@@ -70,7 +70,7 @@ class GaussProfile(GenericProfile):
         mean (float): 
         sigma (float): 
         scipy_dist(scipy.stats.rv_continuous): 
-        default_params (Dict[float, float]): A dictionary of fitting parameters for this time profile.
+        default_params (Dict[str, float]): A dictionary of fitting parameters for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting parameters.
     """
 
@@ -170,7 +170,7 @@ class GaussProfile(GenericProfile):
         return [time_profile.get_range(), [0, diff]]
     
     @property
-    def default_params(self) -> Dict[float, float]:
+    def default_params(self) -> Dict[str, float]:
         return self._default_params
     
     @property
@@ -185,7 +185,7 @@ class UniformProfile(GenericProfile):
     
     Attributes:
         window (List[float]): 
-        default_params (Dict[float, float]): A dictionary of fitting parameters for this time profile.
+        default_params (Dict[str, float]): A dictionary of fitting parameters for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting parameters.
     """
 
@@ -276,7 +276,155 @@ class UniformProfile(GenericProfile):
         return [time_profile.get_range(), time_profile.get_range()]
     
     @property
-    def default_params(self) -> Dict[float, float]:
+    def default_params(self) -> Dict[str, float]:
+        return self._default_params
+    
+    @property
+    def param_dtype(self) -> List[Tuple[str, str]]:
+        return self._param_dtype
+    
+    @property
+    def window(self) -> Tuple[float]:
+        return tuple(self._window)
+    
+class CustomProfile(GenericProfile):
+    """Time profile class for a custom binned distribution. 
+
+    More class info...
+
+    Attributes:
+        window (List[float]): The range of distribution function.
+        pdf (Callable[[np.array, Tuple[float, float]], float]): The distribution function.
+        default_params (Dict[str, float]): A dictionary of fitting parameters for this time profile.
+        param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting parameters.
+        dist (scipy.stats.rv_histogram): The histogrammed version of the distribution function.
+    """
+
+    def __init__(self, 
+                 pdf: Callable[[np.array, Tuple[float, float]], float],
+                 start: float,
+                 end: float,
+                 bins: Union[List[float], int] = 100,
+                 name: str = 'custom_tp',
+    ) -> None:
+        """Constructs the object.
+
+        More function info...
+
+        Args:
+            pdf: The distribution function (takes times and time window).
+            start: lower bound for the distribution.
+            end: upper bound for the distribution.
+            bins: Either a list of specific bin edges to use (values should be between 0 and 1),
+                  or an integer giving the number of linear spaced bins to use.
+            name: prefix for parameters.
+        """
+        
+        
+        self._window = [start, end]
+        self._default_params = {'_'.join([name, 'start']):self._window[0], '_'.join([name, 'end']):self._window[1]}
+        self._param_dtype = [('_'.join([name, 'start']), np.float32),('_'.join([name, 'end']), np.float32)]
+        self.dist = self.build_rv(pdf, bins)
+        
+    def build_rv(pdf: Callable[[np.array, Tuple[float, float]], float], bins: Union[List[float], int]
+    ) -> scipy.stats.rv_histogram:
+        """Function info...
+
+        More function info...
+
+        Args:
+            pdf: The normalized distribution function (takes times and time window).
+            bins: Either a list of specific bin edges to use (values should be between 0 and 1),
+                  or an integer giving the number of linear spaced bins to use.
+
+        Returns:
+            The scipy histogram distribution based on the bin edges and the distribution function.
+        """
+        if isinstance(bins, int):
+            bin_edges = np.linspace(*self._window, bins)
+        else:
+            span = self._window[1] - self._window[0]
+            bin_edges = span * np.array(bins)
+            
+        bin_widths = np.diff(bin_edges)
+        bin_centers = bin_edges[:-1] + bin_widths
+        hist = pdf(bin_centers, tuple(self._window))
+        area_under_hist = np.sum(hist * bin_widths)
+        
+        hist *= 1/area_under_hist
+        
+        return scipy.stats.rv_histogram((hist, bin_edges))
+
+    def pdf(self, times: np.array) -> np.array:
+        """Calculates the probability for each time.
+        
+        More function info...
+
+        Args:
+            times: A numpy list of times to evaluate.
+            
+        Returns:
+            
+        """
+        return self.dist.pdf(times)
+
+    def logpdf(self, times: np.array) -> np.array:
+        """Calculates the log(probability) for each time.
+        
+        More function info...
+
+        Args:
+            times: A numpy list of times to evaluate.
+            
+        Returns:
+            
+        """
+        return self.dist.logpdf(times)
+
+    def random(self, size: int = 1) -> np.array:
+        """Returns random values following the uniform distribution.
+        
+        More function info...
+
+        Args:
+            size: The number of random values to return.
+        
+        Returns:
+            
+        """
+        return self.dist.rvs(size=size)
+
+    def get_range(self) -> List[float]:
+        """Returns the min/max values for the distribution."""
+        return self._window
+    
+    def x0(self, times: np.array) -> Tuple[float, float]:
+        """Short function info...
+        
+        More function info...
+        
+        Args:
+            times: 
+            
+        Returns:
+            
+        """
+        x0_start = np.min(times)
+        x0_end = np.max(times)
+        return x0_start, x0_end
+        
+    def bounds(self, time_profile: GenericProfile) -> List[List[float]]:
+        """Given some other profile, returns allowable ranges for parameters.
+        
+        More function info...
+        
+        Args:
+            time_profile:
+        """
+        return [time_profile.get_range(), time_profile.get_range()]
+    
+    @property
+    def default_params(self) -> Dict[str, float]:
         return self._default_params
     
     @property
