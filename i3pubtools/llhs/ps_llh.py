@@ -476,11 +476,8 @@ class PsLLH:
         sob_pre = S/B
         
         def get_ts(args):
-            params = []
             ns = args[0]
             gamma = args[1]
-            if len(args) > 2:
-                params = args[2:]
                 
             e_lh_ratio = self._get_energy_sob(events, gamma, splines)
             sob = sob_pre * e_lh_ratio
@@ -501,7 +498,36 @@ class PsLLH:
             output['ns'] = result.x[0]
             output['gamma'] = result.x[1]
 
-            return output
+        return output
+    
+    def get_individual_ts(self,
+                          events: np.ndarray,
+                          ns: float, 
+                          gamma: float,
+    ) -> np.ndarray:
+        
+        n_events = len(events)
+        if n_events == 0: return None
+
+        # Check: ns cannot be larger than flux_norm
+        if ns >= n_events:
+            ns = n_events - 0.00001
+            
+        S = self._signal_pdf(events)
+        B = self._background_pdf(events)
+        splines = self._get_energy_splines(events)
+        e_lh_ratio = self._get_energy_sob(events, gamma, splines)
+        sob = S/B * e_lh_ratio
+        
+        output = rf.append_fields(
+            events.copy(),
+            'ts',
+            (ns/n_events*(sob - 1))+1,
+            dtypes=np.float32,
+            usemask=False,
+        )
+        
+        return output
 
     def produce_n_trials(self, 
                          ntrials: int,
