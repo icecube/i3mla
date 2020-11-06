@@ -17,13 +17,12 @@ import scipy
 import numpy as np
 from tqdm import tqdm
 from i3pubtools import tools
-from i3pubtools import time_profiles
 
 import numpy.lib.recfunctions as rf
 import scipy.interpolate
 
-class PsFlareLLH:
-    """Performs an point-source analysis assuming some single-flaring behavior to the signal.
+class PsLLH:
+    """Performs an point-source analysis.
     
     More class info...
     
@@ -33,8 +32,6 @@ class PsFlareLLH:
         grl (np.ndarray): A list of runs/times when the detector was working properly.
         bins (np.ndarray): Bin edges for dec and logE for generating sob maps.
         gammas (np.array): Gamma steps for generating sob maps.
-        signal_time_profile (generic_profile.GenericProfile): A time profile for the background distribution.
-        background_time_profile (generic_profile.GenericProfile): A time profile for the signal distribution.
         source (Dict[str, float]): Where to look for neutrinos.
     """
 
@@ -44,8 +41,6 @@ class PsFlareLLH:
                  grl: np.ndarray,
                  gammas: np.ndarray,
                  bins: np.ndarray,
-                 signal_time_profile: Optional[time_profiles.GenericProfile] = None,
-                 background_time_profile: Optional[time_profiles.GenericProfile] = None,
                  source: Dict[str, float] = {'ra':np.pi/2, 'dec':np.pi/6},
                  infile: Optional[str] = None,
                  outfile: Optional[str] = None,
@@ -59,11 +54,6 @@ class PsFlareLLH:
             outfile: Where to save the computed maps.
         """
         
-        if signal_time_profile is None:
-            signal_time_profile = time_profiles.GaussProfile(np.average(data['time']), np.std(data['time'])),
-        if background_time_profile is None:
-            background_time_profile = time_profiles.UniformProfile(np.min(data['time']), np.max(data['time'])),
-        
         self.data = data
         self.sim = sim
         
@@ -74,8 +64,6 @@ class PsFlareLLH:
         
         self.bins = bins
         self.gammas = gammas
-        self.signal_time_profile = signal_time_profile
-        self.background_time_profile = background_time_profile
         self.source = source
         
         if infile is not None:
@@ -267,7 +255,7 @@ class PsFlareLLH:
     def _select_and_weight(self, 
                            flux_norm: float = 0, 
                            gamma: float = -2, 
-                           sampling_width: float = np.radians(1),
+                           sampling_width: Optional[float] = None,
     ) -> np.ndarray:
         """Short function info...
         
@@ -284,15 +272,26 @@ class PsFlareLLH:
         """
         # Pick out only those events that are close in
         # declination. We only want to sample from those.
-        sindec_dist = np.abs(self.source['dec']-self.sim['trueDec'])
-        close = sindec_dist < sampling_width
-
-        reduced_sim = rf.append_fields(
-            self.sim[close].copy(),
-            'weight',
-            np.zeros(close.sum()),
-            dtypes=np.float32,
-        )
+        if sampling_width is not None:
+            sindec_dist = np.abs(self.source['dec']-self.sim['trueDec'])
+            close = sindec_dist < sampling_width
+            
+            reduced_sim = rf.append_fields(
+                self.sim[close].copy(),
+                'weight',
+                np.zeros(close.sum()),
+                dtypes=np.float32,
+            )
+            omega = 2*np.pi * (np.min([np.sin(self.source['dec']+sampling_width), 1]) -\
+                    np.max([np.sin(self.source['dec']-sampling_width), -1]))
+        else:
+            reduced_sim = rf.append_fields(
+                self.sim.copy(),
+                'weight',
+                np.zeros(len(self.sim)),
+                dtypes=np.float32,
+            )
+            omega = 4*np.pi
 
         # Assign the weights using the newly defined "time profile"
         # classes above. If you want to make this a more complicated
@@ -304,8 +303,6 @@ class PsFlareLLH:
         # sample events from similar declinations.
         # When we do this, correct for the solid angle
         # we're including for sampling
-        omega = 2*np.pi * (np.min([np.sin(self.source['dec']+sampling_width), 1]) -\
-                           np.max([np.sin(self.source['dec']-sampling_width), -1]))
         reduced_sim['weight'] /= omega
         return reduced_sim
 
@@ -324,9 +321,6 @@ class PsFlareLLH:
         # How many events should we add in? This will now be based on the
         # total number of events actually observed during these runs
         background = np.random.choice(self.data, n_background_observed).copy()
-
-        # Assign times to our background events
-        background['time'] = self.background_time_profile.random(len(background))
 
         # Randomize the background RA
         background['ra'] = np.random.uniform(0, 2*np.pi, len(background))
@@ -355,15 +349,6 @@ class PsFlareLLH:
             replace = False,
         ).copy()
 
-        # Assign times to the signal using our time_profile class
-        signal['time'] = self.signal_time_profile.random(len(signal))
-
-        # And cut any times outside of the background range.
-        bgrange = self.background_time_profile.get_range()
-        contained_in_background = ((signal['time'] >= bgrange[0]) &\
-                                   (signal['time'] < bgrange[1]))
-        signal = signal[contained_in_background]
-
         # Update this number
         n_signal_observed = len(signal)
 
@@ -390,7 +375,7 @@ class PsFlareLLH:
                       reduced_sim: Optional[np.ndarray] = None, 
                       flux_norm: float = 0, 
                       gamma: float = -2, 
-                      sampling_width: float = np.radians(1), 
+                      sampling_width: Optional[float] = None, 
                       random_seed: Optional[int] = None,
                       verbose: bool = False,
     ) -> np.ndarray:
@@ -471,7 +456,6 @@ class PsFlareLLH:
             'ts':np.nan,
             'ns':ns,
             'gamma':gamma,
-            **self.signal_time_profile.default_params,
         }
         
         n_events = len(events)
@@ -486,11 +470,10 @@ class PsFlareLLH:
         B = self._background_pdf(events)
 
         splines = self._get_energy_splines(events)
-        t_lh_bg = self.background_time_profile.pdf(events['time'])
         
         drop = n_events - np.sum(S != 0)
         
-        sob_pre = S/B/t_lh_bg
+        sob_pre = S/B
         
         def get_ts(args):
             params = []
@@ -500,9 +483,7 @@ class PsFlareLLH:
                 params = args[2:]
                 
             e_lh_ratio = self._get_energy_sob(events, gamma, splines)
-            sig_t_pro = self.signal_time_profile.__class__(*params)
-            t_lh_sig = sig_t_pro.pdf(events['time'])
-            sob = sob_pre * e_lh_ratio * t_lh_sig
+            sob = sob_pre * e_lh_ratio
             ts = (ns/n_events*(sob - 1))+1
             return -2*(np.sum(np.log(ts)) + drop*np.log(1-ns/n_events))
 
@@ -510,12 +491,8 @@ class PsFlareLLH:
             # Set the seed values, which tell the minimizer
             # where to start, and the bounds. First do the
             # shape parameters.
-            x0 = [ns, gamma, *self.signal_time_profile.x0(events['time'])]
-            bounds = [
-                [0, n_events],
-                [-4, -1], # gamma [min, max]
-                *self.signal_time_profile.bounds(self.background_time_profile),
-            ]
+            x0 = [ns, gamma]
+            bounds = [[0, n_events], [-4, -1]] # gamma [min, max]
 
             result = scipy.optimize.minimize(get_ts, x0=x0, bounds=bounds, method='L-BFGS-B')
 
@@ -523,8 +500,6 @@ class PsFlareLLH:
             output['ts'] = -1*result.fun
             output['ns'] = result.x[0]
             output['gamma'] = result.x[1]
-            for i, key in enumerate(self.signal_time_profile.default_params):
-                output[key] = result.x[2+i]
 
             return output
 
@@ -535,7 +510,7 @@ class PsFlareLLH:
                          random_seed: Optional[int] = None,
                          flux_norm: float = 0,
                          gamma: float = -2,
-                         sampling_width: float = np.radians(1),
+                         sampling_width: Optional[float] = None,
     ) -> np.ndarray:
         """Produces n trials and calculate a test statistic for each trial.
         
@@ -567,7 +542,6 @@ class PsFlareLLH:
             ('ninj', np.int),
             ('ns', np.float32),
             ('gamma', np.float32),
-            *self.signal_time_profile.param_dtype,
         ])
         fit_info = np.empty(ntrials, dtype=dtype)
 
@@ -599,7 +573,5 @@ class PsFlareLLH:
             fit_info['ninj'][i] = (trial['run'] > 200000).sum()
             fit_info['ns'][i] = bestfit['ns']
             fit_info['gamma'][i] = bestfit['gamma']
-            for j, key in enumerate(self.signal_time_profile.default_params):
-                fit_info[key][i] = bestfit[key]
 
         return fit_info

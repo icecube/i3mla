@@ -35,19 +35,19 @@ class PsFlareLLH:
         gammas (np.array): Gamma steps for generating sob maps.
         signal_time_profile (generic_profile.GenericProfile): A time profile for the background distribution.
         background_time_profile (generic_profile.GenericProfile): A time profile for the signal distribution.
-        source (dict): Where to look for neutrinos.
+        source (Dict[str, float]): Where to look for neutrinos.
     """
 
-    def __init__(self, 
-                 data: np.ndarray, 
-                 sim: np.ndarray, 
-                 grl: np.ndarray, 
-                 gammas: np.ndarray, 
-                 bins: np.ndarray, 
+    def __init__(self,
+                 data: np.ndarray,
+                 sim: np.ndarray,
+                 grl: np.ndarray,
+                 gammas: np.ndarray,
+                 bins: np.ndarray,
                  signal_time_profile: Optional[time_profiles.GenericProfile] = None,
                  background_time_profile: Optional[time_profiles.GenericProfile] = None,
-                 source: Dict[float, float] = {'ra':np.pi/2, 'dec':np.pi/6},
-                 infile: Optional[str] = None, 
+                 source: Dict[str, float] = {'ra':np.pi/2, 'dec':np.pi/6},
+                 infile: Optional[str] = None,
                  outfile: Optional[str] = None,
     ) -> None:
         """Inits PsFlareLLH and calculates sob maps.
@@ -490,6 +490,8 @@ class PsFlareLLH:
         
         drop = n_events - np.sum(S != 0)
         
+        sob_pre = S/B/t_lh_bg
+        
         def get_ts(args):
             params = []
             ns = args[0]
@@ -500,7 +502,7 @@ class PsFlareLLH:
             e_lh_ratio = self._get_energy_sob(events, gamma, splines)
             sig_t_pro = self.signal_time_profile.__class__(*params)
             t_lh_sig = sig_t_pro.pdf(events['time'])
-            sob = S/B*e_lh_ratio * (t_lh_sig/t_lh_bg)
+            sob = sob_pre * e_lh_ratio * t_lh_sig
             ts = (ns/n_events*(sob - 1))+1
             return -2*(np.sum(np.log(ts)) + drop*np.log(1-ns/n_events))
 
