@@ -45,7 +45,7 @@ class PsLLH:
                  infile: Optional[str] = None,
                  outfile: Optional[str] = None,
     ) -> None:
-        """Inits PsFlareLLH and calculates sob maps.
+        """Inits PsFlareLlh and calculates sob maps.
         
         More function info...
 
@@ -71,10 +71,7 @@ class PsLLH:
             self.sob_maps = indata[0]
             self.bg_p_dec = indata[1]
         else:
-            self.sob_maps = np.zeros((len(bins[0])-1, len(bins[1])-1, len(gammas)))
-            self.bg_p_dec = self._create_bg_p_dec()
-            for i,gamma in enumerate(tqdm(gammas)):
-                self.sob_maps[:,:,i] = self._create_interpolated_ratio(gamma)
+            
         
         if outfile is not None:
             np.save(outfile, np.array([self.sob_maps, self.bg_p_dec], dtype=object))
