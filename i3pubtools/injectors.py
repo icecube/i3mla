@@ -11,12 +11,15 @@ __status__ = 'Development'
 Docstring
 """
 
-from typing import
+from typing import Dict, Optional
 
 import numpy as np
+import scipy
 
 from i3pubtools import tools
 from i3pubtools import models
+
+import numpy.lib.recfunctions as rf
 
 class PsInjector:
     """Class info...
