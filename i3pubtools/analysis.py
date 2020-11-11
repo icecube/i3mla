@@ -16,6 +16,7 @@ from typing import Dict, List, Optional, Union
 import scipy
 import numpy as np
 from i3pubtools import models
+from i3pubtools import injectors
 
 import numpy.lib.recfunctions as rf
 
@@ -27,7 +28,7 @@ class Analysis:
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def __init__(self, event_model: models.EventModel, *args, **kwargs) -> None: pass
+    def __init__(self, *args, **kwargs) -> None: pass
 
     @abc.abstractmethod
     def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array: pass
@@ -41,97 +42,29 @@ class Analysis:
     @abc.abstractmethod
     def produce_and_minimize(self, n_trials: int, *args, **kwargs) -> np.ndarray: pass
     
-    @property
-    @abc.abstractmethod
-    def data(self) -> np.ndarray: pass
-    
-    @property
-    @abc.abstractmethod
-    def sim(self) -> np.ndarray: pass
-    
-    @property
-    @abc.abstractmethod
-    def grl(self) -> np.ndarray: pass
-    
 class PsAnalysis(Analysis):
     """Class info...
 
     More class info...
 
     Attributes:
-        ps_model(models.PsModel):
+        injector (injectors.PsInjector):
     """
-    def __init__(self, event_model: models.EventModel, source: Dict[str, float]) -> None:
+    def __init__(self,
+                 source: Optional[Dict[str, float]] = None,
+                 injector: Optional[injectors.PsInjector] = None) -> None:
         """Function info...
 
         More function info...
 
         Args:
-            event_model:
             source:
+            injector:
         """
-        self.ps_model = models.PsModel(source, event_model)
-        
-    def _inject_background_events(self) -> np.ndarray:
-        """Function info...
-        
-        More function info...
-        
-        Returns:
-            An array of injected background events.
-        """
-        # Get the number of events we see from these runs
-        n_background = self.ps_model.grl['events'].sum()
-        n_background_observed = np.random.poisson(n_background)
-
-        # How many events should we add in? This will now be based on the
-        # total number of events actually observed during these runs
-        background = np.random.choice(self.ps_model.data, n_background_observed).copy()
-
-        # Randomize the background RA
-        background['ra'] = np.random.uniform(0, 2*np.pi, len(background))
-        
-        return background
+        if injector is not None: self.injector = injector
+        else: self.injector = injectors.PsInjector(source)
     
-    def _inject_signal_events(self, reduced_sim: np.ndarray) -> np.ndarray:
-        """Function info...
-        
-        More function info...
-        
-        Args:
-            reduced_sim: Reweighted and pruned simulated events near the source declination.
-            
-        Returns:
-            An array of injected signal events.
-        """
-        # Pick the signal events
-        total = reduced_sim['weight'].sum()
-
-        n_signal_observed = scipy.stats.poisson.rvs(total)
-        signal = np.random.choice(
-            reduced_sim, 
-            n_signal_observed,
-            p=reduced_sim['weight']/total,
-            replace = False).copy()
-
-        # Update this number
-        n_signal_observed = len(signal)
-
-        if n_signal_observed > 0:
-            ones = np.ones_like(signal['trueRa'])
-
-            signal['ra'], signal['dec'] = tools.rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones*self.ps_model.source['ra'], ones*self.ps_model.source['dec'],
-                signal['ra'], signal['dec'])
-            signal['trueRa'], signal['trueDec'] = tools.rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones*self.ps_model.source['ra'], ones*self.ps_model.source['dec'],
-                signal['trueRa'], signal['trueDec'])
-        
-        return signal
-    
-    def _preprocess_ts(self, events: np.ndarray
+    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel
     ) -> Optional[Tuple[List[scipy.interpolate.UnivariateSpline], np.array]]:
         """Function info...
 
@@ -139,20 +72,20 @@ class PsAnalysis(Analysis):
 
         Args:
             events:
+            event_model: An object containing data and preprocessed parameters.
 
         Returns:
             None if there are no events, otherwise the pre-processed signal over background.
         """
         if len(events) == 0: return
             
-        S = self.ps_model.signal_spatial_pdf(events)
-        B = self.ps_model.background_spatial_pdf(events)
-        splines = self.ps_model.get_log_sob_gamma_splines(events)
+        S = self.injector.signal_spatial_pdf(events)
+        B = self.injector.background_spatial_pdf(events, event_model)
+        splines = event_model.get_log_sob_gamma_splines(events)
         
         return splines, S/B
     
-    def evaluate_ts(self,
-                    events: np.ndarray, ns: float, gamma: float,
+    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, ns: float, gamma: float,
                     preprocessing: Optional[Tuple[List[scipy.interpolate.UnivariateSpline], np.array]] = None
     ) -> Optional[np.array]:
         """Function info...
@@ -161,20 +94,21 @@ class PsAnalysis(Analysis):
 
         Args:
             events:
+            event_model: An object containing data and preprocessed parameters.
             ns:
             gamma:
 
         Returns:
             
         """
-        if preprocessing is None and preprocessing:=self._preprocess_ts(events) is None: return
+        if preprocessing is None and preprocessing:=self._preprocess_ts(events, event_model) is None: return
         
         splines, sob = preprocessing
         sob *= np.exp([spline(gamma) for spline in splines])
         
         return np.log((ns/n_events*(sob - 1)) + 1)
     
-    def minimize_ts(self, events: np.ndarray,
+    def minimize_ts(self, events: np.ndarray, event_model: EventModel,
                     test_ns: float,
                     test_gamma: float,
                     gamma_bounds: List[float] = [-4, -1],
@@ -185,6 +119,7 @@ class PsAnalysis(Analysis):
 
         Args:
             events:
+            event_model: An object containing data and preprocessed parameters.
             test_ns:
             test_gamma:
 
@@ -192,7 +127,7 @@ class PsAnalysis(Analysis):
             
         """
         output = {'ts': np.nan, 'ns': ns, 'gamma': gamma}
-        preprocessing = self._preprocess_ts(events)
+        preprocessing = self._preprocess_ts(events, event_model)
         if preprocessing is None: return output
         
         # Check: ns cannot be larger than n_events
@@ -226,6 +161,7 @@ class PsAnalysis(Analysis):
         return output
     
     def produce_trial(self,
+                      event_model: models.EventModel,
                       flux_norm: float, 
                       reduced_sim: Optional[np.ndarray] = None, 
                       gamma: float = -2, 
@@ -237,6 +173,7 @@ class PsAnalysis(Analysis):
         More function info...
         
         Args:
+            event_model: An object containing data and preprocessed parameters.
             reduced_sim: Reweighted and pruned simulated events near the source declination.
             flux_norm: A flux normaliization to adjust weights.
             gamma: A spectral index to adjust weights.
@@ -250,13 +187,13 @@ class PsAnalysis(Analysis):
         if random_seed is not None: np.random.seed(random_seed)
         
         if reduced_sim is None: 
-            reduced_sim = self.ps_model.reduced_sim(
+            reduced_sim = self.injector.reduced_sim(
                 flux_norm=flux_norm,
                 gamma=gamma,
                 sampling_width=sampling_width)
 
-        background = self._inject_background_events()
-        if flux_norm > 0: signal = self._inject_signal_events(reduced_sim)
+        background = self.injector.inject_background_events()
+        if flux_norm > 0: signal = self.injector.inject_signal_events(reduced_sim)
         else: signal = np.empty(0, dtype=background.dtype)
         
         if verbose:
@@ -279,15 +216,16 @@ class PsAnalysis(Analysis):
         # We need to check to ensure that every event is contained within
         # a good run. If the event happened when we had deadtime (when we
         # were not taking data), then we need to remove it.
-        after_start = np.less(self.ps_model.grl['start'].reshape((1, len(self.ps_model.grl))),
+        after_start = np.less(event_model.grl['start'].reshape((1, len(event_model.grl))),
                               events['time'].reshape(len(events), 1))
         before_stop = np.less(events['time'].reshape(len(events), 1),
-                              self.ps_model.grl['stop'].reshape((1, len(self.ps_model.grl))))
+                              event_model.grl['stop'].reshape((1, len(event_model.grl))))
         during_uptime = np.any(after_start & before_stop, axis = 1)
 
         return events[during_uptime]
     
     def produce_and_minimize(self,
+                             event_model: models.EventModel,
                              n_trials: int,
                              test_ns: float = 1,
                              test_gamma: float = -2,
@@ -302,6 +240,7 @@ class PsAnalysis(Analysis):
         More function info...
         
         Args:
+            event_model: An object containing data and preprocessed parameters.
             n_trials: The number of times to repeat the trial + evaluate_ts process.
             test_ns: A guess for the number of signal events.
             test_gamma: A guess for best fit spectral index of the signal.
@@ -319,7 +258,10 @@ class PsAnalysis(Analysis):
         # Cut down the sim. We're going to be using the same
         # source and weights each time, so this stops us from
         # needing to recalculate over and over again.
-        reduced_sim = self.ps_model.reduced_sim(flux_norm=flux_norm, gamma=gamma, sampling_width=sampling_width)
+        reduced_sim = self.injector.reduced_sim(event_model,
+                                                flux_norm=flux_norm,
+                                                gamma=gamma,
+                                                sampling_width=sampling_width)
 
         # Build a place to store information for the trial
         dtype = np.dtype([
@@ -341,10 +283,10 @@ class PsAnalysis(Analysis):
             
         for i in range(n_trials):
             # Produce the trial events
-            trial = self.produce_trial(flux_norm, reduced_sim, random_seed=random_seed)
+            trial = self.produce_trial(event_model, flux_norm, reduced_sim, random_seed=random_seed)
 
             # And get the weights
-            bestfit = self.minimize_ts(trial, test_ns, test_gamma)
+            bestfit = self.minimize_ts(trial, event_model, test_ns, test_gamma)
 
             fit_info['ts'][i] = bestfit['ts']
             fit_info['ntot'][i] = len(trial)
@@ -358,18 +300,6 @@ class PsAnalysis(Analysis):
         if verbose: print('done')
 
         return fit_info
-    
-    @property
-    def data(self) -> np.ndarray:
-        return self.ps_model.data
-    
-    @property
-    def sim(self) -> np.ndarray:
-        return self.ps_model.sim
-    
-    @property
-    def grl(self) -> np.ndarray:
-        return self.ps_model.grl
     
 class PsStackingAnalysis(Analysis):
     """Class info...
@@ -401,15 +331,3 @@ class PsStackingAnalysis(Analysis):
     
     def produce_and_minimize(self, n_trials: int, **trial_and_test_args) -> np.ndarray:
         return NotImplementedError
-    
-    @property
-    def data(self) -> np.ndarray:
-        return self.ps_analyses[0].data
-    
-    @property
-    def sim(self) -> np.ndarray:
-        return self.ps_analyses[0].sim
-    
-    @property
-    def grl(self) -> np.ndarray:
-        return self.ps_analyses[0].grl
