@@ -123,6 +123,14 @@ class EventModel:
         if 's' not in kwargs: kwargs['s'] = 1.5e-5
         if 'ext' not in kwargs: kwargs['ext'] = 1
         
+        # Normalize over the right ascension, assuming 
+        # uniform background response. This works for 
+        # longer time windows and is roughly correct for
+        # shorter windows as well. This is necessary in
+        # order to get identical units as the 2d gaussian
+        # used for the signal spatial PDF
+        hist /= (2 * np.pi)
+
         return scipy.interpolate.UnivariateSpline(bin_centers, hist, *args, *kwargs)
     
     def _create_sob_map(self, gamma: float, *args, verbose: bool = False, **kwargs) -> np.array:
