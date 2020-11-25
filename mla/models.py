@@ -14,7 +14,7 @@ Docstring
 from typing import Dict, List, Union
 
 import numpy as np
-from i3pubtools import tools
+from mla import tools
 
 import numpy.lib.recfunctions as rf
 import scipy.interpolate

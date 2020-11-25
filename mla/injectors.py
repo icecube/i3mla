@@ -16,8 +16,8 @@ from typing import Dict, Optional
 import numpy as np
 import scipy
 
-from i3pubtools import tools
-from i3pubtools import models
+from mla import tools
+from mla import models
 
 import numpy.lib.recfunctions as rf
 

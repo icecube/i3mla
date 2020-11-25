@@ -30,17 +30,14 @@ def build_bkg_spline(data , bins=np.linspace(-1.0, 1.0, 501) , file_name = None)
     
     hist, bins = np.histogram(sin_dec, 
                         bins=bins, 
-                        weights=np.ones_like(data['dec'])/len(data['dec']),
                         density=True
                         )
                         
-    bg_p_dec = interpolate.UnivariateSpline(bins[:-1]+np.diff(bins)/2., 
-                                        hist,
-                                        bbox=[-1.0, 1.0],
-                                        s=1.5e-5,
-                                        ext=1)
+    bg_p_dec = interpolate.InterpolatedUnivariateSpline(bins[:-1]+np.diff(bins)/2., 
+                                        np.log(hist),
+                                        k=2)
     if file_name is not None:
-        with open(file_name, 'wb') as f:
+        with open(file_name+"1d.pickle", 'wb') as f:
             pickle.dump(bg_p_dec, f)
         
     return bg_p_dec
@@ -99,13 +96,11 @@ def build_bkg_2dhistogram(data , bins=[np.linspace(-1,1,100),np.linspace(1,8,100
     bg_h,bins:The background histogram and the binning.
     '''
     bg_w=np.ones(len(data),dtype=float)
-    
-    bg_w/=np.sum(bg_w)
-    
     bg_h,xedges,yedges=np.histogram2d(np.sin(data['dec']),data['logE'],bins=bins
-                                      ,weights=bg_w)
+                                      ,density=True)
+    bg_h /= np.sum(bg_h,axis=1)[:,None] 
     if file_name is not None:
-        np.save(file_name,bg_h)                                
+        np.save(file_name+"bkg2d.npy",bg_h)                                
     return bg_h,bins
 
 #The code
@@ -124,21 +119,19 @@ def create_interpolated_ratio( data, sim, gamma, bins=[np.linspace(-1,1,100),np.
     '''
     # background
     bins = np.array(bins)
-    bg_w = np.ones(len(data), dtype=float)
-    bg_w /= np.sum(bg_w)
     bg_h, xedges, yedges  = np.histogram2d(np.sin(data['dec']),
                                            data['logE'],
                                            bins=bins,
-                                           weights = bg_w)
-    
+                                           density = True)
+    bg_h /= np.sum(bg_h,axis=1)[:,None] 
     # signal
     sig_w = sim['ow'] * sim['trueE']**gamma
-    sig_w /= np.sum(sig_w)
     sig_h, xedges, yedges = np.histogram2d(np.sin(sim['dec']),
                                            sim['logE'],
                                            bins=bins,
-                                           weights = sig_w)
-    
+                                           weights = sig_w,
+                                           density = True)
+    sig_h /= np.sum(sig_h,axis=1)[:,None] 
     ratio = sig_h / bg_h
     for i in range(ratio.shape[0]):
         # Pick out the values we want to use.
@@ -154,7 +147,7 @@ def create_interpolated_ratio( data, sim, gamma, bins=[np.linspace(-1,1,100),np.
                                                     ext = 3)
 
         # And store the interpolated values
-        ratio[i] = spline(bins[1,:-1])
+        ratio[i] = spline(bins[1][:-1])
         
     return ratio, bins
 
@@ -179,7 +172,7 @@ def build_energy_2dhistogram(data, sim, bins=[np.linspace(-1,1,100),np.linspace(
         sob_maps[:,:,i], _ = create_interpolated_ratio(data, sim,g, bins )
                      
     if file_name is not None:
-        np.save(file_name,sob_maps)
+        np.save(file_name+"2d.npy",sob_maps)
         np.save("gamma_point_"+file_name,gamma_points)
     return sob_maps, gamma_points
 
@@ -190,7 +183,7 @@ def build_energy_2dhistogram(data, sim, bins=[np.linspace(-1,1,100),np.linspace(
     
 class LLH_point_source(object):
     '''The class for point source'''
-    def __init__(self , ra , dec , data , sim ,  spectrum , signal_time_profile = None , background_time_profile = (0,1) , background = None, fit_position=False , bkg_bins=np.linspace(-1.0, 1.0, 501) , sampling_width = np.radians(1) , bkg_2dbins=[np.linspace(-1,1,100),np.linspace(1,8,100)] , sob_maps = None , gamma_points = np.arange(-4, -1, 0.25) ,bkg_dec_spline = None ,bkg_maps = None):
+    def __init__(self , ra , dec , data , sim ,  spectrum , signal_time_profile = None , background_time_profile = (0,1) , background = None, fit_position=False , bkg_bins=np.linspace(-1.0, 1.0, 501) , sampling_width = np.radians(1) , bkg_2dbins=[np.linspace(-1,1,100),np.linspace(1,8,100)] , sob_maps = None , gamma_points = np.arange(-4, -1, 0.25) ,bkg_dec_spline = None ,bkg_maps = None,file_name=None):
         ''' Constructor of the class
         args:
         ra: RA of the source in rad
@@ -218,6 +211,7 @@ class LLH_point_source(object):
         try:
             self.data = rf.append_fields(data,'sindec',np.sin(data['dec']),usemask=False)#The full simulation set,this is for the overall normalization of the Energy S/B ratio
         except ValueError: #sindec already exist
+            self.data = data
             pass
                     
         self.energybins = bkg_2dbins
@@ -226,6 +220,7 @@ class LLH_point_source(object):
         try:
             self.fullsim = rf.append_fields(sim,'sindec',np.sin(sim['dec']),usemask=False)#The full simulation set,this is for the overall normalization of the Energy S/B ratio
         except ValueError: #sindec already exist
+            self.fullsim = self.fullsim
             pass
             
         
@@ -242,7 +237,7 @@ class LLH_point_source(object):
         self.sampling_width = sampling_width
         
         if bkg_dec_spline is None:
-            self.bkg_spline = build_bkg_spline(self.background , bins = bkg_bins)
+            self.bkg_spline = build_bkg_spline(self.background , bins = bkg_bins,file_name=file_name)
             
         elif type(bkg_dec_spline) == str:
             with open(bkg_dec_spline, 'rb') as f:
@@ -252,8 +247,9 @@ class LLH_point_source(object):
         
         if spectrum == "PowerLaw":
             self.gamma_point = gamma_points
+            self.gamma_point_prc = np.abs(gamma_points[1] - gamma_points[0])
             if sob_maps is None:
-                self.ratio,self.gamma_point = build_energy_2dhistogram(self.background, sim ,bkg_2dbins ,gamma_points)
+                self.ratio,self.gamma_point = build_energy_2dhistogram(self.background, sim ,bkg_2dbins ,gamma_points,file_name=file_name)
                 
             elif type(sob_maps) == str:
                 self.ratio = np.load(sob_maps)
@@ -265,7 +261,7 @@ class LLH_point_source(object):
             self.spectrum = spectrum
             
             if bkg_maps is None:
-                self.bg_h,self.energybins = build_bkg_2dhistogram(self.background , bins = bkg_2dbins)
+                self.bg_h,self.energybins = build_bkg_2dhistogram(self.background , bins = bkg_2dbins,file_name=file_name)
 
             elif type(bkg_maps) == str:
                 self.bg_h = np.load(bkg_maps)
@@ -339,8 +335,8 @@ class LLH_point_source(object):
         try:
             self.data = rf.append_fields(data,'sindec',np.sin(data['dec']),usemask=False)#The full simulation set,this is for the overall normalization of the Energy S/B ratio
         except ValueError: #sindec already exist
+            self.data = data
             pass
-        self.data = data
         self.N = len(data)   
         self.sample_size = 0       
         self.update_spatial()
@@ -365,7 +361,7 @@ class LLH_point_source(object):
         return:
         background spatial pdf
         '''
-        background_likelihood = (1/(2*np.pi))*self.bkg_spline(np.sin(self.data['dec']))
+        background_likelihood = (1/(2*np.pi))*np.exp(self.bkg_spline(np.sin(self.data['dec'])))
         return background_likelihood
     
     def update_background_time_profile(self,profile):
@@ -394,8 +390,8 @@ class LLH_point_source(object):
     def update_energy_histogram(self):
         '''enegy weight calculation. This is slow if you choose a large sample width'''
         sig_w=self.sim_dec['ow'] * self.spectrum(self.sim_dec['trueE'])
-        sig_w/=np.sum(self.fullsim['ow'] * self.spectrum(self.fullsim['trueE']))
-        sig_h,xedges,yedges=np.histogram2d(self.sim_dec['sindec'],self.sim_dec['logE'],bins=self.energybins,weights=sig_w)
+        sig_h,xedges,yedges=np.histogram2d(self.sim_dec['sindec'],self.sim_dec['logE'],bins=self.energybins,weights=sig_w,density=True)
+        sig_h /= np.sum(sig_h,axis=1)[:,None]
         with np.errstate(divide='ignore'):
             ratio=sig_h/self.bg_h
         for k in range(ratio.shape[0]):
@@ -436,7 +432,7 @@ class LLH_point_source(object):
             for i in range(len(self.data)):
                 spline = scipy.interpolate.UnivariateSpline(self.gamma_point,
                                             np.log(sob_ratios[i]),
-                                            k = 3,
+                                            k = 2,
                                             s = 0,
                                             ext = 'raise')
                 sob_spline[i] = spline
@@ -451,7 +447,7 @@ class LLH_point_source(object):
                     bounds= [[gamma, gamma],[0,self.N]]
                     self.gamma_best_fit = gamma
                 else:
-                    bounds= [[self.gamma_point[0], self.gamma_point[-1]],[0,self.N]]
+                    bounds= [[self.gamma_point[0]+0.01, self.gamma_point[-1]-0.01],[0,self.N]]
                 bf_params = scipy.optimize.minimize(inner_ts,
                                     x0 = [-2,1],
                                     bounds = bounds,
