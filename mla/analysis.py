@@ -15,8 +15,8 @@ from typing import Dict, List, Optional, Union
 
 import scipy
 import numpy as np
-from i3pubtools import models
-from i3pubtools import injectors
+from mla import models
+from mla import injectors
 
 import numpy.lib.recfunctions as rf
 

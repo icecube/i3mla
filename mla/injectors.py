@@ -15,10 +15,11 @@ from typing import Dict, Optional
 
 import numpy as np
 import scipy
+import scipy.stats
 
 from mla import tools
 from mla import models
-
+from mla import spectral
 import numpy.lib.recfunctions as rf
 
 class PsInjector:
@@ -66,9 +67,12 @@ class PsInjector:
         return (1/(2*np.pi))*event_model.background_dec_spline(np.sin(events['dec']))
     
     def reduced_sim(self,
-                    event_model: models.EventModel,
-                    flux_norm: float = 0, 
-                    gamma: float = -2, 
+                    livetime: float,
+                    event_model: Optional[models.EventModel] = None,
+                    sim: Optional[np.ndarray] = None,
+                    flux_norm: Optional[float] = 0, 
+                    gamma: Optional[float] = -2,
+                    spectrum: Optional[spectral.BaseSpectrum] = None,
                     sampling_width: Optional[float] = None) -> np.ndarray:
         """Function info...
         
@@ -76,8 +80,12 @@ class PsInjector:
         weight for each event. Adds the weights as a new column to the simulation set.
             
         Args:
+            livetime: livetime in days
+            event_model: models.EventModel object that holds the simulation set
+            sim: simulation set. Alternative for user not passing event_model. 
             flux_norm: A flux normaliization to adjust weights.
             gamma: A spectral index to adjust weights.
+            spectrum: spectral.BaseSpectrum object.Alternative for user not passing flux_norm and gamma. 
             sampling_width: The bandwidth around the source declination to cut events.
         
         Returns:
@@ -85,29 +93,37 @@ class PsInjector:
         """
         # Pick out only those events that are close in
         # declination. We only want to sample from those.
+        if event_model is not None:
+            sim = event_model.sim
+        
         if sampling_width is not None:
-            sindec_dist = np.abs(self.source['dec']-event_model.sim['trueDec'])
+            sindec_dist = np.abs(self.source['dec']-sim['trueDec'])
             close = sindec_dist < sampling_width
             
             reduced_sim = rf.append_fields(
-                event_model.sim[close].copy(),
+                sim[close].copy(),
                 'weight',
                 np.zeros(close.sum()),
-                dtypes=np.float32)
+                dtypes=np.float32,
+                usemask=False)
             omega = 2*np.pi * (np.min([np.sin(self.source['dec']+sampling_width), 1]) -\
                     np.max([np.sin(self.source['dec']-sampling_width), -1]))
         else:
             reduced_sim = rf.append_fields(
-                event_model.sim.copy(),
+                sim.copy(),
                 'weight',
-                np.zeros(len(event_model.sim)),
-                dtypes=np.float32)
+                np.zeros(len(sim)),
+                dtypes=np.float32,
+                usemask=False)
             omega = 4*np.pi
 
         # Assign the weights using the newly defined "time profile"
         # classes above. If you want to make this a more complicated
         # shape, talk to me and we can work it out.
-        reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * (reduced_sim['trueE']/100.e3)**gamma
+        if spectrum is not None:
+            reduced_sim['weight'] = reduced_sim['ow'] * spectrum(reduced_sim['trueE']) * livetime * 3600 * 24
+        else:
+            reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * (reduced_sim['trueE']/100.e3)**gamma * 3600 * 24
 
         # Apply the sampling width, which ensures that we
         # sample events from similar declinations.
@@ -174,3 +190,43 @@ class PsInjector:
                 signal['trueRa'], signal['trueDec'])
         
         return signal
+    
+    def inject_nsignal_events(self, reduced_sim: np.ndarray, n: int) -> np.ndarray:
+        """Function info...
+        
+        Inject n signal events.
+        
+        Args:
+            reduced_sim: Reweighted and pruned simulated events near the source declination.
+            n: Number of events.
+            
+        Returns:
+            An array of injected signal events.
+        """
+        # Pick the signal events
+        total = reduced_sim['weight'].sum()
+
+        n_signal_observed = n
+        signal = np.random.choice(
+            reduced_sim, 
+            n_signal_observed,
+            p=reduced_sim['weight']/total,
+            replace = False).copy()
+
+        # Update this number
+        n_signal_observed = len(signal)
+
+        if n_signal_observed > 0:
+            ones = np.ones_like(signal['trueRa'])
+
+            signal['ra'], signal['dec'] = tools.rotate(
+                signal['trueRa'], signal['trueDec'],
+                ones*self.source['ra'], ones*self.source['dec'],
+                signal['ra'], signal['dec'])
+            signal['trueRa'], signal['trueDec'] = tools.rotate(
+                signal['trueRa'], signal['trueDec'],
+                ones*self.source['ra'], ones*self.source['dec'],
+                signal['trueRa'], signal['trueDec'])
+        
+        return signal
+    
