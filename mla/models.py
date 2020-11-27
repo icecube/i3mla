@@ -80,7 +80,7 @@ class EventModel:
         
         if isinstance(gamma_bins, int):
             gamma_bins = np.linspace(-4.25, -0.5, 1+gamma_bins)
-        self._log_sob_gamma_splines = self._create_log_sob_gamma_splines(gamma_bins, verbose)
+        self._log_sob_gamma_splines = self._create_log_sob_gamma_splines(gamma_bins, verbose = verbose)
     
     def _create_background_dec_spline(self, sin_dec_bins: np.array,
                                       *args,
@@ -130,8 +130,8 @@ class EventModel:
         # order to get identical units as the 2d gaussian
         # used for the signal spatial PDF
         hist /= (2 * np.pi)
-
-        return scipy.interpolate.UnivariateSpline(bin_centers, hist, *args, *kwargs)
+        
+        return scipy.interpolate.UnivariateSpline(bin_centers, hist, *args, **kwargs)
     
     def _create_sob_map(self, gamma: float, *args, verbose: bool = False, **kwargs) -> np.array:
         """Function info...
@@ -205,7 +205,7 @@ class EventModel:
         Returns: A Nested list of splines of shape (sin_dec_bins, log_energy_bins).
         """
         if verbose: print('Building signal-over-background maps...')
-        sob_maps = np.array([self._create_sob_map(gamma, verbose) for gamma in gamma_bins])
+        sob_maps = np.array([self._create_sob_map(gamma, verbose = verbose) for gamma in gamma_bins])
         if verbose: print('done.')
 
         if 'k' not in kwargs: kwargs['k'] = 3

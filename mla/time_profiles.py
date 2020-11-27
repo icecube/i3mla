@@ -52,6 +52,9 @@ class GenericProfile:
     
     @abc.abstractmethod
     def bounds(self, time_profile: 'GenericProfile') -> List[List[float]]: pass
+    
+    @abc.abstractmethod
+    def effective_exposure(self, times): pass
 
     @property
     @abc.abstractmethod
@@ -87,6 +90,7 @@ class GaussProfile(GenericProfile):
         self.mean = mean
         self.sigma = sigma
         self.scipy_dist = scipy.stats.norm(mean, sigma)
+        self.norm = 1.0/np.sqrt(2*np.pi*sigma**2)
         self._default_params = {'_'.join([name, 'mean']):mean, '_'.join([name, 'sigma']):sigma}
         self._param_dtype = [('_'.join([name, 'mean']), np.float32),('_'.join([name, 'sigma']), np.float32)]
         return
@@ -149,7 +153,18 @@ class GaussProfile(GenericProfile):
         x0_sigma = np.std(times)
         return x0_mean, x0_sigma
         
+    def effective_exposure(self) -> float: 
+        """Return the effective exposure of the gaussian
         
+        Args:
+            
+        
+        Returns:
+            effctive exposure
+        """
+        return self.norm
+
+    
     def bounds(self, time_profile: GenericProfile) -> List[List[float]]:
         """Short function info...
         
@@ -200,6 +215,7 @@ class UniformProfile(GenericProfile):
             name: prefix for parameters.
         """
         self._window = [start, end]
+        self.norm = end-start
         self._default_params = {'_'.join([name, 'start']):self._window[0], '_'.join([name, 'end']):self._window[1]}
         self._param_dtype = [('_'.join([name, 'start']), np.float32),('_'.join([name, 'end']), np.float32)]
         return
@@ -273,8 +289,20 @@ class UniformProfile(GenericProfile):
         Args:
             time_profile:
         """
-        return [time_profile.get_range(), time_profile.get_range()]
-    
+        return [time_profile.get_range(), time_profile.get_range()]\
+        
+    def effective_exposure(self) -> float: 
+        """Return the effective exposure 
+        
+        Args:
+            
+        
+        Returns:
+            effctive exposure
+        """
+        return self.norm
+
+        
     @property
     def default_params(self) -> Dict[str, float]:
         return self._default_params
@@ -304,7 +332,7 @@ class CustomProfile(GenericProfile):
                  pdf: Callable[[np.array, Tuple[float, float]], float],
                  start: float,
                  end: float,
-                 bins: Union[List[float], int] = 100,
+                 bins = 100,
                  name: str = 'custom_tp',
     ) -> None:
         """Constructs the object.
@@ -326,7 +354,7 @@ class CustomProfile(GenericProfile):
         self._param_dtype = [('_'.join([name, 'start']), np.float32),('_'.join([name, 'end']), np.float32)]
         self.dist = self.build_rv(pdf, bins)
         
-    def build_rv(pdf: Callable[[np.array, Tuple[float, float]], float], bins: Union[List[float], int]
+    def build_rv(pdf: Callable[[np.array, Tuple[float, float]], float], bins
     ) -> scipy.stats.rv_histogram:
         """Function info...
 
@@ -350,9 +378,9 @@ class CustomProfile(GenericProfile):
         bin_centers = bin_edges[:-1] + bin_widths
         hist = pdf(bin_centers, tuple(self._window))
         area_under_hist = np.sum(hist * bin_widths)
-        
         hist *= 1/area_under_hist
-        
+        self.norm = 1/np.max(hist)
+        hist *= bin_widths
         return scipy.stats.rv_histogram((hist, bin_edges))
 
     def pdf(self, times: np.array) -> np.array:
@@ -422,6 +450,17 @@ class CustomProfile(GenericProfile):
             time_profile:
         """
         return [time_profile.get_range(), time_profile.get_range()]
+    
+    def effective_exposure(self) -> float: 
+        """Return the effective exposure 
+        
+        Args:
+            
+        
+        Returns:
+            effctive exposure
+        """
+        return self.norm
     
     @property
     def default_params(self) -> Dict[str, float]:

@@ -20,6 +20,7 @@ import scipy.stats
 from mla import tools
 from mla import models
 from mla import spectral
+from mla import time_profiles
 import numpy.lib.recfunctions as rf
 
 class PsInjector:
@@ -37,6 +38,8 @@ class PsInjector:
         More function info...
         """
         self.source = source
+        self.signal_time_profile = None
+        self.background_time_profile = None
         
     def signal_spatial_pdf(self, events: np.ndarray) -> np.array:
         """Calculates the signal probability of events based on their angular distance from a source.
@@ -132,7 +135,7 @@ class PsInjector:
         reduced_sim['weight'] /= omega
         return reduced_sim
     
-    def inject_background_events(self, event_model: models.EventModel) -> np.ndarray:
+    def inject_background_events_No_time(self, event_model: models.EventModel) -> np.ndarray:
         """Function info...
         
         More function info...
@@ -152,14 +155,104 @@ class PsInjector:
         background['ra'] = np.random.uniform(0, 2*np.pi, len(background))
         
         return background
+
+    def inject_background_events(self,
+                                 event_model: models.EventModel,
+                                 background_time_profile: Optional[time_profiles.GenericProfile] = None,
+                                 background_window: Optional[float] = 14
+                                 ) -> np.ndarray:
+        """Function info...
+        
+        Inject Background Events
+        
+        Args:
+            event_model: EventModel that holds the grl and data
+            background_time_profile: Background time profile to do the injection
+            background_window: Days used to estimated the background rate
+        
+        Returns:
+            An array of injected background events.
+        """
+        if background_time_profile is not None:
+            self.set_background_profile(event_model, background_time_profile, background_window)
+            
+        # Get the number of events we see from these runs
+        n_background = self.n_background
+        n_background_observed = np.random.poisson(n_background)
+
+        # How many events should we add in? This will now be based on the
+        # total number of events actually observed during these runs
+        background = np.random.choice(event_model.data, n_background_observed).copy()
+
+        # Randomize the background RA
+        background['ra'] = np.random.uniform(0, 2*np.pi, len(background))
+        
+        #Randomize the background time
+        if self.background_time_profile is not None:
+            background['time'] = self.background_time_profile.random(size = len(background))
+        return background
     
-    def inject_signal_events(self, reduced_sim: np.ndarray) -> np.ndarray:
+    def set_background_profile(self, 
+                       event_model: models.EventModel, 
+                       background_time_profile: time_profiles.GenericProfile,
+                       background_window: Optional[float] = 14) -> None:
+        """Function info...
+        
+        Setting the background rate for the models
+        Args:
+            event_model: EventModel that holds the grl
+            background_window: Days used to estimated the background rate
+            background_time_profile: Background time profile to do the injection
+        
+        Returns:
+            None
+        """
+        # Find the run contian in the background time window
+        start_time = background_time_profile.get_range()[0]
+        fully_contained = (event_model.grl['start'] >= start_time-background_window) &\
+                            (event_model.grl['stop'] < start_time)
+        start_contained = (event_model.grl['start'] < start_time-background_window) &\
+                            (event_model.grl['stop'] > start_time-background_window)
+        background_runs = (fully_contained | start_contained)
+        if not np.any(background_runs):
+            print("ERROR: No runs found in GRL for calculation of "
+                  "background rates!")
+            raise RuntimeError
+        background_grl = event_model.grl[background_runs]
+        
+        #Find the background rate
+        n_background = background_grl['events'].sum()
+        n_background /= background_grl['livetime'].sum()
+        n_background *= background_time_profile.effective_exposure()
+        self.n_background = n_background
+        self.background_time_profile = background_time_profile
+        return
+    
+    def set_signal_profile(self, 
+                       signal_time_profile: time_profiles.GenericProfile) -> None:
+        """Function info...
+        
+        Setting the signal time profile
+        Args:
+            signal_time_profile: Signal time profile to do the injection
+        
+        Returns:
+            None
+        """
+        self.signal_time_profile = signal_time_profile
+        return
+    
+    
+    def inject_signal_events(self, 
+                             reduced_sim: np.ndarray, 
+                             signal_time_profile:Optional[time_profiles.GenericProfile] = None) -> np.ndarray:
         """Function info...
         
         More function info...
         
         Args:
             reduced_sim: Reweighted and pruned simulated events near the source declination.
+            signal_time_profile: The time profile of the injected signal
             
         Returns:
             An array of injected signal events.
@@ -188,10 +281,20 @@ class PsInjector:
                 signal['trueRa'], signal['trueDec'],
                 ones*self.source['ra'], ones*self.source['dec'],
                 signal['trueRa'], signal['trueDec'])
+        #set the signal time profile if provided
+        if signal_time_profile is not None:
+            self.set_signal_profile(signal_time_profile)
+         
+        #Randomize the signal time
+        if self.signal_time_profile is not None:    
+            signal['time'] = self.signal_time_profile.random(size = len(signal))
         
         return signal
     
-    def inject_nsignal_events(self, reduced_sim: np.ndarray, n: int) -> np.ndarray:
+    def inject_nsignal_events(self, 
+                              reduced_sim: np.ndarray, 
+                              n: int,
+                              signal_time_profile:Optional[time_profiles.GenericProfile] = None) -> np.ndarray:
         """Function info...
         
         Inject n signal events.
@@ -199,7 +302,7 @@ class PsInjector:
         Args:
             reduced_sim: Reweighted and pruned simulated events near the source declination.
             n: Number of events.
-            
+            signal_time_profile: The time profile of the injected signal
         Returns:
             An array of injected signal events.
         """
@@ -227,6 +330,14 @@ class PsInjector:
                 signal['trueRa'], signal['trueDec'],
                 ones*self.source['ra'], ones*self.source['dec'],
                 signal['trueRa'], signal['trueDec'])
+                
+        #set the signal time profile if provided
+        if signal_time_profile is not None:
+            self.set_signal_profile(signal_time_profile)
+         
+        #Randomize the signal time
+        if self.signal_time_profile is not None:    
+            signal['time'] = self.signal_time_profile.random(size = len(signal))
         
         return signal
     
