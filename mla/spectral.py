@@ -100,16 +100,16 @@ class PowerLaw(BaseSpectrum):
     
 class CustomSpectrum(BaseSpectrum):
     r'''Custom spectrum using astromodel'''
-    def __init__(self,likelihood_model_instance):
+    def __init__(self,spectrum):
         r"""Constructor of CustomSpectrum object.
         args:
-        likelihood_model_instance: 
-        Any astromodel's model object
+        spectrum: 
+        Any callable object
         """
-        self.model = likelihood_model_instance
+        self.spectrum = spectrum
         return
         
-    def __call__(self, E, id = 0):
+    def __call__(self, E):
         r"""Evaluate spectrum at E 
         args:
         E: Float or array
@@ -119,7 +119,7 @@ class CustomSpectrum(BaseSpectrum):
         flux : Float or array
         Flux at evaluation energy.
         """
-        return self.model.get_point_source_fluxes(id = id,energies = E)
+        return self.spectrum(E)
         
     def __str__(self):
         r"""String representation of class"""

@@ -11,13 +11,14 @@ __status__ = 'Development'
 Docstring
 """
 
-from typing import Dict, List, Union
+from typing import Dict, List, Union,Optional
 
 import numpy as np
 from mla import tools
-
+from mla import spectral
 import numpy.lib.recfunctions as rf
 import scipy.interpolate
+
 
 class EventModel:
     """Stores the events and pre-processed parameters used in analyses.
@@ -301,16 +302,7 @@ class ThreeMLEventModel(EventModel):
         except ValueError: #sindec already exist
             self._sim = sim
             pass
-        if reduce:
-            self._reduced_sim = self._cut_sim(sampling_width)
-        else:
-            self._reduced_sim = self._sim
-        self.reduce = reduce
-        self.sampling_width = sampling_width
-        min_mjd = np.min(data['time'])
-        max_mjd = np.max(data['time'])
-        self._grl = grl[(grl['start'] < max_mjd) & (grl['stop'] > min_mjd)]
-        
+            
         if isinstance(background_sin_dec_bins, int):
             background_sin_dec_bins = np.linspace(-1, 1, 1+background_sin_dec_bins)
         self._background_dec_spline = self._create_background_dec_spline(background_sin_dec_bins)
@@ -323,8 +315,20 @@ class ThreeMLEventModel(EventModel):
             log_energy_bins = np.linspace(1, 8, 1+log_energy_bins)
         self._log_energy_bins = log_energy_bins
         
-        if isinstance(gamma_bins, int):
-            gamma_bins = np.linspace(-4.25, -0.5, 1+gamma_bins)
+        self.sampling_width = sampling_width
+        self.reduce = reduce
+        if reduce:
+            self._reduced_sim = self._cut_sim(self.sampling_width)
+            self._reduced_sim_truedec = self._cut_sim_truedec(self.sampling_width)
+        else:
+            self._reduced_sim = self._sim
+            self._reduced_sim_truedec = self._sim
+        
+        min_mjd = np.min(data['time'])
+        max_mjd = np.max(data['time'])
+        self._grl = grl[(grl['start'] < max_mjd) & (grl['stop'] > min_mjd)]
+        
+
         self._log_sob_gamma_splines = None
         self._background_sob_map = self._create_background_sob_map()
         if spectrum is not None:
@@ -336,6 +340,13 @@ class ThreeMLEventModel(EventModel):
         return
     
     def _cut_sim(self, source_dec:float = np.pi/2, sampling_width = np.radians(3)) -> np.ndarray:
+        """Select simulation events in a reconstruction dec band
+        
+        
+        Args:
+            source_dec: dec 
+            sampling_width: width of the dec band
+        """
         sindec_dist = np.abs(source_dec-self._sim['dec'])
     
         close = sindec_dist < sampling_width
@@ -343,12 +354,32 @@ class ThreeMLEventModel(EventModel):
         reduced_sim = self._sim[close].copy()
     
         return reduced_sim
-
+    
+    def _cut_sim_truedec(self, source_dec:float = np.pi/2, sampling_width = np.radians(1)) -> np.ndarray:
+        """Select simulation events in a true dec band(for ns calculation)
+        
+        
+        Args:
+            source_dec: dec 
+            sampling_width: width of the dec band
+        """
+        sindec_dist = np.abs(source_dec-self._sim['trueDec'])
+        
+        close = sindec_dist < sampling_width
+        
+        reduced_sim = self._sim[close].copy()
+        
+        omega = 2*np.pi * (np.min([np.sin(source_dec+sampling_width), 1]) -\
+                           np.max([np.sin(source_dec-sampling_width), -1]))             
+        reduced_sim['ow'] /= omega
+        
+        return reduced_sim
     
     def _create_background_sob_map(self)->None:
         """Create the backgroub SOB map
         """
         # background
+        bins = np.array([self._sin_dec_bins, self._log_energy_bins])
         bg_h, xedges, yedges = np.histogram2d(
             self._data['sindec'],
             self._data['logE'],
@@ -357,7 +388,7 @@ class ThreeMLEventModel(EventModel):
         bg_h /= np.sum(bg_h,axis=1)[:,None] 
         return bg_h
     
-    def _create_sob_ratio(self)-> None:
+    def _create_sob_ratio(self, *args, **kwargs)-> None:
         """Create the SOB map with a spectrum
         """
         bins = np.array([self._sin_dec_bins, self._log_energy_bins])
@@ -373,7 +404,9 @@ class ThreeMLEventModel(EventModel):
         # Normalize histograms by dec band
         
         sig_h /= np.sum(sig_h,axis=1)[:,None]
-        
+        if 'k' not in kwargs: kwargs['k'] = 1
+        if 's' not in kwargs: kwargs['s'] = 0
+        if 'ext' not in kwargs: kwargs['ext'] = 3       
         ratio = sig_h / self._background_sob_map
         for i in range(ratio.shape[0]):
             # Pick out the values we want to use.
@@ -383,33 +416,54 @@ class ThreeMLEventModel(EventModel):
             x, y = bins[1][:-1][good], values[good]
 
             # Do a linear interpolation across the energy range
-            spline = scipy.interpolate.UnivariateSpline(x, y, *args, **kwargs)
-
-            # And store the interpolated values
-            ratio[i] = spline(bin_centers)
-        if verbose: print('done')
+            if len(x) > 1:
+                spline = scipy.interpolate.UnivariateSpline(x, y, *args, **kwargs)
+                ratio[i]=spline(bin_centers)
+            elif len(x)==1:
+                ratio[i]=y
+            else:
+                ratio[i]=0
         return ratio
     
-    def update_model(self,likelihood_model_instance , update_position:Optional[bool] = False)->None:
+    
+    def get_energy_sob(self, events: np.ndarray) -> List[scipy.interpolate.UnivariateSpline]:
+        """Gets the splines of signal-over-background vs. gamma required for each event.
+        
+        More function info...
+        
+        Args:
+            events: An array of events including their positional data.
+            
+        Returns:
+            A list of splines of signal-over-background vs gamma for each event.
+        """
+        # Get the bin that each event belongs to
+        try: 
+            sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1], events['sindec'])
+        except:
+            sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1], np.sin(events['dec']))
+        log_energy_idx = np.searchsorted(self._log_energy_bins[:-1], events['logE'])
+        sin_dec_idx[sin_dec_idx<self.edge_point[0]] = self.edge_point[0] #If events fall outside the sampling width, just gonna approxiamte the weight using the nearest non-zero sinDec bin.
+        sin_dec_idx[sin_dec_idx>self.edge_point[1]] = self.edge_point[1]
+        return self._ratio[sin_dec_idx,log_energy_idx]
+    
+    
+    def update_model(self, spectrum)->None:
         """Update the model
         """
-        if update_position:
-            if not self.reduce:
-                raise Exception("self.reduce is set to not reduce simulation set")
-            dec = self._get_dec_from_model(likelihood_model_instance)
-            self._reduced_sim = self._cut_sim(source_dec = dec , sampling_width = self.sampling_width)
-        self.spectrum = spectral.CustomSpectrum(likelihood_model_instance)
+        self._spectrum = spectral.CustomSpectrum(spectrum)
         self._ratio = self._create_sob_ratio()
         return
     
-    def _get_dec_from_model(self, likelihood_model_instance)-> float:
-        """Get the declination given the model(right now only work for point source)
+    def update_position(self, ra = np.pi/6, dec = np.pi/2)-> float:
+        """update the position of the model
         """
-        
-        for source_name, source in likelihood_model_instance._point_sources.items():
-            if isinstance(source,NeutrinoPointSource):
-                dec = source.position.get_dec()
-                dec = dec*np.pi/180 #convert it to radian
-                
-        return dec
+        self.dec = dec
+        self.ra = ra
+        self.edge_point = (np.searchsorted(self._sin_dec_bins,np.sin(dec-self.sampling_width))-1,np.searchsorted(self._sin_dec_bins,np.sin(dec+self.sampling_width))-1)
+        if self.reduce:
+            self._reduced_sim = self._cut_sim(self.dec,self.sampling_width)
+            self._reduced_sim_truedec = self._cut_sim_truedec(self.dec,self.sampling_width)
+            self._ratio = self._create_sob_ratio()
+        return 
     

@@ -98,13 +98,19 @@ class PsInjector:
         # declination. We only want to sample from those.
         if event_model is not None:
             sim = event_model.sim
+        try:
+            reduced_sim = rf.append_fields(sim,'sindec',np.sin(sim['dec']),usemask=False)#The full simulation set,this is for the overall normalization of the Energy S/B ratio
+        except ValueError: #sindec already exist
+            reduced_sim = sim
+            pass
+
         
         if sampling_width is not None:
             sindec_dist = np.abs(self.source['dec']-sim['trueDec'])
             close = sindec_dist < sampling_width
             
             reduced_sim = rf.append_fields(
-                sim[close].copy(),
+                reduced_sim[close].copy(),
                 'weight',
                 np.zeros(close.sum()),
                 dtypes=np.float32,
@@ -341,3 +347,38 @@ class PsInjector:
         
         return signal
     
+    def inject_background_and_signal(self,
+                                     reduced_sim: np.ndarray, 
+                                     event_model: models.EventModel,
+                                     nsignal: Optional[int] = None,
+                                     signal_time_profile:Optional[time_profiles.GenericProfile] = None,
+                                     background_time_profile: Optional[time_profiles.GenericProfile] = None,
+                                     background_window: Optional[float] = 14
+                                     ) -> np.ndarray:
+        """Inject both signal and background
+        
+        
+        Args:
+            reduced_sim: Reweighted and pruned simulated events near the source declination.
+            event_model: EventModel that holds the grl and data
+            n: Number of events(Optional,use spectrum to get the nsignal if not pass.)
+            signal_time_profile: The time profile of the injected signal
+            background_time_profile: Background time profile to do the injection
+            background_window: Days used to estimated the background rate
+            
+        Returns:
+            Array containing injected signal and background
+        """
+        if nsignal is None:
+            signal = self.inject_signal_events(reduced_sim, signal_time_profile)
+        else: 
+            signal = self.inject_nsignal_events(reduced_sim, n = nsignal, signal_time_profile = signal_time_profile)
+        background = self.inject_background_events(event_model, background_time_profile, background_window)
+        bgrange = self.background_time_profile.get_range()
+        contained_in_background = ((signal['time'] >= bgrange[0]) &\
+                                   (signal['time'] < bgrange[1]))
+        signal = signal[contained_in_background]
+        signal = rf.drop_fields(signal, [n for n in signal.dtype.names \
+                 if not n in background.dtype.names])
+        
+        return np.concatenate([background,signal])
