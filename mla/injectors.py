@@ -41,6 +41,18 @@ class PsInjector:
         self.signal_time_profile = None
         self.background_time_profile = None
         
+    def set_position(self, ra:float, dec:float) -> None:
+        """set the position
+        
+        More function info...
+        Args:
+            ra
+            dec
+        """   
+        source = {'ra':ra, 'dec':dec}
+        self.source = source
+        return
+    
     def signal_spatial_pdf(self, events: np.ndarray) -> np.array:
         """Calculates the signal probability of events based on their angular distance from a source.
         
