@@ -209,10 +209,11 @@ class TimeDependentPsInjector(PsInjector):
         self.bg_time_profile = bg_time_profile
         self.sig_time_profile = sig_time_profile
 
-    def inject_background_events(self):
+    def inject_background_events(self,
+                                 event_model: models.EventModel) -> np.ndarray:
         """Docstring"""
         raise NotImplementedError
 
-    def inject_signal_events(self):
+    def inject_signal_events(self, reduced_sim: np.ndarray) -> np.ndarray:
         """Docstring"""
         raise NotImplementedError
