@@ -18,7 +18,7 @@ from mla import tools
 from mla import spectral
 import numpy.lib.recfunctions as rf
 import scipy.interpolate
-
+import pickle
 
 class EventModel:
     """Stores the events and pre-processed parameters used in analyses.
@@ -236,6 +236,18 @@ class EventModel:
         
         return [self._log_sob_gamma_splines[i-1][j-1] for i,j in zip(sin_dec_idx, log_energy_idx)]
     
+    
+    def to_file(self,file_name:str)->None:
+        """Saving the model to pickle file
+        
+        
+        Args:
+            file_name:Name of the pickle file
+        """
+        with open(file_name, 'wb') as output:
+            pickle.dump(self, output)
+        return None  
+        
     @property
     def data(self) -> np.ndarray:
         return self._data
