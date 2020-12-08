@@ -325,6 +325,7 @@ class PsAnalysis(Analysis):
 
         return fit_info
 
+
 class TimeDependentPsAnalysis(Analysis):
     """Docstring"""
 
