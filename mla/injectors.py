@@ -236,8 +236,10 @@ class PsInjector:
         """
         if background_time_profile is not None:
             self.set_background_profile(event_model, background_time_profile, background_window)
+        elif self.background_time_profile is not None:
+            pass
         else:
-                self.n_background = event_model.grl['events'].sum()
+            self.n_background = event_model.grl['events'].sum()
             
         # Get the number of events we see from these runs
         n_background = self.n_background
@@ -256,9 +258,9 @@ class PsInjector:
         return background
     
     def set_background_profile(self, 
-                       event_model: models.EventModel, 
-                       background_time_profile: time_profiles.GenericProfile,
-                       background_window: Optional[float] = 14) -> None:
+                               event_model: models.EventModel, 
+                               background_time_profile: time_profiles.GenericProfile,
+                               background_window: Optional[float] = 14) -> None:
         """Function info...
         
         Setting the background rate for the models

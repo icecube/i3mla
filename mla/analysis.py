@@ -444,7 +444,7 @@ class PsAnalysis(Analysis):
             
         # Combine the signal background events and time-sort them.
         
-        if signal_time_profile is None:
+        if signal_time_profile is None and self.injector.signal_time_profile is None:
             signal['time'] = time_profiles.UniformProfile(event_model.grl['start'][0],event_model.grl['stop'][-1]).random(len(signal))
         events = np.concatenate([background, signal])
         if not disable_time_filter:
@@ -474,6 +474,7 @@ class PsAnalysis(Analysis):
                              sampling_width: Optional[float] = None,
                              signal_time_profile:Optional[time_profiles.GenericProfile] = None,
                              background_time_profile: Optional[time_profiles.GenericProfile] = None,
+                             background_window: Optional[float] = 14,
                              test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,
                              test_background_time_profile:Optional[time_profiles.GenericProfile] = None,
                              disable_time_filter: Optional[bool] = False,
@@ -494,6 +495,7 @@ class PsAnalysis(Analysis):
             sampling_width: The bandwidth around the source declination to cut events.
             signal_time_profile: The time profile of the injected signal.
             background_time_profile: Background time profile to do the injection.
+            background_window: background time window used to estimated the background rate
             test_signal_time_profile: Background time profile to calculate_TS.
             test_background_time_profile: The time profile of signals for calculate_TS.
             disable_time_filter:Cut out events that is not in grl
@@ -525,11 +527,15 @@ class PsAnalysis(Analysis):
         # Cut down the sim. We're going to be using the same
         # source and weights each time, so this stops us from
         # needing to recalculate over and over again.
+        # Also set the signal time profile for injector
+        self.injector.set_signal_profile(signal_time_profile)
+        self.injector.set_background_profile(event_model,background_time_profile,background_window)
         reduced_sim = self.injector.reduced_sim(event_model,
                                                 flux_norm=flux_norm,
                                                 gamma=gamma,
                                                 sampling_width=sampling_width)
-
+        
+        
         # Build a place to store information for the trial
         dtype = np.dtype([
             ('ts', np.float32),
@@ -555,8 +561,6 @@ class PsAnalysis(Analysis):
                                        reduced_sim, 
                                        nsignal = nsignal,
                                        random_seed=random_seed,
-                                       background_time_profile=background_time_profile,
-                                       signal_time_profile=signal_time_profile,
                                        disable_time_filter=disable_time_filter,
                                        verbose = verbose)
             
