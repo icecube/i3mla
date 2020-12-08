@@ -2362,6 +2362,14 @@ A	docs/genindex.html	/^<h2 id="A">A<\/h2>$/;"	i
 About threeML	test/workshop/README.md	/^# About threeML$/;"	c
 Ae	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 Analysis	mla/analysis.py	/^class Analysis:$/;"	c
+Analysis	mla/analysis_BACKUP_417468.py	/^class Analysis:$/;"	c
+Analysis	mla/analysis_BACKUP_417862.py	/^class Analysis:$/;"	c
+Analysis	mla/analysis_BASE_417468.py	/^class Analysis:$/;"	c
+Analysis	mla/analysis_BASE_417862.py	/^class Analysis:$/;"	c
+Analysis	mla/analysis_LOCAL_417468.py	/^class Analysis:$/;"	c
+Analysis	mla/analysis_LOCAL_417862.py	/^class Analysis:$/;"	c
+Analysis	mla/analysis_REMOTE_417468.py	/^class Analysis:$/;"	c
+Analysis	mla/analysis_REMOTE_417862.py	/^class Analysis:$/;"	c
 Animation	docs/_static/jquery-3.5.1.js	/^function Animation( elem, properties, options ) {$/;"	f
 AnonymousFunction25ce0e960100	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:z
 AnonymousFunction25ce0e960200	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f
@@ -3398,6 +3406,8 @@ B	docs/genindex.html	/^<h2 id="B">B<\/h2>$/;"	i
 BUILDDIR	docs/Makefile	/^BUILDDIR      = build$/;"	m
 BUILDDIR	docs/make.bat	/^set BUILDDIR=build$/;"	v
 BUILDER	docs/_static/documentation_options.js	/^    BUILDER: 'html',$/;"	p	class:DOCUMENTATION_OPTIONS
+B_time	mla/analysis_BACKUP_417468.py	/^            B_time = test_background_time_profile.pdf(events['time'])$/;"	v
+B_time	mla/analysis_BACKUP_417862.py	/^            B_time = test_background_time_profile.pdf(events['time'])$/;"	v
 BaseSpectrum	mla/spectral.py	/^class BaseSpectrum(object):$/;"	c
 Be	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 Bt	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
@@ -3496,7 +3506,19 @@ Pe	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&
 PowerLaw	mla/spectral.py	/^class PowerLaw(BaseSpectrum):$/;"	c
 Prerequisites	test/workshop/README.md	/^# Prerequisites$/;"	c
 PsAnalysis	mla/analysis.py	/^class PsAnalysis(Analysis):$/;"	c
+PsAnalysis	mla/analysis_BACKUP_417468.py	/^class PsAnalysis(Analysis):$/;"	c
+PsAnalysis	mla/analysis_BACKUP_417862.py	/^class PsAnalysis(Analysis):$/;"	c
+PsAnalysis	mla/analysis_BASE_417468.py	/^class PsAnalysis(Analysis):$/;"	c
+PsAnalysis	mla/analysis_BASE_417862.py	/^class PsAnalysis(Analysis):$/;"	c
+PsAnalysis	mla/analysis_LOCAL_417468.py	/^class PsAnalysis(Analysis):$/;"	c
+PsAnalysis	mla/analysis_LOCAL_417862.py	/^class PsAnalysis(Analysis):$/;"	c
+PsAnalysis	mla/analysis_REMOTE_417468.py	/^class PsAnalysis(Analysis):$/;"	c
+PsAnalysis	mla/analysis_REMOTE_417862.py	/^class PsAnalysis(Analysis):$/;"	c
 PsInjector	mla/injectors.py	/^class PsInjector:$/;"	c
+PsStackingAnalysis	mla/analysis_BASE_417468.py	/^class PsStackingAnalysis(Analysis):$/;"	c
+PsStackingAnalysis	mla/analysis_BASE_417862.py	/^class PsStackingAnalysis(Analysis):$/;"	c
+PsStackingAnalysis	mla/analysis_REMOTE_417468.py	/^class PsStackingAnalysis(Analysis):$/;"	c
+PsStackingAnalysis	mla/analysis_REMOTE_417862.py	/^class PsStackingAnalysis(Analysis):$/;"	c
 Public IceCube Analysis Tools	README.md	/^# Public IceCube Analysis Tools$/;"	c
 Python Module Index	docs/py-modindex.html	/^   <h1>Python Module Index<\/h1>$/;"	h
 R	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
@@ -3512,10 +3534,14 @@ SOURCELINK_SUFFIX	docs/_static/documentation_options.js	/^    SOURCELINK_SUFFIX:
 SPHINXBUILD	docs/Makefile	/^SPHINXBUILD   ?= sphinx-build$/;"	m
 SPHINXBUILD	docs/make.bat	/^	set SPHINXBUILD=sphinx-build$/;"	v
 SPHINXOPTS	docs/Makefile	/^SPHINXOPTS    ?=$/;"	m
+S_time	mla/analysis_BACKUP_417468.py	/^            S_time = test_signal_time_profile.pdf(events['time'])$/;"	v
+S_time	mla/analysis_BACKUP_417862.py	/^            S_time = test_signal_time_profile.pdf(events['time'])$/;"	v
 Scorer	docs/_static/searchtools.js	/^  var Scorer = {$/;"	c
 Se	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 Search	docs/_static/searchtools.js	/^var Search = {$/;"	c
 Sizzle	docs/_static/jquery-3.5.1.js	/^function Sizzle( selector, context, results, seed ) {$/;"	f
+SoB	mla/analysis_BACKUP_417468.py	/^        SoB = S\/B$/;"	v
+SoB	mla/analysis_BACKUP_417862.py	/^        SoB = S\/B$/;"	v
 Stemmer	docs/_static/language_data.js	/^var Stemmer = function() {$/;"	c
 Submodules	docs/source/i3pubtools.llhs.rst	/^Submodules$/;"	s	chapter:i3pubtools.llhs package
 Submodules	docs/source/i3pubtools.rst	/^Submodules$/;"	s	chapter:i3pubtools package
@@ -3533,8 +3559,18 @@ TS	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	
 TS	test/workshop/hawc_fit/crab_fit_logparabola.py	/^TS = jl.compute_TS("crab", like_df)$/;"	v
 Te	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 Testing the your setup	test/workshop/README.md	/^# Testing the your setup$/;"	c
+ThreeMLPsAnalysis	mla/analysis_BACKUP_417468.py	/^class ThreeMLPsAnalysis(Analysis):$/;"	c
+ThreeMLPsAnalysis	mla/analysis_BACKUP_417862.py	/^class ThreeMLPsAnalysis(Analysis):$/;"	c
+ThreeMLPsAnalysis	mla/analysis_REMOTE_417468.py	/^class ThreeMLPsAnalysis(Analysis):$/;"	c
+ThreeMLPsAnalysis	mla/analysis_REMOTE_417862.py	/^class ThreeMLPsAnalysis(Analysis):$/;"	c
 Thrower	docs/_static/jquery-3.5.1.js	/^function Thrower( ex ) {$/;"	f
+TimeDependentPsAnalysis	mla/analysis.py	/^class TimeDependentPsAnalysis(Analysis):$/;"	c
+TimeDependentPsInjector	mla/injectors.py	/^class TimeDependentPsInjector(PsInjector):$/;"	c
 TsPreprocess	mla/analysis.py	/^TsPreprocess = Tuple[List[scipy.interpolate.UnivariateSpline], np.array]$/;"	v
+TsPreprocess	mla/analysis_BACKUP_417468.py	/^TsPreprocess = Tuple[List[scipy.interpolate.UnivariateSpline], np.array]$/;"	v
+TsPreprocess	mla/analysis_BACKUP_417862.py	/^TsPreprocess = Tuple[List[scipy.interpolate.UnivariateSpline], np.array]$/;"	v
+TsPreprocess	mla/analysis_LOCAL_417468.py	/^TsPreprocess = Tuple[List[scipy.interpolate.UnivariateSpline], np.array]$/;"	v
+TsPreprocess	mla/analysis_LOCAL_417862.py	/^TsPreprocess = Tuple[List[scipy.interpolate.UnivariateSpline], np.array]$/;"	v
 Tween	docs/_static/jquery-3.5.1.js	/^function Tween( elem, options, prop, end, easing ) {$/;"	f
 U	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	f
 U	docs/genindex.html	/^<h2 id="U">U<\/h2>$/;"	I
@@ -3559,6 +3595,14 @@ _	docs/_static/underscore-1.3.1.js	/^  _.prototype = wrapper.prototype;$/;"	c
 _	docs/_static/underscore-1.3.1.js	/^  var _ = function(obj) { return new wrapper(obj); };$/;"	f
 __author__	examples/sources.py	/^__author__ = 'John Evans'$/;"	v
 __author__	mla/analysis.py	/^__author__ = 'John Evans'$/;"	v
+__author__	mla/analysis_BACKUP_417468.py	/^__author__ = 'John Evans'$/;"	v
+__author__	mla/analysis_BACKUP_417862.py	/^__author__ = 'John Evans'$/;"	v
+__author__	mla/analysis_BASE_417468.py	/^__author__ = 'John Evans'$/;"	v
+__author__	mla/analysis_BASE_417862.py	/^__author__ = 'John Evans'$/;"	v
+__author__	mla/analysis_LOCAL_417468.py	/^__author__ = 'John Evans'$/;"	v
+__author__	mla/analysis_LOCAL_417862.py	/^__author__ = 'John Evans'$/;"	v
+__author__	mla/analysis_REMOTE_417468.py	/^__author__ = 'John Evans'$/;"	v
+__author__	mla/analysis_REMOTE_417862.py	/^__author__ = 'John Evans'$/;"	v
 __author__	mla/injectors.py	/^__author__ = 'John Evans'$/;"	v
 __author__	mla/models.py	/^__author__ = 'John Evans'$/;"	v
 __author__	mla/time_profiles.py	/^__author__ = 'John Evans'$/;"	v
@@ -3571,6 +3615,14 @@ __call__	mla/spectral.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:Powe
 __call__	mla/spectral.py	/^    def __call__(self, E, id = 0):$/;"	m	class:CustomSpectrum
 __copyright__	examples/sources.py	/^__copyright__ = ''$/;"	v
 __copyright__	mla/analysis.py	/^__copyright__ = ''$/;"	v
+__copyright__	mla/analysis_BACKUP_417468.py	/^__copyright__ = ''$/;"	v
+__copyright__	mla/analysis_BACKUP_417862.py	/^__copyright__ = ''$/;"	v
+__copyright__	mla/analysis_BASE_417468.py	/^__copyright__ = ''$/;"	v
+__copyright__	mla/analysis_BASE_417862.py	/^__copyright__ = ''$/;"	v
+__copyright__	mla/analysis_LOCAL_417468.py	/^__copyright__ = ''$/;"	v
+__copyright__	mla/analysis_LOCAL_417862.py	/^__copyright__ = ''$/;"	v
+__copyright__	mla/analysis_REMOTE_417468.py	/^__copyright__ = ''$/;"	v
+__copyright__	mla/analysis_REMOTE_417862.py	/^__copyright__ = ''$/;"	v
 __copyright__	mla/injectors.py	/^__copyright__ = ''$/;"	v
 __copyright__	mla/models.py	/^__copyright__ = ''$/;"	v
 __copyright__	mla/time_profiles.py	/^__copyright__ = ''$/;"	v
@@ -3579,6 +3631,14 @@ __copyright__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__copyright__ = 
 __copyright__	test/test_data.py	/^__copyright__ = ''$/;"	v
 __credits__	examples/sources.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
 __credits__	mla/analysis.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	mla/analysis_BACKUP_417468.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	mla/analysis_BACKUP_417862.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	mla/analysis_BASE_417468.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	mla/analysis_BASE_417862.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	mla/analysis_LOCAL_417468.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	mla/analysis_LOCAL_417862.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	mla/analysis_REMOTE_417468.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	mla/analysis_REMOTE_417862.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
 __credits__	mla/injectors.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
 __credits__	mla/models.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
 __credits__	mla/time_profiles.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
@@ -3587,6 +3647,14 @@ __credits__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__credits__ = ['Jo
 __credits__	test/test_data.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
 __email__	examples/sources.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
 __email__	mla/analysis.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
+__email__	mla/analysis_BACKUP_417468.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
+__email__	mla/analysis_BACKUP_417862.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
+__email__	mla/analysis_BASE_417468.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
+__email__	mla/analysis_BASE_417862.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
+__email__	mla/analysis_LOCAL_417468.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
+__email__	mla/analysis_LOCAL_417862.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
+__email__	mla/analysis_REMOTE_417468.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
+__email__	mla/analysis_REMOTE_417862.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
 __email__	mla/injectors.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
 __email__	mla/models.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
 __email__	mla/time_profiles.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
@@ -3595,9 +3663,35 @@ __email__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__email__ = 'john.ev
 __email__	test/test_data.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
 __init__	mla/analysis.py	/^    def __init__(self, *args, **kwargs) -> None:$/;"	m	class:Analysis
 __init__	mla/analysis.py	/^    def __init__(self,$/;"	m	class:PsAnalysis
+__init__	mla/analysis.py	/^    def __init__(self,$/;"	m	class:TimeDependentPsAnalysis
+__init__	mla/analysis_BACKUP_417468.py	/^    def __init__(self, *args, **kwargs) -> None:$/;"	m	class:Analysis
+__init__	mla/analysis_BACKUP_417468.py	/^    def __init__(self,$/;"	m	class:PsAnalysis
+__init__	mla/analysis_BACKUP_417468.py	/^    def __init__(self,$/;"	m	class:ThreeMLPsAnalysis
+__init__	mla/analysis_BACKUP_417862.py	/^    def __init__(self, *args, **kwargs) -> None:$/;"	m	class:Analysis
+__init__	mla/analysis_BACKUP_417862.py	/^    def __init__(self,$/;"	m	class:PsAnalysis
+__init__	mla/analysis_BACKUP_417862.py	/^    def __init__(self,$/;"	m	class:ThreeMLPsAnalysis
+__init__	mla/analysis_BASE_417468.py	/^    def __init__(self, *args, **kwargs) -> None: pass$/;"	m	class:Analysis
+__init__	mla/analysis_BASE_417468.py	/^    def __init__(self, event_model: models.EventModel, sources: List[Dict[str, float]]) -> None:$/;"	m	class:PsStackingAnalysis
+__init__	mla/analysis_BASE_417468.py	/^    def __init__(self,$/;"	m	class:PsAnalysis
+__init__	mla/analysis_BASE_417862.py	/^    def __init__(self, *args, **kwargs) -> None: pass$/;"	m	class:Analysis
+__init__	mla/analysis_BASE_417862.py	/^    def __init__(self, event_model: models.EventModel, sources: List[Dict[str, float]]) -> None:$/;"	m	class:PsStackingAnalysis
+__init__	mla/analysis_BASE_417862.py	/^    def __init__(self,$/;"	m	class:PsAnalysis
+__init__	mla/analysis_LOCAL_417468.py	/^    def __init__(self, *args, **kwargs) -> None:$/;"	m	class:Analysis
+__init__	mla/analysis_LOCAL_417468.py	/^    def __init__(self,$/;"	m	class:PsAnalysis
+__init__	mla/analysis_LOCAL_417862.py	/^    def __init__(self, *args, **kwargs) -> None:$/;"	m	class:Analysis
+__init__	mla/analysis_LOCAL_417862.py	/^    def __init__(self,$/;"	m	class:PsAnalysis
+__init__	mla/analysis_REMOTE_417468.py	/^    def __init__(self, *args, **kwargs) -> None: pass$/;"	m	class:Analysis
+__init__	mla/analysis_REMOTE_417468.py	/^    def __init__(self, event_model: models.EventModel, sources: List[Dict[str, float]]) -> None:$/;"	m	class:PsStackingAnalysis
+__init__	mla/analysis_REMOTE_417468.py	/^    def __init__(self,$/;"	m	class:PsAnalysis
+__init__	mla/analysis_REMOTE_417468.py	/^    def __init__(self,$/;"	m	class:ThreeMLPsAnalysis
+__init__	mla/analysis_REMOTE_417862.py	/^    def __init__(self, *args, **kwargs) -> None: pass$/;"	m	class:Analysis
+__init__	mla/analysis_REMOTE_417862.py	/^    def __init__(self, event_model: models.EventModel, sources: List[Dict[str, float]]) -> None:$/;"	m	class:PsStackingAnalysis
+__init__	mla/analysis_REMOTE_417862.py	/^    def __init__(self,$/;"	m	class:PsAnalysis
+__init__	mla/analysis_REMOTE_417862.py	/^    def __init__(self,$/;"	m	class:ThreeMLPsAnalysis
 __init__	mla/core.py	/^    def __init__(self , ra , dec , data , sim ,  spectrum , signal_time_profile = None , backgro/;"	m	class:LLH_point_source
 __init__	mla/injection.py	/^    def __init__(self, spectrum, mc , signal_time_profile = None , background_time_profile = (0,/;"	m	class:PSinjector
 __init__	mla/injectors.py	/^    def __init__(self, source: Dict[str, float]) -> None:$/;"	m	class:PsInjector
+__init__	mla/injectors.py	/^    def __init__(self, source: Dict[str, float],$/;"	m	class:TimeDependentPsInjector
 __init__	mla/models.py	/^    def __init__(self, # For an initial release, this implementation is fine... pylint: disable=/;"	m	class:EventModel
 __init__	mla/sensitivtiy.py	/^    def __init__(self):$/;"	m	class:PS_sensitivity
 __init__	mla/spectral.py	/^    def __init__(self):$/;"	m	class:BaseSpectrum
@@ -3616,6 +3710,14 @@ __init__	test/workshop/joint_fit_example/VERITASLike.py	/^    def __init__(self,
 __instrument_name	test/workshop/joint_fit_example/VERITASLike.py	/^__instrument_name = "VERITAS"$/;"	v
 __license__	examples/sources.py	/^__license__ = 'Apache License 2.0'$/;"	v
 __license__	mla/analysis.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	mla/analysis_BACKUP_417468.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	mla/analysis_BACKUP_417862.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	mla/analysis_BASE_417468.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	mla/analysis_BASE_417862.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	mla/analysis_LOCAL_417468.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	mla/analysis_LOCAL_417862.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	mla/analysis_REMOTE_417468.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	mla/analysis_REMOTE_417862.py	/^__license__ = 'Apache License 2.0'$/;"	v
 __license__	mla/injectors.py	/^__license__ = 'Apache License 2.0'$/;"	v
 __license__	mla/models.py	/^__license__ = 'Apache License 2.0'$/;"	v
 __license__	mla/time_profiles.py	/^__license__ = 'Apache License 2.0'$/;"	v
@@ -3624,6 +3726,14 @@ __license__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__license__ = 'Apa
 __license__	test/test_data.py	/^__license__ = 'Apache License 2.0'$/;"	v
 __maintainer__	examples/sources.py	/^__maintainer__ = 'John Evans'$/;"	v
 __maintainer__	mla/analysis.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	mla/analysis_BACKUP_417468.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	mla/analysis_BACKUP_417862.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	mla/analysis_BASE_417468.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	mla/analysis_BASE_417862.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	mla/analysis_LOCAL_417468.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	mla/analysis_LOCAL_417862.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	mla/analysis_REMOTE_417468.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	mla/analysis_REMOTE_417862.py	/^__maintainer__ = 'John Evans'$/;"	v
 __maintainer__	mla/injectors.py	/^__maintainer__ = 'John Evans'$/;"	v
 __maintainer__	mla/models.py	/^__maintainer__ = 'John Evans'$/;"	v
 __maintainer__	mla/time_profiles.py	/^__maintainer__ = 'John Evans'$/;"	v
@@ -3631,10 +3741,26 @@ __maintainer__	mla/tools.py	/^__maintainer__ = 'John Evans'$/;"	v
 __maintainer__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__maintainer__ = 'John Evans'$/;"	v
 __maintainer__	test/test_data.py	/^__maintainer__ = 'John Evans'$/;"	v
 __metaclass__	mla/analysis.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:Analysis	file:
+__metaclass__	mla/analysis_BACKUP_417468.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:Analysis	file:
+__metaclass__	mla/analysis_BACKUP_417862.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:Analysis	file:
+__metaclass__	mla/analysis_BASE_417468.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:Analysis	file:
+__metaclass__	mla/analysis_BASE_417862.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:Analysis	file:
+__metaclass__	mla/analysis_LOCAL_417468.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:Analysis	file:
+__metaclass__	mla/analysis_LOCAL_417862.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:Analysis	file:
+__metaclass__	mla/analysis_REMOTE_417468.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:Analysis	file:
+__metaclass__	mla/analysis_REMOTE_417862.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:Analysis	file:
 __metaclass__	mla/time_profiles.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:GenericProfile	file:
 __metaclass__	mla/timing.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:generic_profile	file:
 __status__	examples/sources.py	/^__status__ = 'Development'$/;"	v
 __status__	mla/analysis.py	/^__status__ = 'Development'$/;"	v
+__status__	mla/analysis_BACKUP_417468.py	/^__status__ = 'Development'$/;"	v
+__status__	mla/analysis_BACKUP_417862.py	/^__status__ = 'Development'$/;"	v
+__status__	mla/analysis_BASE_417468.py	/^__status__ = 'Development'$/;"	v
+__status__	mla/analysis_BASE_417862.py	/^__status__ = 'Development'$/;"	v
+__status__	mla/analysis_LOCAL_417468.py	/^__status__ = 'Development'$/;"	v
+__status__	mla/analysis_LOCAL_417862.py	/^__status__ = 'Development'$/;"	v
+__status__	mla/analysis_REMOTE_417468.py	/^__status__ = 'Development'$/;"	v
+__status__	mla/analysis_REMOTE_417862.py	/^__status__ = 'Development'$/;"	v
 __status__	mla/injectors.py	/^__status__ = 'Development'$/;"	v
 __status__	mla/models.py	/^__status__ = 'Development'$/;"	v
 __status__	mla/time_profiles.py	/^__status__ = 'Development'$/;"	v
@@ -3646,6 +3772,14 @@ __str__	mla/spectral.py	/^    def __str__(self):$/;"	m	class:CustomSpectrum
 __str__	mla/spectral.py	/^    def __str__(self):$/;"	m	class:PowerLaw
 __version__	examples/sources.py	/^__version__ = '0.0.1'$/;"	v
 __version__	mla/analysis.py	/^__version__ = '0.0.1'$/;"	v
+__version__	mla/analysis_BACKUP_417468.py	/^__version__ = '0.0.1'$/;"	v
+__version__	mla/analysis_BACKUP_417862.py	/^__version__ = '0.0.1'$/;"	v
+__version__	mla/analysis_BASE_417468.py	/^__version__ = '0.0.1'$/;"	v
+__version__	mla/analysis_BASE_417862.py	/^__version__ = '0.0.1'$/;"	v
+__version__	mla/analysis_LOCAL_417468.py	/^__version__ = '0.0.1'$/;"	v
+__version__	mla/analysis_LOCAL_417862.py	/^__version__ = '0.0.1'$/;"	v
+__version__	mla/analysis_REMOTE_417468.py	/^__version__ = '0.0.1'$/;"	v
+__version__	mla/analysis_REMOTE_417862.py	/^__version__ = '0.0.1'$/;"	v
 __version__	mla/injectors.py	/^__version__ = '0.0.1'$/;"	v
 __version__	mla/models.py	/^__version__ = '0.0.1'$/;"	v
 __version__	mla/time_profiles.py	/^__version__ = '0.0.1'$/;"	v
@@ -3659,8 +3793,22 @@ _create_log_sob_gamma_splines	mla/models.py	/^    def _create_log_sob_gamma_spli
 _create_sob_map	mla/models.py	/^    def _create_sob_map(self, gamma: float, *args, verbose: bool = False, # I don't think it's n/;"	m	class:EventModel
 _get_diff_flux_and_integral	test/workshop/joint_fit_example/VERITASLike.py	/^    def _get_diff_flux_and_integral(self, like_model):$/;"	m	class:VERITASRun
 _index	docs/_static/searchtools.js	/^  _index : null,$/;"	p	class:Search
+_init_event_model	mla/analysis_BACKUP_417468.py	/^    def _init_event_model(self,$/;"	m	class:ThreeMLPsAnalysis
+_init_event_model	mla/analysis_BACKUP_417862.py	/^    def _init_event_model(self,$/;"	m	class:ThreeMLPsAnalysis
+_init_event_model	mla/analysis_REMOTE_417468.py	/^    def _init_event_model(self,$/;"	m	class:ThreeMLPsAnalysis
+_init_event_model	mla/analysis_REMOTE_417862.py	/^    def _init_event_model(self,$/;"	m	class:ThreeMLPsAnalysis
 _integrate	test/workshop/joint_fit_example/VERITASLike.py	/^    def _integrate(function, e1, e2):$/;"	m	class:VERITASRun
 _preprocess_ts	mla/analysis.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel$/;"	m	class:PsAnalysis
+_preprocess_ts	mla/analysis_BACKUP_417468.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel$/;"	f
+_preprocess_ts	mla/analysis_BACKUP_417468.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel,$/;"	f
+_preprocess_ts	mla/analysis_BACKUP_417862.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel$/;"	f
+_preprocess_ts	mla/analysis_BACKUP_417862.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel,$/;"	f
+_preprocess_ts	mla/analysis_BASE_417468.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel$/;"	m	class:PsAnalysis
+_preprocess_ts	mla/analysis_BASE_417862.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel$/;"	m	class:PsAnalysis
+_preprocess_ts	mla/analysis_LOCAL_417468.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel$/;"	m	class:PsAnalysis
+_preprocess_ts	mla/analysis_LOCAL_417862.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel$/;"	m	class:PsAnalysis
+_preprocess_ts	mla/analysis_REMOTE_417468.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel,$/;"	m	class:PsAnalysis
+_preprocess_ts	mla/analysis_REMOTE_417862.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel,$/;"	m	class:PsAnalysis
 _pulse_status	docs/_static/searchtools.js	/^  _pulse_status : -1,$/;"	p	class:Search
 _queued_query	docs/_static/searchtools.js	/^  _queued_query : null,$/;"	p	class:Search
 _renorm_hMigration	test/workshop/joint_fit_example/VERITASLike.py	/^    def _renorm_hMigration(self):$/;"	m	class:VERITASRun
@@ -3806,6 +3954,8 @@ bindAll	docs/_static/underscore-1.3.1.js	/^  _.bindAll = function(obj) {$/;"	f	f
 bindAll	docs/_static/underscore.js	/^var F=function(){};b.bind=function(a,c){var d,e;if(a.bind===s&&s)return s.apply(a,i.call(argumen/;"	f	function:b
 bindType	docs/_static/jquery-3.5.1.js	/^		bindType: fix,$/;"	p	class:jQuery.event.special
 bindType	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	p	class:S.event.special
+bkgr	mla/analysis_BACKUP_417468.py	/^        bkgr = self.injector.background_spatial_pdf(events, event_model)$/;"	v
+bkgr	mla/analysis_BACKUP_417862.py	/^        bkgr = self.injector.background_spatial_pdf(events, event_model)$/;"	v
 bli	docs/_static/language_data.js	/^    bli: 'ble',$/;"	p	class:Stemmer.step2list
 blockquote	docs/_static/basic.css	/^div.admonition, div.topic, blockquote {$/;"	s
 blockquote	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
@@ -3846,6 +3996,14 @@ c	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function 
 c	docs/_static/underscore.js	/^b.after=function(a,b){return a<=0?b():function(){if(--a<1)return b.apply(this,arguments)}};b.key/;"	v
 c	docs/_static/underscore.js	/^return e};b.union=function(){return b.uniq(b.flatten(arguments,true))};b.intersection=b.intersec/;"	v
 cache	docs/_static/jquery-3.5.1.js	/^	function cache( key, value ) {$/;"	f	function:createCache
+cal_ts	mla/analysis_BACKUP_417468.py	/^        def cal_ts(ns):$/;"	f	member:ThreeMLPsAnalysis.min_ns	file:
+cal_ts	mla/analysis_BACKUP_417862.py	/^        def cal_ts(ns):$/;"	f	member:ThreeMLPsAnalysis.min_ns	file:
+cal_ts	mla/analysis_REMOTE_417468.py	/^        def cal_ts(ns):$/;"	f	member:ThreeMLPsAnalysis.min_ns	file:
+cal_ts	mla/analysis_REMOTE_417862.py	/^        def cal_ts(ns):$/;"	f	member:ThreeMLPsAnalysis.min_ns	file:
+calculate_TS	mla/analysis_BACKUP_417468.py	/^    def calculate_TS(self, $/;"	m	class:ThreeMLPsAnalysis
+calculate_TS	mla/analysis_BACKUP_417862.py	/^    def calculate_TS(self, $/;"	m	class:ThreeMLPsAnalysis
+calculate_TS	mla/analysis_REMOTE_417468.py	/^    def calculate_TS(self, $/;"	m	class:ThreeMLPsAnalysis
+calculate_TS	mla/analysis_REMOTE_417862.py	/^    def calculate_TS(self, $/;"	m	class:ThreeMLPsAnalysis
 calculate_ratio_passthreshold	mla/sensitivtiy.py	/^    def calculate_ratio_passthreshold(self,bkg_trials = 1000, signal_trials = 200 ,result = Fals/;"	m	class:PS_sensitivity
 calculate_sensitivity	mla/sensitivtiy.py	/^    def calculate_sensitivity(self, bkg_trials = 1000, signal_trials = 200, gamma = -2, list_N =/;"	m	class:PS_sensitivity
 callback	docs/_static/jquery-3.5.1.js	/^				callback = function( type ) {$/;"	f	function:AnonymousFunctionb030af4018700
@@ -4159,6 +4317,8 @@ elements	docs/_static/js/html5shiv-printshiv.min.js	/^!function(a,b){function c(
 elements	docs/_static/js/html5shiv.min.js	/^!function(a,b){function c(a,b){var c=a.createElement("p"),d=a.getElementsByTagName("head")[0]||a/;"	p	class:t
 elements	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:r
 eli	docs/_static/language_data.js	/^    eli: 'e',$/;"	p	class:Stemmer.step2list
+else	mla/analysis_BACKUP_417468.py	/^        else: self.injector = injectors.PsInjector(source)$/;"	v
+else	mla/analysis_BACKUP_417862.py	/^        else: self.injector = injectors.PsInjector(source)$/;"	v
 enci	docs/_static/language_data.js	/^    enci: 'ence',$/;"	p	class:Stemmer.step2list
 end	docs/make.bat	/^:end$/;"	l
 entli	docs/_static/language_data.js	/^    entli: 'ent',$/;"	p	class:Stemmer.step2list
@@ -4177,7 +4337,30 @@ evaluate	docs/_static/underscore-1.3.1.js	/^    evaluate    : \/<%([\\s\\S]+?)%>
 evaluate	docs/_static/underscore.js	/^function(c){K(c,b[c]=a[c])})};var L=0;b.uniqueId=function(a){var b=L++;return a?a+b:b};b.templat/;"	p	class:b.templateSettings
 evaluate_interpolated_ratio	mla/core.py	/^    def evaluate_interpolated_ratio(self):$/;"	m	class:LLH_point_source
 evaluate_ts	mla/analysis.py	/^    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array:$/;"	m	class:Analysis
+evaluate_ts	mla/analysis.py	/^    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array:$/;"	m	class:TimeDependentPsAnalysis
 evaluate_ts	mla/analysis.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will/;"	m	class:PsAnalysis
+evaluate_ts	mla/analysis_BACKUP_417468.py	/^    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array:$/;"	m	class:Analysis
+evaluate_ts	mla/analysis_BACKUP_417468.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will/;"	f
+evaluate_ts	mla/analysis_BACKUP_417468.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, ns: float, gamma: /;"	f
+evaluate_ts	mla/analysis_BACKUP_417862.py	/^    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array:$/;"	m	class:Analysis
+evaluate_ts	mla/analysis_BACKUP_417862.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will/;"	f
+evaluate_ts	mla/analysis_BACKUP_417862.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, ns: float, gamma: /;"	f
+evaluate_ts	mla/analysis_BASE_417468.py	/^    def evaluate_ts(self, events: np.ndarray, **fixed_args) -> np.array:$/;"	m	class:PsStackingAnalysis
+evaluate_ts	mla/analysis_BASE_417468.py	/^    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array: pass$/;"	m	class:Analysis
+evaluate_ts	mla/analysis_BASE_417468.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, ns: float, gamma: /;"	m	class:PsAnalysis
+evaluate_ts	mla/analysis_BASE_417862.py	/^    def evaluate_ts(self, events: np.ndarray, **fixed_args) -> np.array:$/;"	m	class:PsStackingAnalysis
+evaluate_ts	mla/analysis_BASE_417862.py	/^    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array: pass$/;"	m	class:Analysis
+evaluate_ts	mla/analysis_BASE_417862.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, ns: float, gamma: /;"	m	class:PsAnalysis
+evaluate_ts	mla/analysis_LOCAL_417468.py	/^    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array:$/;"	m	class:Analysis
+evaluate_ts	mla/analysis_LOCAL_417468.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will/;"	m	class:PsAnalysis
+evaluate_ts	mla/analysis_LOCAL_417862.py	/^    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array:$/;"	m	class:Analysis
+evaluate_ts	mla/analysis_LOCAL_417862.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will/;"	m	class:PsAnalysis
+evaluate_ts	mla/analysis_REMOTE_417468.py	/^    def evaluate_ts(self, events: np.ndarray, **fixed_args) -> np.array:$/;"	m	class:PsStackingAnalysis
+evaluate_ts	mla/analysis_REMOTE_417468.py	/^    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array: pass$/;"	m	class:Analysis
+evaluate_ts	mla/analysis_REMOTE_417468.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, ns: float, gamma: /;"	m	class:PsAnalysis
+evaluate_ts	mla/analysis_REMOTE_417862.py	/^    def evaluate_ts(self, events: np.ndarray, **fixed_args) -> np.array:$/;"	m	class:PsStackingAnalysis
+evaluate_ts	mla/analysis_REMOTE_417862.py	/^    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array: pass$/;"	m	class:Analysis
+evaluate_ts	mla/analysis_REMOTE_417862.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, ns: float, gamma: /;"	m	class:PsAnalysis
 exclude_patterns	docs/source/conf.py	/^exclude_patterns = []$/;"	v
 expand	docs/_static/jquery-3.5.1.js	/^		expand: function( value ) {$/;"	m	class:jQuery.cssHooks
 expand	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	m	class:S.cssHooks
@@ -4274,6 +4457,12 @@ get_range	mla/timing.py	/^    def get_range(self): $/;"	m	class:gauss_profile
 get_range	mla/timing.py	/^    def get_range(self): $/;"	m	class:uniform_profile
 get_range	mla/timing.py	/^    def get_range(self): pass$/;"	m	class:generic_profile
 get_ts	mla/analysis.py	/^        def get_ts(args):$/;"	f	member:PsAnalysis.minimize_ts	file:
+get_ts	mla/analysis_BASE_417468.py	/^        def get_ts(args):$/;"	f	member:PsAnalysis.minimize_ts	file:
+get_ts	mla/analysis_BASE_417862.py	/^        def get_ts(args):$/;"	f	member:PsAnalysis.minimize_ts	file:
+get_ts	mla/analysis_LOCAL_417468.py	/^        def get_ts(args):$/;"	f	member:PsAnalysis.minimize_ts	file:
+get_ts	mla/analysis_LOCAL_417862.py	/^        def get_ts(args):$/;"	f	member:PsAnalysis.minimize_ts	file:
+get_ts	mla/analysis_REMOTE_417468.py	/^        def get_ts(args):$/;"	f	member:PsAnalysis.minimize_ts	file:
+get_ts	mla/analysis_REMOTE_417862.py	/^        def get_ts(args):$/;"	f	member:PsAnalysis.minimize_ts	file:
 get_ts	mla/core.py	/^        def get_ts(ns):   $/;"	f	member:LLH_point_source.eval_llh_fit_ns	file:
 gettext	docs/_static/doctools.js	/^  gettext : function(string) {$/;"	m	class:Documentation
 github	docs/Makefile	/^github:$/;"	t
@@ -4597,7 +4786,9 @@ initial	docs/_static/underscore-1.3.1.js	/^  _.initial = function(array, n, guar
 initial	docs/_static/underscore.js	/^c,d){d||(d=b.identity);for(var e=0,f=a.length;e<f;){var g=e+f>>1;d(a[g])<d(c)?e=g+1:f=g}return e/;"	f	function:b
 injectCss	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:a.yepnope
 injectJs	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:a.yepnope
+inject_background_events	mla/injectors.py	/^    def inject_background_events(self):$/;"	m	class:TimeDependentPsInjector
 inject_background_events	mla/injectors.py	/^    def inject_background_events(self, # This still belongs here even though it doesn't use self/;"	m	class:PsInjector
+inject_signal_events	mla/injectors.py	/^    def inject_signal_events(self):$/;"	m	class:TimeDependentPsInjector
 inject_signal_events	mla/injectors.py	/^    def inject_signal_events(self, reduced_sim: np.ndarray) -> np.ndarray:$/;"	m	class:PsInjector
 inlinesvg	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
 inner_fit	test/workshop/joint_fit_example/VERITASLike.py	/^    def inner_fit(self):$/;"	m	class:VERITASLike
@@ -4804,8 +4995,33 @@ mightThrow	docs/_static/jquery-3.5.1.js	/^								mightThrow = function() {$/;"	
 migration_matrix	test/workshop/joint_fit_example/VERITASLike.py	/^    def migration_matrix(self):$/;"	m	class:VERITASRun
 min	docs/_static/underscore-1.3.1.js	/^  _.min = function(obj, iterator, context) {$/;"	f	function:_
 min	docs/_static/underscore.js	/^function(a,c){return b.map(a,function(a){return a[c]})};b.max=function(a,c,d){if(!c&&b.isArray(a/;"	f	function:b
+min_ns	mla/analysis_BACKUP_417468.py	/^    def min_ns(self, $/;"	m	class:ThreeMLPsAnalysis
+min_ns	mla/analysis_BACKUP_417862.py	/^    def min_ns(self, $/;"	m	class:ThreeMLPsAnalysis
+min_ns	mla/analysis_REMOTE_417468.py	/^    def min_ns(self, $/;"	m	class:ThreeMLPsAnalysis
+min_ns	mla/analysis_REMOTE_417862.py	/^    def min_ns(self, $/;"	m	class:ThreeMLPsAnalysis
 minimize_ts	mla/analysis.py	/^    def minimize_ts(self, events: np.ndarray, *args,$/;"	m	class:Analysis
+minimize_ts	mla/analysis.py	/^    def minimize_ts(self, events: np.ndarray, *args,$/;"	m	class:TimeDependentPsAnalysis
 minimize_ts	mla/analysis.py	/^    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will/;"	m	class:PsAnalysis
+minimize_ts	mla/analysis_BACKUP_417468.py	/^    def minimize_ts(self, events: np.ndarray, *args,$/;"	m	class:Analysis
+minimize_ts	mla/analysis_BACKUP_417468.py	/^    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will/;"	f
+minimize_ts	mla/analysis_BACKUP_417862.py	/^    def minimize_ts(self, events: np.ndarray, *args,$/;"	m	class:Analysis
+minimize_ts	mla/analysis_BACKUP_417862.py	/^    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will/;"	f
+minimize_ts	mla/analysis_BASE_417468.py	/^    def minimize_ts(self, events: np.ndarray, **test_args) -> Dict[str, float]:$/;"	m	class:PsStackingAnalysis
+minimize_ts	mla/analysis_BASE_417468.py	/^    def minimize_ts(self, events: np.ndarray, *args, **kwargs) -> Dict[str, float]: pass$/;"	m	class:Analysis
+minimize_ts	mla/analysis_BASE_417468.py	/^    def minimize_ts(self, events: np.ndarray, event_model: EventModel,$/;"	m	class:PsAnalysis
+minimize_ts	mla/analysis_BASE_417862.py	/^    def minimize_ts(self, events: np.ndarray, **test_args) -> Dict[str, float]:$/;"	m	class:PsStackingAnalysis
+minimize_ts	mla/analysis_BASE_417862.py	/^    def minimize_ts(self, events: np.ndarray, *args, **kwargs) -> Dict[str, float]: pass$/;"	m	class:Analysis
+minimize_ts	mla/analysis_BASE_417862.py	/^    def minimize_ts(self, events: np.ndarray, event_model: EventModel,$/;"	m	class:PsAnalysis
+minimize_ts	mla/analysis_LOCAL_417468.py	/^    def minimize_ts(self, events: np.ndarray, *args,$/;"	m	class:Analysis
+minimize_ts	mla/analysis_LOCAL_417468.py	/^    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will/;"	m	class:PsAnalysis
+minimize_ts	mla/analysis_LOCAL_417862.py	/^    def minimize_ts(self, events: np.ndarray, *args,$/;"	m	class:Analysis
+minimize_ts	mla/analysis_LOCAL_417862.py	/^    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will/;"	m	class:PsAnalysis
+minimize_ts	mla/analysis_REMOTE_417468.py	/^    def minimize_ts(self, events: np.ndarray, **test_args) -> Dict[str, float]:$/;"	m	class:PsStackingAnalysis
+minimize_ts	mla/analysis_REMOTE_417468.py	/^    def minimize_ts(self, events: np.ndarray, *args, **kwargs) -> Dict[str, float]: pass$/;"	m	class:Analysis
+minimize_ts	mla/analysis_REMOTE_417468.py	/^    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel,$/;"	m	class:PsAnalysis
+minimize_ts	mla/analysis_REMOTE_417862.py	/^    def minimize_ts(self, events: np.ndarray, **test_args) -> Dict[str, float]:$/;"	m	class:PsStackingAnalysis
+minimize_ts	mla/analysis_REMOTE_417862.py	/^    def minimize_ts(self, events: np.ndarray, *args, **kwargs) -> Dict[str, float]: pass$/;"	m	class:Analysis
+minimize_ts	mla/analysis_REMOTE_417862.py	/^    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel,$/;"	m	class:PsAnalysis
 mixin	docs/_static/underscore-1.3.1.js	/^  _.mixin = function(obj) {$/;"	f	function:_
 mixin	docs/_static/underscore.js	/^b.isRegExp=function(a){return l.call(a)=="[object RegExp]"};b.isNull=function(a){return a===null/;"	f	function:b
 model	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^model = Model(source)$/;"	v
@@ -4863,6 +5079,14 @@ nodeName	docs/_static/jquery-3.5.1.js	/^function nodeName( elem, name ) {$/;"	f
 nonce	docs/_static/jquery-3.5.1.js	/^		nonce: true,$/;"	p	class:AnonymousFunctionb030af400100.preservedScriptAttributes
 np	examples/sources.py	/^import numpy as np$/;"	I
 np	mla/analysis.py	/^import numpy as np$/;"	I
+np	mla/analysis_BACKUP_417468.py	/^import numpy as np$/;"	I
+np	mla/analysis_BACKUP_417862.py	/^import numpy as np$/;"	I
+np	mla/analysis_BASE_417468.py	/^import numpy as np$/;"	I
+np	mla/analysis_BASE_417862.py	/^import numpy as np$/;"	I
+np	mla/analysis_LOCAL_417468.py	/^import numpy as np$/;"	I
+np	mla/analysis_LOCAL_417862.py	/^import numpy as np$/;"	I
+np	mla/analysis_REMOTE_417468.py	/^import numpy as np$/;"	I
+np	mla/analysis_REMOTE_417862.py	/^import numpy as np$/;"	I
 np	mla/core.py	/^import os, sys, glob, numpy as np, matplotlib, scipy,  time$/;"	I
 np	mla/injection.py	/^import numpy as np$/;"	I
 np	mla/injectors.py	/^import numpy as np$/;"	I
@@ -4966,13 +5190,55 @@ pre	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box
 pre	docs/_static/pygments.css	/^pre { line-height: 125%; margin: 0; }$/;"	s
 prefixed	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:e
 prefixes	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	p	class:function.b.c
+preprocessing	mla/analysis_BACKUP_417468.py	/^            preprocessing = self._preprocess_ts(events, event_model)$/;"	v
+preprocessing	mla/analysis_BACKUP_417862.py	/^            preprocessing = self._preprocess_ts(events, event_model)$/;"	v
 preservedScriptAttributes	docs/_static/jquery-3.5.1.js	/^	var preservedScriptAttributes = {$/;"	c	class:AnonymousFunctionb030af400100
 previousUnderscore	docs/_static/underscore-1.3.1.js	/^  var previousUnderscore = root._;$/;"	v
 produce_and_minimize	mla/analysis.py	/^    def produce_and_minimize(self, event_model: models.EventModel, # Super class will never be c/;"	m	class:PsAnalysis
 produce_and_minimize	mla/analysis.py	/^    def produce_and_minimize(self, n_trials: int, *args,$/;"	m	class:Analysis
+produce_and_minimize	mla/analysis.py	/^    def produce_and_minimize(self, n_trials: int, *args,$/;"	m	class:TimeDependentPsAnalysis
+produce_and_minimize	mla/analysis_BACKUP_417468.py	/^    def produce_and_minimize(self, n_trials: int, *args, **kwargs) -> np.ndarray: pass$/;"	f
+produce_and_minimize	mla/analysis_BACKUP_417468.py	/^    def produce_and_minimize(self, n_trials: int, *args,$/;"	f
+produce_and_minimize	mla/analysis_BACKUP_417862.py	/^    def produce_and_minimize(self, n_trials: int, *args, **kwargs) -> np.ndarray: pass$/;"	f
+produce_and_minimize	mla/analysis_BACKUP_417862.py	/^    def produce_and_minimize(self, n_trials: int, *args,$/;"	f
+produce_and_minimize	mla/analysis_BASE_417468.py	/^    def produce_and_minimize(self, n_trials: int, **trial_and_test_args) -> np.ndarray:$/;"	m	class:PsStackingAnalysis
+produce_and_minimize	mla/analysis_BASE_417468.py	/^    def produce_and_minimize(self, n_trials: int, *args, **kwargs) -> np.ndarray: pass$/;"	m	class:Analysis
+produce_and_minimize	mla/analysis_BASE_417468.py	/^    def produce_and_minimize(self,$/;"	m	class:PsAnalysis
+produce_and_minimize	mla/analysis_BASE_417862.py	/^    def produce_and_minimize(self, n_trials: int, **trial_and_test_args) -> np.ndarray:$/;"	m	class:PsStackingAnalysis
+produce_and_minimize	mla/analysis_BASE_417862.py	/^    def produce_and_minimize(self, n_trials: int, *args, **kwargs) -> np.ndarray: pass$/;"	m	class:Analysis
+produce_and_minimize	mla/analysis_BASE_417862.py	/^    def produce_and_minimize(self,$/;"	m	class:PsAnalysis
+produce_and_minimize	mla/analysis_LOCAL_417468.py	/^    def produce_and_minimize(self, event_model: models.EventModel, # Super class will never be c/;"	m	class:PsAnalysis
+produce_and_minimize	mla/analysis_LOCAL_417468.py	/^    def produce_and_minimize(self, n_trials: int, *args,$/;"	m	class:Analysis
+produce_and_minimize	mla/analysis_LOCAL_417862.py	/^    def produce_and_minimize(self, event_model: models.EventModel, # Super class will never be c/;"	m	class:PsAnalysis
+produce_and_minimize	mla/analysis_LOCAL_417862.py	/^    def produce_and_minimize(self, n_trials: int, *args,$/;"	m	class:Analysis
+produce_and_minimize	mla/analysis_REMOTE_417468.py	/^    def produce_and_minimize(self, n_trials: int, **trial_and_test_args) -> np.ndarray:$/;"	m	class:PsStackingAnalysis
+produce_and_minimize	mla/analysis_REMOTE_417468.py	/^    def produce_and_minimize(self, n_trials: int, *args, **kwargs) -> np.ndarray: pass$/;"	m	class:Analysis
+produce_and_minimize	mla/analysis_REMOTE_417468.py	/^    def produce_and_minimize(self,$/;"	m	class:PsAnalysis
+produce_and_minimize	mla/analysis_REMOTE_417862.py	/^    def produce_and_minimize(self, n_trials: int, **trial_and_test_args) -> np.ndarray:$/;"	m	class:PsStackingAnalysis
+produce_and_minimize	mla/analysis_REMOTE_417862.py	/^    def produce_and_minimize(self, n_trials: int, *args, **kwargs) -> np.ndarray: pass$/;"	m	class:Analysis
+produce_and_minimize	mla/analysis_REMOTE_417862.py	/^    def produce_and_minimize(self,$/;"	m	class:PsAnalysis
 produce_background	mla/injection.py	/^    def produce_background(self,time_window):$/;"	m	class:PSinjector
 produce_trial	mla/analysis.py	/^    def produce_trial(self, *args, **kwargs) -> np.ndarray:$/;"	m	class:Analysis
+produce_trial	mla/analysis.py	/^    def produce_trial(self, *args, **kwargs) -> np.ndarray:$/;"	m	class:TimeDependentPsAnalysis
 produce_trial	mla/analysis.py	/^    def produce_trial(self, event_model: models.EventModel, flux_norm: float, # Super class will/;"	m	class:PsAnalysis
+produce_trial	mla/analysis_BACKUP_417468.py	/^    def produce_trial(self, *args, **kwargs) -> np.ndarray:$/;"	m	class:Analysis
+produce_trial	mla/analysis_BACKUP_417862.py	/^    def produce_trial(self, *args, **kwargs) -> np.ndarray:$/;"	m	class:Analysis
+produce_trial	mla/analysis_BASE_417468.py	/^    def produce_trial(self, **trial_args) -> np.ndarray:$/;"	m	class:PsStackingAnalysis
+produce_trial	mla/analysis_BASE_417468.py	/^    def produce_trial(self, *args, **kwargs) -> np.ndarray: pass$/;"	m	class:Analysis
+produce_trial	mla/analysis_BASE_417468.py	/^    def produce_trial(self,$/;"	m	class:PsAnalysis
+produce_trial	mla/analysis_BASE_417862.py	/^    def produce_trial(self, **trial_args) -> np.ndarray:$/;"	m	class:PsStackingAnalysis
+produce_trial	mla/analysis_BASE_417862.py	/^    def produce_trial(self, *args, **kwargs) -> np.ndarray: pass$/;"	m	class:Analysis
+produce_trial	mla/analysis_BASE_417862.py	/^    def produce_trial(self,$/;"	m	class:PsAnalysis
+produce_trial	mla/analysis_LOCAL_417468.py	/^    def produce_trial(self, *args, **kwargs) -> np.ndarray:$/;"	m	class:Analysis
+produce_trial	mla/analysis_LOCAL_417468.py	/^    def produce_trial(self, event_model: models.EventModel, flux_norm: float, # Super class will/;"	m	class:PsAnalysis
+produce_trial	mla/analysis_LOCAL_417862.py	/^    def produce_trial(self, *args, **kwargs) -> np.ndarray:$/;"	m	class:Analysis
+produce_trial	mla/analysis_LOCAL_417862.py	/^    def produce_trial(self, event_model: models.EventModel, flux_norm: float, # Super class will/;"	m	class:PsAnalysis
+produce_trial	mla/analysis_REMOTE_417468.py	/^    def produce_trial(self, **trial_args) -> np.ndarray:$/;"	m	class:PsStackingAnalysis
+produce_trial	mla/analysis_REMOTE_417468.py	/^    def produce_trial(self, *args, **kwargs) -> np.ndarray: pass$/;"	m	class:Analysis
+produce_trial	mla/analysis_REMOTE_417468.py	/^    def produce_trial(self,$/;"	m	class:PsAnalysis
+produce_trial	mla/analysis_REMOTE_417862.py	/^    def produce_trial(self, **trial_args) -> np.ndarray:$/;"	m	class:PsStackingAnalysis
+produce_trial	mla/analysis_REMOTE_417862.py	/^    def produce_trial(self, *args, **kwargs) -> np.ndarray: pass$/;"	m	class:Analysis
+produce_trial	mla/analysis_REMOTE_417862.py	/^    def produce_trial(self,$/;"	m	class:PsAnalysis
 project	docs/source/conf.py	/^project = 'i3pubtools'$/;"	v
 promise	docs/_static/jquery-3.5.1.js	/^			promise = {$/;"	c	class:AnonymousFunctionb030af409f00
 propFilter	docs/_static/jquery-3.5.1.js	/^function propFilter( props, specialEasing ) {$/;"	f
@@ -5043,6 +5309,14 @@ results	test/workshop/hawc_fit/crab_fit_logparabola.py	/^results=jl.results$/;"	
 returnFalse	docs/_static/jquery-3.5.1.js	/^function returnFalse() {$/;"	f
 returnTrue	docs/_static/jquery-3.5.1.js	/^function returnTrue() {$/;"	f
 rf	mla/analysis.py	/^import numpy.lib.recfunctions as rf$/;"	I
+rf	mla/analysis_BACKUP_417468.py	/^import numpy.lib.recfunctions as rf$/;"	I
+rf	mla/analysis_BACKUP_417862.py	/^import numpy.lib.recfunctions as rf$/;"	I
+rf	mla/analysis_BASE_417468.py	/^import numpy.lib.recfunctions as rf$/;"	I
+rf	mla/analysis_BASE_417862.py	/^import numpy.lib.recfunctions as rf$/;"	I
+rf	mla/analysis_LOCAL_417468.py	/^import numpy.lib.recfunctions as rf$/;"	I
+rf	mla/analysis_LOCAL_417862.py	/^import numpy.lib.recfunctions as rf$/;"	I
+rf	mla/analysis_REMOTE_417468.py	/^import numpy.lib.recfunctions as rf$/;"	I
+rf	mla/analysis_REMOTE_417862.py	/^import numpy.lib.recfunctions as rf$/;"	I
 rf	mla/core.py	/^import numpy.lib.recfunctions as rf$/;"	I
 rf	mla/injection.py	/^import numpy.lib.recfunctions as rf$/;"	I
 rf	mla/injectors.py	/^import numpy.lib.recfunctions as rf$/;"	I
@@ -5100,6 +5374,10 @@ setRequestHeader	docs/_static/jquery-3.5.1.js	/^				setRequestHeader: function( 
 setRequestHeader	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof module&&"object"==typeof module.exports?module.expo/;"	m	class:AnonymousFunctionc74c453e18500.T
 set_backround	mla/injection.py	/^    def set_backround(self, background ,grl ,background_window = 14):$/;"	m	class:PSinjector
 set_backround	mla/sensitivtiy.py	/^    def set_backround(self, background ,grl ,background_window = 14):$/;"	m	class:PS_sensitivity
+set_data	mla/analysis_BACKUP_417468.py	/^    def set_data(self, data: np.ndarray)->None:$/;"	m	class:ThreeMLPsAnalysis
+set_data	mla/analysis_BACKUP_417862.py	/^    def set_data(self, data: np.ndarray)->None:$/;"	m	class:ThreeMLPsAnalysis
+set_data	mla/analysis_REMOTE_417468.py	/^    def set_data(self, data: np.ndarray)->None:$/;"	m	class:ThreeMLPsAnalysis
+set_data	mla/analysis_REMOTE_417862.py	/^    def set_data(self, data: np.ndarray)->None:$/;"	m	class:ThreeMLPsAnalysis
 set_injection	mla/sensitivtiy.py	/^    def set_injection( self, sim , gamma = -2, signal_time_profile = None , background_time_prof/;"	m	class:PS_sensitivity
 set_model	test/workshop/joint_fit_example/VERITASLike.py	/^    def set_model(self, likelihood_model_instance):$/;"	m	class:VERITASLike
 set_point_source	mla/sensitivtiy.py	/^    def set_point_source(self, ra , dec , data , sim ,  spectrum , signal_time_profile = None , /;"	m	class:PS_sensitivity
@@ -5127,6 +5405,8 @@ shuffle	docs/_static/underscore.js	/^return e.value};b.shuffle=function(a){var b
 sibling	docs/_static/jquery-3.5.1.js	/^function sibling( cur, dir ) {$/;"	f
 siblingCheck	docs/_static/jquery-3.5.1.js	/^function siblingCheck( a, b ) {$/;"	f
 sidebar_is_collapsed	docs/_static/sidebar.js	/^  function sidebar_is_collapsed() {$/;"	f	function:AnonymousFunction5a10cfd80100
+sig	mla/analysis_BACKUP_417468.py	/^        sig = self.injector.signal_spatial_pdf(events)$/;"	v
+sig	mla/analysis_BACKUP_417862.py	/^        sig = self.injector.signal_spatial_pdf(events)$/;"	v
 signal_pdf	mla/core.py	/^    def signal_pdf(self):$/;"	m	class:LLH_point_source
 signal_spatial_pdf	mla/injectors.py	/^    def signal_spatial_pdf(self, events: np.ndarray) -> np.array:$/;"	m	class:PsInjector
 sim	mla/models.py	/^    def sim(self) -> np.ndarray:$/;"	m	class:EventModel
@@ -5140,6 +5420,8 @@ slice	docs/_static/underscore-1.3.1.js	/^  var slice            = ArrayProto.sli
 small	docs/_static/css/theme.css	/^ *\/@font-face{font-family:FontAwesome;src:url(fonts\/fontawesome-webfont.eot?674f50d287a8c48dc1/;"	s
 small	docs/_static/css/theme.css	/^html{box-sizing:border-box}*,:after,:before{box-sizing:inherit}article,aside,details,figcaption,/;"	s
 smil	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	f	function:s
+sob	mla/analysis_BACKUP_417468.py	/^        splines, sob = preprocessing$/;"	v
+sob	mla/analysis_BACKUP_417862.py	/^        splines, sob = preprocessing$/;"	v
 sortBy	docs/_static/underscore-1.3.1.js	/^  _.sortBy = function(obj, iterator, context) {$/;"	f	function:_
 sortBy	docs/_static/underscore.js	/^return e.value};b.shuffle=function(a){var b=[],d;j(a,function(a,f){f==0?b[0]=a:(d=Math.floor(Mat/;"	f	function:b
 sortOrder	docs/_static/jquery-3.5.1.js	/^	sortOrder = function( a, b ) {$/;"	f	function:AnonymousFunctionb030af401e00
@@ -5165,6 +5447,10 @@ special	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof mo
 spectrum	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^spectrum = Log_parabola()$/;"	v
 spectrum	test/workshop/hawc_fit/crab_fit_logparabola.py	/^spectrum = Log_parabola()$/;"	v
 spline	mla/models.py	/^        def spline(log_ratios):$/;"	f	member:EventModel._create_log_sob_gamma_splines	file:
+splines	mla/analysis_BACKUP_417468.py	/^        splines = event_model.get_log_sob_gamma_splines(events)$/;"	v
+splines	mla/analysis_BACKUP_417468.py	/^        splines, sob = preprocessing$/;"	v
+splines	mla/analysis_BACKUP_417862.py	/^        splines = event_model.get_log_sob_gamma_splines(events)$/;"	v
+splines	mla/analysis_BACKUP_417862.py	/^        splines, sob = preprocessing$/;"	v
 splitChars	docs/_static/language_data.js	/^var splitChars = (function() {$/;"	f
 splitQuery	docs/_static/language_data.js	/^function splitQuery(query) {$/;"	f
 splitQuery	docs/_static/searchtools.js	/^  function splitQuery(query) {$/;"	f
@@ -5281,6 +5567,8 @@ then	docs/_static/jquery.js	/^!function(e,t){"use strict";"object"==typeof modul
 throttle	docs/_static/underscore-1.3.1.js	/^  _.throttle = function(func, wait) {$/;"	f	function:_
 throttle	docs/_static/underscore.js	/^c){var d={};c||(c=b.identity);return function(){var e=c.apply(this,arguments);return b.has(d,e)?/;"	f	function:b
 tick	docs/_static/jquery-3.5.1.js	/^		tick = function() {$/;"	f	function:Animation
+time_SoB	mla/analysis_BACKUP_417468.py	/^            time_SoB = S_time\/B_time$/;"	v
+time_SoB	mla/analysis_BACKUP_417862.py	/^            time_SoB = S_time\/B_time$/;"	v
 timeout	docs/_static/js/modernizr.min.js	/^;window.Modernizr=function(a,b,c){function D(a){j.cssText=a}function E(a,b){return D(n.join(a+";/;"	m	class:z
 times	docs/_static/underscore-1.3.1.js	/^  _.times = function (n, iterator, context) {$/;"	f	function:_
 times	docs/_static/underscore.js	/^b.isRegExp=function(a){return l.call(a)=="[object RegExp]"};b.isNull=function(a){return a===null/;"	f	function:b

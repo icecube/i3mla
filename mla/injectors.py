@@ -19,6 +19,7 @@ import scipy
 
 from mla import tools
 from mla import models
+from mla import time_profiles
 
 class PsInjector:
     """A basic point-source injector.
@@ -126,6 +127,14 @@ class PsInjector:
         # When we do this, correct for the solid angle
         # we're including for sampling
         reduced_sim['weight'] /= omega
+
+        # Randomly assign times to the simulation events within the data time
+        # range.
+        min_time = np.min(event_model.data['time'])
+        max_time = np.max(event_model.data['time'])
+        reduced_sim['time'] = np.random.uniform(min_time, max_time,
+                                               size=len(reduced_sim))
+
         return reduced_sim
 
     def inject_background_events(self, # This still belongs here even though it doesn't use self... pylint: disable=no-self-use
@@ -188,3 +197,22 @@ class PsInjector:
                 signal['trueRa'], signal['trueDec'])
 
         return signal
+
+class TimeDependentPsInjector(PsInjector):
+    """Docstring"""
+
+    def __init__(self, source: Dict[str, float],
+                 bg_time_profile: time_profiles.GenericProfile,
+                 sig_time_profile: time_profiles.GenericProfile) -> None:
+        """Docstring"""
+        super().__init__(source)
+        self.bg_time_profile = bg_time_profile
+        self.sig_time_profile = sig_time_profile
+
+    def inject_background_events(self):
+        """Docstring"""
+        raise NotImplementedError
+
+    def inject_signal_events(self):
+        """Docstring"""
+        raise NotImplementedError
