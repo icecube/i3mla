@@ -13,10 +13,8 @@ About threeML	test/workshop/README.md	/^# About threeML$/;"	c
 Analysis	mla/analysis.py	/^class Analysis:$/;"	c
 BUILDDIR	docs/Makefile	/^BUILDDIR      = build$/;"	m
 BUILDDIR	docs/make.bat	/^set BUILDDIR=build$/;"	v
-BaseSpectrum	mla/spectral.py	/^class BaseSpectrum(object):$/;"	c
 Contribute	docs/source/index.rst	/^Contribute$/;"	s	chapter:$project
 CustomProfile	mla/time_profiles.py	/^class CustomProfile(GenericProfile):$/;"	c
-CustomSpectrum	mla/spectral.py	/^class CustomSpectrum(BaseSpectrum):$/;"	c
 EOM	test/workshop/install_everything.sh	/^cat > $HOME\/init_conda_hal.sh <<- EOM$/;"	h
 EOM	test/workshop/install_from_conda.sh	/^cat > $HOME\/init_conda_fvh.sh <<- EOM$/;"	h
 EventModel	mla/models.py	/^class EventModel:$/;"	c
@@ -34,7 +32,6 @@ License	docs/source/index.rst	/^License$/;"	s	chapter:$project
 MacOS:	test/workshop/README.md	/^## MacOS:$/;"	s	chapter:Prerequisites
 Module contents	docs/source/mla.rst	/^Module contents$/;"	s	chapter:mla package
 Module contents¶	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	i
-PowerLaw	mla/spectral.py	/^class PowerLaw(BaseSpectrum):$/;"	c
 Prerequisites	test/workshop/README.md	/^# Prerequisites$/;"	c
 PsAnalysis	mla/analysis.py	/^class PsAnalysis(Analysis):$/;"	c
 PsInjector	mla/injectors.py	/^class PsInjector:$/;"	c
@@ -67,17 +64,14 @@ __author__	mla/tools.py	/^__author__ = 'John Evans'$/;"	v
 __author__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__author__ = 'John Evans'$/;"	v
 __author__	test/test_data.py	/^__author__ = 'John Evans'$/;"	v
 __author__	test/workshop/joint_fit_example/VERITASLike.py	/^__author__ = 'giacomov'$/;"	v
-__call__	mla/spectral.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:BaseSpectrum
-__call__	mla/spectral.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:PowerLaw
-__call__	mla/spectral.py	/^    def __call__(self, E, id = 0):$/;"	m	class:CustomSpectrum
-__copyright__	examples/sources.py	/^__copyright__ = ''$/;"	v
-__copyright__	mla/analysis.py	/^__copyright__ = ''$/;"	v
-__copyright__	mla/injectors.py	/^__copyright__ = ''$/;"	v
-__copyright__	mla/models.py	/^__copyright__ = ''$/;"	v
-__copyright__	mla/time_profiles.py	/^__copyright__ = ''$/;"	v
-__copyright__	mla/tools.py	/^__copyright__ = ''$/;"	v
+__copyright__	examples/sources.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
+__copyright__	mla/analysis.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
+__copyright__	mla/injectors.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
+__copyright__	mla/models.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
+__copyright__	mla/time_profiles.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
+__copyright__	mla/tools.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
 __copyright__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__copyright__ = ''$/;"	v
-__copyright__	test/test_data.py	/^__copyright__ = ''$/;"	v
+__copyright__	test/test_data.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
 __credits__	examples/sources.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
 __credits__	mla/analysis.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
 __credits__	mla/injectors.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
@@ -100,9 +94,6 @@ __init__	mla/analysis.py	/^    def __init__(self,$/;"	m	class:TimeDependentPsAna
 __init__	mla/injectors.py	/^    def __init__(self, source: Dict[str, float]) -> None:$/;"	m	class:PsInjector
 __init__	mla/injectors.py	/^    def __init__(self, source: Dict[str, float],$/;"	m	class:TimeDependentPsInjector
 __init__	mla/models.py	/^    def __init__(self, # For an initial release, this implementation is fine... pylint: disable=/;"	m	class:EventModel
-__init__	mla/spectral.py	/^    def __init__(self):$/;"	m	class:BaseSpectrum
-__init__	mla/spectral.py	/^    def __init__(self, E0, A, gamma, Ecut=None):$/;"	m	class:PowerLaw
-__init__	mla/spectral.py	/^    def __init__(self,likelihood_model_instance):$/;"	m	class:CustomSpectrum
 __init__	mla/time_profiles.py	/^    def __init__(self) -> None:$/;"	m	class:GenericProfile
 __init__	mla/time_profiles.py	/^    def __init__(self, mean: float, sigma: float,$/;"	m	class:GaussProfile
 __init__	mla/time_profiles.py	/^    def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], float],$/;"	m	class:CustomProfile
@@ -136,9 +127,6 @@ __status__	mla/time_profiles.py	/^__status__ = 'Development'$/;"	v
 __status__	mla/tools.py	/^__status__ = 'Development'$/;"	v
 __status__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__status__ = 'Development'$/;"	v
 __status__	test/test_data.py	/^__status__ = 'Development'$/;"	v
-__str__	mla/spectral.py	/^    def __str__(self):$/;"	m	class:BaseSpectrum
-__str__	mla/spectral.py	/^    def __str__(self):$/;"	m	class:CustomSpectrum
-__str__	mla/spectral.py	/^    def __str__(self):$/;"	m	class:PowerLaw
 __version__	examples/sources.py	/^__version__ = '0.0.1'$/;"	v
 __version__	mla/analysis.py	/^__version__ = '0.0.1'$/;"	v
 __version__	mla/injectors.py	/^__version__ = '0.0.1'$/;"	v
@@ -168,7 +156,6 @@ bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile)
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile) -> List[List[float]]:$/;"	m	class:GaussProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile) -> List[List[float]]:$/;"	m	class:UniformProfile
 build_rv	mla/time_profiles.py	/^    def build_rv(self, pdf: Callable[[np.array, Tuple[float, float]], float],$/;"	m	class:CustomProfile
-copy	mla/spectral.py	/^    def copy(self):$/;"	m	class:BaseSpectrum
 copyright	docs/source/conf.py	/^copyright = '2020, John Evans, Jason Fan, Michael Larson'$/;"	v
 cross_matrix	mla/tools.py	/^def cross_matrix(mat: np.ndarray) -> np.ndarray:$/;"	f
 data	mla/models.py	/^    def data(self) -> np.ndarray:$/;"	m	class:EventModel
@@ -295,7 +282,6 @@ np	examples/sources.py	/^import numpy as np$/;"	I
 np	mla/analysis.py	/^import numpy as np$/;"	I
 np	mla/injectors.py	/^import numpy as np$/;"	I
 np	mla/models.py	/^import numpy as np$/;"	I
-np	mla/spectral.py	/^import numpy as np$/;"	I
 np	mla/time_profiles.py	/^import numpy as np$/;"	I
 np	mla/tools.py	/^import numpy as np$/;"	I
 np	test/.ipynb_checkpoints/test_data-checkpoint.py	/^import numpy as np$/;"	I
