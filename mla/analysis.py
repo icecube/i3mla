@@ -528,3 +528,48 @@ class PsAnalysis(Analysis):
             print('done')
 
         return fit_info
+
+class TimeDependentPsAnalysis(Analysis):
+    """Docstring"""
+
+    def __init__(self,
+                 source: Optional[Dict[str, float]] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 bg_time_profile: Optional[time_profiles.GenericProfile] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 sig_time_profile: Optional[time_profiles.GenericProfile] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 injector: Optional[injectors.TimeDependentPsInjector] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
+    ) -> None:
+        """Function info...
+
+        More function info...
+
+        Args:
+            source:
+            bg_time_profile:
+            sig_time_profile:
+            injector:
+        """
+        super().__init__()
+        if injector is not None:
+            self.injector = injector
+        else:
+            self.injector = injectors.TimeDependentPsInjector(source,
+                                                              bg_time_profile,
+                                                              sig_time_profile)
+
+    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array:
+        """Docstring"""
+        raise NotImplementedError
+
+    def minimize_ts(self, events: np.ndarray, *args,
+                    **kwargs) -> Dict[str, float]:
+        """Docstring"""
+        raise NotImplementedError
+
+    def produce_trial(self, *args, **kwargs) -> np.ndarray:
+        """Docstring"""
+        raise NotImplementedError
+
+    def produce_and_minimize(self, n_trials: int, *args,
+                             **kwargs) -> np.ndarray:
+        """Docstring"""
+        raise NotImplementedError
