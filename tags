@@ -151,7 +151,7 @@ bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile)
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile) -> List[List[float]]:$/;"	m	class:UniformProfile
 build_rv	mla/time_profiles.py	/^    def build_rv(self, pdf: Callable[[np.array, Tuple[float, float]], float],$/;"	m	class:CustomProfile
 copyright	docs/source/conf.py	/^copyright = '2020, John Evans, Jason Fan, Michael Larson'$/;"	v
-cross_matrix	mla/tools.py	/^def cross_matrix(mat: np.ndarray) -> np.ndarray:$/;"	f
+cross_matrix	mla/tools.py	/^def cross_matrix(mat: np.array) -> np.array:$/;"	f
 data	mla/models.py	/^    def data(self) -> np.ndarray:$/;"	m	class:EventModel
 data	test/testmla-liklihood_way.py	/^data = read(glob.glob(data_files))$/;"	v
 data	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^data = DataList(hawc)$/;"	v

@@ -15,9 +15,7 @@ import numpy as np
 
 
 def read(filelist: List[str]) -> np.ndarray:
-    """Reads in and concatenate a list of numpy files.
-
-    More function info...
+    """Reads in and concatenates a list of numpy files.
 
     Args:
         fileList: A list of .npy file paths as strings.
@@ -38,14 +36,12 @@ def read(filelist: List[str]) -> np.ndarray:
 def to_unit_vector(r_a: float, dec: float) -> np.array:
     """Converts location on unit sphere to rectangular coordinates.
 
-    More function info...
-
     Args:
-        ra:
-        dec:
+        r_a: The right ascension of the point on the unit sphere.
+        dec: The declination of the point on the unit sphere.
 
     Returns:
-
+        A numpy array of the x, y, and z coordinates of the point.
     """
     return np.array([np.cos(r_a)*np.cos(dec),
                      np.sin(r_a)*np.cos(dec),
@@ -55,16 +51,14 @@ def to_unit_vector(r_a: float, dec: float) -> np.array:
 def angular_distance(ra1: float, dec1: float, ra2: float, dec2: float) -> float:
     """Calculates the angle between two points on the unit sphere.
 
-    More function info...
-
     Args:
-        ra1:
-        dec1:
-        ra2:
-        dec2:
+        ra1: The right ascension of the first point (radians).
+        dec1: The declination of the first point (radians).
+        ra2: The right ascension of the second point (radians).
+        dec2: The declination of the second point (radians).
 
     Returns:
-
+        The distance, in radians, between the two points.
     """
     unit1 = to_unit_vector(ra1, dec1)
     unit2 = to_unit_vector(ra2, dec2)
@@ -74,16 +68,16 @@ def angular_distance(ra1: float, dec1: float, ra2: float, dec2: float) -> float:
     return np.arccos(np.dot(unit1, unit2))
 
 
-def cross_matrix(mat: np.ndarray) -> np.ndarray:
+def cross_matrix(mat: np.array) -> np.array:
     """Calculate cross product matrix.
 
     A[ij] = x_i * y_j - y_i * x_j
 
     Args:
-        mat:
+        mat: A 2D array to take the cross product of.
 
     Returns:
-
+        The cross matrix.
     """
     skv = np.roll(np.roll(np.diag(mat.ravel()), 1, 1), -1, 0)
     return skv - skv.T
@@ -96,15 +90,15 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float,  # This is fine for
     The rotation is performed on (ra3, dec3).
 
     Args:
-        ra1:
-        dec1:
-        ra2:
-        dec2:
-        ra3:
-        dec3:
+        ra1: The right ascension of the point to be rotated from.
+        dec1: The declination of the point to be rotated from.
+        ra2: the right ascension of the point to be rotated onto.
+        dec2: the declination of the point to be rotated onto.
+        ra3: the right ascension of the point that will actually be rotated.
+        dec3: the declination of the point that will actually be rotated.
 
     Returns:
-
+        The rotated ra3 and dec3.
     """
     ra1 = np.atleast_1d(ra1)
     dec1 = np.atleast_1d(dec1)

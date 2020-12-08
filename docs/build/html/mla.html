@@ -1161,38 +1161,40 @@ parameters.</p>
 <dt id="mla.tools.angular_distance">
 <code class="sig-prename descclassname">mla.tools.</code><code class="sig-name descname">angular_distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ra1</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">dec1</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">ra2</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">dec2</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mla.tools.angular_distance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the angle between two points on the unit sphere.</p>
-<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ra1</strong> – </p></li>
-<li><p><strong>dec1</strong> – </p></li>
-<li><p><strong>ra2</strong> – </p></li>
-<li><p><strong>dec2</strong> – </p></li>
+<li><p><strong>ra1</strong> – The right ascension of the first point (radians).</p></li>
+<li><p><strong>dec1</strong> – The declination of the first point (radians).</p></li>
+<li><p><strong>ra2</strong> – The right ascension of the second point (radians).</p></li>
+<li><p><strong>dec2</strong> – The declination of the second point (radians).</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The distance, in radians, between the two points.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="mla.tools.cross_matrix">
-<code class="sig-prename descclassname">mla.tools.</code><code class="sig-name descname">cross_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mat</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.tools.cross_matrix" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">mla.tools.</code><code class="sig-name descname">cross_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mat</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.tools.cross_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate cross product matrix.</p>
 <p>A[ij] = x_i * y_j - y_i * x_j</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>mat</strong> – </p>
+<dd class="field-odd"><p><strong>mat</strong> – A 2D array to take the cross product of.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The cross matrix.</p>
 </dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="mla.tools.read">
 <code class="sig-prename descclassname">mla.tools.</code><code class="sig-name descname">read</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filelist</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.tools.read" title="Permalink to this definition">¶</a></dt>
-<dd><p>Reads in and concatenate a list of numpy files.</p>
-<p>More function info…</p>
+<dd><p>Reads in and concatenates a list of numpy files.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>fileList</strong> – A list of .npy file paths as strings.</p>
@@ -1211,32 +1213,35 @@ parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ra1</strong> – </p></li>
-<li><p><strong>dec1</strong> – </p></li>
-<li><p><strong>ra2</strong> – </p></li>
-<li><p><strong>dec2</strong> – </p></li>
-<li><p><strong>ra3</strong> – </p></li>
-<li><p><strong>dec3</strong> – </p></li>
+<li><p><strong>ra1</strong> – The right ascension of the point to be rotated from.</p></li>
+<li><p><strong>dec1</strong> – The declination of the point to be rotated from.</p></li>
+<li><p><strong>ra2</strong> – the right ascension of the point to be rotated onto.</p></li>
+<li><p><strong>dec2</strong> – the declination of the point to be rotated onto.</p></li>
+<li><p><strong>ra3</strong> – the right ascension of the point that will actually be rotated.</p></li>
+<li><p><strong>dec3</strong> – the declination of the point that will actually be rotated.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The rotated ra3 and dec3.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py function">
 <dt id="mla.tools.to_unit_vector">
 <code class="sig-prename descclassname">mla.tools.</code><code class="sig-name descname">to_unit_vector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">r_a</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">dec</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.tools.to_unit_vector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts location on unit sphere to rectangular coordinates.</p>
-<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ra</strong> – </p></li>
-<li><p><strong>dec</strong> – </p></li>
+<li><p><strong>r_a</strong> – The right ascension of the point on the unit sphere.</p></li>
+<li><p><strong>dec</strong> – The declination of the point on the unit sphere.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A numpy array of the x, y, and z coordinates of the point.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 </div>
