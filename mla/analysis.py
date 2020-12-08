@@ -712,10 +712,10 @@ class TimeDependentPsAnalysis(Analysis):
             # We need to check to ensure that every event is contained within
             # a good run. If the event happened when we had deadtime (when we
             # were not taking data), then we need to remove it.
-            after_start = np.less(event_model.grl['start'].reshape((1, len(event_model.grl))),
-                                  events['time'].reshape(len(events), 1))
-            before_stop = np.less(events['time'].reshape(len(events), 1),
-                                  event_model.grl['stop'].reshape((1, len(event_model.grl))))
+            grl_start = event_model.grl['start'].reshape((1, len(event_model.grl)))
+            grl_stop = event_model.grl['stop'].reshape((1, len(event_model.grl)))
+            after_start = np.less(grl_start, events['time'].reshape(len(events), 1))
+            before_stop = np.less(events['time'].reshape(len(events), 1), grl_stop)
             during_uptime = np.any(after_start & before_stop, axis = 1)
             events = events[during_uptime]
         return events

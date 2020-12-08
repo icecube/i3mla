@@ -291,8 +291,8 @@ class TimeDependentPsInjector(PsInjector):
             try:
                 livetime = self.signal_time_profile.effective_exposure()
             except:
-                print("no livetime and no signal time profile in injector.Using 1 day to weight the MC")
-                livetime = 1
+                print("no livetime and no signal time profile in injector.Using 1s to weight the MC")
+                livetime = 1/3600/24
         try:
             reduced_sim = rf.append_fields(sim,'sindec',np.sin(sim['dec']),usemask=False)#The full simulation set,this is for the overall normalization of the Energy S/B ratio
         except ValueError: #sindec already exist
@@ -335,6 +335,10 @@ class TimeDependentPsInjector(PsInjector):
         # we're including for sampling
         reduced_sim['weight'] /= omega
         reduced_sim['ow'] /= omega
+        min_time = np.min(event_model.data['time'])
+        max_time = np.max(event_model.data['time'])
+        reduced_sim['time'] = np.random.uniform(min_time, max_time,
+                                               size=len(reduced_sim))
         return reduced_sim
     
     def reweight_simulation(self,
@@ -530,7 +534,7 @@ class TimeDependentPsInjector(PsInjector):
         #Randomize the signal time
         if self.signal_time_profile is not None:    
             signal['time'] = self.signal_time_profile.random(size = len(signal))
-        
+            
         return signal
     
     def inject_nsignal_events(self, 
