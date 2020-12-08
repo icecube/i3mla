@@ -13,6 +13,7 @@ from typing import List, Tuple
 
 import numpy as np
 
+
 def read(filelist: List[str]) -> np.ndarray:
     """Reads in and concatenate a list of numpy files.
 
@@ -33,6 +34,7 @@ def read(filelist: List[str]) -> np.ndarray:
             data = np.concatenate([data, file_data])
     return data
 
+
 def to_unit_vector(r_a: float, dec: float) -> np.array:
     """Converts location on unit sphere to rectangular coordinates.
 
@@ -48,6 +50,7 @@ def to_unit_vector(r_a: float, dec: float) -> np.array:
     return np.array([np.cos(r_a)*np.cos(dec),
                      np.sin(r_a)*np.cos(dec),
                      np.sin(dec)])
+
 
 def angular_distance(ra1: float, dec1: float, ra2: float, dec2: float) -> float:
     """Calculates the angle between two points on the unit sphere.
@@ -70,6 +73,7 @@ def angular_distance(ra1: float, dec1: float, ra2: float, dec2: float) -> float:
         return np.arccos(np.dot(unit1.T, unit2))
     return np.arccos(np.dot(unit1, unit2))
 
+
 def cross_matrix(mat: np.ndarray) -> np.ndarray:
     """Calculate cross product matrix.
 
@@ -84,7 +88,8 @@ def cross_matrix(mat: np.ndarray) -> np.ndarray:
     skv = np.roll(np.roll(np.diag(mat.ravel()), 1, 1), -1, 0)
     return skv - skv.T
 
-def rotate(ra1: float, dec1: float, ra2: float, dec2: float, # This is fine for a first release... pylint: disable=too-many-arguments, too-many-locals
+
+def rotate(ra1: float, dec1: float, ra2: float, dec2: float,  # This is fine for a first release... pylint: disable=too-many-arguments, too-many-locals
            ra3: float, dec3: float) -> Tuple[float, float]:
     """Rotation matrix for rotation of (ra1, dec1) onto (ra2, dec2).
 
@@ -134,10 +139,10 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float, # This is fine for 
     nvec[norm > 0] /= norm[np.newaxis, norm > 0].T
 
     one = np.diagflat(np.ones(3))
-    nTn = np.array([np.outer(nv, nv) for nv in nvec]) # This is fine for a first release... pylint: disable=invalid-name
-    nx = np.array([cross_matrix(nv) for nv in nvec]) # This is fine for a first release... pylint: disable=invalid-name
+    nTn = np.array([np.outer(nv, nv) for nv in nvec])  # This is fine for a first release... pylint: disable=invalid-name
+    nx = np.array([cross_matrix(nv) for nv in nvec])  # This is fine for a first release... pylint: disable=invalid-name
 
-    R = np.array([(1. - np.cos(a)) * nTn_i + np.cos(a) * one + np.sin(a) * nx_i # This is fine for a first release... pylint: disable=invalid-name
+    R = np.array([(1. - np.cos(a)) * nTn_i + np.cos(a) * one + np.sin(a) * nx_i  # This is fine for a first release... pylint: disable=invalid-name
                   for a, nTn_i, nx_i in zip(alpha, nTn, nx)])
     vec = np.array([np.dot(R_i, vec_i.T) for R_i, vec_i in zip(R, vec3)])
 

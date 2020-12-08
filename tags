@@ -93,7 +93,7 @@ __init__	mla/analysis.py	/^    def __init__(self,$/;"	m	class:PsAnalysis
 __init__	mla/analysis.py	/^    def __init__(self,$/;"	m	class:TimeDependentPsAnalysis
 __init__	mla/injectors.py	/^    def __init__(self, source: Dict[str, float]) -> None:$/;"	m	class:PsInjector
 __init__	mla/injectors.py	/^    def __init__(self, source: Dict[str, float],$/;"	m	class:TimeDependentPsInjector
-__init__	mla/models.py	/^    def __init__(self, # For an initial release, this implementation is fine... pylint: disable=/;"	m	class:EventModel
+__init__	mla/models.py	/^    def __init__(self,  # For an initial release, this implementation is fine... pylint: disable/;"	m	class:EventModel
 __init__	mla/time_profiles.py	/^    def __init__(self) -> None:$/;"	m	class:GenericProfile
 __init__	mla/time_profiles.py	/^    def __init__(self, mean: float, sigma: float,$/;"	m	class:GaussProfile
 __init__	mla/time_profiles.py	/^    def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], float],$/;"	m	class:CustomProfile
@@ -139,7 +139,7 @@ _bin_counts_log	test/workshop/joint_fit_example/VERITASLike.py	/^    def _bin_co
 _columns_in_data_tree	test/workshop/joint_fit_example/VERITASLike.py	/^_columns_in_data_tree = ['Time',  # it is the MJD of individual events$/;"	v
 _create_background_dec_spline	mla/models.py	/^    def _create_background_dec_spline(self, sin_dec_bins: np.array, *args,$/;"	m	class:EventModel
 _create_log_sob_gamma_splines	mla/models.py	/^    def _create_log_sob_gamma_splines(self, gamma_bins: np.array, *args,$/;"	m	class:EventModel
-_create_sob_map	mla/models.py	/^    def _create_sob_map(self, gamma: float, *args, verbose: bool = False, # I don't think it's n/;"	m	class:EventModel
+_create_sob_map	mla/models.py	/^    def _create_sob_map(self, gamma: float, *args, verbose: bool = False,  # I don't think it's /;"	m	class:EventModel
 _get_diff_flux_and_integral	test/workshop/joint_fit_example/VERITASLike.py	/^    def _get_diff_flux_and_integral(self, like_model):$/;"	m	class:VERITASRun
 _integrate	test/workshop/joint_fit_example/VERITASLike.py	/^    def _integrate(function, e1, e2):$/;"	m	class:VERITASRun
 _preprocess_ts	mla/analysis.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel$/;"	m	class:PsAnalysis
@@ -150,7 +150,7 @@ _trees_in_run	test/workshop/joint_fit_example/VERITASLike.py	/^_trees_in_run = [
 angular_distance	mla/tools.py	/^def angular_distance(ra1: float, dec1: float, ra2: float, dec2: float) -> float:$/;"	f
 author	docs/source/conf.py	/^author = 'John Evans, Jason Fan, Michael Larson'$/;"	v
 background_dec_spline	mla/models.py	/^    def background_dec_spline(self) -> scipy.interpolate.UnivariateSpline:$/;"	m	class:EventModel
-background_spatial_pdf	mla/injectors.py	/^    def background_spatial_pdf(self, events: np.ndarray, # This still belongs here even though i/;"	m	class:PsInjector
+background_spatial_pdf	mla/injectors.py	/^    def background_spatial_pdf(self, events: np.ndarray,  # This still belongs here even though /;"	m	class:PsInjector
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: 'GenericProfile') -> List[List[float]]:$/;"	m	class:GenericProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile) -> List[List[float]]:$/;"	m	class:CustomProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile) -> List[List[float]]:$/;"	m	class:GaussProfile
@@ -184,7 +184,7 @@ documentation_options	docs/.ipynb_checkpoints/modules-checkpoint.html	/^      <s
 end	docs/make.bat	/^:end$/;"	l
 evaluate_ts	mla/analysis.py	/^    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array:$/;"	m	class:Analysis
 evaluate_ts	mla/analysis.py	/^    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array:$/;"	m	class:TimeDependentPsAnalysis
-evaluate_ts	mla/analysis.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will/;"	m	class:PsAnalysis
+evaluate_ts	mla/analysis.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel,  # Super class wil/;"	m	class:PsAnalysis
 exclude_patterns	docs/source/conf.py	/^exclude_patterns = []$/;"	v
 extensions	docs/source/conf.py	/^extensions = [$/;"	v
 fig	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^fig = hawc.display_fit(smoothing_kernel_sigma=0.3,display_colorbar=True)$/;"	v
@@ -238,7 +238,7 @@ i3pubtools.llhs.ps_flare_llh.PsFlareLLH.evaluate_ts	docs/.ipynb_checkpoints/i3pu
 i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_n_trials	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_n_trials">$/;"	I
 i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_trial	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<dt id="i3pubtools.llhs.ps_flare_llh.PsFlareLLH.produce_trial">$/;"	I
 indices-and-tables	docs/.ipynb_checkpoints/index-checkpoint.html	/^<div class="section" id="indices-and-tables">$/;"	I
-inject_background_events	mla/injectors.py	/^    def inject_background_events(self, # This still belongs here even though it doesn't use self/;"	m	class:PsInjector
+inject_background_events	mla/injectors.py	/^    def inject_background_events(self,  # This still belongs here even though it doesn't use sel/;"	m	class:PsInjector
 inject_background_events	mla/injectors.py	/^    def inject_background_events(self,$/;"	m	class:TimeDependentPsInjector
 inject_signal_events	mla/injectors.py	/^    def inject_signal_events(self, reduced_sim: np.ndarray) -> np.ndarray:$/;"	m	class:PsInjector
 inject_signal_events	mla/injectors.py	/^    def inject_signal_events(self, reduced_sim: np.ndarray) -> np.ndarray:$/;"	m	class:TimeDependentPsInjector
@@ -261,7 +261,7 @@ maptree	test/workshop/hawc_fit/crab_fit_logparabola.py	/^maptree = "..\/data\/HA
 migration_matrix	test/workshop/joint_fit_example/VERITASLike.py	/^    def migration_matrix(self):$/;"	m	class:VERITASRun
 minimize_ts	mla/analysis.py	/^    def minimize_ts(self, events: np.ndarray, *args,$/;"	m	class:Analysis
 minimize_ts	mla/analysis.py	/^    def minimize_ts(self, events: np.ndarray, *args,$/;"	m	class:TimeDependentPsAnalysis
-minimize_ts	mla/analysis.py	/^    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will/;"	m	class:PsAnalysis
+minimize_ts	mla/analysis.py	/^    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel,  # Super class wil/;"	m	class:PsAnalysis
 mla	docs/source/modules.rst	/^mla$/;"	c
 mla package	docs/source/mla.rst	/^mla package$/;"	c
 mla.analysis module	docs/source/mla.rst	/^mla.analysis module$/;"	s	chapter:mla package
@@ -303,12 +303,12 @@ plt	test/testmla-liklihood_way.py	/^from matplotlib import pyplot as plt, colors
 plt	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^import matplotlib.pyplot as plt$/;"	I
 plt	test/workshop/hawc_fit/crab_fit_logparabola.py	/^import matplotlib.pyplot as plt$/;"	I
 plt	test/workshop/joint_fit_example/example_joint.py	/^import matplotlib.pyplot as plt$/;"	I
-produce_and_minimize	mla/analysis.py	/^    def produce_and_minimize(self, event_model: models.EventModel, # Super class will never be c/;"	m	class:PsAnalysis
+produce_and_minimize	mla/analysis.py	/^    def produce_and_minimize(self, event_model: models.EventModel,  # Super class will never be /;"	m	class:PsAnalysis
 produce_and_minimize	mla/analysis.py	/^    def produce_and_minimize(self, n_trials: int, *args,$/;"	m	class:Analysis
 produce_and_minimize	mla/analysis.py	/^    def produce_and_minimize(self, n_trials: int, *args,$/;"	m	class:TimeDependentPsAnalysis
 produce_trial	mla/analysis.py	/^    def produce_trial(self, *args, **kwargs) -> np.ndarray:$/;"	m	class:Analysis
 produce_trial	mla/analysis.py	/^    def produce_trial(self, *args, **kwargs) -> np.ndarray:$/;"	m	class:TimeDependentPsAnalysis
-produce_trial	mla/analysis.py	/^    def produce_trial(self, event_model: models.EventModel, flux_norm: float, # Super class will/;"	m	class:PsAnalysis
+produce_trial	mla/analysis.py	/^    def produce_trial(self, event_model: models.EventModel, flux_norm: float,  # Super class wil/;"	m	class:PsAnalysis
 project	docs/source/conf.py	/^project = 'mla'$/;"	v
 ra	test/testmla-liklihood_way.py	/^ra = 83.63*np.pi\/180$/;"	v
 ra_crab	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^ra_crab, dec_crab = 83.63,22.02$/;"	v
@@ -331,7 +331,7 @@ rf	mla/analysis.py	/^import numpy.lib.recfunctions as rf$/;"	I
 rf	mla/injectors.py	/^import numpy.lib.recfunctions as rf$/;"	I
 roi	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^roi = HealpixConeROI(data_radius=data_radius,$/;"	v
 roi	test/workshop/hawc_fit/crab_fit_logparabola.py	/^roi = HealpixConeROI(data_radius=data_radius,$/;"	v
-rotate	mla/tools.py	/^def rotate(ra1: float, dec1: float, ra2: float, dec2: float, # This is fine for a first release./;"	f
+rotate	mla/tools.py	/^def rotate(ra1: float, dec1: float, ra2: float, dec2: float,  # This is fine for a first release/;"	f
 rtd-search-form	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
 rtd-search-form	docs/.ipynb_checkpoints/index-checkpoint.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
 rtd-search-form	docs/.ipynb_checkpoints/modules-checkpoint.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
@@ -360,7 +360,7 @@ umd_icecube_analysis_tutorial¶	docs/.ipynb_checkpoints/modules-checkpoint.html	
 welcome-to-i3pubtools-s-documentation	docs/.ipynb_checkpoints/index-checkpoint.html	/^  <div class="section" id="welcome-to-i3pubtools-s-documentation">$/;"	I
 window	mla/time_profiles.py	/^    def window(self) -> Tuple[float]:$/;"	m	class:CustomProfile
 window	mla/time_profiles.py	/^    def window(self) -> Tuple[float]:$/;"	m	class:UniformProfile
-x0	mla/time_profiles.py	/^    def x0(self, times: np.array) -> Tuple: # I think this is the best name... pylint: disable=i/;"	m	class:GenericProfile
+x0	mla/time_profiles.py	/^    def x0(self, times: np.array) -> Tuple:  # I think this is the best name... pylint: disable=/;"	m	class:GenericProfile
 x0	mla/time_profiles.py	/^    def x0(self, times: np.array) -> Tuple[float, float]:$/;"	m	class:CustomProfile
 x0	mla/time_profiles.py	/^    def x0(self, times: np.array) -> Tuple[float, float]:$/;"	m	class:GaussProfile
 x0	mla/time_profiles.py	/^    def x0(self, times: np.array) -> Tuple[float, float]:$/;"	m	class:UniformProfile

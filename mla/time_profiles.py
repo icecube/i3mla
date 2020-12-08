@@ -19,6 +19,7 @@ import abc
 import numpy as np
 import scipy.stats
 
+
 class GenericProfile:
     """A generic base class to standardize the methods for the time profiles.
 
@@ -57,7 +58,7 @@ class GenericProfile:
         """Docstring"""
 
     @abc.abstractmethod
-    def x0(self, times: np.array) -> Tuple: # I think this is the best name... pylint: disable=invalid-name
+    def x0(self, times: np.array) -> Tuple:  # I think this is the best name... pylint: disable=invalid-name
         """Docstring"""
 
     @abc.abstractmethod
@@ -73,6 +74,7 @@ class GenericProfile:
     @abc.abstractmethod
     def param_dtype(self) -> List[Tuple[str, str]]:
         """Docstring"""
+
 
 class GaussProfile(GenericProfile):
     """Time profile class for a gaussian distribution.
@@ -104,8 +106,8 @@ class GaussProfile(GenericProfile):
         self.mean = mean
         self.sigma = sigma
         self.scipy_dist = scipy.stats.norm(mean, sigma)
-        self._default_params = {'_'.join([name, 'mean']):mean,
-                                '_'.join([name, 'sigma']):sigma}
+        self._default_params = {'_'.join([name, 'mean']): mean,
+                                '_'.join([name, 'sigma']): sigma}
         self._param_dtype = [('_'.join([name, 'mean']), np.float32),
                              ('_'.join([name, 'sigma']), np.float32)]
 
@@ -167,7 +169,6 @@ class GaussProfile(GenericProfile):
         x0_sigma = np.std(times)
         return x0_mean, x0_sigma
 
-
     def bounds(self, time_profile: GenericProfile) -> List[List[float]]:
         """Short function info...
 
@@ -194,6 +195,7 @@ class GaussProfile(GenericProfile):
     @property
     def param_dtype(self) -> List[Tuple[str, str]]:
         return self._param_dtype
+
 
 class UniformProfile(GenericProfile):
     """Time profile class for a uniform distribution.
@@ -222,8 +224,8 @@ class UniformProfile(GenericProfile):
         """
         super().__init__()
         self._window = [start, end]
-        self._default_params = {'_'.join([name, 'start']):self._window[0],
-                                '_'.join([name, 'end']):self._window[1]}
+        self._default_params = {'_'.join([name, 'start']): self._window[0],
+                                '_'.join([name, 'end']): self._window[1]}
         self._param_dtype = [('_'.join([name, 'start']), np.float32),
                              ('_'.join([name, 'end']), np.float32)]
 
@@ -239,8 +241,9 @@ class UniformProfile(GenericProfile):
 
         """
         output = np.zeros_like(times)
-        output[(times>=self._window[0]) &\
-               (times<self._window[1])] = 1/(self._window[1] - self._window[0])
+        output[(times >= self._window[0])
+               & (times < self._window[1])] = 1/(self._window[1]
+                                                 - self._window[0])
         return output
 
     def logpdf(self, times: np.array) -> np.array:
@@ -311,6 +314,7 @@ class UniformProfile(GenericProfile):
         """Docstring"""
         return tuple(self._window)
 
+
 class CustomProfile(GenericProfile):
     """Time profile class for a custom binned distribution.
 
@@ -329,7 +333,7 @@ class CustomProfile(GenericProfile):
     """
 
     def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], float],
-                 time_window: Tuple[float], bins: Union[List[float], int] = 100, # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 time_window: Tuple[float], bins: Union[List[float], int] = 100,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                  name: str = 'custom_tp') -> None:
         """Constructs the object.
 
@@ -345,14 +349,14 @@ class CustomProfile(GenericProfile):
         """
         super().__init__()
         self._window = time_window
-        self._default_params = {'_'.join([name, 'start']):self._window[0],
-                                '_'.join([name, 'end']):self._window[1]}
+        self._default_params = {'_'.join([name, 'start']): self._window[0],
+                                '_'.join([name, 'end']): self._window[1]}
         self._param_dtype = [('_'.join([name, 'start']), np.float32),
                              ('_'.join([name, 'end']), np.float32)]
         self.dist = self.build_rv(pdf, bins)
 
     def build_rv(self, pdf: Callable[[np.array, Tuple[float, float]], float],
-                 bins: Union[List[float], int]) -> scipy.stats.rv_histogram: # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 bins: Union[List[float], int]) -> scipy.stats.rv_histogram:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Function info...
 
         More function info...
