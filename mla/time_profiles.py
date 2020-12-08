@@ -11,7 +11,7 @@ __status__ = 'Development'
 Docstring
 """
 
-from typing import Callable, Dict, List, Tuple
+from typing import Callable, Dict, List, Tuple, Union
 
 import abc
 import numpy as np
@@ -332,7 +332,7 @@ class CustomProfile(GenericProfile):
                  pdf: Callable[[np.array, Tuple[float, float]], float],
                  start: float,
                  end: float,
-                 bins = 100,
+                 bins: Union[List[float], int]  = 100,
                  name: str = 'custom_tp',
     ) -> None:
         """Constructs the object.
@@ -354,7 +354,7 @@ class CustomProfile(GenericProfile):
         self._param_dtype = [('_'.join([name, 'start']), np.float32),('_'.join([name, 'end']), np.float32)]
         self.dist = self.build_rv(pdf, bins)
         
-    def build_rv(pdf: Callable[[np.array, Tuple[float, float]], float], bins
+    def build_rv(pdf: Callable[[np.array, Tuple[float, float]], float], bins: Union[List[float], int] 
     ) -> scipy.stats.rv_histogram:
         """Function info...
 
