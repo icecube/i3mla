@@ -39,41 +39,91 @@ class GenericProfile:
 
     @abc.abstractmethod
     def __init__(self) -> None:
-        """Docstring"""
+        """Initializes the time profile."""
 
     @abc.abstractmethod
     def pdf(self, times: np.array) -> np.array:
-        """Docstring"""
+        """Get the probability amplitude given a time for this time profile.
+
+        Args:
+            times: An array of event times to get the probability amplitude for.
+
+        Returns:
+            A numpy array of probability amplitudes at the given times.
+        """
 
     @abc.abstractmethod
     def logpdf(self, times: np.array) -> np.array:
-        """Docstring"""
+        """Get the log(probability) given a time for this time profile.
+
+        Args:
+            times: An array of times to get the log(probability) of.
+
+        Returns:
+            A numpy array of log(probability) at the given times.
+        """
 
     @abc.abstractmethod
     def random(self, size: int) -> np.array:
-        """Docstring"""
+        """Get random times sampled from the pdf of this time profile.
+
+        Args:
+            size: The number of times to return.
+
+        Returns:
+            An array of times.
+        """
 
     @abc.abstractmethod
-    def get_range(self) -> List[float]:
-        """Docstring"""
+    def get_range(self) -> Tuple[float]:
+        """Gets the maximum and minimum values for the times in this profile.
+
+        Returns:
+            A tuple of times.
+        """
 
     @abc.abstractmethod
     def x0(self, times: np.array) -> Tuple:  # I think this is the best name... pylint: disable=invalid-name
-        """Docstring"""
+        """Gets a tuple of initial guess to use when fitting parameters.
+
+        The guesses are arrived at by simple approximations using the given
+        times.
+
+        Args:
+            times: An array of times to use to approximate the fitting
+                parameters of this time profile.
+
+        Returns:
+            A tuple of approximate parameters.
+        """
 
     @abc.abstractmethod
-    def bounds(self, time_profile: 'GenericProfile') -> List[List[float]]:
-        """Docstring"""
+    def bounds(self, time_profile: 'GenericProfile') -> List[Tuple[float]]:
+        """Get a list of tuples of bounds for the parameters of this profile.
+
+        Uses another time profile to constrain the bounds. This is usually
+        needed to constrain the bounds of a signal time profile given a
+        background time profile.
+
+        Args:
+            time_profile: Another time profile to constrain from.
+
+        Returns:
+            A list of tuples of bounds for fitting the  parameters of this time
+            profile.
+        """
 
     @property
     @abc.abstractmethod
     def default_params(self) -> Dict[str, float]:
-        """Docstring"""
+        """Returns the initial parameters formatted for ts calculation output.
+        """
 
     @property
     @abc.abstractmethod
     def param_dtype(self) -> List[Tuple[str, str]]:
-        """Docstring"""
+        """Returns the parameter names and datatypes formatted for numpy dtypes.
+        """
 
 
 class GaussProfile(GenericProfile):

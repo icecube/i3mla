@@ -145,7 +145,7 @@ angular_distance	mla/tools.py	/^def angular_distance(ra1: float, dec1: float, ra
 author	docs/source/conf.py	/^author = 'John Evans, Jason Fan, Michael Larson'$/;"	v
 background_dec_spline	mla/models.py	/^    def background_dec_spline(self) -> scipy.interpolate.UnivariateSpline:$/;"	m	class:EventModel
 background_spatial_pdf	mla/injectors.py	/^    def background_spatial_pdf(self, events: np.ndarray,  # This still belongs here even though /;"	m	class:PsInjector
-bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: 'GenericProfile') -> List[List[float]]:$/;"	m	class:GenericProfile
+bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: 'GenericProfile') -> List[Tuple[float]]:$/;"	m	class:GenericProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile) -> List[List[float]]:$/;"	m	class:CustomProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile) -> List[List[float]]:$/;"	m	class:GaussProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile) -> List[List[float]]:$/;"	m	class:UniformProfile
@@ -201,8 +201,8 @@ get_random_sim	test/.ipynb_checkpoints/test_data-checkpoint.py	/^def get_random_
 get_random_sim	test/test_data.py	/^def get_random_sim(length: int) -> np.ndarray:$/;"	f
 get_range	mla/time_profiles.py	/^    def get_range(self) -> List[float]:$/;"	m	class:CustomProfile
 get_range	mla/time_profiles.py	/^    def get_range(self) -> List[float]:$/;"	m	class:GaussProfile
-get_range	mla/time_profiles.py	/^    def get_range(self) -> List[float]:$/;"	m	class:GenericProfile
 get_range	mla/time_profiles.py	/^    def get_range(self) -> List[float]:$/;"	m	class:UniformProfile
+get_range	mla/time_profiles.py	/^    def get_range(self) -> Tuple[float]:$/;"	m	class:GenericProfile
 get_ts	mla/analysis.py	/^        def get_ts(args):$/;"	f	member:PsAnalysis.minimize_ts	file:
 grl	mla/models.py	/^    def grl(self) -> np.ndarray:$/;"	m	class:EventModel
 grl	test/testmla-liklihood_way.py	/^grl = read(glob.glob(grl_files))$/;"	v
