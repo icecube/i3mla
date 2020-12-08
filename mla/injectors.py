@@ -82,11 +82,11 @@ class PsInjector:
         return (1/(2*np.pi))*event_model.background_dec_spline(np.sin(events['dec']))
     
     def reduced_sim(self,
-                    livetime: float,
                     event_model: Optional[models.EventModel] = None,
                     sim: Optional[np.ndarray] = None,
                     flux_norm: Optional[float] = 0, 
                     gamma: Optional[float] = -2,
+                    livetime: float = None,
                     spectrum: Optional[spectral.BaseSpectrum] = None,
                     sampling_width: Optional[float] = None) -> np.ndarray:
         """Function info...
@@ -110,6 +110,13 @@ class PsInjector:
         # declination. We only want to sample from those.
         if event_model is not None:
             sim = event_model.sim
+        
+        if livetime is None:
+            try:
+                livetime = self.signal_time_profile.effective_exposure()
+            except:
+                print("no livetime and no signal time profile in injector.Using 1 day to weight the MC")
+                livetime = 1
         try:
             reduced_sim = rf.append_fields(sim,'sindec',np.sin(sim['dec']),usemask=False)#The full simulation set,this is for the overall normalization of the Energy S/B ratio
         except ValueError: #sindec already exist
@@ -144,15 +151,51 @@ class PsInjector:
         if spectrum is not None:
             reduced_sim['weight'] = reduced_sim['ow'] * spectrum(reduced_sim['trueE']) * livetime * 3600 * 24
         else:
-            reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * (reduced_sim['trueE']/100.e3)**gamma * 3600 * 24
+            reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * (reduced_sim['trueE']/100.e3)**gamma * livetime * 3600 * 24
 
         # Apply the sampling width, which ensures that we
         # sample events from similar declinations.
         # When we do this, correct for the solid angle
         # we're including for sampling
         reduced_sim['weight'] /= omega
+        reduced_sim['ow'] /= omega
         return reduced_sim
     
+    def reweight_simulation(self,
+                            reduced_sim:np.ndarray,
+                            livetime:float = None,
+                            flux_norm: Optional[float] = 0, 
+                            gamma: Optional[float] = -2,
+                            spectrum: Optional[spectral.BaseSpectrum] = None)-> np.ndarray:
+                            
+        """Function info...
+        
+        Prunes the simulation set to only events close to a given source and calculate the
+        weight for each event. Adds the weights as a new column to the simulation set.
+            
+        Args:
+            reduced_sim: simulation set.
+            flux_norm: A flux normaliization to adjust weights.
+            gamma: A spectral index to adjust weights.
+            spectrum: spectral.BaseSpectrum object.Alternative for user not passing flux_norm and gamma. 
+            sampling_width: The bandwidth around the source declination to cut events.
+        
+        Returns:
+            A reweighted simulation set around the source declination.
+        """
+        if livetime is None:
+            try:
+                livetime = self.signal_time_profile.effective_exposure()
+            except:
+                print("no livetime and no signal time profile in injector.Using 1 day to weight the MC")
+                livetime = 1
+        if spectrum is not None:
+            reduced_sim['weight'] = reduced_sim['ow'] * spectrum(reduced_sim['trueE']) * livetime * 3600 * 24
+        else:
+            reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * (reduced_sim['trueE']/100.e3)**gamma * livetime * 3600 * 24
+
+        return reduced_sim
+        
     def inject_background_events_No_time(self, event_model: models.EventModel) -> np.ndarray:
         """Function info...
         
@@ -193,6 +236,8 @@ class PsInjector:
         """
         if background_time_profile is not None:
             self.set_background_profile(event_model, background_time_profile, background_window)
+        else:
+                self.n_background = event_model.grl['events'].sum()
             
         # Get the number of events we see from these runs
         n_background = self.n_background
@@ -262,7 +307,7 @@ class PsInjector:
     
     
     def inject_signal_events(self, 
-                             reduced_sim: np.ndarray, 
+                             reduced_sim: np.ndarray,
                              signal_time_profile:Optional[time_profiles.GenericProfile] = None) -> np.ndarray:
         """Function info...
         
@@ -276,6 +321,7 @@ class PsInjector:
             An array of injected signal events.
         """
         # Pick the signal events
+
         total = reduced_sim['weight'].sum()
 
         n_signal_observed = scipy.stats.poisson.rvs(total)
@@ -386,10 +432,6 @@ class PsInjector:
         else: 
             signal = self.inject_nsignal_events(reduced_sim, n = nsignal, signal_time_profile = signal_time_profile)
         background = self.inject_background_events(event_model, background_time_profile, background_window)
-        bgrange = self.background_time_profile.get_range()
-        contained_in_background = ((signal['time'] >= bgrange[0]) &\
-                                   (signal['time'] < bgrange[1]))
-        signal = signal[contained_in_background]
         signal = rf.drop_fields(signal, [n for n in signal.dtype.names \
                  if not n in background.dtype.names])
         

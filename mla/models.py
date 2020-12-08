@@ -109,12 +109,8 @@ class EventModel:
         # behavior, we first take a look at the dec values
         # in the data. We can do this by histogramming them.
         sin_dec = np.sin(self._data['dec'])
-
-        # Make the background histogram. Note that we do NOT
-        # want to use density=True here, since that would mean
-        # that our spline depends on the original bin widths!
-        weights = np.ones_like(self._data['dec'])/len(self._data['dec'])
-        hist, bins = np.histogram(sin_dec, bins=sin_dec_bins, weights=weights)
+        hist, bins = np.histogram(sin_dec, bins=sin_dec_bins, density=True)
+        
         bin_centers = bins[:-1] + np.diff(bins)/2
 
         # These values have a lot of "noise": they jump
@@ -132,13 +128,6 @@ class EventModel:
         if 's' not in kwargs: kwargs['s'] = 1.5e-5
         if 'ext' not in kwargs: kwargs['ext'] = 1
         
-        # Normalize over the right ascension, assuming 
-        # uniform background response. This works for 
-        # longer time windows and is roughly correct for
-        # shorter windows as well. This is necessary in
-        # order to get identical units as the 2d gaussian
-        # used for the signal spatial PDF
-        hist /= (2 * np.pi)
         
         return scipy.interpolate.UnivariateSpline(bin_centers, hist, *args, **kwargs)
     
@@ -245,7 +234,7 @@ class EventModel:
         sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1], np.sin(events['dec']))
         log_energy_idx = np.searchsorted(self._log_energy_bins[:-1], events['logE'])
         
-        return [self._log_sob_gamma_splines[i][j] for i,j in zip(sin_dec_idx, log_energy_idx)]
+        return [self._log_sob_gamma_splines[i-1][j-1] for i,j in zip(sin_dec_idx, log_energy_idx)]
     
     @property
     def data(self) -> np.ndarray:

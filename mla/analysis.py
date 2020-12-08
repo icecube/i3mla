@@ -18,6 +18,7 @@ import numpy as np
 from mla import models
 from mla import injectors
 from mla import spectral
+from mla import time_profiles
 import abc
 import numpy.lib.recfunctions as rf
 
@@ -125,6 +126,8 @@ class ThreeMLPsAnalysis(Analysis):
                      event_model: models.EventModel, 
                      data: Optional[np.ndarray] = None, 
                      ns: Optional[float] = None,
+                     test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,
+                     test_background_time_profile:Optional[time_profiles.GenericProfile] = None,
                      recalculate:Optional[bool] = True)-> float:
         """Calculate the signal pdf"""
         if self.N == 0:
@@ -134,7 +137,7 @@ class ThreeMLPsAnalysis(Analysis):
         if recalculate:
             if data is not None:
                 self.data = data
-            if len(self.data) == 0: return 0
+            if len(self.data) == 0: return 0,0
             if self.first_spatial == True:
                 self.Spatial_S = self.injector.signal_spatial_pdf(self.data)
                 mask = self.Spatial_S!=0
@@ -144,13 +147,19 @@ class ThreeMLPsAnalysis(Analysis):
                 self.Spatial_SoB = self.Spatial_S/self.Spatial_B
                 self.drop = self.N - mask.sum()
                 self.first_spatial = False
-            if self.injector.signal_time_profile is None:
-                Time_S = 1
-                Time_B = 1
-            else:
-                Time_S = self.injector.signal_time_profile.pdf(self.data['time'])
-                Time_B = self.injector.background_time_profile.pdf(self.data['time'])
-            self.Time_SOB = Time_S/Time_B
+                if test_signal_time_profile is None or test_background_time_profile is None:
+                    if self.injector.signal_time_profile is None:
+                        Time_S = 1
+                        Time_B = 1
+                    else:
+                        Time_S = self.injector.signal_time_profile.pdf(self.data['time'])
+                        Time_B = self.injector.background_time_profile.pdf(self.data['time'])
+                else:
+                    Time_S = test_signal_time_profile.pdf(self.data['time'])
+                    Time_B = test_background_time_profile.pdf(self.data['time'])
+                    
+                self.Time_SOB = Time_S/Time_B
+                self.Time_SOB[np.isnan(self.Time_SOB)] = 0
             self.energy_SoB = event_model.get_energy_sob(self.data)
         if ns is None:
             ns = event_model._spectrum(event_model._reduced_sim_truedec['trueE'])\
@@ -160,6 +169,8 @@ class ThreeMLPsAnalysis(Analysis):
             
         self.ts =( ns/self.N * (self.energy_SoB*self.Spatial_SoB*self.Time_SOB - 1))+1
         ts_value = 2*(np.sum(np.log(self.ts))+self.drop*np.log(1-ns/self.N))
+        if np.isnan(ts_value):
+            self.ts = 0
         return ts_value,ns
     
     def min_ns(self, 
@@ -185,13 +196,17 @@ class ThreeMLPsAnalysis(Analysis):
                 self.Spatial_SoB = self.Spatial_S/self.Spatial_B
                 self.drop = self.N - mask.sum()
                 self.first_spatial = False
-            if self.injector.signal_time_profile is None:
-                Time_S = 1
-                Time_B = 1
-            else:
-                Time_S = self.injector.signal_time_profile.pdf(self.data['time'])
-                Time_B = self.injector.background_time_profile.pdf(self.data['time'])
-            self.Time_SOB = Time_S/Time_B
+                if self.injector.signal_time_profile is None:
+                    Time_S = 1
+                    Time_B = 1
+                else:
+                    Time_S = self.injector.signal_time_profile.pdf(self.data['time'])
+                    Time_B = self.injector.background_time_profile.pdf(self.data['time'])
+                self.Time_SOB = Time_S/Time_B
+                self.Time_SOB[np.isnan(self.Time_SOB)] = 0
+                if np.isinf(self.Time_SOB).sum() > 0:
+                    print("Warning:Background time profile doesn't not cover signal time profile.Discard events outside background window!")
+                    time_SoB[np.isinf(self.time_SoB)] = 0
             self.energy_SoB = event_model.get_energy_sob(self.data)
         
         def cal_ts(ns):
@@ -232,8 +247,10 @@ class PsAnalysis(Analysis):
         if injector is not None: self.injector = injector
         else: self.injector = injectors.PsInjector(source)
     
-    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel
-    ) -> Optional[Tuple[List[scipy.interpolate.UnivariateSpline], np.array]]:
+    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel,
+                       test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,
+                       test_background_time_profile:Optional[time_profiles.GenericProfile] = None,
+                       ) -> Optional[Tuple[List[scipy.interpolate.UnivariateSpline], np.array]]:
         """Function info...
 
         More function info...
@@ -241,7 +258,8 @@ class PsAnalysis(Analysis):
         Args:
             events:
             event_model: An object containing data and preprocessed parameters.
-
+            test_signal_time_profile: Background time profile to calculate_TS.
+            test_background_time_profile: The time profile of signals for calculate_TS.
         Returns:
             None if there are no events, otherwise the pre-processed signal over background.
         """
@@ -250,10 +268,24 @@ class PsAnalysis(Analysis):
         S = self.injector.signal_spatial_pdf(events)
         B = self.injector.background_spatial_pdf(events, event_model)
         splines = event_model.get_log_sob_gamma_splines(events)
+        SoB = S/B
+        if test_signal_time_profile is not None and test_background_time_profile is not None:
+            S_time = test_signal_time_profile.pdf(events['time'])
+            B_time = test_background_time_profile.pdf(events['time'])
+            time_SoB = S_time/B_time
+            time_SoB[np.isnan(time_SoB)] = 0
+            if np.isinf(time_SoB).sum() > 0:
+                print("Warning:Background time profile doesn't not cover signal time profile.Discard events outside background window!")
+                time_SoB[np.isinf(time_SoB)] = 0
+            SoB *= time_SoB
+
         
-        return splines, S/B
+        return np.array(splines), np.array(SoB)
     
     def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, ns: float, gamma: float,
+                    n_events:Optional[int] = None,
+                    test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,
+                    test_background_time_profile:Optional[time_profiles.GenericProfile] = None,
                     preprocessing: Optional[Tuple[List[scipy.interpolate.UnivariateSpline], np.array]] = None
     ) -> Optional[np.array]:
         """Function info...
@@ -269,19 +301,25 @@ class PsAnalysis(Analysis):
         Returns:
             
         """
+        if n_events is None:
+            n_events = len(events)
         if preprocessing is None:
-            preprocessing = self._preprocess_ts(events, event_model) 
+            preprocessing = self._preprocess_ts(events, 
+                                                event_model,
+                                                test_signal_time_profile=test_signal_time_profile,
+                                                test_background_time_profile=test_background_time_profile) 
             if preprocessing is None: return
-        
         splines, sob = preprocessing
-        sob *= np.exp([spline(gamma) for spline in splines])
+        sob_new = sob*np.exp([spline(gamma) for spline in splines])
         
-        return np.log((ns/n_events*(sob - 1)) + 1)
+        return np.log((ns/n_events*(sob_new - 1)) + 1)
     
     def minimize_ts(self, events: np.ndarray, event_model: models.EventModel,
                     test_ns: float,
                     test_gamma: float,
                     gamma_bounds: List[float] = [-4, -1],
+                    test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,
+                    test_background_time_profile:Optional[time_profiles.GenericProfile] = None,
                     **kwargs) -> Dict[str, float]:
         """Function info...
 
@@ -292,12 +330,15 @@ class PsAnalysis(Analysis):
             event_model: An object containing data and preprocessed parameters.
             test_ns:
             test_gamma:
-
+            test_signal_time_profile: Background time profile to calculate_TS.
+            test_background_time_profile: The time profile of signals for calculate_TS.
         Returns:
             
         """
-        output = {'ts': np.nan, 'ns': ns, 'gamma': gamma}
-        preprocessing = self._preprocess_ts(events, event_model)
+        ns = test_ns
+        gamma = test_gamma
+        output = {'ts': 0, 'ns': ns, 'gamma': gamma}
+        preprocessing = self._preprocess_ts(events, event_model,test_signal_time_profile = test_signal_time_profile,test_background_time_profile = test_background_time_profile)
         if preprocessing is None: return output
         
         # Check: ns cannot be larger than n_events
@@ -306,11 +347,12 @@ class PsAnalysis(Analysis):
             ns = n_events - 0.00001
             
         drop = n_events - np.sum(preprocessing[1] != 0)
-        
+        drop_index = preprocessing[1] != 0
+        preprocessing = (preprocessing[0][drop_index],preprocessing[1][drop_index])
         def get_ts(args):
             ns = args[0]
             gamma = args[1]
-            llhs = self.evaluate_ts(events, ns, gamma, preprocessing=preprocessing)
+            llhs = self.evaluate_ts(events[drop_index], event_model, ns, gamma, n_events, preprocessing=preprocessing)
             return -2*(np.sum(llhs) + drop*np.log(1-ns/n_events))
             
         with np.errstate(divide='ignore', invalid='ignore'):
@@ -324,19 +366,26 @@ class PsAnalysis(Analysis):
             result = scipy.optimize.minimize(get_ts, x0=x0, bounds=bounds, **kwargs)
 
             # Store the results in the output array
+                
             output['ts'] = -1*result.fun
+            if np.isnan(output['ts']):
+                output['ts'] = 0
             output['ns'] = result.x[0]
             output['gamma'] = result.x[1]
-
+        
         return output
     
     def produce_trial(self,
                       event_model: models.EventModel,
-                      flux_norm: float, 
+                      flux_norm: Optional[float] = 1e-9, 
                       reduced_sim: Optional[np.ndarray] = None, 
-                      gamma: float = -2, 
+                      gamma: float = -2,
+                      nsignal: Optional[int] = None,
                       sampling_width: Optional[float] = None, 
                       random_seed: Optional[int] = None,
+                      signal_time_profile:Optional[time_profiles.GenericProfile] = None,
+                      background_time_profile: Optional[time_profiles.GenericProfile] = None,
+                      disable_time_filter: Optional[bool] = False,
                       verbose: bool = False) -> np.ndarray:
         """Produces a single trial of background+signal events based on input parameters.
         
@@ -349,22 +398,36 @@ class PsAnalysis(Analysis):
             gamma: A spectral index to adjust weights.
             sampling_width: The bandwidth around the source declination to cut events.
             random_seed: A seed value for the numpy RNG.
+            signal_time_profile: The time profile of the injected signal.
+            background_time_profile: Background time profile to do the injection.
+            disable_time_filter:Cut out events that is not in grl
             verbose: A flag to print progress.
             
         Returns:
             An array of combined signal and background events.
         """
         if random_seed is not None: np.random.seed(random_seed)
-        
+        if background_time_profile is not None:
+            if not issubclass(type(background_time_profile) ,time_profiles.GenericProfile):
+                background_time_profile = time_profiles.UniformProfile(background_time_profile[0],
+                                                                       background_time_profile[1])
+        if signal_time_profile is not None:                                                            
+            if not issubclass(type(signal_time_profile) ,time_profiles.GenericProfile):
+                signal_time_profile = time_profiles.UniformProfile(signal_time_profile[0],
+                                                                   signal_time_profile[1]) 
         if reduced_sim is None: 
             reduced_sim = self.injector.reduced_sim(
+                event_model=event_model,
                 flux_norm=flux_norm,
                 gamma=gamma,
                 sampling_width=sampling_width)
-
-        background = self.injector.inject_background_events()
-        if flux_norm > 0: signal = self.injector.inject_signal_events(reduced_sim)
-        else: signal = np.empty(0, dtype=background.dtype)
+        background = self.injector.inject_background_events(event_model,background_time_profile=background_time_profile)
+        if nsignal is not None:
+            signal = self.injector.inject_nsignal_events(reduced_sim,nsignal,signal_time_profile=signal_time_profile)
+            
+        else:
+            if flux_norm > 0: signal = self.injector.inject_signal_events(reduced_sim,signal_time_profile=signal_time_profile)
+            else: signal = np.empty(0, dtype=background.dtype)
         
         if verbose:
             print(f'number of background events: {len(background)}')
@@ -377,22 +440,27 @@ class PsAnalysis(Analysis):
         # energy, and 'oneweight'.
         signal = rf.drop_fields(signal, [n for n in signal.dtype.names \
                                          if not n in background.dtype.names])
-
+        
+            
         # Combine the signal background events and time-sort them.
+        
+        if signal_time_profile is None:
+            signal['time'] = time_profiles.UniformProfile(event_model.grl['start'][0],event_model.grl['stop'][-1]).random(len(signal))
         events = np.concatenate([background, signal])
-        sorting_indices = np.argsort(events['time'])
-        events = events[sorting_indices]
+        if not disable_time_filter:
+            sorting_indices = np.argsort(events['time'])
+            events = events[sorting_indices]
 
-        # We need to check to ensure that every event is contained within
-        # a good run. If the event happened when we had deadtime (when we
-        # were not taking data), then we need to remove it.
-        after_start = np.less(event_model.grl['start'].reshape((1, len(event_model.grl))),
-                              events['time'].reshape(len(events), 1))
-        before_stop = np.less(events['time'].reshape(len(events), 1),
-                              event_model.grl['stop'].reshape((1, len(event_model.grl))))
-        during_uptime = np.any(after_start & before_stop, axis = 1)
-
-        return events[during_uptime]
+            # We need to check to ensure that every event is contained within
+            # a good run. If the event happened when we had deadtime (when we
+            # were not taking data), then we need to remove it.
+            after_start = np.less(event_model.grl['start'].reshape((1, len(event_model.grl))),
+                                  events['time'].reshape(len(events), 1))
+            before_stop = np.less(events['time'].reshape(len(events), 1),
+                                  event_model.grl['stop'].reshape((1, len(event_model.grl))))
+            during_uptime = np.any(after_start & before_stop, axis = 1)
+            events = events[during_uptime]
+        return events
     
     def produce_and_minimize(self,
                              event_model: models.EventModel,
@@ -402,7 +470,13 @@ class PsAnalysis(Analysis):
                              random_seed: Optional[int] = None,
                              flux_norm: float = 0,
                              gamma: float = -2,
+                             nsignal:Optional[int] = None,
                              sampling_width: Optional[float] = None,
+                             signal_time_profile:Optional[time_profiles.GenericProfile] = None,
+                             background_time_profile: Optional[time_profiles.GenericProfile] = None,
+                             test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,
+                             test_background_time_profile:Optional[time_profiles.GenericProfile] = None,
+                             disable_time_filter: Optional[bool] = False,
                              verbose: bool = False,
     ) -> np.ndarray:
         """Produces n trials and calculate a test statistic for each trial.
@@ -418,13 +492,36 @@ class PsAnalysis(Analysis):
             flux_norm: A flux normaliization to adjust weights.
             gamma: A guess for best fit spectral index of the signal.
             sampling_width: The bandwidth around the source declination to cut events.
+            signal_time_profile: The time profile of the injected signal.
+            background_time_profile: Background time profile to do the injection.
+            test_signal_time_profile: Background time profile to calculate_TS.
+            test_background_time_profile: The time profile of signals for calculate_TS.
+            disable_time_filter:Cut out events that is not in grl
             verbose: A flag to print progress.
-            
+
         Returns:
             An array of test statistic values and their best-fit parameters for each trial.
         """
         if random_seed: np.random.seed(random_seed)
-
+        if background_time_profile is not None:
+            if not issubclass(type(background_time_profile) ,time_profiles.GenericProfile):
+                background_time_profile = time_profiles.UniformProfile(background_time_profile[0],
+                                                                       background_time_profile[1])
+            if test_background_time_profile is None:
+                test_background_time_profile = background_time_profile
+            elif not issubclass(type(test_background_time_profile),time_profiles.GenericProfile):
+                test_background_time_profile = time_profiles.UniformProfile(test_background_time_profile[0],
+                                                                            test_background_time_profile[1])
+                                                                       
+        if signal_time_profile is not None:                                                            
+            if not issubclass(type(signal_time_profile) ,time_profiles.GenericProfile):
+                signal_time_profile = time_profiles.UniformProfile(signal_time_profile[0],
+                                                                   signal_time_profile[1])
+            if test_signal_time_profile is None:
+                test_signal_time_profile = signal_time_profile
+            elif not issubclass(type(test_signal_time_profile) ,time_profiles.GenericProfile):
+                test_signal_time_profile = time_profiles.UniformProfile(test_signal_time_profile[0],
+                                                                        test_signal_time_profile[1])
         # Cut down the sim. We're going to be using the same
         # source and weights each time, so this stops us from
         # needing to recalculate over and over again.
@@ -453,10 +550,23 @@ class PsAnalysis(Analysis):
             
         for i in range(n_trials):
             # Produce the trial events
-            trial = self.produce_trial(event_model, flux_norm, reduced_sim, random_seed=random_seed)
-
+            trial = self.produce_trial(event_model,
+                                       flux_norm,
+                                       reduced_sim, 
+                                       nsignal = nsignal,
+                                       random_seed=random_seed,
+                                       background_time_profile=background_time_profile,
+                                       signal_time_profile=signal_time_profile,
+                                       disable_time_filter=disable_time_filter,
+                                       verbose = verbose)
+            
             # And get the weights
-            bestfit = self.minimize_ts(trial, event_model, test_ns, test_gamma)
+            bestfit = self.minimize_ts(trial, 
+                                       event_model, 
+                                       test_ns, 
+                                       test_gamma,
+                                       test_signal_time_profile = test_signal_time_profile,
+                                       test_background_time_profile = test_background_time_profile)
 
             fit_info['ts'][i] = bestfit['ts']
             fit_info['ntot'][i] = len(trial)
