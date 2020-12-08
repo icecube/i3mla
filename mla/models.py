@@ -57,8 +57,6 @@ class EventModel:
                 spanning -1 -> 1, otherwise, a numpy array of bin edges.
             signal_sin_dec_bins: If an int, then the number of bins spanning
                 -1 -> 1, otherwise, a numpy array of bin edges.
-            log_energy_bins: if an int, then the number of bins spanning
-                1 -> 8, otherwise, a numpy array of bin edges.
             gamma_bins: If an int, then the number of bins spanning
                 -4.25 -> -0.5, otherwise, a numpy array of bin edges.
             verbose: A flag to print progress.
@@ -282,20 +280,28 @@ class EventModel:
 
     @property
     def data(self) -> np.ndarray:
-        """Getter for data."""
+        """Getter for data.
+        :noindex:
+        """
         return self._data
 
     @property
     def sim(self) -> np.ndarray:
-        """Getter for sim."""
+        """Getter for sim.
+        :noindex:
+        """
         return self._sim
 
     @property
     def grl(self) -> np.ndarray:
-        """Getter for GRL."""
+        """Getter for GRL.
+        :noindex:
+        """
         return self._grl
 
     @property
     def background_dec_spline(self) -> scipy.interpolate.UnivariateSpline:
-        """Getter for background_dec_spline."""
+        """Getter for background_dec_spline.
+        :noindex:
+        """
         return self._background_dec_spline

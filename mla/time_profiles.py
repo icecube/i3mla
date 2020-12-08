@@ -98,8 +98,6 @@ class GaussProfile(GenericProfile):
         More function info...
 
         Args:
-            mean: The center form the distribution.
-            sigma: The width for the distribution.
             name: prefix for printing parameters.
         """
         super().__init__()
@@ -340,7 +338,6 @@ class CustomProfile(GenericProfile):
         More function info...
 
         Args:
-            pdf: The distribution function (takes times and time window).
             time_window: lower and upper bound for the distribution.
             bins: Either a list of specific bin edges to use (values should be
                 between 0 and 1), or an integer giving the number of linear

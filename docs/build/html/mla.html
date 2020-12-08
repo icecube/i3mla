@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>mla package &mdash; mla  documentation</title>
+  <title>mla package &mdash; MLA  documentation</title>
   
 
   
@@ -50,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> mla
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> MLA
           
 
           
@@ -89,7 +89,6 @@
 <li class="toctree-l3"><a class="reference internal" href="#module-mla.analysis">mla.analysis module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mla.injectors">mla.injectors module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mla.models">mla.models module</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-mla.spectral">mla.spectral module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mla.time_profiles">mla.time_profiles module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mla.tools">mla.tools module</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-mla">Module contents</a></li>
@@ -112,7 +111,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">mla</a>
+          <a href="index.html">MLA</a>
         
       </nav>
 
@@ -571,13 +570,15 @@ gamma at a binned energy and sin(dec).</p>
 <dl class="py method">
 <dt id="id0">
 <em class="property">property </em><code class="sig-name descname">background_dec_spline</code><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter for background_dec_spline.</p>
+<dd><p>Getter for background_dec_spline.
+:noindex:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="id1">
 <em class="property">property </em><code class="sig-name descname">data</code><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter for data.</p>
+<dd><p>Getter for data.
+:noindex:</p>
 </dd></dl>
 
 <dl class="py method">
@@ -597,46 +598,17 @@ gamma at a binned energy and sin(dec).</p>
 <dl class="py method">
 <dt id="id2">
 <em class="property">property </em><code class="sig-name descname">grl</code><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter for GRL.</p>
+<dd><p>Getter for GRL.
+:noindex:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="id3">
 <em class="property">property </em><code class="sig-name descname">sim</code><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter for sim.</p>
+<dd><p>Getter for sim.
+:noindex:</p>
 </dd></dl>
 
-</dd></dl>
-
-</div>
-<div class="section" id="module-mla.spectral">
-<span id="mla-spectral-module"></span><h2>mla.spectral module<a class="headerlink" href="#module-mla.spectral" title="Permalink to this headline">¶</a></h2>
-<p>Spectral Modelling</p>
-<dl class="py class">
-<dt id="mla.spectral.BaseSpectrum">
-<em class="property">class </em><code class="sig-prename descclassname">mla.spectral.</code><code class="sig-name descname">BaseSpectrum</code><a class="headerlink" href="#mla.spectral.BaseSpectrum" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>Base class for spectral models of the form</p>
-<dl class="py method">
-<dt id="mla.spectral.BaseSpectrum.copy">
-<code class="sig-name descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#mla.spectral.BaseSpectrum.copy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return copy of this class</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt id="mla.spectral.CustomSpectrum">
-<em class="property">class </em><code class="sig-prename descclassname">mla.spectral.</code><code class="sig-name descname">CustomSpectrum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">likelihood_model_instance</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.spectral.CustomSpectrum" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mla.spectral.BaseSpectrum" title="mla.spectral.BaseSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">mla.spectral.BaseSpectrum</span></code></a></p>
-<p>Custom spectrum using astromodel</p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="mla.spectral.PowerLaw">
-<em class="property">class </em><code class="sig-prename descclassname">mla.spectral.</code><code class="sig-name descname">PowerLaw</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">E0</span></em>, <em class="sig-param"><span class="n">A</span></em>, <em class="sig-param"><span class="n">gamma</span></em>, <em class="sig-param"><span class="n">Ecut</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.spectral.PowerLaw" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#mla.spectral.BaseSpectrum" title="mla.spectral.BaseSpectrum"><code class="xref py py-class docutils literal notranslate"><span class="pre">mla.spectral.BaseSpectrum</span></code></a></p>
-<p>Powerlaw spectrum</p>
 </dd></dl>
 
 </div>

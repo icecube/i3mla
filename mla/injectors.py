@@ -33,11 +33,7 @@ class PsInjector:
         source (Dict[str, float]): The dictionary representation of a source.
     """
     def __init__(self, source: Dict[str, float]) -> None:
-        """Initializes the PsInjector object and gives it a source.
-
-        Args:
-            source: The dictionary representation of a source.
-        """
+        """Initializes the PsInjector object and gives it a source."""
         self.source = source
 
     def signal_spatial_pdf(self, events: np.ndarray) -> np.array:

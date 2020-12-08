@@ -70,7 +70,6 @@ class PsAnalysis(Analysis):
 
         Args:
             source:
-            injector:
         """
         super().__init__()
         if injector is not None:
@@ -343,7 +342,6 @@ class TimeDependentPsAnalysis(Analysis):
             source:
             bg_time_profile:
             sig_time_profile:
-            injector:
         """
         super().__init__()
         if injector is not None:

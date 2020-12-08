@@ -28,14 +28,6 @@ mla.models module
    :undoc-members:
    :show-inheritance:
 
-mla.spectral module
--------------------
-
-.. automodule:: mla.spectral
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 mla.time\_profiles module
 -------------------------
 
