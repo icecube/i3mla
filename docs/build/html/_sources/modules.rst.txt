@@ -1,7 +1,7 @@
-umd_icecube_analysis_tutorial
-=============================
+mla
+===
 
 .. toctree::
    :maxdepth: 4
 
-   i3pubtools
+   mla
