@@ -132,8 +132,8 @@ class GaussProfile(GenericProfile):
     Use this to produce gaussian-distributed times for your source.
 
     Attributes:
-        mean (float):
-        sigma (float):
+        mean (float): The center of the distribution.
+        sigma (float): The spread of the distribution.
         scipy_dist(scipy.stats.rv_continuous):
         default_params (Dict[str, float]): A dictionary of fitting parameters
             for this time profile.
@@ -143,9 +143,7 @@ class GaussProfile(GenericProfile):
 
     def __init__(self, mean: float, sigma: float,
                  name: str = 'gauss_tp') -> None:
-        """Constructs the object.
-
-        More function info...
+        """Initializes the time profile.
 
         Args:
             name: prefix for printing parameters.
@@ -162,79 +160,74 @@ class GaussProfile(GenericProfile):
     def pdf(self, times: np.array) -> np.array:
         """Calculates the probability for each time.
 
-        More function info...
-
         Args:
             times: A numpy list of times to evaluate.
 
         Returns:
-
+            A numpy array of probability amplitudes at the given times.
         """
         return self.scipy_dist.pdf(times)
 
     def logpdf(self, times: np.array) -> np.array:
         """Calculates the log(probability) for each time.
 
-        More function info...
-
         Args:
             times: A numpy list of times to evaluate.
 
         Returns:
-
+            A numpy array of log(probability) at the given times.
         """
         return self.scipy_dist.logpdf(times)
 
     def random(self, size: int = 1) -> np.array:
         """Returns random values following the gaussian distribution.
 
-        More function info...
-
         Args:
             size: The number of random values to return.
 
         Returns:
-
+            An array of times.
         """
         return self.scipy_dist.rvs(size=size)
 
-    def get_range(self) -> List[float]:
+    def get_range(self) -> Tuple[float]:
         """Returns the min/max values for the distribution."""
-        return [None, None]
+        return None, None
 
     def x0(self, times: np.array) -> Tuple[float, float]:
-        """Short function info...
-
-        More function info...
+        """Returns good guesses for mean and sigma based on given times.
 
         Args:
             times: A numpy list of times to evaluate.
 
         Returns:
-
+            A tuple of mean and sigma guesses.
         """
         x0_mean = np.average(times)
         x0_sigma = np.std(times)
         return x0_mean, x0_sigma
 
-    def bounds(self, time_profile: GenericProfile) -> List[List[float]]:
-        """Short function info...
+    def bounds(self, time_profile: GenericProfile) -> List[Tuple[float]]:
+        """Returns good bounds for this time profile given another time profile.
 
-        More function info...
+        Limits the mean to be within the range of the other profile and limits
+        the sigma to be >= 0 and <= the width of the other profile.
 
         Args:
-            time_profile:
+            time_profile: Another time profile to use to define the parameter
+                bounds of this time profile.
 
         Returns:
-
+            A list of tuples of bounds for fitting the parameters in this time
+            profile.
         """
 
         if None in time_profile.get_range():
-            return [time_profile.get_range(), [0, None]]
+            return [time_profile.get_range(), (0, None)]
 
         diff = time_profile.get_range()[1] - time_profile.get_range()[0]
 
-        return [time_profile.get_range(), [0, diff]]
+        return [time_profile.get_range(), (0, diff)]
 
     @property
     def default_params(self) -> Dict[str, float]:
