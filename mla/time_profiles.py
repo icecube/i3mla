@@ -247,7 +247,8 @@ class UniformProfile(GenericProfile):
     your source.
 
     Attributes:
-        window (Tuple[float, float]):
+        window (Tuple[float, float]): The start and stop times for this time
+            profile.
         default_params (Dict[str, float]): A dictionary of fitting parameters
             for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
@@ -256,9 +257,7 @@ class UniformProfile(GenericProfile):
 
     def __init__(self, start: float, end: float,
                  name: str = 'uniform_tp') -> None:
-        """Constructs the object.
-
-        More function info...
+        """Constructs the time profile.
 
         Args:
             start: lower bound for the uniform distribution.
@@ -275,13 +274,11 @@ class UniformProfile(GenericProfile):
     def pdf(self, times: np.array) -> np.array:
         """Calculates the probability for each time.
 
-        More function info...
-
         Args:
             times: A numpy list of times to evaluate.
 
         Returns:
-
+            A numpy array of probability amplitudes at the given times.
         """
         output = np.zeros_like(times)
         output[
@@ -292,26 +289,22 @@ class UniformProfile(GenericProfile):
     def logpdf(self, times: np.array) -> np.array:
         """Calculates the log(probability) for each time.
 
-        More function info...
-
         Args:
             times: A numpy list of times to evaluate.
 
         Returns:
-
+            A numpy array of log(probability) at the given times.
         """
         return np.log(self.pdf(times))
 
     def random(self, size: int = 1) -> np.array:
         """Returns random values following the uniform distribution.
 
-        More function info...
-
         Args:
             size: The number of random values to return.
 
         Returns:
-
+            An array of times.
         """
         return np.random.uniform(*self._window, size)
 
@@ -320,15 +313,13 @@ class UniformProfile(GenericProfile):
         return self._window
 
     def x0(self, times: np.array) -> Tuple[float, float]:
-        """Short function info...
-
-        More function info...
+        """Returns good guesses for start and stop based on given times.
 
         Args:
-            times:
+            times: A numpy list of times to evaluate.
 
         Returns:
-
+            A tuple of start and stop guesses.
         """
         x0_start = np.min(times)
         x0_end = np.max(times)
@@ -338,10 +329,12 @@ class UniformProfile(GenericProfile):
                ) -> List[Tuple[Optional[float], Optional[float]]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Given some other profile, returns allowable ranges for parameters.
 
-        More function info...
-
         Args:
-            time_profile:
+            time_profile: Another time profile used to get the limits of start
+                and end.
+
+        Returns:
+            A list of tuples of bounds for fitting.
         """
         return [time_profile.get_range(), time_profile.get_range()]
 
@@ -355,7 +348,7 @@ class UniformProfile(GenericProfile):
 
     @property
     def window(self) -> Tuple[float]:
-        """Docstring"""
+        """Equivalent to get_range()"""
         return self._window
 
 
