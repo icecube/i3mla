@@ -43,8 +43,8 @@ def to_unit_vector(r_a: float, dec: float) -> np.array:
     Returns:
         A numpy array of the x, y, and z coordinates of the point.
     """
-    return np.array([np.cos(r_a)*np.cos(dec),
-                     np.sin(r_a)*np.cos(dec),
+    return np.array([np.cos(r_a) * np.cos(dec),
+                     np.sin(r_a) * np.cos(dec),
                      np.sin(dec)])
 
 

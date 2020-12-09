@@ -52,7 +52,8 @@ class PsInjector:
         sigma = events['angErr']
         dist = tools.angular_distance(events['ra'], events['dec'],
                                       self.source['ra'], self.source['dec'])
-        return (1.0/(2*np.pi*sigma**2))*np.exp(-dist**2/(2*sigma**2))
+        norm = 1 / (2 * np.pi * sigma**2)
+        return norm * np.exp(-dist**2 / (2 * sigma**2))
 
     def background_spatial_pdf(self, events: np.ndarray,  # This still belongs here even though it doesn't use self... pylint: disable=no-self-use
                                event_model: models.EventModel) -> np.array:
@@ -69,7 +70,7 @@ class PsInjector:
             The value for the background space pdf for the given events decs.
         """
         bg_densities = event_model.background_dec_spline(np.sin(events['dec']))
-        return (1/(2*np.pi))*bg_densities
+        return (1 / (2 * np.pi)) * bg_densities
 
     def reduced_sim(self, event_model: models.EventModel, flux_norm: float = 0,
                     gamma: float = -2,
@@ -92,7 +93,8 @@ class PsInjector:
         # Pick out only those events that are close in
         # declination. We only want to sample from those.
         if sampling_width is not None:
-            sindec_dist = np.abs(self.source['dec']-event_model.sim['trueDec'])
+            sindec_dist = np.abs(
+                self.source['dec'] - event_model.sim['trueDec'])
             close = sindec_dist < sampling_width
 
             reduced_sim = rf.append_fields(
@@ -101,9 +103,9 @@ class PsInjector:
                 np.zeros(close.sum()),
                 dtypes=np.float32)
 
-            max_dec = np.min([np.sin(self.source['dec']+sampling_width), 1])
-            min_dec = np.max([np.sin(self.source['dec']-sampling_width), -1])
-            omega = 2*np.pi * max_dec - min_dec
+            max_dec = np.min([np.sin(self.source['dec'] + sampling_width), 1])
+            min_dec = np.max([np.sin(self.source['dec'] - sampling_width), -1])
+            omega = 2 * np.pi * max_dec - min_dec
 
         else:
             reduced_sim = rf.append_fields(
@@ -111,12 +113,12 @@ class PsInjector:
                 'weight',
                 np.zeros(len(event_model.sim)),
                 dtypes=np.float32)
-            omega = 4*np.pi
+            omega = 4 * np.pi
 
         # Assign the weights using the newly defined "time profile"
         # classes above. If you want to make this a more complicated
         # shape, talk to me and we can work it out.
-        rescaled_energy = (reduced_sim['trueE']/100.e3)**gamma
+        rescaled_energy = (reduced_sim['trueE'] / 100.e3)**gamma
         reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * rescaled_energy
 
         # Apply the sampling width, which ensures that we
@@ -154,7 +156,7 @@ class PsInjector:
                                       n_background_observed).copy()
 
         # Randomize the background RA
-        background['ra'] = np.random.uniform(0, 2*np.pi, len(background))
+        background['ra'] = np.random.uniform(0, 2 * np.pi, len(background))
 
         return background
 
@@ -175,7 +177,7 @@ class PsInjector:
         signal = np.random.choice(
             reduced_sim,
             n_signal_observed,
-            p=reduced_sim['weight']/total,
+            p=reduced_sim['weight'] / total,
             replace=False).copy()
 
         # Update this number
@@ -186,11 +188,11 @@ class PsInjector:
 
             signal['ra'], signal['dec'] = tools.rotate(
                 signal['trueRa'], signal['trueDec'],
-                ones*self.source['ra'], ones*self.source['dec'],
+                ones * self.source['ra'], ones * self.source['dec'],
                 signal['ra'], signal['dec'])
             signal['trueRa'], signal['trueDec'] = tools.rotate(
                 signal['trueRa'], signal['trueDec'],
-                ones*self.source['ra'], ones*self.source['dec'],
+                ones * self.source['ra'], ones * self.source['dec'],
                 signal['trueRa'], signal['trueDec'])
 
         return signal

@@ -570,15 +570,13 @@ gamma at a binned energy and sin(dec).</p>
 <dl class="py method">
 <dt id="id0">
 <em class="property">property </em><code class="sig-name descname">background_dec_spline</code><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter for background_dec_spline.
-:noindex:</p>
+<dd><p>Getter for background_dec_spline.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="id1">
 <em class="property">property </em><code class="sig-name descname">data</code><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter for data.
-:noindex:</p>
+<dd><p>Getter for data.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -598,15 +596,13 @@ gamma at a binned energy and sin(dec).</p>
 <dl class="py method">
 <dt id="id2">
 <em class="property">property </em><code class="sig-name descname">grl</code><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter for GRL.
-:noindex:</p>
+<dd><p>Getter for GRL.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="id3">
 <em class="property">property </em><code class="sig-name descname">sim</code><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter for sim.
-:noindex:</p>
+<dd><p>Getter for sim.</p>
 </dd></dl>
 
 </dd></dl>
@@ -629,7 +625,7 @@ inherit from to create other time profiles.</p>
 <dd><p>The range of distribution function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>List[float]</p>
+<dd class="field-odd"><p>Tuple[float]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -684,7 +680,7 @@ distribution function.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.CustomProfile.bounds">
-<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.CustomProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.CustomProfile.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given some other profile, returns allowable ranges for parameters.</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -724,7 +720,7 @@ distribution function.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.CustomProfile.get_range">
-<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#mla.time_profiles.CustomProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.CustomProfile.get_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the min/max values for the distribution.</p>
 </dd></dl>
 
@@ -858,7 +854,7 @@ parameters.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.GaussProfile.bounds">
-<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GaussProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GaussProfile.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns good bounds for this time profile given another time profile.</p>
 <p>Limits the mean to be within the range of the other profile and limits
 the sigma to be &gt;= 0 and &lt;= the width of the other profile.</p>
@@ -882,7 +878,7 @@ profile.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.GaussProfile.get_range">
-<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GaussProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GaussProfile.get_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the min/max values for the distribution.</p>
 </dd></dl>
 
@@ -985,7 +981,7 @@ parameters.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.GenericProfile.bounds">
-<em class="property">abstract </em><code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GenericProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GenericProfile.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of tuples of bounds for the parameters of this profile.</p>
 <p>Uses another time profile to constrain the bounds. This is usually
 needed to constrain the bounds of a signal time profile given a
@@ -1009,7 +1005,7 @@ profile.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.GenericProfile.get_range">
-<em class="property">abstract </em><code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GenericProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GenericProfile.get_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the maximum and minimum values for the times in this profile.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1097,7 +1093,7 @@ your source.</p>
 <code class="sig-name descname">window</code><a class="headerlink" href="#mla.time_profiles.UniformProfile.window" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>List[float]</p>
+<dd class="field-odd"><p>Tuple[float, float]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1128,7 +1124,7 @@ parameters.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.UniformProfile.bounds">
-<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.UniformProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.UniformProfile.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given some other profile, returns allowable ranges for parameters.</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -1146,7 +1142,7 @@ parameters.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.UniformProfile.get_range">
-<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#mla.time_profiles.UniformProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.UniformProfile.get_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the min/max values for the distribution.</p>
 </dd></dl>
 
