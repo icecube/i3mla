@@ -12,11 +12,12 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import List, Union
+from typing import List, Union, Optional
 
 import numpy as np
-import pickle
 import scipy.interpolate
+from mla import spectral
+import numpy.lib.recfunctions as rf
 
 class EventModel:
     """Stores the events and pre-processed parameters used in analyses.
@@ -88,7 +89,7 @@ class EventModel:
             gamma_bins = np.linspace(-4.25, -0.5, 1+gamma_bins)
 
         self._log_sob_gamma_splines = self._create_log_sob_gamma_splines(
-            gamma_bins, verbose)
+            gamma_bins, verbose=verbose)
 
     def _create_background_dec_spline(self, sin_dec_bins: np.array, *args,
                                       **kwargs,
@@ -112,7 +113,7 @@ class EventModel:
         # behavior, we first take a look at the dec values
         # in the data. We can do this by histogramming them.
         sin_dec = np.sin(self._data['dec'])
-        hist, bins = np.histogram(sin_dec, bins=sin_dec_bins, density=True))
+        hist, bins = np.histogram(sin_dec, bins=sin_dec_bins, density=True)
         bin_centers = bins[:-1] + np.diff(bins)/2
 
         # These values have a lot of "noise": they jump
@@ -135,7 +136,7 @@ class EventModel:
 
 
         return scipy.interpolate.UnivariateSpline(bin_centers, hist, *args,
-                                                  *kwargs)
+                                                  **kwargs)
 
     def _create_sob_map(self, gamma: float, *args, verbose: bool = False, # I don't think it's necessary to reduce the number of variables... pylint: disable=too-many-locals
                         **kwargs) -> np.array:
@@ -219,7 +220,7 @@ class EventModel:
         """
         if verbose:
             print('Building signal-over-background maps...')
-        sob_maps = np.array([self._create_sob_map(gamma, verbose)
+        sob_maps = np.array([self._create_sob_map(gamma, verbose=verbose)
                              for gamma in gamma_bins])
         if verbose:
             print('done.')
@@ -266,17 +267,6 @@ class EventModel:
 
         return [self._log_sob_gamma_splines[i-1][j-1]
                 for i,j in zip(sin_dec_idx, log_energy_idx)]
-
-    def to_file(self,file_name:str)->None:
-        """Saving the model to pickle file
-        
-        
-        Args:
-            file_name:Name of the pickle file
-        """
-        with open(file_name, 'wb') as output:
-            pickle.dump(self, output)
-        return None  
 
     @property
     def data(self) -> np.ndarray:

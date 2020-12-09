@@ -20,6 +20,7 @@ import scipy
 from mla import tools
 from mla import models
 from mla import time_profiles
+from mla import spectral
 
 class PsInjector:
     """A basic point-source injector.
@@ -208,14 +209,13 @@ class TimeDependentPsInjector(PsInjector):
         source (Dict[str, float]):
         event_model (EventModel):
     """
-    def __init__(self, source: Dict[str, float]) -> None:
-        """Function info...
-        
-        More function info...
-        """
-        self.source = source
-        self.signal_time_profile = None
-        self.background_time_profile = None
+    def __init__(self, source: Dict[str, float],
+                 background_time_profile:Optional[time_profiles.GenericProfile] = None,
+                 signal_time_profile: Optional[time_profiles.GenericProfile] = None) -> None:
+        """Docstring"""
+        super().__init__(source)
+        self.background_time_profile = background_time_profile
+        self.signal_time_profile = signal_time_profile
         
     def set_position(self, ra:float, dec:float) -> None:
         """set the position
@@ -271,11 +271,11 @@ class TimeDependentPsInjector(PsInjector):
         weight for each event. Adds the weights as a new column to the simulation set.
             
         Args:
-            livetime: livetime in days
             event_model: models.EventModel object that holds the simulation set
             sim: simulation set. Alternative for user not passing event_model. 
             flux_norm: A flux normaliization to adjust weights.
             gamma: A spectral index to adjust weights.
+            livetime: Livetime in days.It is equivalent of using flux per second instead of time-integrated flux.
             spectrum: spectral.BaseSpectrum object.Alternative for user not passing flux_norm and gamma. 
             sampling_width: The bandwidth around the source declination to cut events.
         
@@ -287,12 +287,6 @@ class TimeDependentPsInjector(PsInjector):
         if event_model is not None:
             sim = event_model.sim
         
-        if livetime is None:
-            try:
-                livetime = self.signal_time_profile.effective_exposure()
-            except:
-                print("no livetime and no signal time profile in injector.Using 1s to weight the MC")
-                livetime = 1/3600/24
         try:
             reduced_sim = rf.append_fields(sim,'sindec',np.sin(sim['dec']),usemask=False)#The full simulation set,this is for the overall normalization of the Energy S/B ratio
         except ValueError: #sindec already exist
@@ -324,11 +318,21 @@ class TimeDependentPsInjector(PsInjector):
         # Assign the weights using the newly defined "time profile"
         # classes above. If you want to make this a more complicated
         # shape, talk to me and we can work it out.
-        if spectrum is not None:
-            reduced_sim['weight'] = reduced_sim['ow'] * spectrum(reduced_sim['trueE']) * livetime * 3600 * 24
+        if livetime is None:
+            if spectrum is not None:
+                reduced_sim['weight'] = reduced_sim['ow'] * spectrum(reduced_sim['trueE']) 
+            else:
+                reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * (reduced_sim['trueE']/100.e3)**gamma 
+        
+        #Use flux per second instead of time-integrated flux
         else:
-            reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * (reduced_sim['trueE']/100.e3)**gamma * livetime * 3600 * 24
-
+            if spectrum is not None:
+                reduced_sim['weight'] = reduced_sim['ow'] * spectrum(reduced_sim['trueE']) * livetime * 3600 * 24
+            else:
+                reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * (reduced_sim['trueE']/100.e3)**gamma * livetime * 3600 * 24
+        
+        
+        
         # Apply the sampling width, which ensures that we
         # sample events from similar declinations.
         # When we do this, correct for the solid angle
@@ -341,41 +345,7 @@ class TimeDependentPsInjector(PsInjector):
                                                size=len(reduced_sim))
         return reduced_sim
     
-    def reweight_simulation(self,
-                            reduced_sim:np.ndarray,
-                            livetime:float = None,
-                            flux_norm: Optional[float] = 0, 
-                            gamma: Optional[float] = -2,
-                            spectrum: Optional[spectral.BaseSpectrum] = None)-> np.ndarray:
-                            
-        """Function info...
-        
-        Prunes the simulation set to only events close to a given source and calculate the
-        weight for each event. Adds the weights as a new column to the simulation set.
-            
-        Args:
-            reduced_sim: simulation set.
-            flux_norm: A flux normaliization to adjust weights.
-            gamma: A spectral index to adjust weights.
-            spectrum: spectral.BaseSpectrum object.Alternative for user not passing flux_norm and gamma. 
-            sampling_width: The bandwidth around the source declination to cut events.
-        
-        Returns:
-            A reweighted simulation set around the source declination.
-        """
-        if livetime is None:
-            try:
-                livetime = self.signal_time_profile.effective_exposure()
-            except:
-                print("no livetime and no signal time profile in injector.Using 1 day to weight the MC")
-                livetime = 1
-        if spectrum is not None:
-            reduced_sim['weight'] = reduced_sim['ow'] * spectrum(reduced_sim['trueE']) * livetime * 3600 * 24
-        else:
-            reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * (reduced_sim['trueE']/100.e3)**gamma * livetime * 3600 * 24
 
-        return reduced_sim
-        
     def inject_background_events_No_time(self, event_model: models.EventModel) -> np.ndarray:
         """Function info...
         
@@ -400,7 +370,8 @@ class TimeDependentPsInjector(PsInjector):
     def inject_background_events(self,
                                  event_model: models.EventModel,
                                  background_time_profile: Optional[time_profiles.GenericProfile] = None,
-                                 background_window: Optional[float] = 14
+                                 background_window: Optional[float] = 14,
+                                 withinwindow: Optional[bool] = False,
                                  ) -> np.ndarray:
         """Function info...
         
@@ -410,12 +381,12 @@ class TimeDependentPsInjector(PsInjector):
             event_model: EventModel that holds the grl and data
             background_time_profile: Background time profile to do the injection
             background_window: Days used to estimated the background rate
-        
+            withinwindow: Use data rate within time profile to estimate background rate
         Returns:
             An array of injected background events.
         """
         if background_time_profile is not None:
-            self.set_background_profile(event_model, background_time_profile, background_window)
+            self.set_background_profile(event_model, background_time_profile, background_window, withinwindow)
         elif self.background_time_profile is not None:
             pass
         else:
@@ -440,7 +411,8 @@ class TimeDependentPsInjector(PsInjector):
     def set_background_profile(self, 
                                event_model: models.EventModel, 
                                background_time_profile: time_profiles.GenericProfile,
-                               background_window: Optional[float] = 14) -> None:
+                               background_window: Optional[float] = 14,
+                               withinwindow: Optional[bool] = False) -> None:
         """Function info...
         
         Setting the background rate for the models
@@ -448,22 +420,35 @@ class TimeDependentPsInjector(PsInjector):
             event_model: EventModel that holds the grl
             background_window: Days used to estimated the background rate
             background_time_profile: Background time profile to do the injection
-        
+            withinwindow: Use data rate within time profile to estimate background rate
         Returns:
             None
         """
         # Find the run contian in the background time window
         start_time = background_time_profile.get_range()[0]
-        fully_contained = (event_model.grl['start'] >= start_time-background_window) &\
-                            (event_model.grl['stop'] < start_time)
-        start_contained = (event_model.grl['start'] < start_time-background_window) &\
-                            (event_model.grl['stop'] > start_time-background_window)
-        background_runs = (fully_contained | start_contained)
-        if not np.any(background_runs):
-            print("ERROR: No runs found in GRL for calculation of "
-                  "background rates!")
-            raise RuntimeError
-        background_grl = event_model.grl[background_runs]
+        end_time = background_time_profile.get_range()[1]
+        if withinwindow:
+            fully_contained = (event_model.grl['start'] >= start_time) &\
+                                (event_model.grl['stop'] < end_time)
+            start_contained = (event_model.grl['start'] < start_time) &\
+                                (event_model.grl['stop'] > start_time)
+            background_runs = (fully_contained | start_contained)
+            if not np.any(background_runs):
+                print("ERROR: No runs found in GRL for calculation of "
+                      "background rates!")
+                raise RuntimeError
+            background_grl = event_model.grl[background_runs]
+        else:
+            fully_contained = (event_model.grl['start'] >= start_time-background_window) &\
+                                (event_model.grl['stop'] < start_time)
+            start_contained = (event_model.grl['start'] < start_time-background_window) &\
+                                (event_model.grl['stop'] > start_time-background_window)
+            background_runs = (fully_contained | start_contained)
+            if not np.any(background_runs):
+                print("ERROR: No runs found in GRL for calculation of "
+                      "background rates!")
+                raise RuntimeError
+            background_grl = event_model.grl[background_runs]
         
         #Find the background rate
         n_background = background_grl['events'].sum()

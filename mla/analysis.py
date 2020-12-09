@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Optional, Tuple, Union
 
 import abc
 import scipy
@@ -19,6 +19,7 @@ import numpy.lib.recfunctions as rf
 from mla import models
 from mla import injectors
 from mla import time_profiles
+from mla import spectral
 
 TsPreprocess = Tuple[List[scipy.interpolate.UnivariateSpline], np.array]
 
@@ -339,6 +340,7 @@ class ThreeMLPsAnalysis(Analysis):
             source:
             injector:
         """
+        super().__init__()
         if injector is not None: self.injector = injector
         else: self.injector = injectors.TimeDependentPsInjector(source)
         self.first_spatial = False
@@ -445,6 +447,77 @@ class ThreeMLPsAnalysis(Analysis):
             self.ts = 0
         return ts_value,ns
     
+    def produce_trial(self,
+                      event_model: models.EventModel,
+                      spectrum:Optional[spectral.BaseSpectrum] = None, 
+                      reduced_sim: Optional[np.ndarray] = None, 
+                      nsignal: Optional[int] = None,
+                      sampling_width: Optional[float] = None, 
+                      random_seed: Optional[int] = None,
+                      signal_time_profile:Optional[time_profiles.GenericProfile] = None,
+                      background_time_profile: Optional[time_profiles.GenericProfile] = None,
+                      background_window: Optional[float] = 14,
+                      withinwindow: Optional[bool] = False,
+                      verbose: bool = False) -> np.ndarray:    
+        """Produce trial
+        
+        More function info...
+        
+        Args:
+            event_model: An object containing data and preprocessed parameters.
+            spectrum: Spectrum of the injection
+            reduced_sim: Reweighted and pruned simulated events near the source declination.
+            sampling_width: The bandwidth around the source declination to cut events.
+            random_seed: A seed value for the numpy RNG.
+            signal_time_profile: The time profile of the injected signal.
+            background_time_profile: Background time profile to do the injection.
+            disable_time_filter:Cut out events that is not in grl
+            verbose: A flag to print progress.
+            
+        Returns:
+            An array of combined signal and background events.
+        """
+        if random_seed is not None: np.random.seed(random_seed)
+        
+        background = self.injector.inject_background_events(event_model, 
+                                                            background_time_profile = background_time_profile, 
+                                                            background_window = background_window, 
+                                                            withinwindow = withinwindow)
+        
+        
+        if signal_time_profile is not None:
+            self.injector.set_signal_profile(signal_time_profile)
+        
+        livetime = self.injector.signal_time_profile.effective_exposure()
+        
+        if nsignal is None:
+            if spectrum is None:
+                try:
+                    data = self.injector.inject_signal_events(event_model._reduced_sim_truedec, signal_time_profile=signal_time_profile)
+                except:
+                    raise "No spectrum had even supplied"
+            else:
+                event_model._reduced_sim_truedec = self.injector.reduced_sim(event_model = event_model,spectrum=spectrum, livetime =livetime)
+                data = self.injector.inject_signal_events(event_model._reduced_sim_truedec, signal_time_profile=signal_time_profile)    
+        else:
+            if spectrum is None:
+                try:
+                    data = self.injector.inject_nsignal_events(event_model._reduced_sim_truedec,nsignal, signal_time_profile=signal_time_profile)
+                except:
+                    raise "No spectrum had even supplied"
+            else:
+                event_model._reduced_sim_truedec = self.injector.reduced_sim(event_model = event_model, spectrum=spectrum, livetime = livetime)
+                data = self.injector.inject_nsignal_events(event_model._reduced_sim_truedec, nsignal, signal_time_profile=signal_time_profile)
+                
+        bgrange = self.injector.background_time_profile.get_range()
+        contained_in_background = ((data['time'] >= bgrange[0]) &\
+                                   (data['time'] < bgrange[1]))
+        data = data[contained_in_background]
+        data = rf.drop_fields(data, [n for n in data.dtype.names \
+                 if not n in background.dtype.names])    
+        
+        return np.concatenate([background,data])        
+        
     def min_ns(self, 
                event_model: models.EventModel, 
                data: Optional[np.ndarray] = None,
@@ -509,6 +582,7 @@ class TimeDependentPsAnalysis(Analysis):
             source:
             injector:
         """
+        super().__init__()
         if injector is not None: self.injector = injector
         else: self.injector = injectors.TimeDependentPsInjector(source)
     
@@ -626,8 +700,6 @@ class TimeDependentPsAnalysis(Analysis):
             # Store the results in the output array
                 
             output['ts'] = -1*result.fun
-            if np.isnan(output['ts']):
-                output['ts'] = 0
             output['ns'] = result.x[0]
             output['gamma'] = result.x[1]
         
