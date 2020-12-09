@@ -4,14 +4,14 @@ with open("../README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="i3pubtools-thejevans",
+    name="mla-thejevans",
     version="0.0.1",
-    author="John Evans",
+    author="John Evans, Jason Fan, Michael Larson",
     author_email="john.evans@icecube.wisc.edu",
     description="IceCube analysis tools for use with public data",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/thejevans/umd_icecube_analysis_tutorial",
+    url="https://github.com/thejevans/mla",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",

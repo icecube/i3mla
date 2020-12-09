@@ -4,7 +4,7 @@ to do a point source analysis.
 """
 
 __author__ = 'John Evans'
-__copyright__ = ''
+__copyright__ = 'Copyright 2020 John Evans'
 __credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
 __license__ = 'Apache License 2.0'
 __version__ = '0.0.1'
@@ -18,6 +18,7 @@ import numpy as np
 import scipy.interpolate
 from mla import spectral
 import numpy.lib.recfunctions as rf
+
 
 class EventModel:
     """Stores the events and pre-processed parameters used in analyses.
@@ -41,14 +42,14 @@ class EventModel:
             A 2D list of spline fits of the log(signal-over-background) vs.
             gamma at a binned energy and sin(dec).
     """
-    def __init__(self, # For an initial release, this implementation is fine... pylint: disable=too-many-arguments
+    def __init__(self,  # For an initial release, this implementation is fine... pylint: disable=too-many-arguments
                  data: np.ndarray,
                  sim: np.ndarray,
                  grl: np.ndarray,
-                 background_sin_dec_bins: Union[np.array, int] = 500,
-                 signal_sin_dec_bins: Union[np.array, int] = 50,
-                 log_energy_bins: Union[np.array, int] = 50,
-                 gamma_bins: Union[np.array, int] = 50,
+                 background_sin_dec_bins: Union[np.array, int] = 500,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 signal_sin_dec_bins: Union[np.array, int] = 50,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 log_energy_bins: Union[np.array, int] = 50,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 gamma_bins: Union[np.array, int] = 50,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                  verbose: bool = False) -> None:
         """Initializes EventModel and calculates energy sob maps.
 
@@ -57,8 +58,6 @@ class EventModel:
                 spanning -1 -> 1, otherwise, a numpy array of bin edges.
             signal_sin_dec_bins: If an int, then the number of bins spanning
                 -1 -> 1, otherwise, a numpy array of bin edges.
-            log_energy_bins: if an int, then the number of bins spanning
-                1 -> 8, otherwise, a numpy array of bin edges.
             gamma_bins: If an int, then the number of bins spanning
                 -4.25 -> -0.5, otherwise, a numpy array of bin edges.
             verbose: A flag to print progress.
@@ -138,7 +137,7 @@ class EventModel:
         return scipy.interpolate.UnivariateSpline(bin_centers, hist, *args,
                                                   **kwargs)
 
-    def _create_sob_map(self, gamma: float, *args, verbose: bool = False, # I don't think it's necessary to reduce the number of variables... pylint: disable=too-many-locals
+    def _create_sob_map(self, gamma: float, *args, verbose: bool = False,  # I don't think it's necessary to reduce the number of variables... pylint: disable=too-many-locals
                         **kwargs) -> np.array:
         """Creates sob histogram for a given spectral index (gamma).
 
@@ -159,7 +158,7 @@ class EventModel:
         if verbose:
             print(f'Building map for gamma = {gamma}...', end='')
         bins = np.array([self._sin_dec_bins, self._log_energy_bins])
-        bin_centers = bins[1,:-1] + np.diff(bins[1])/2
+        bin_centers = bins[1, :-1] + np.diff(bins[1])/2
 
         # background
         bg_h, _, _ = np.histogram2d(np.sin(self._data['dec']),
@@ -172,8 +171,8 @@ class EventModel:
                                      weights=sig_w, density=True)
 
         # Normalize histograms by dec band
-        bg_h /= np.sum(bg_h,axis=1)[:,None]
-        sig_h /= np.sum(sig_h,axis=1)[:,None]
+        bg_h /= np.sum(bg_h, axis=1)[:, None]
+        sig_h /= np.sum(sig_h, axis=1)[:, None]
 
         ratio = sig_h / bg_h
 
@@ -187,7 +186,7 @@ class EventModel:
         for i in range(ratio.shape[0]):
             # Pick out the values we want to use.
             # We explicitly want to avoid NaNs and infinities
-            good = np.isfinite(ratio[i]) & (ratio[i]>0)
+            good = np.isfinite(ratio[i]) & (ratio[i] > 0)
             good_bins, good_vals = bins[1][:-1][good], ratio[i][good]
 
             # Do a linear interpolation across the energy range
@@ -265,27 +264,37 @@ class EventModel:
         log_energy_idx = np.searchsorted(self._log_energy_bins[:-1],
                                          events['logE'])
 
+
         return [self._log_sob_gamma_splines[i-1][j-1]
                 for i,j in zip(sin_dec_idx, log_energy_idx)]
 
+
     @property
     def data(self) -> np.ndarray:
-        """Getter for data."""
+        """Getter for data.
+        :noindex:
+        """
         return self._data
 
     @property
     def sim(self) -> np.ndarray:
-        """Getter for sim."""
+        """Getter for sim.
+        :noindex:
+        """
         return self._sim
 
     @property
     def grl(self) -> np.ndarray:
-        """Getter for GRL."""
+        """Getter for GRL.
+        :noindex:
+        """
         return self._grl
 
     @property
     def background_dec_spline(self) -> scipy.interpolate.UnivariateSpline:
-        """Getter for background_dec_spline."""
+        """Getter for background_dec_spline.
+        :noindex:
+        """
         return self._background_dec_spline
 
 

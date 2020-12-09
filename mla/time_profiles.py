@@ -5,7 +5,7 @@ inherit from to create other time profiles.
 """
 
 __author__ = 'John Evans'
-__copyright__ = ''
+__copyright__ = 'Copyright 2020 John Evans'
 __credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
 __license__ = 'Apache License 2.0'
 __version__ = '0.0.1'
@@ -18,6 +18,7 @@ from typing import Callable, Dict, List, Tuple, Union
 import abc
 import numpy as np
 import scipy.stats
+
 
 class GenericProfile:
     """A generic base class to standardize the methods for the time profiles.
@@ -38,41 +39,92 @@ class GenericProfile:
 
     @abc.abstractmethod
     def __init__(self) -> None:
-        """Docstring"""
+        """Initializes the time profile."""
 
     @abc.abstractmethod
     def pdf(self, times: np.array) -> np.array:
-        """Docstring"""
+        """Get the probability amplitude given a time for this time profile.
+
+        Args:
+            times: An array of event times to get the probability amplitude for.
+
+        Returns:
+            A numpy array of probability amplitudes at the given times.
+        """
 
     @abc.abstractmethod
     def logpdf(self, times: np.array) -> np.array:
-        """Docstring"""
+        """Get the log(probability) given a time for this time profile.
+
+        Args:
+            times: An array of times to get the log(probability) of.
+
+        Returns:
+            A numpy array of log(probability) at the given times.
+        """
 
     @abc.abstractmethod
     def random(self, size: int) -> np.array:
-        """Docstring"""
+        """Get random times sampled from the pdf of this time profile.
+
+        Args:
+            size: The number of times to return.
+
+        Returns:
+            An array of times.
+        """
 
     @abc.abstractmethod
-    def get_range(self) -> List[float]:
-        """Docstring"""
+    def get_range(self) -> Tuple[float]:
+        """Gets the maximum and minimum values for the times in this profile.
+
+        Returns:
+            A tuple of times.
+        """
 
     @abc.abstractmethod
-    def x0(self, times: np.array) -> Tuple: # I think this is the best name... pylint: disable=invalid-name
-        """Docstring"""
+    def x0(self, times: np.array) -> Tuple:  # I think this is the best name... pylint: disable=invalid-name
+        """Gets a tuple of initial guess to use when fitting parameters.
+
+        The guesses are arrived at by simple approximations using the given
+        times.
+
+        Args:
+            times: An array of times to use to approximate the fitting
+                parameters of this time profile.
+
+        Returns:
+            A tuple of approximate parameters.
+        """
 
     @abc.abstractmethod
-    def bounds(self, time_profile: 'GenericProfile') -> List[List[float]]:
-        """Docstring"""
+    def bounds(self, time_profile: 'GenericProfile') -> List[Tuple[float]]:
+        """Get a list of tuples of bounds for the parameters of this profile.
+
+        Uses another time profile to constrain the bounds. This is usually
+        needed to constrain the bounds of a signal time profile given a
+        background time profile.
+
+        Args:
+            time_profile: Another time profile to constrain from.
+
+        Returns:
+            A list of tuples of bounds for fitting the  parameters of this time
+            profile.
+        """
 
     @property
     @abc.abstractmethod
     def default_params(self) -> Dict[str, float]:
-        """Docstring"""
+        """Returns the initial parameters formatted for ts calculation output.
+        """
 
     @property
     @abc.abstractmethod
     def param_dtype(self) -> List[Tuple[str, str]]:
-        """Docstring"""
+        """Returns the parameter names and datatypes formatted for numpy dtypes.
+        """
+
 
 class GaussProfile(GenericProfile):
     """Time profile class for a gaussian distribution.
@@ -96,8 +148,6 @@ class GaussProfile(GenericProfile):
         More function info...
 
         Args:
-            mean: The center form the distribution.
-            sigma: The width for the distribution.
             name: prefix for printing parameters.
         """
         super().__init__()
@@ -168,6 +218,7 @@ class GaussProfile(GenericProfile):
         x0_sigma = np.std(times)
         return x0_mean, x0_sigma
 
+
     def effective_exposure(self) -> float: 
         """Return the effective exposure of the gaussian
         
@@ -179,6 +230,7 @@ class GaussProfile(GenericProfile):
         """
         return self.norm
         
+
     def bounds(self, time_profile: GenericProfile) -> List[List[float]]:
         """Short function info...
 
@@ -205,6 +257,7 @@ class GaussProfile(GenericProfile):
     @property
     def param_dtype(self) -> List[Tuple[str, str]]:
         return self._param_dtype
+
 
 class UniformProfile(GenericProfile):
     """Time profile class for a uniform distribution.
@@ -251,8 +304,9 @@ class UniformProfile(GenericProfile):
 
         """
         output = np.zeros_like(times)
-        output[(times>=self._window[0]) &\
-               (times<self._window[1])] = 1/(self._window[1] - self._window[0])
+        output[(times >= self._window[0])
+               & (times < self._window[1])] = 1/(self._window[1]
+                                                 - self._window[0])
         return output
 
     def logpdf(self, times: np.array) -> np.array:
@@ -334,6 +388,7 @@ class UniformProfile(GenericProfile):
         """Docstring"""
         return tuple(self._window)
 
+
 class CustomProfile(GenericProfile):
     """Time profile class for a custom binned distribution.
 
@@ -352,14 +407,13 @@ class CustomProfile(GenericProfile):
     """
 
     def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], float],
-                 time_window: Tuple[float], bins: Union[List[float], int] = 100, # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 time_window: Tuple[float], bins: Union[List[float], int] = 100,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                  name: str = 'custom_tp') -> None:
         """Constructs the object.
 
         More function info...
 
         Args:
-            pdf: The distribution function (takes times and time window).
             time_window: lower and upper bound for the distribution.
             bins: Either a list of specific bin edges to use (values should be
                 between 0 and 1), or an integer giving the number of linear
@@ -368,14 +422,14 @@ class CustomProfile(GenericProfile):
         """
         super().__init__()
         self._window = time_window
-        self._default_params = {'_'.join([name, 'start']):self._window[0],
-                                '_'.join([name, 'end']):self._window[1]}
+        self._default_params = {'_'.join([name, 'start']): self._window[0],
+                                '_'.join([name, 'end']): self._window[1]}
         self._param_dtype = [('_'.join([name, 'start']), np.float32),
                              ('_'.join([name, 'end']), np.float32)]
         self.dist = self.build_rv(pdf, bins)
 
     def build_rv(self, pdf: Callable[[np.array, Tuple[float, float]], float],
-                 bins: Union[List[float], int]) -> scipy.stats.rv_histogram: # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 bins: Union[List[float], int]) -> scipy.stats.rv_histogram:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Function info...
 
         More function info...

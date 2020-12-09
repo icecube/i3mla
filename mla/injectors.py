@@ -3,7 +3,7 @@ The classes in this file are used to inject events for trials generation.
 """
 
 __author__ = 'John Evans'
-__copyright__ = ''
+__copyright__ = 'Copyright 2020 John Evans'
 __credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
 __license__ = 'Apache License 2.0'
 __version__ = '0.0.1'
@@ -22,6 +22,7 @@ from mla import models
 from mla import time_profiles
 from mla import spectral
 
+
 class PsInjector:
     """A basic point-source injector.
 
@@ -33,11 +34,7 @@ class PsInjector:
         source (Dict[str, float]): The dictionary representation of a source.
     """
     def __init__(self, source: Dict[str, float]) -> None:
-        """Initializes the PsInjector object and gives it a source.
-
-        Args:
-            source: The dictionary representation of a source.
-        """
+        """Initializes the PsInjector object and gives it a source."""
         self.source = source
 
     def signal_spatial_pdf(self, events: np.ndarray) -> np.array:
@@ -58,7 +55,7 @@ class PsInjector:
                                       self.source['ra'], self.source['dec'])
         return (1.0/(2*np.pi*sigma**2))*np.exp(-dist**2/(2*sigma**2))
 
-    def background_spatial_pdf(self, events: np.ndarray, # This still belongs here even though it doesn't use self... pylint: disable=no-self-use
+    def background_spatial_pdf(self, events: np.ndarray,  # This still belongs here even though it doesn't use self... pylint: disable=no-self-use
                                event_model: models.EventModel) -> np.array:
         """Calculates the background probability of events based on their dec.
 
@@ -77,7 +74,7 @@ class PsInjector:
 
     def reduced_sim(self, event_model: models.EventModel, flux_norm: float = 0,
                     gamma: float = -2,
-                    sampling_width: Optional[float] = None) -> np.ndarray: # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                    sampling_width: Optional[float] = None) -> np.ndarray:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Gets a small simulation dataset to use for injecting signal.
 
         Prunes the simulation set to only events close to a given source and
@@ -134,11 +131,11 @@ class PsInjector:
         min_time = np.min(event_model.data['time'])
         max_time = np.max(event_model.data['time'])
         reduced_sim['time'] = np.random.uniform(min_time, max_time,
-                                               size=len(reduced_sim))
+                                                size=len(reduced_sim))
 
         return reduced_sim
 
-    def inject_background_events(self, # This still belongs here even though it doesn't use self... pylint: disable=no-self-use
+    def inject_background_events(self,  # This still belongs here even though it doesn't use self... pylint: disable=no-self-use
                                  event_model: models.EventModel) -> np.ndarray:
         """Injects background events for a trial.
 
@@ -180,7 +177,7 @@ class PsInjector:
             reduced_sim,
             n_signal_observed,
             p=reduced_sim['weight']/total,
-            replace = False).copy()
+            replace=False).copy()
 
         # Update this number
         n_signal_observed = len(signal)
@@ -198,6 +195,7 @@ class PsInjector:
                 signal['trueRa'], signal['trueDec'])
 
         return signal
+
 
 class TimeDependentPsInjector(PsInjector):
     """Docstring"""

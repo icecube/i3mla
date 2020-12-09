@@ -1,7 +1,7 @@
 """Docstring"""
 
 __author__ = 'John Evans'
-__copyright__ = ''
+__copyright__ = 'Copyright 2020 John Evans'
 __credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
 __license__ = 'Apache License 2.0'
 __version__ = '0.0.1'
@@ -22,6 +22,7 @@ from mla import time_profiles
 from mla import spectral
 
 TsPreprocess = Tuple[List[scipy.interpolate.UnivariateSpline], np.array]
+
 
 class Analysis:
     """Abstract class defining the structure of analysis classes.
@@ -52,6 +53,7 @@ class Analysis:
                              **kwargs) -> np.ndarray:
         """Docstring"""
 
+
 class PsAnalysis(Analysis):
     """Class info...
 
@@ -61,15 +63,14 @@ class PsAnalysis(Analysis):
         injector (injectors.PsInjector):
     """
     def __init__(self,
-                 source: Optional[Dict[str, float]] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 injector: Optional[injectors.PsInjector] = None) -> None: # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 source: Optional[Dict[str, float]] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 injector: Optional[injectors.PsInjector] = None) -> None:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Function info...
 
         More function info...
 
         Args:
             source:
-            injector:
         """
         super().__init__()
         if injector is not None:
@@ -103,7 +104,7 @@ class PsAnalysis(Analysis):
 
         return splines, sig/bkgr
 
-    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will never be called... pylint: disable=arguments-differ, too-many-arguments
+    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel,  # Super class will never be called... pylint: disable=arguments-differ, too-many-arguments
                     ns: float, gamma: float,
                     preprocessing: TsPreprocess) -> np.array:
         """Function info...
@@ -127,7 +128,7 @@ class PsAnalysis(Analysis):
 
         return np.log((ns/len(events)*(sob - 1)) + 1)
 
-    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel, # Super class will never be called... pylint: disable=arguments-differ, too-many-arguments
+    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel,  # Super class will never be called... pylint: disable=arguments-differ, too-many-arguments
                     test_ns: float, test_gamma: float,
                     gamma_bounds: Tuple[float] = (-4, -1),
                     **kwargs) -> Dict[str, float]:
@@ -168,7 +169,7 @@ class PsAnalysis(Analysis):
             # where to start, and the bounds. First do the
             # shape parameters.
             x_0 = [test_ns, test_gamma]
-            bounds = [(0, n_events), gamma_bounds] # gamma [min, max]
+            bounds = [(0, n_events), gamma_bounds]  # gamma [min, max]
             if 'method' not in kwargs:
                 kwargs['method'] = 'L-BFGS-B'
 
@@ -182,10 +183,10 @@ class PsAnalysis(Analysis):
 
         return output
 
-    def produce_trial(self, event_model: models.EventModel, flux_norm: float, # Super class will never be called... pylint: disable=arguments-differ, too-many-locals, too-many-arguments
-                      reduced_sim: Optional[np.ndarray] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                      gamma: float = -2, sampling_width: Optional[float] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                      random_seed: Optional[int] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
+    def produce_trial(self, event_model: models.EventModel, flux_norm: float,  # Super class will never be called... pylint: disable=arguments-differ, too-many-locals, too-many-arguments
+                      reduced_sim: Optional[np.ndarray] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                      gamma: float = -2, sampling_width: Optional[float] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                      random_seed: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                       verbose: bool = False) -> np.ndarray:
         """Produces a single trial of background+signal events based on inputs.
 
@@ -229,8 +230,8 @@ class PsAnalysis(Analysis):
         # we need to remove the fields in the simulated events that are
         # not present in the data events. These include the true direction,
         # energy, and 'oneweight'.
-        signal = rf.drop_fields(signal,[n for n in signal.dtype.names
-                                        if not n in background.dtype.names])
+        signal = rf.drop_fields(signal, [n for n in signal.dtype.names
+                                         if n not in background.dtype.names])
 
         # Combine the signal background events and time-sort them.
         events = np.concatenate([background, signal])
@@ -244,16 +245,16 @@ class PsAnalysis(Analysis):
         grl_stop = event_model.grl['stop'].reshape((1, len(event_model.grl)))
         after_start = np.less(grl_start, events['time'].reshape(len(events), 1))
         before_stop = np.less(events['time'].reshape(len(events), 1), grl_stop)
-        during_uptime = np.any(after_start & before_stop, axis = 1)
+        during_uptime = np.any(after_start & before_stop, axis=1)
 
         return events[during_uptime]
 
-    def produce_and_minimize(self, event_model: models.EventModel, # Super class will never be called... pylint: disable=arguments-differ, too-many-locals, too-many-arguments
+    def produce_and_minimize(self, event_model: models.EventModel,  # Super class will never be called... pylint: disable=arguments-differ, too-many-locals, too-many-arguments
                              n_trials: int, test_ns: float = 1,
                              test_gamma: float = -2,
-                             random_seed: Optional[int] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                             random_seed: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                              flux_norm: float = 0, gamma: float = -2,
-                             sampling_width: Optional[float] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                             sampling_width: Optional[float] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                              verbose: bool = False) -> np.ndarray:
         """Produces n trials and calculate a test statistic for each trial.
 
@@ -323,6 +324,7 @@ class PsAnalysis(Analysis):
             print('done')
 
         return fit_info
+
 
 
 class ThreeMLPsAnalysis(Analysis):
@@ -570,21 +572,31 @@ class ThreeMLPsAnalysis(Analysis):
             fit_ns = 0
         return fit_ts,fit_ns             
         
+
 class TimeDependentPsAnalysis(Analysis):
     """Docstring"""
 
     def __init__(self,
-                 source: Optional[Dict[str, float]] = None,
-                 injector: Optional[injectors.PsInjector] = None) -> None:
+                 source: Optional[Dict[str, float]] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 background_time_profile: Optional[time_profiles.GenericProfile] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 signal_time_profile: Optional[time_profiles.GenericProfile] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 injector: Optional[injectors.TimeDependentPsInjector] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 **kwargs
+    ) -> None:
         """Function info...
         More function info...
         Args:
             source:
+            background_time_profile:
+            signal_time_profile:
             injector:
         """
         super().__init__()
         if injector is not None: self.injector = injector
         else: self.injector = injectors.TimeDependentPsInjector(source)
+        self.injector.background_time_profile = background_time_profile
+        if self.injector.background_time_profile is not None: self.injector.set_background_profile(self.injector.background_time_profile,**kwargs)
+        self.injector.signal_time_profile = signal_time_profile
     
     def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel,
                        test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,

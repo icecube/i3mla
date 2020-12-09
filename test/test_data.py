@@ -1,15 +1,13 @@
+"""Docstring"""
+
 __author__ = 'John Evans'
-__copyright__ = ''
+__copyright__ = 'Copyright 2020 John Evans'
 __credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
 __license__ = 'Apache License 2.0'
 __version__ = '0.0.1'
 __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
-
-"""
-Docstring
-"""
 
 import numpy as np
 
@@ -53,10 +51,10 @@ grl_dtype = [
 
 def get_random_data(length: int) -> np.ndarray:
     """generate junk data of a given length
-    
+
     Args:
         length: length of data
-        
+
     Returns:
         np array of type data_dtype
     """
@@ -77,10 +75,10 @@ def get_random_data(length: int) -> np.ndarray:
 
 def get_random_sim(length: int) -> np.ndarray:
     """generate junk sim of a given length
-    
+
     Args:
         length: length of sim
-        
+
     Returns:
         np array of type sim_dtype
     """
@@ -106,10 +104,10 @@ def get_random_sim(length: int) -> np.ndarray:
 
 def get_random_grl(data: np.ndarray) -> np.ndarray:
     """generate junk grl based on data
-    
+
     Args:
         data: A data array to build this GRL from
-        
+
     Returns:
         np array of type grl_dtype
     """
