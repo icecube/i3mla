@@ -107,7 +107,7 @@ class PsAnalysis(Analysis):
     def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel,  # Super class will never be called... pylint: disable=arguments-differ, too-many-arguments
                     ns: float, gamma: float,
                     n_events:Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                    preprocessing: TsPreprocess) -> np.array:
+                    preprocessing: TsPreprocess = None) -> np.array:
         """Function info...
 
         More function info...
@@ -193,7 +193,9 @@ class PsAnalysis(Analysis):
     def produce_trial(self, event_model: models.EventModel, flux_norm: float,  # Super class will never be called... pylint: disable=arguments-differ, too-many-locals, too-many-arguments
                       reduced_sim: Optional[np.ndarray] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                       gamma: float = -2, sampling_width: Optional[float] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                      nsignal: Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                       random_seed: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                      disable_time_filter: Optional[bool] = False,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                       verbose: bool = False) -> np.ndarray:
         """Produces a single trial of background+signal events based on inputs.
 
@@ -205,9 +207,11 @@ class PsAnalysis(Analysis):
                 declination.
             flux_norm: A flux normaliization to adjust weights.
             gamma: A spectral index to adjust weights.
+            nsignal: How many signal events(Will overwrite flux_norm)
             sampling_width: The bandwidth around the source declination to cut
-                events.
+                events.    
             random_seed: A seed value for the numpy RNG.
+            disable_time_filter:do not cut out events that is not in grl
             verbose: A flag to print progress.
 
         Returns:
@@ -222,11 +226,14 @@ class PsAnalysis(Analysis):
                 gamma=gamma,
                 sampling_width=sampling_width)
 
-        background = self.injector.inject_background_events()
-        if flux_norm > 0:
-            signal = self.injector.inject_signal_events(reduced_sim)
+        background = self.injector.inject_background_events(event_model)
+        if nsignal is None:
+            if flux_norm > 0:
+                signal = self.injector.inject_signal_events(reduced_sim)
+            else:
+                signal = np.empty(0, dtype=background.dtype)
         else:
-            signal = np.empty(0, dtype=background.dtype)
+            signal = self.injector.inject_nsignal_events(reduced_sim,nsignal)
 
         if verbose:
             print(f'number of background events: {len(background)}')
@@ -242,26 +249,31 @@ class PsAnalysis(Analysis):
 
         # Combine the signal background events and time-sort them.
         events = np.concatenate([background, signal])
-        sorting_indices = np.argsort(events['time'])
-        events = events[sorting_indices]
+        if not disable_time_filter:
+            sorting_indices = np.argsort(events['time'])
+            events = events[sorting_indices]
 
-        # We need to check to ensure that every event is contained within
-        # a good run. If the event happened when we had deadtime (when we
-        # were not taking data), then we need to remove it.
-        grl_start = event_model.grl['start'].reshape((1, len(event_model.grl)))
-        grl_stop = event_model.grl['stop'].reshape((1, len(event_model.grl)))
-        after_start = np.less(grl_start, events['time'].reshape(len(events), 1))
-        before_stop = np.less(events['time'].reshape(len(events), 1), grl_stop)
-        during_uptime = np.any(after_start & before_stop, axis=1)
+            # We need to check to ensure that every event is contained within
+            # a good run. If the event happened when we had deadtime (when we
+            # were not taking data), then we need to remove it.
+            grl_start = event_model.grl['start'].reshape((1, len(event_model.grl)))
+            grl_stop = event_model.grl['stop'].reshape((1, len(event_model.grl)))
+            after_start = np.less(grl_start, events['time'].reshape(len(events), 1))
+            before_stop = np.less(events['time'].reshape(len(events), 1), grl_stop)
+            during_uptime = np.any(after_start & before_stop, axis = 1)
+            events = events[during_uptime]
+            
+        return events
 
-        return events[during_uptime]
 
     def produce_and_minimize(self, event_model: models.EventModel,  # Super class will never be called... pylint: disable=arguments-differ, too-many-locals, too-many-arguments
                              n_trials: int, test_ns: float = 1,
                              test_gamma: float = -2,
                              random_seed: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                              flux_norm: float = 0, gamma: float = -2,
+                             nsignal: Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                              sampling_width: Optional[float] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                             disable_time_filter: Optional[bool] = False,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                              verbose: bool = False) -> np.ndarray:
         """Produces n trials and calculate a test statistic for each trial.
 
@@ -276,8 +288,10 @@ class PsAnalysis(Analysis):
             random_seed: A seed value for the numpy RNG.
             flux_norm: A flux normaliization to adjust weights.
             gamma: A guess for best fit spectral index of the signal.
+            nsignal: How many signal events(Will overwrite flux_norm)
             sampling_width: The bandwidth around the source declination to cut
                 events.
+            disable_time_filter:do not cut out events that is not in grl
             verbose: A flag to print progress.
 
         Returns:
@@ -312,8 +326,8 @@ class PsAnalysis(Analysis):
 
         for i in range(n_trials):
             # Produce the trial events
-            trial = self.produce_trial(event_model, flux_norm, reduced_sim,
-                                       random_seed=random_seed)
+            trial = self.produce_trial(event_model, flux_norm, reduced_sim, nsignal=nsignal,
+                                       random_seed=random_seed,disable_time_filter=disable_time_filter)
 
             # And get the weights
             bestfit = self.minimize_ts(trial, event_model, test_ns, test_gamma)
@@ -476,6 +490,7 @@ class ThreeMLPsAnalysis(Analysis):
             event_model: An object containing data and preprocessed parameters.
             spectrum: Spectrum of the injection
             reduced_sim: Reweighted and pruned simulated events near the source declination.
+            nsignal: How many signal events(Will overwrite flux_norm)
             sampling_width: The bandwidth around the source declination to cut events.
             random_seed: A seed value for the numpy RNG.
             signal_time_profile: The time profile of the injected signal.
@@ -580,30 +595,53 @@ class ThreeMLPsAnalysis(Analysis):
         return fit_ts,fit_ns             
         
 
-class TimeDependentPsAnalysis(Analysis):
+class TimeDependentPsAnalysis(PsAnalysis):
     """Docstring"""
 
     def __init__(self,
-                 source: Optional[Dict[str, float]] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 background_time_profile: Optional[time_profiles.GenericProfile] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 signal_time_profile: Optional[time_profiles.GenericProfile] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 injector: Optional[injectors.TimeDependentPsInjector] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 source: Optional[Dict[str, float]],  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 event_model: models.EventModel,
+                 background_time_profile: Optional[Union[time_profiles.GenericProfile,Tuple[float,float]]],  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 signal_time_profile: Optional[Union[time_profiles.GenericProfile,Tuple[float,float]]],  # Python 3.9 bug... pylint: disable=unsubscriptable-object 
+                 test_background_time_profile: Optional[Union[time_profiles.GenericProfile,Tuple[float,float]]],  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 test_signal_time_profile:Optional[Union[time_profiles.GenericProfile,Tuple[float,float]]],  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                  **kwargs
     ) -> None:
         """Function info...
         More function info...
         Args:
             source:
-            background_time_profile:
-            signal_time_profile:
+            background_time_profile: Background time profile for injection
+            signal_time_profile:Signal time profile for injection
+            test_background_time_profile:Background time profile for likelihood
+            test_signal_time_profile:Background time profile for injection
             injector:
         """
         super().__init__()
-        if injector is not None: self.injector = injector
-        else: self.injector = injectors.TimeDependentPsInjector(source)
-        self.injector.background_time_profile = background_time_profile
-        if self.injector.background_time_profile is not None: self.injector.set_background_profile(self.injector.background_time_profile,**kwargs)
-        self.injector.signal_time_profile = signal_time_profile
+        self.injector = injectors.TimeDependentPsInjector(source)
+                
+        if not issubclass(type(background_time_profile) ,time_profiles.GenericProfile):
+            background_time_profile = time_profiles.UniformProfile(background_time_profile[0],
+                                                                   background_time_profile[1])
+                                                             
+        if not issubclass(type(signal_time_profile) ,time_profiles.GenericProfile):
+            signal_time_profile = time_profiles.UniformProfile(signal_time_profile[0],
+                                                               signal_time_profile[1]) 
+                                                               
+        if not issubclass(type(test_background_time_profile) ,time_profiles.GenericProfile):
+            test_background_time_profile = time_profiles.UniformProfile(test_background_time_profile[0],
+                                                                   test_background_time_profile[1])
+                                                             
+        if not issubclass(type(test_signal_time_profile) ,time_profiles.GenericProfile):
+            test_signal_time_profile = time_profiles.UniformProfile(test_signal_time_profile[0],
+                                                               test_signal_time_profile[1]) 
+                                                       
+                                                               
+        self.injector.set_signal_profile(signal_time_profile)
+        self.injector.set_background_profile(event_model,background_time_profile, **kwargs)
+        self.test_background_time_profile = test_background_time_profile
+        self.test_signal_time_profile = test_signal_time_profile
+        return
     
     def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel,
                        test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
@@ -625,311 +663,15 @@ class TimeDependentPsAnalysis(Analysis):
         B = self.injector.background_spatial_pdf(events, event_model)
         splines = event_model.get_log_sob_gamma_splines(events)
         SoB = S/B
-        if test_signal_time_profile is not None and test_background_time_profile is not None:
-            S_time = test_signal_time_profile.pdf(events['time'])
-            B_time = test_background_time_profile.pdf(events['time'])
-            time_SoB = S_time/B_time
-            time_SoB[np.isnan(time_SoB)] = 0
-            if np.isinf(time_SoB).sum() > 0:
-                print("Warning:Background time profile doesn't not cover signal time profile.Discard events outside background window!")
-                time_SoB[np.isinf(time_SoB)] = 0
-            SoB *= time_SoB
+        S_time = self.test_signal_time_profile.pdf(events['time'])
+        B_time = self.test_background_time_profile.pdf(events['time'])
+        time_SoB = S_time/B_time
+        time_SoB[np.isnan(time_SoB)] = 0
+        if np.isinf(time_SoB).sum() > 0:
+            print("Warning:Background time profile doesn't not cover signal time profile.Discard events outside background window!")
+            time_SoB[np.isinf(time_SoB)] = 0
+        SoB *= time_SoB
 
         
         return np.array(splines), np.array(SoB)
-    
-    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, ns: float, gamma: float,
-                    n_events:Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                    test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                    test_background_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                    preprocessing: Optional[Tuple[List[scipy.interpolate.UnivariateSpline], np.array]] = None# Python 3.9 bug... pylint: disable=unsubscriptable-object
-    ) -> Optional[np.array]:# Python 3.9 bug... pylint: disable=unsubscriptable-object
-        """Function info...
-        More function info...
-        Args:
-            events:
-            event_model: An object containing data and preprocessed parameters.
-            ns:
-            gamma:
-        Returns:
-            
-        """
-        if n_events is None:
-            n_events = len(events)
-        if preprocessing is None:
-            preprocessing = self._preprocess_ts(events, 
-                                                event_model,
-                                                test_signal_time_profile=test_signal_time_profile,
-                                                test_background_time_profile=test_background_time_profile) 
-            if preprocessing is None: return
-        splines, sob = preprocessing
-        sob_new = sob*np.exp([spline(gamma) for spline in splines])
-        
-        return np.log((ns/n_events*(sob_new - 1)) + 1)
-    
-    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel,
-                    test_ns: float,
-                    test_gamma: float,
-                    gamma_bounds: List[float] = [-4, -1],
-                    test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                    test_background_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                    **kwargs) -> Dict[str, float]:
-        """Function info...
-        More function info...
-        Args:
-            events:
-            event_model: An object containing data and preprocessed parameters.
-            test_ns:
-            test_gamma:
-            test_signal_time_profile: Background time profile to calculate_TS.
-            test_background_time_profile: The time profile of signals for calculate_TS.
-        Returns:
-            
-        """
-        ns = test_ns
-        gamma = test_gamma
-        output = {'ts': 0, 'ns': ns, 'gamma': gamma}
-        preprocessing = self._preprocess_ts(events, event_model,test_signal_time_profile = test_signal_time_profile,test_background_time_profile = test_background_time_profile)
-        if preprocessing is None: return output
-        
-        # Check: ns cannot be larger than n_events
-        n_events = len(events)
-        if n_events <= ns:
-            ns = n_events - 0.00001
-            
-        drop = n_events - np.sum(preprocessing[1] != 0)
-        drop_index = preprocessing[1] != 0
-        preprocessing = (preprocessing[0][drop_index],preprocessing[1][drop_index])
-        def get_ts(args):
-            ns = args[0]
-            gamma = args[1]
-            llhs = self.evaluate_ts(events[drop_index], event_model, ns, gamma, n_events, preprocessing=preprocessing)
-            return -2*(np.sum(llhs) + drop*np.log(1-ns/n_events))
-            
-        with np.errstate(divide='ignore', invalid='ignore'):
-            # Set the seed values, which tell the minimizer
-            # where to start, and the bounds. First do the
-            # shape parameters.
-            x0 = [test_ns, test_gamma]
-            bounds = [[0, n_events], gamma_bounds] # gamma [min, max]
-            if 'method' not in kwargs: kwargs['method'] = 'L-BFGS-B'
-                
-            result = scipy.optimize.minimize(get_ts, x0=x0, bounds=bounds, **kwargs)
-
-            # Store the results in the output array
-                
-            output['ts'] = -1*result.fun
-            output['ns'] = result.x[0]
-            output['gamma'] = result.x[1]
-        
-        return output
-    
-    def produce_trial(self,
-                      event_model: models.EventModel,
-                      flux_norm: Optional[float] = 1e-9, # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                      reduced_sim: Optional[np.ndarray] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                      gamma: float = -2,
-                      nsignal: Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                      sampling_width: Optional[float] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                      random_seed: Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                      signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                      background_time_profile: Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                      disable_time_filter: Optional[bool] = False,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                      verbose: bool = False) -> np.ndarray:
-        """Produces a single trial of background+signal events based on input parameters.
-        
-        More function info...
-        
-        Args:
-            event_model: An object containing data and preprocessed parameters.
-            reduced_sim: Reweighted and pruned simulated events near the source declination.
-            flux_norm: A flux normaliization to adjust weights.
-            gamma: A spectral index to adjust weights.
-            sampling_width: The bandwidth around the source declination to cut events.
-            random_seed: A seed value for the numpy RNG.
-            signal_time_profile: The time profile of the injected signal.
-            background_time_profile: Background time profile to do the injection.
-            disable_time_filter:Cut out events that is not in grl
-            verbose: A flag to print progress.
-            
-        Returns:
-            An array of combined signal and background events.
-        """
-        if random_seed is not None: np.random.seed(random_seed)
-        if background_time_profile is not None:
-            if not issubclass(type(background_time_profile) ,time_profiles.GenericProfile):
-                background_time_profile = time_profiles.UniformProfile(background_time_profile[0],
-                                                                       background_time_profile[1])
-        if signal_time_profile is not None:                                                            
-            if not issubclass(type(signal_time_profile) ,time_profiles.GenericProfile):
-                signal_time_profile = time_profiles.UniformProfile(signal_time_profile[0],
-                                                                   signal_time_profile[1]) 
-        if reduced_sim is None: 
-            reduced_sim = self.injector.reduced_sim(
-                event_model=event_model,
-                flux_norm=flux_norm,
-                gamma=gamma,
-                sampling_width=sampling_width)
-        background = self.injector.inject_background_events(event_model,background_time_profile=background_time_profile)
-        if nsignal is not None:
-            signal = self.injector.inject_nsignal_events(reduced_sim,nsignal,signal_time_profile=signal_time_profile)
-            
-        else:
-            if flux_norm > 0: signal = self.injector.inject_signal_events(reduced_sim,signal_time_profile=signal_time_profile)
-            else: signal = np.empty(0, dtype=background.dtype)
-        
-        if verbose:
-            print(f'number of background events: {len(background)}')
-            print(f'number of signal events: {len(signal)}')
-            
-        # Because we want to return the entire event and not just the
-        # number of events, we need to do some numpy magic. Specifically,
-        # we need to remove the fields in the simulated events that are
-        # not present in the data events. These include the true direction,
-        # energy, and 'oneweight'.
-        signal = rf.drop_fields(signal, [n for n in signal.dtype.names \
-                                         if not n in background.dtype.names])
-        
-            
-        # Combine the signal background events and time-sort them.
-        
-        if signal_time_profile is None and self.injector.signal_time_profile is None:
-            signal['time'] = time_profiles.UniformProfile(event_model.grl['start'][0],event_model.grl['stop'][-1]).random(len(signal))
-        events = np.concatenate([background, signal])
-        if not disable_time_filter:
-            sorting_indices = np.argsort(events['time'])
-            events = events[sorting_indices]
-
-            # We need to check to ensure that every event is contained within
-            # a good run. If the event happened when we had deadtime (when we
-            # were not taking data), then we need to remove it.
-            grl_start = event_model.grl['start'].reshape((1, len(event_model.grl)))
-            grl_stop = event_model.grl['stop'].reshape((1, len(event_model.grl)))
-            after_start = np.less(grl_start, events['time'].reshape(len(events), 1))
-            before_stop = np.less(events['time'].reshape(len(events), 1), grl_stop)
-            during_uptime = np.any(after_start & before_stop, axis = 1)
-            events = events[during_uptime]
-        return events
-    
-    def produce_and_minimize(self,
-                             event_model: models.EventModel,
-                             n_trials: int,
-                             test_ns: float = 1,
-                             test_gamma: float = -2,
-                             random_seed: Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                             flux_norm: float = 0,
-                             gamma: float = -2,
-                             nsignal:Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                             sampling_width: Optional[float] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                             signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                             background_time_profile: Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                             background_window: Optional[float] = 14,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                             test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                             test_background_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                             disable_time_filter: Optional[bool] = False,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                             verbose: bool = False,
-    ) -> np.ndarray:
-        """Produces n trials and calculate a test statistic for each trial.
-        
-        More function info...
-        
-        Args:
-            event_model: An object containing data and preprocessed parameters.
-            n_trials: The number of times to repeat the trial + evaluate_ts process.
-            test_ns: A guess for the number of signal events.
-            test_gamma: A guess for best fit spectral index of the signal.
-            random_seed: A seed value for the numpy RNG.
-            flux_norm: A flux normaliization to adjust weights.
-            gamma: A guess for best fit spectral index of the signal.
-            sampling_width: The bandwidth around the source declination to cut events.
-            signal_time_profile: The time profile of the injected signal.
-            background_time_profile: Background time profile to do the injection.
-            background_window: background time window used to estimated the background rate
-            test_signal_time_profile: Background time profile to calculate_TS.
-            test_background_time_profile: The time profile of signals for calculate_TS.
-            disable_time_filter:Cut out events that is not in grl
-            verbose: A flag to print progress.
-        Returns:
-            An array of test statistic values and their best-fit parameters for each trial.
-        """
-        if random_seed: np.random.seed(random_seed)
-        if background_time_profile is not None:
-            if not issubclass(type(background_time_profile) ,time_profiles.GenericProfile):
-                background_time_profile = time_profiles.UniformProfile(background_time_profile[0],
-                                                                       background_time_profile[1])
-            if test_background_time_profile is None:
-                test_background_time_profile = background_time_profile
-            elif not issubclass(type(test_background_time_profile),time_profiles.GenericProfile):
-                test_background_time_profile = time_profiles.UniformProfile(test_background_time_profile[0],
-                                                                            test_background_time_profile[1])
-                                                                       
-        if signal_time_profile is not None:                                                            
-            if not issubclass(type(signal_time_profile) ,time_profiles.GenericProfile):
-                signal_time_profile = time_profiles.UniformProfile(signal_time_profile[0],
-                                                                   signal_time_profile[1])
-            if test_signal_time_profile is None:
-                test_signal_time_profile = signal_time_profile
-            elif not issubclass(type(test_signal_time_profile) ,time_profiles.GenericProfile):
-                test_signal_time_profile = time_profiles.UniformProfile(test_signal_time_profile[0],
-                                                                        test_signal_time_profile[1])
-        # Cut down the sim. We're going to be using the same
-        # source and weights each time, so this stops us from
-        # needing to recalculate over and over again.
-        # Also set the signal time profile for injector
-        self.injector.set_signal_profile(signal_time_profile)
-        self.injector.set_background_profile(event_model,background_time_profile,background_window)
-        reduced_sim = self.injector.reduced_sim(event_model,
-                                                flux_norm=flux_norm,
-                                                gamma=gamma,
-                                                sampling_width=sampling_width)
-        
-        
-        # Build a place to store information for the trial
-        dtype = np.dtype([
-            ('ts', np.float32),
-            ('ntot', np.int),
-            ('ninj', np.int),
-            ('ns', np.float32),
-            ('gamma', np.float32),
-        ])
-        fit_info = np.empty(n_trials, dtype=dtype)
-
-        # We're going to cache the signal weights, which will
-        # speed up our signal generation significantly.
-        signal_weights = None
-        
-        if verbose:
-            print(f'Running Trials (N={flux_norm:3.2e}, gamma={gamma:2.1f})', end='')
-            prop_complete = 0
-            
-        for i in range(n_trials):
-            # Produce the trial events
-            trial = self.produce_trial(event_model,
-                                       flux_norm,
-                                       reduced_sim, 
-                                       nsignal = nsignal,
-                                       random_seed=random_seed,
-                                       disable_time_filter=disable_time_filter,
-                                       verbose = verbose)
-            
-            # And get the weights
-            bestfit = self.minimize_ts(trial, 
-                                       event_model, 
-                                       test_ns, 
-                                       test_gamma,
-                                       test_signal_time_profile = test_signal_time_profile,
-                                       test_background_time_profile = test_background_time_profile)
-
-            fit_info['ts'][i] = bestfit['ts']
-            fit_info['ntot'][i] = len(trial)
-            fit_info['ninj'][i] = (trial['run'] > 200000).sum()
-            fit_info['ns'][i] = bestfit['ns']
-            fit_info['gamma'][i] = bestfit['gamma']
-            
-            if verbose and i/n_trials > prop_complete:
-                prop_complete += .05
-                print('.', end='')
-        if verbose: print('done')
-
-        return fit_info
     
