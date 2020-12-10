@@ -102,7 +102,7 @@ class PsAnalysis(Analysis):
         bkgr = self.injector.background_spatial_pdf(events, event_model)
         splines = event_model.get_log_sob_gamma_splines(events)
 
-        return splines, sig/bkgr
+        return splines, sig / bkgr
 
     def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel,  # Super class will never be called... pylint: disable=arguments-differ, too-many-arguments
                     ns: float, gamma: float,
@@ -184,7 +184,7 @@ class PsAnalysis(Analysis):
                                              **kwargs)
 
             # Store the results in the output array
-            output['ts'] = -1*result.fun
+            output['ts'] = -1 * result.fun
             output['ns'] = result.x[0]
             output['gamma'] = result.x[1]
 
@@ -324,7 +324,7 @@ class PsAnalysis(Analysis):
             fit_info['ns'][i] = bestfit['ns']
             fit_info['gamma'][i] = bestfit['gamma']
 
-            if verbose and i/n_trials > prop_complete:
+            if verbose and i / n_trials > prop_complete:
                 prop_complete += .05
                 print('.', end='')
         if verbose:

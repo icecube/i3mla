@@ -570,15 +570,13 @@ gamma at a binned energy and sin(dec).</p>
 <dl class="py method">
 <dt id="id0">
 <em class="property">property </em><code class="sig-name descname">background_dec_spline</code><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter for background_dec_spline.
-:noindex:</p>
+<dd><p>Getter for background_dec_spline.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="id1">
 <em class="property">property </em><code class="sig-name descname">data</code><a class="headerlink" href="#id1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter for data.
-:noindex:</p>
+<dd><p>Getter for data.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -598,15 +596,13 @@ gamma at a binned energy and sin(dec).</p>
 <dl class="py method">
 <dt id="id2">
 <em class="property">property </em><code class="sig-name descname">grl</code><a class="headerlink" href="#id2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter for GRL.
-:noindex:</p>
+<dd><p>Getter for GRL.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="id3">
 <em class="property">property </em><code class="sig-name descname">sim</code><a class="headerlink" href="#id3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Getter for sim.
-:noindex:</p>
+<dd><p>Getter for sim.</p>
 </dd></dl>
 
 </dd></dl>
@@ -629,7 +625,7 @@ inherit from to create other time profiles.</p>
 <dd><p>The range of distribution function.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>List[float]</p>
+<dd class="field-odd"><p>Tuple[float]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -684,7 +680,7 @@ distribution function.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.CustomProfile.bounds">
-<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.CustomProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.CustomProfile.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given some other profile, returns allowable ranges for parameters.</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -724,7 +720,7 @@ distribution function.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.CustomProfile.get_range">
-<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#mla.time_profiles.CustomProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.CustomProfile.get_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the min/max values for the distribution.</p>
 </dd></dl>
 
@@ -803,7 +799,8 @@ distribution function.</p>
 <dl class="py attribute">
 <dt id="mla.time_profiles.GaussProfile.mean">
 <code class="sig-name descname">mean</code><a class="headerlink" href="#mla.time_profiles.GaussProfile.mean" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>The center of the distribution.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
 </dd>
@@ -813,7 +810,8 @@ distribution function.</p>
 <dl class="py attribute">
 <dt id="mla.time_profiles.GaussProfile.sigma">
 <code class="sig-name descname">sigma</code><a class="headerlink" href="#mla.time_profiles.GaussProfile.sigma" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>The spread of the distribution.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p>float</p>
 </dd>
@@ -856,15 +854,20 @@ parameters.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.GaussProfile.bounds">
-<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GaussProfile.bounds" title="Permalink to this definition">¶</a></dt>
-<dd><p>Short function info…</p>
-<p>More function info…</p>
+<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GaussProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns good bounds for this time profile given another time profile.</p>
+<p>Limits the mean to be within the range of the other profile and limits
+the sigma to be &gt;= 0 and &lt;= the width of the other profile.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>time_profile</strong> – </p>
+<dd class="field-odd"><p><strong>time_profile</strong> – Another time profile to use to define the parameter
+bounds of this time profile.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of tuples of bounds for fitting the parameters in this time
+profile.</p>
 </dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py method">
@@ -875,7 +878,7 @@ parameters.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.GaussProfile.get_range">
-<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GaussProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GaussProfile.get_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the min/max values for the distribution.</p>
 </dd></dl>
 
@@ -883,13 +886,14 @@ parameters.</p>
 <dt id="mla.time_profiles.GaussProfile.logpdf">
 <code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.time_profiles.GaussProfile.logpdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the log(probability) for each time.</p>
-<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>times</strong> – A numpy list of times to evaluate.</p>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A numpy array of log(probability) at the given times.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py method">
@@ -902,39 +906,42 @@ parameters.</p>
 <dt id="mla.time_profiles.GaussProfile.pdf">
 <code class="sig-name descname">pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.time_profiles.GaussProfile.pdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the probability for each time.</p>
-<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>times</strong> – A numpy list of times to evaluate.</p>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A numpy array of probability amplitudes at the given times.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="mla.time_profiles.GaussProfile.random">
 <code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.time_profiles.GaussProfile.random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns random values following the gaussian distribution.</p>
-<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>size</strong> – The number of random values to return.</p>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of times.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="mla.time_profiles.GaussProfile.x0">
 <code class="sig-name descname">x0</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GaussProfile.x0" title="Permalink to this definition">¶</a></dt>
-<dd><p>Short function info…</p>
-<p>More function info…</p>
+<dd><p>Returns good guesses for mean and sigma based on given times.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>times</strong> – A numpy list of times to evaluate.</p>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple of mean and sigma guesses.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 </dd></dl>
@@ -974,7 +981,7 @@ parameters.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.GenericProfile.bounds">
-<em class="property">abstract </em><code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GenericProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GenericProfile.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of tuples of bounds for the parameters of this profile.</p>
 <p>Uses another time profile to constrain the bounds. This is usually
 needed to constrain the bounds of a signal time profile given a
@@ -998,7 +1005,7 @@ profile.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.GenericProfile.get_range">
-<em class="property">abstract </em><code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GenericProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GenericProfile.get_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets the maximum and minimum values for the times in this profile.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1084,9 +1091,11 @@ your source.</p>
 <dl class="py attribute">
 <dt id="mla.time_profiles.UniformProfile.window">
 <code class="sig-name descname">window</code><a class="headerlink" href="#mla.time_profiles.UniformProfile.window" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>The start and stop times for this time
+profile.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>List[float]</p>
+<dd class="field-odd"><p>Tuple[float, float]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1117,12 +1126,15 @@ parameters.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.UniformProfile.bounds">
-<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.UniformProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.UniformProfile.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given some other profile, returns allowable ranges for parameters.</p>
-<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>time_profile</strong> – </p>
+<dd class="field-odd"><p><strong>time_profile</strong> – Another time profile used to get the limits of start
+and end.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of tuples of bounds for fitting.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1135,7 +1147,7 @@ parameters.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.UniformProfile.get_range">
-<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>float<span class="p">]</span><a class="headerlink" href="#mla.time_profiles.UniformProfile.get_range" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.UniformProfile.get_range" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the min/max values for the distribution.</p>
 </dd></dl>
 
@@ -1143,13 +1155,14 @@ parameters.</p>
 <dt id="mla.time_profiles.UniformProfile.logpdf">
 <code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.time_profiles.UniformProfile.logpdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the log(probability) for each time.</p>
-<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>times</strong> – A numpy list of times to evaluate.</p>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A numpy array of log(probability) at the given times.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1162,45 +1175,48 @@ parameters.</p>
 <dt id="mla.time_profiles.UniformProfile.pdf">
 <code class="sig-name descname">pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.time_profiles.UniformProfile.pdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the probability for each time.</p>
-<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>times</strong> – A numpy list of times to evaluate.</p>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A numpy array of probability amplitudes at the given times.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="mla.time_profiles.UniformProfile.random">
 <code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.time_profiles.UniformProfile.random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns random values following the uniform distribution.</p>
-<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>size</strong> – The number of random values to return.</p>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of times.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="id14">
 <em class="property">property </em><code class="sig-name descname">window</code><a class="headerlink" href="#id14" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring</p>
+<dd><p>Equivalent to get_range()</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="mla.time_profiles.UniformProfile.x0">
 <code class="sig-name descname">x0</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><a class="headerlink" href="#mla.time_profiles.UniformProfile.x0" title="Permalink to this definition">¶</a></dt>
-<dd><p>Short function info…</p>
-<p>More function info…</p>
+<dd><p>Returns good guesses for start and stop based on given times.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>times</strong> – </p>
+<dd class="field-odd"><p><strong>times</strong> – A numpy list of times to evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple of start and stop guesses.</p>
 </dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 </dd></dl>

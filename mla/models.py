@@ -71,21 +71,21 @@ class EventModel:
 
         if isinstance(background_sin_dec_bins, int):
             background_sin_dec_bins = np.linspace(-1, 1,
-                                                  1+background_sin_dec_bins)
+                                                  1 + background_sin_dec_bins)
 
         self._background_dec_spline = self._create_background_dec_spline(
             background_sin_dec_bins)
 
         if isinstance(signal_sin_dec_bins, int):
-            signal_sin_dec_bins = np.linspace(-1, 1, 1+signal_sin_dec_bins)
+            signal_sin_dec_bins = np.linspace(-1, 1, 1 + signal_sin_dec_bins)
         self._sin_dec_bins = signal_sin_dec_bins
 
         if isinstance(log_energy_bins, int):
-            log_energy_bins = np.linspace(1, 8, 1+log_energy_bins)
+            log_energy_bins = np.linspace(1, 8, 1 + log_energy_bins)
         self._log_energy_bins = log_energy_bins
 
         if isinstance(gamma_bins, int):
-            gamma_bins = np.linspace(-4.25, -0.5, 1+gamma_bins)
+            gamma_bins = np.linspace(-4.25, -0.5, 1 + gamma_bins)
 
         self._log_sob_gamma_splines = self._create_log_sob_gamma_splines(
             gamma_bins, verbose=verbose)
@@ -158,7 +158,7 @@ class EventModel:
         if verbose:
             print(f'Building map for gamma = {gamma}...', end='')
         bins = np.array([self._sin_dec_bins, self._log_energy_bins])
-        bin_centers = bins[1, :-1] + np.diff(bins[1])/2
+        bin_centers = bins[1, :-1] + np.diff(bins[1]) / 2
 
         # background
         bg_h, _, _ = np.histogram2d(np.sin(self._data['dec']),
@@ -272,28 +272,24 @@ class EventModel:
     @property
     def data(self) -> np.ndarray:
         """Getter for data.
-        :noindex:
         """
         return self._data
 
     @property
     def sim(self) -> np.ndarray:
         """Getter for sim.
-        :noindex:
         """
         return self._sim
 
     @property
     def grl(self) -> np.ndarray:
         """Getter for GRL.
-        :noindex:
         """
         return self._grl
 
     @property
     def background_dec_spline(self) -> scipy.interpolate.UnivariateSpline:
         """Getter for background_dec_spline.
-        :noindex:
         """
         return self._background_dec_spline
 
