@@ -153,12 +153,13 @@ class GaussProfile(GenericProfile):
         self.mean = mean
         self.sigma = sigma
         self.scipy_dist = scipy.stats.norm(mean, sigma)
-        self.norm = 1.0/np.sqrt(2*np.pi*sigma**2)
+        self._range = None, None
+        self._exposure = np.sqrt(2*np.pi*sigma**2)
         self._default_params = {'_'.join([name, 'mean']):mean,
                                 '_'.join([name, 'sigma']):sigma}
         self._param_dtype = [('_'.join([name, 'mean']), np.float32),
                              ('_'.join([name, 'sigma']), np.float32)]
-
+        
     def pdf(self, times: np.array) -> np.array:
         """Calculates the probability for each time.
 
@@ -194,7 +195,7 @@ class GaussProfile(GenericProfile):
 
     def get_range(self) -> Tuple[Optional[float], Optional[float]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Returns the min/max values for the distribution."""
-        return None, None
+        return self._range
 
     def x0(self, times: np.array) -> Tuple[float, float]:
         """Returns good guesses for mean and sigma based on given times.
@@ -219,7 +220,7 @@ class GaussProfile(GenericProfile):
         Returns:
             effctive exposure
         """
-        return self.norm
+        return self._exposure
         
 
     def bounds(self, time_profile: GenericProfile) -> List[List[float]]:
@@ -268,7 +269,7 @@ class UniformProfile(GenericProfile):
             parameters.
     """
 
-    def __init__(self, start: float, end: float,
+    def __init__(self, start: float, length: float,
                  name: str = 'uniform_tp') -> None:
         """Constructs the time profile.
 
@@ -278,10 +279,10 @@ class UniformProfile(GenericProfile):
             name: prefix for parameters.
         """
         super().__init__()
-        self._window = [start, end]
-        self.norm = end-start
-        self._default_params = {'_'.join([name, 'start']):self._window[0],
-                                '_'.join([name, 'end']):self._window[1]}
+        self._range = [start, start+length]
+        self._exposure = length
+        self._default_params = {'_'.join([name, 'start']):self._range[0],
+                                '_'.join([name, 'end']):self._range[1]}
 
         self._param_dtype = [('_'.join([name, 'start']), np.float32),
                              ('_'.join([name, 'end']), np.float32)]
@@ -297,8 +298,8 @@ class UniformProfile(GenericProfile):
         """
         output = np.zeros_like(times)
         output[
-            (times >= self._window[0]) & (times < self._window[1])
-        ] = 1 / (self._window[1] - self._window[0])
+            (times >= self._range[0]) & (times < self._range[1])
+        ] = 1 / (self._range[1] - self._range[0])
         return output
 
     def logpdf(self, times: np.array) -> np.array:
@@ -321,11 +322,11 @@ class UniformProfile(GenericProfile):
         Returns:
             An array of times.
         """
-        return np.random.uniform(*self._window, size)
+        return np.random.uniform(*self._range, size)
 
     def get_range(self) -> Tuple[Optional[float], Optional[float]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Returns the min/max values for the distribution."""
-        return self._window
+        return self._range
 
     def x0(self, times: np.array) -> Tuple[float, float]:
         """Returns good guesses for start and stop based on given times.
@@ -362,7 +363,7 @@ class UniformProfile(GenericProfile):
         Returns:
             effctive exposure
         """
-        return self.norm
+        return self._exposure
 
     @property
     def default_params(self) -> Dict[str, float]:
@@ -372,10 +373,6 @@ class UniformProfile(GenericProfile):
     def param_dtype(self) -> List[Tuple[str, str]]:
         return self._param_dtype
 
-    @property
-    def window(self) -> Tuple[float]:
-        """Equivalent to get_range()"""
-        return self._window
 
 
 class CustomProfile(GenericProfile):
@@ -410,7 +407,7 @@ class CustomProfile(GenericProfile):
             name: prefix for parameters.
         """
         super().__init__()
-        self._window = time_window
+        self._range = time_window
         self._default_params = {'_'.join([name, 'start']): self._window[0],
                                 '_'.join([name, 'end']): self._window[1]}
         self._param_dtype = [('_'.join([name, 'start']), np.float32),
@@ -445,7 +442,7 @@ class CustomProfile(GenericProfile):
         hist = pdf(bin_centers, tuple(self._window))
         area_under_hist = np.sum(hist * bin_widths)
         hist *= 1/area_under_hist
-        self.norm = 1/np.max(hist)
+        self._exposure = 1/np.max(hist)
         hist *= bin_widths
         
 
@@ -494,7 +491,7 @@ class CustomProfile(GenericProfile):
 
     def get_range(self) -> Tuple[Optional[float], Optional[float]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Returns the min/max values for the distribution."""
-        return self._window
+        return self._range
 
     def x0(self, times: np.array) -> Tuple[float, float]:
         """Short function info...
@@ -531,7 +528,7 @@ class CustomProfile(GenericProfile):
         Returns:
             effctive exposure
         """
-        return self.norm
+        return self._exposure
 
     @property
     def default_params(self) -> Dict[str, float]:
@@ -541,7 +538,4 @@ class CustomProfile(GenericProfile):
     def param_dtype(self) -> List[Tuple[str, str]]:
         return self._param_dtype
 
-    @property
-    def window(self) -> Tuple[float]:
-        """Docstring"""
-        return self._window
+
