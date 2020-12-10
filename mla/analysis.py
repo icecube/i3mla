@@ -106,6 +106,7 @@ class PsAnalysis(Analysis):
 
     def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel,  # Super class will never be called... pylint: disable=arguments-differ, too-many-arguments
                     ns: float, gamma: float,
+                    n_events:Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                     preprocessing: TsPreprocess) -> np.array:
         """Function info...
 
@@ -115,18 +116,21 @@ class PsAnalysis(Analysis):
             events:
             event_model: An object containing data and preprocessed parameters.
             ns:
+            n_events
             gamma:
 
         Returns:
 
         """
+        if n_events is None:
+            n_events = len(events)
         if preprocessing is None:
             preprocessing = self._preprocess_ts(events, event_model)
 
         splines, sob = preprocessing
-        sob *= np.exp([spline(gamma) for spline in splines])
-
-        return np.log((ns/len(events)*(sob - 1)) + 1)
+        sob_new = sob*np.exp([spline(gamma) for spline in splines])
+        
+        return np.log((ns/n_events*(sob_new - 1)) + 1)
 
     def minimize_ts(self, events: np.ndarray, event_model: models.EventModel,  # Super class will never be called... pylint: disable=arguments-differ, too-many-arguments
                     test_ns: float, test_gamma: float,
@@ -154,15 +158,18 @@ class PsAnalysis(Analysis):
         n_events = len(events)
         if n_events <= test_ns:
             test_ns = n_events - 0.00001
-
+        
+        
+        #Drop events with zero spatial or time llh
+        #The contribution of those llh will be accounts in drop*np.log(1-ns/n_events)
         drop = n_events - np.sum(preprocessing[1] != 0)
-
+        drop_index = preprocessing[1] != 0
+        preprocessing = (preprocessing[0][drop_index],preprocessing[1][drop_index])
         def get_ts(args):
-            n_s = args[0]
+            ns = args[0]
             gamma = args[1]
-            llhs = self.evaluate_ts(events, event_model, n_s, gamma,
-                                    preprocessing=preprocessing)
-            return -2*(np.sum(llhs) + drop*np.log(1-n_s/n_events))
+            llhs = self.evaluate_ts(events[drop_index], event_model, ns, gamma, n_events = n_events, preprocessing=preprocessing)
+            return -2*(np.sum(llhs) + drop*np.log(1-ns/n_events))
 
         with np.errstate(divide='ignore', invalid='ignore'):
             # Set the seed values, which tell the minimizer
@@ -599,9 +606,9 @@ class TimeDependentPsAnalysis(Analysis):
         self.injector.signal_time_profile = signal_time_profile
     
     def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel,
-                       test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,
-                       test_background_time_profile:Optional[time_profiles.GenericProfile] = None,
-                       ) -> Optional[Tuple[List[scipy.interpolate.UnivariateSpline], np.array]]:
+                       test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                       test_background_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                       ) -> Optional[Tuple[List[scipy.interpolate.UnivariateSpline], np.array]]:# Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Function info...
         More function info...
         Args:
@@ -632,11 +639,11 @@ class TimeDependentPsAnalysis(Analysis):
         return np.array(splines), np.array(SoB)
     
     def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel, ns: float, gamma: float,
-                    n_events:Optional[int] = None,
-                    test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,
-                    test_background_time_profile:Optional[time_profiles.GenericProfile] = None,
-                    preprocessing: Optional[Tuple[List[scipy.interpolate.UnivariateSpline], np.array]] = None
-    ) -> Optional[np.array]:
+                    n_events:Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                    test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                    test_background_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                    preprocessing: Optional[Tuple[List[scipy.interpolate.UnivariateSpline], np.array]] = None# Python 3.9 bug... pylint: disable=unsubscriptable-object
+    ) -> Optional[np.array]:# Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Function info...
         More function info...
         Args:
@@ -664,8 +671,8 @@ class TimeDependentPsAnalysis(Analysis):
                     test_ns: float,
                     test_gamma: float,
                     gamma_bounds: List[float] = [-4, -1],
-                    test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,
-                    test_background_time_profile:Optional[time_profiles.GenericProfile] = None,
+                    test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                    test_background_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                     **kwargs) -> Dict[str, float]:
         """Function info...
         More function info...
@@ -719,15 +726,15 @@ class TimeDependentPsAnalysis(Analysis):
     
     def produce_trial(self,
                       event_model: models.EventModel,
-                      flux_norm: Optional[float] = 1e-9, 
-                      reduced_sim: Optional[np.ndarray] = None, 
+                      flux_norm: Optional[float] = 1e-9, # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                      reduced_sim: Optional[np.ndarray] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
                       gamma: float = -2,
-                      nsignal: Optional[int] = None,
-                      sampling_width: Optional[float] = None, 
-                      random_seed: Optional[int] = None,
-                      signal_time_profile:Optional[time_profiles.GenericProfile] = None,
-                      background_time_profile: Optional[time_profiles.GenericProfile] = None,
-                      disable_time_filter: Optional[bool] = False,
+                      nsignal: Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                      sampling_width: Optional[float] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                      random_seed: Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                      signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                      background_time_profile: Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                      disable_time_filter: Optional[bool] = False,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                       verbose: bool = False) -> np.ndarray:
         """Produces a single trial of background+signal events based on input parameters.
         
@@ -809,17 +816,17 @@ class TimeDependentPsAnalysis(Analysis):
                              n_trials: int,
                              test_ns: float = 1,
                              test_gamma: float = -2,
-                             random_seed: Optional[int] = None,
+                             random_seed: Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                              flux_norm: float = 0,
                              gamma: float = -2,
-                             nsignal:Optional[int] = None,
-                             sampling_width: Optional[float] = None,
-                             signal_time_profile:Optional[time_profiles.GenericProfile] = None,
-                             background_time_profile: Optional[time_profiles.GenericProfile] = None,
-                             background_window: Optional[float] = 14,
-                             test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,
-                             test_background_time_profile:Optional[time_profiles.GenericProfile] = None,
-                             disable_time_filter: Optional[bool] = False,
+                             nsignal:Optional[int] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                             sampling_width: Optional[float] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                             signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                             background_time_profile: Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                             background_window: Optional[float] = 14,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                             test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                             test_background_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                             disable_time_filter: Optional[bool] = False,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                              verbose: bool = False,
     ) -> np.ndarray:
         """Produces n trials and calculate a test statistic for each trial.

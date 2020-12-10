@@ -187,7 +187,7 @@ class EventModel:
             # Pick out the values we want to use.
             # We explicitly want to avoid NaNs and infinities
             good = np.isfinite(ratio[i]) & (ratio[i] > 0)
-            good_bins, good_vals = bins[1][:-1][good], ratio[i][good]
+            good_bins, good_vals = bin_centers[good], ratio[i][good]
 
             # Do a linear interpolation across the energy range
             spline = scipy.interpolate.UnivariateSpline(good_bins, good_vals,
@@ -307,9 +307,9 @@ class ThreeMLEventModel(EventModel):
                  background_sin_dec_bins: Union[np.array, int] = 500,
                  signal_sin_dec_bins: Union[np.array, int] = 50,
                  log_energy_bins: Union[np.array, int] = 50,
-                 spectrum: Optional[spectral.BaseSpectrum] = None,
-                 sampling_width: Optional[float] = np.radians(3),
-                 reduce: Optional[bool] = True,
+                 spectrum: Optional[spectral.BaseSpectrum] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 sampling_width: Optional[float] = np.radians(3),# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 reduce: Optional[bool] = True,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                  verbose: bool = False) -> None:
         """Initializes EventModel and calculates background only signal-over-background (sob) maps for ThreeML.
         
@@ -447,7 +447,7 @@ class ThreeMLEventModel(EventModel):
             # We explicitly want to avoid NaNs and infinities
             values = ratio[i]
             good = np.isfinite(values) & (values>0)
-            x, y = bins[1][:-1][good], values[good]
+            x, y = bin_centers[good], values[good]
 
             # Do a linear interpolation across the energy range
             if len(x) > 1:
