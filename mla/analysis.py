@@ -533,7 +533,7 @@ class ThreeMLPsAnalysis(Analysis):
                 event_model._reduced_sim_truedec = self.injector.reduced_sim(event_model = event_model, spectrum=spectrum, livetime = livetime)
                 data = self.injector.inject_nsignal_events(event_model._reduced_sim_truedec, nsignal, signal_time_profile=signal_time_profile)
                 
-        bgrange = self.injector.background_time_profile.get_range()
+        bgrange = self.injector.background_time_profile.range
         contained_in_background = ((data['time'] >= bgrange[0]) &\
                                    (data['time'] < bgrange[1]))
         data = data[contained_in_background]

@@ -465,8 +465,8 @@ class TimeDependentPsInjector(PsInjector):
             None
         """
         # Find the run contian in the background time window
-        start_time = background_time_profile.get_range()[0]
-        end_time = background_time_profile.get_range()[1]
+        start_time = background_time_profile.range[0]
+        end_time = background_time_profile.range[1]
         if withinwindow:
             fully_contained = (event_model.grl['start'] >= start_time) &\
                                 (event_model.grl['stop'] < end_time)
