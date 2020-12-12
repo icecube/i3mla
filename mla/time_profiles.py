@@ -401,7 +401,7 @@ class CustomProfile(GenericProfile):
 
 
     def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], np.array],
-                 time_window: Tuple[float], bins: Union[List[float], int] = 100,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 time_range: Tuple[float], bins: Union[List[float], int] = 100,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                  name: str = 'custom_tp') -> None:
         """Constructs the time profile.
 

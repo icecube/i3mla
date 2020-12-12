@@ -575,7 +575,7 @@ class ThreeMLPsAnalysis(Analysis):
                 self.Time_SOB[np.isnan(self.Time_SOB)] = 0
                 if np.isinf(self.Time_SOB).sum() > 0:
                     print("Warning:Background time profile doesn't not cover signal time profile.Discard events outside background window!")
-                    time_SoB[np.isinf(self.time_SoB)] = 0
+                    self.Time_SOB[np.isinf(self.Time_SOB)] = 0
             self.energy_SoB = event_model.get_energy_sob(self.data)
         
         def cal_ts(ns):

@@ -300,9 +300,9 @@ class ThreeMLEventModel(EventModel):
                  data: np.ndarray,
                  sim: np.ndarray,
                  grl: np.ndarray,
-                 background_sin_dec_bins: Union[np.array, int] = 500,
-                 signal_sin_dec_bins: Union[np.array, int] = 50,
-                 log_energy_bins: Union[np.array, int] = 50,
+                 background_sin_dec_bins: Union[np.array, int] = 500,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 signal_sin_dec_bins: Union[np.array, int] = 50,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 log_energy_bins: Union[np.array, int] = 50,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                  spectrum: Optional[spectral.BaseSpectrum] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                  sampling_width: Optional[float] = np.radians(3),# Python 3.9 bug... pylint: disable=unsubscriptable-object
                  reduce: Optional[bool] = True,# Python 3.9 bug... pylint: disable=unsubscriptable-object
