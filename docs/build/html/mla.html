@@ -221,7 +221,7 @@
 
 <dl class="py method">
 <dt id="mla.analysis.PsAnalysis.evaluate_ts">
-<code class="sig-name descname">evaluate_ts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">ns</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">preprocessing</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>List<span class="p">[</span>scipy.interpolate.fitpack2.UnivariateSpline<span class="p">]</span><span class="p">, </span>numpy.array<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.analysis.PsAnalysis.evaluate_ts" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">evaluate_ts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">ns</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">n_events</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">preprocessing</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>List<span class="p">[</span>scipy.interpolate.fitpack2.UnivariateSpline<span class="p">]</span><span class="p">, </span>numpy.array<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.analysis.PsAnalysis.evaluate_ts" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function info…</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -230,6 +230,7 @@
 <li><p><strong>events</strong> – </p></li>
 <li><p><strong>event_model</strong> – An object containing data and preprocessed parameters.</p></li>
 <li><p><strong>ns</strong> – </p></li>
+<li><p><strong>n_events</strong> – </p></li>
 <li><p><strong>gamma</strong> – </p></li>
 </ul>
 </dd>
@@ -257,7 +258,7 @@
 
 <dl class="py method">
 <dt id="mla.analysis.PsAnalysis.produce_and_minimize">
-<code class="sig-name descname">produce_and_minimize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">n_trials</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">test_ns</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">test_gamma</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flux_norm</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.analysis.PsAnalysis.produce_and_minimize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">produce_and_minimize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">n_trials</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">test_ns</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">test_gamma</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flux_norm</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">nsignal</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">disable_time_filter</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.analysis.PsAnalysis.produce_and_minimize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produces n trials and calculate a test statistic for each trial.</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -271,8 +272,10 @@ process.</p></li>
 <li><p><strong>random_seed</strong> – A seed value for the numpy RNG.</p></li>
 <li><p><strong>flux_norm</strong> – A flux normaliization to adjust weights.</p></li>
 <li><p><strong>gamma</strong> – A guess for best fit spectral index of the signal.</p></li>
+<li><p><strong>nsignal</strong> – How many signal events(Will overwrite flux_norm)</p></li>
 <li><p><strong>sampling_width</strong> – The bandwidth around the source declination to cut
 events.</p></li>
+<li><p><strong>disable_time_filter</strong> – do not cut out events that is not in grl</p></li>
 <li><p><strong>verbose</strong> – A flag to print progress.</p></li>
 </ul>
 </dd>
@@ -285,7 +288,7 @@ each trial.</p>
 
 <dl class="py method">
 <dt id="mla.analysis.PsAnalysis.produce_trial">
-<code class="sig-name descname">produce_trial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">flux_norm</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">reduced_sim</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.analysis.PsAnalysis.produce_trial" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">produce_trial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">flux_norm</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">reduced_sim</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nsignal</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">disable_time_filter</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.analysis.PsAnalysis.produce_trial" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produces a single trial of background+signal events based on inputs.</p>
 <p>More function info…</p>
 <dl class="field-list simple">
@@ -296,9 +299,11 @@ each trial.</p>
 declination.</p></li>
 <li><p><strong>flux_norm</strong> – A flux normaliization to adjust weights.</p></li>
 <li><p><strong>gamma</strong> – A spectral index to adjust weights.</p></li>
+<li><p><strong>nsignal</strong> – How many signal events(Will overwrite flux_norm)</p></li>
 <li><p><strong>sampling_width</strong> – The bandwidth around the source declination to cut
 events.</p></li>
 <li><p><strong>random_seed</strong> – A seed value for the numpy RNG.</p></li>
+<li><p><strong>disable_time_filter</strong> – do not cut out events that is not in grl</p></li>
 <li><p><strong>verbose</strong> – A flag to print progress.</p></li>
 </ul>
 </dd>
@@ -311,34 +316,75 @@ events.</p></li>
 </dd></dl>
 
 <dl class="py class">
-<dt id="mla.analysis.TimeDependentPsAnalysis">
-<em class="property">class </em><code class="sig-prename descclassname">mla.analysis.</code><code class="sig-name descname">TimeDependentPsAnalysis</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>float<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bg_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sig_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">injector</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.injectors.TimeDependentPsInjector" title="mla.injectors.TimeDependentPsInjector">mla.injectors.TimeDependentPsInjector</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.analysis.TimeDependentPsAnalysis" title="Permalink to this definition">¶</a></dt>
+<dt id="mla.analysis.ThreeMLPsAnalysis">
+<em class="property">class </em><code class="sig-prename descclassname">mla.analysis.</code><code class="sig-name descname">ThreeMLPsAnalysis</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>float<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">injector</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.injectors.PsInjector" title="mla.injectors.PsInjector">mla.injectors.PsInjector</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.analysis.ThreeMLPsAnalysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mla.analysis.Analysis" title="mla.analysis.Analysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">mla.analysis.Analysis</span></code></a></p>
+<p>Class info…</p>
+<p>More class info…</p>
+<dl class="py attribute">
+<dt id="mla.analysis.ThreeMLPsAnalysis.injector">
+<code class="sig-name descname">injector</code><a class="headerlink" href="#mla.analysis.ThreeMLPsAnalysis.injector" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#mla.injectors.PsInjector" title="mla.injectors.PsInjector">injectors.PsInjector</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.analysis.ThreeMLPsAnalysis.calculate_TS">
+<code class="sig-name descname">calculate_TS</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ns</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">test_signal_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">test_background_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recalculate</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mla.analysis.ThreeMLPsAnalysis.calculate_TS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the signal pdf</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.analysis.ThreeMLPsAnalysis.min_ns">
+<code class="sig-name descname">min_ns</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">recalculate</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mla.analysis.ThreeMLPsAnalysis.min_ns" title="Permalink to this definition">¶</a></dt>
+<dd><p>minimize ns</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.analysis.ThreeMLPsAnalysis.produce_trial">
+<code class="sig-name descname">produce_trial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">spectrum</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>mla.spectral.BaseSpectrum<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nsignal</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">random_seed</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">signal_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_window</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">14</span></em>, <em class="sig-param"><span class="n">withinwindow</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.analysis.ThreeMLPsAnalysis.produce_trial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce trial</p>
+<p>More function info…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_model</strong> – An object containing data and preprocessed parameters.</p></li>
+<li><p><strong>spectrum</strong> – Spectrum of the injection</p></li>
+<li><p><strong>nsignal</strong> – How many signal events(Will overwrite flux_norm)</p></li>
+<li><p><strong>random_seed</strong> – A seed value for the numpy RNG.</p></li>
+<li><p><strong>signal_time_profile</strong> – The time profile of the injected signal.</p></li>
+<li><p><strong>background_time_profile</strong> – Background time profile to do the injection.</p></li>
+<li><p><strong>disable_time_filter</strong> – Cut out events that is not in grl</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of combined signal and background events.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.analysis.ThreeMLPsAnalysis.set_data">
+<code class="sig-name descname">set_data</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mla.analysis.ThreeMLPsAnalysis.set_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set data
+More function info…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – data events</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="mla.analysis.TimeDependentPsAnalysis">
+<em class="property">class </em><code class="sig-prename descclassname">mla.analysis.</code><code class="sig-name descname">TimeDependentPsAnalysis</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>float<span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">background_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">, </span>Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">signal_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">, </span>Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">test_background_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">, </span>Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">test_signal_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">, </span>Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span></span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.analysis.TimeDependentPsAnalysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mla.analysis.PsAnalysis" title="mla.analysis.PsAnalysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">mla.analysis.PsAnalysis</span></code></a></p>
 <p>Docstring</p>
-<dl class="py method">
-<dt id="mla.analysis.TimeDependentPsAnalysis.evaluate_ts">
-<code class="sig-name descname">evaluate_ts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.analysis.TimeDependentPsAnalysis.evaluate_ts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="mla.analysis.TimeDependentPsAnalysis.minimize_ts">
-<code class="sig-name descname">minimize_ts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>float<span class="p">]</span><a class="headerlink" href="#mla.analysis.TimeDependentPsAnalysis.minimize_ts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="mla.analysis.TimeDependentPsAnalysis.produce_and_minimize">
-<code class="sig-name descname">produce_and_minimize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_trials</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.analysis.TimeDependentPsAnalysis.produce_and_minimize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="mla.analysis.TimeDependentPsAnalysis.produce_trial">
-<code class="sig-name descname">produce_trial</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.analysis.TimeDependentPsAnalysis.produce_trial" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring</p>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -393,6 +439,24 @@ get the probabilities.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>An array of injected background events.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.injectors.PsInjector.inject_nsignal_events">
+<code class="sig-name descname">inject_nsignal_events</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reduced_sim</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.injectors.PsInjector.inject_nsignal_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function info…</p>
+<p>Inject n signal events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reduced_sim</strong> – Reweighted and pruned simulated events near the source declination.</p></li>
+<li><p><strong>n</strong> – Number of events.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of injected signal events.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -455,19 +519,189 @@ distances.</p>
 
 <dl class="py class">
 <dt id="mla.injectors.TimeDependentPsInjector">
-<em class="property">class </em><code class="sig-prename descclassname">mla.injectors.</code><code class="sig-name descname">TimeDependentPsInjector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">bg_time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em>, <em class="sig-param"><span class="n">sig_time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.injectors.TimeDependentPsInjector" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mla.injectors.</code><code class="sig-name descname">TimeDependentPsInjector</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">background_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">signal_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.injectors.TimeDependentPsInjector" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mla.injectors.PsInjector" title="mla.injectors.PsInjector"><code class="xref py py-class docutils literal notranslate"><span class="pre">mla.injectors.PsInjector</span></code></a></p>
 <p>Docstring</p>
 <dl class="py method">
+<dt id="mla.injectors.TimeDependentPsInjector.background_spatial_pdf">
+<code class="sig-name descname">background_spatial_pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.injectors.TimeDependentPsInjector.background_spatial_pdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the background probability of events based on their declination.</p>
+<p>More function info…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>events</strong> – An array of events including their declination.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The value for the background space pdf for the given events declinations.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.injectors.TimeDependentPsInjector.inject_background_and_signal">
+<code class="sig-name descname">inject_background_and_signal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reduced_sim</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">nsignal</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">signal_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_window</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">14</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.injectors.TimeDependentPsInjector.inject_background_and_signal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inject both signal and background</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reduced_sim</strong> – Reweighted and pruned simulated events near the source declination.</p></li>
+<li><p><strong>event_model</strong> – EventModel that holds the grl and data</p></li>
+<li><p><strong>n</strong> – Number of events(Optional,use spectrum to get the nsignal if not pass.)</p></li>
+<li><p><strong>signal_time_profile</strong> – The time profile of the injected signal</p></li>
+<li><p><strong>background_time_profile</strong> – Background time profile to do the injection</p></li>
+<li><p><strong>background_window</strong> – Days used to estimated the background rate</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Array containing injected signal and background</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="mla.injectors.TimeDependentPsInjector.inject_background_events">
-<code class="sig-name descname">inject_background_events</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.injectors.TimeDependentPsInjector.inject_background_events" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring</p>
+<code class="sig-name descname">inject_background_events</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">background_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">background_window</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">14</span></em>, <em class="sig-param"><span class="n">withinwindow</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.injectors.TimeDependentPsInjector.inject_background_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function info…</p>
+<p>Inject Background Events</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_model</strong> – EventModel that holds the grl and data</p></li>
+<li><p><strong>background_time_profile</strong> – Background time profile to do the injection</p></li>
+<li><p><strong>background_window</strong> – Days used to estimated the background rate</p></li>
+<li><p><strong>withinwindow</strong> – Use data rate within time profile to estimate background rate</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of injected background events.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.injectors.TimeDependentPsInjector.inject_background_events_No_time">
+<code class="sig-name descname">inject_background_events_No_time</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.injectors.TimeDependentPsInjector.inject_background_events_No_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function info…</p>
+<p>More function info…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>An array of injected background events.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.injectors.TimeDependentPsInjector.inject_nsignal_events">
+<code class="sig-name descname">inject_nsignal_events</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reduced_sim</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">n</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">signal_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.injectors.TimeDependentPsInjector.inject_nsignal_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function info…</p>
+<p>Inject n signal events.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reduced_sim</strong> – Reweighted and pruned simulated events near the source declination.</p></li>
+<li><p><strong>n</strong> – Number of events.</p></li>
+<li><p><strong>signal_time_profile</strong> – The time profile of the injected signal</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of injected signal events.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt id="mla.injectors.TimeDependentPsInjector.inject_signal_events">
-<code class="sig-name descname">inject_signal_events</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reduced_sim</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.injectors.TimeDependentPsInjector.inject_signal_events" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring</p>
+<code class="sig-name descname">inject_signal_events</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">reduced_sim</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">signal_time_profile</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.injectors.TimeDependentPsInjector.inject_signal_events" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function info…</p>
+<p>More function info…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>reduced_sim</strong> – Reweighted and pruned simulated events near the source declination.</p></li>
+<li><p><strong>signal_time_profile</strong> – The time profile of the injected signal</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of injected signal events.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.injectors.TimeDependentPsInjector.reduced_sim">
+<code class="sig-name descname">reduced_sim</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sim</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">flux_norm</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">gamma</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">- 2</span></em>, <em class="sig-param"><span class="n">livetime</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">spectrum</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>mla.spectral.BaseSpectrum<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.injectors.TimeDependentPsInjector.reduced_sim" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function info…</p>
+<p>Prunes the simulation set to only events close to a given source and calculate the
+weight for each event. Adds the weights as a new column to the simulation set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>event_model</strong> – models.EventModel object that holds the simulation set</p></li>
+<li><p><strong>sim</strong> – simulation set. Alternative for user not passing event_model.</p></li>
+<li><p><strong>flux_norm</strong> – A flux normaliization to adjust weights.</p></li>
+<li><p><strong>gamma</strong> – A spectral index to adjust weights.</p></li>
+<li><p><strong>livetime</strong> – Livetime in days.It is equivalent of using flux per second instead of time-integrated flux.</p></li>
+<li><p><strong>spectrum</strong> – spectral.BaseSpectrum object.Alternative for user not passing flux_norm and gamma.</p></li>
+<li><p><strong>sampling_width</strong> – The bandwidth around the source declination to cut events.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A reweighted simulation set around the source declination.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.injectors.TimeDependentPsInjector.set_background_profile">
+<code class="sig-name descname">set_background_profile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">background_time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em>, <em class="sig-param"><span class="n">background_window</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">14</span></em>, <em class="sig-param"><span class="n">withinwindow</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mla.injectors.TimeDependentPsInjector.set_background_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function info…</p>
+<p>Setting the background rate for the models
+:param event_model: EventModel that holds the grl
+:param background_window: Days used to estimated the background rate
+:param background_time_profile: Background time profile to do the injection
+:param withinwindow: Use data rate within time profile to estimate background rate</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.injectors.TimeDependentPsInjector.set_position">
+<code class="sig-name descname">set_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ra</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">dec</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mla.injectors.TimeDependentPsInjector.set_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>set the position</p>
+<p>More function info…
+:param ra:
+:param dec:</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.injectors.TimeDependentPsInjector.set_signal_profile">
+<code class="sig-name descname">set_signal_profile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">signal_time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mla.injectors.TimeDependentPsInjector.set_signal_profile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function info…</p>
+<p>Setting the signal time profile
+:param signal_time_profile: Signal time profile to do the injection</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.injectors.TimeDependentPsInjector.signal_spatial_pdf">
+<code class="sig-name descname">signal_spatial_pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.injectors.TimeDependentPsInjector.signal_spatial_pdf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the signal probability of events based on their angular distance from a source.</p>
+<p>More function info…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>events</strong> – An array of events including their positional data.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The value for the signal space pdf for the given events angular distances.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -607,6 +841,39 @@ gamma at a binned energy and sin(dec).</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt id="mla.models.ThreeMLEventModel">
+<em class="property">class </em><code class="sig-prename descclassname">mla.models.</code><code class="sig-name descname">ThreeMLEventModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">sim</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">grl</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">background_sin_dec_bins</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>numpy.array<span class="p">, </span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">500</span></em>, <em class="sig-param"><span class="n">signal_sin_dec_bins</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>numpy.array<span class="p">, </span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">50</span></em>, <em class="sig-param"><span class="n">log_energy_bins</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>numpy.array<span class="p">, </span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">50</span></em>, <em class="sig-param"><span class="n">spectrum</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>mla.spectral.BaseSpectrum<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">sampling_width</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">0.05235987755982989</span></em>, <em class="sig-param"><span class="n">reduce</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>bool<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.models.ThreeMLEventModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel"><code class="xref py py-class docutils literal notranslate"><span class="pre">mla.models.EventModel</span></code></a></p>
+<dl class="py method">
+<dt id="mla.models.ThreeMLEventModel.get_energy_sob">
+<code class="sig-name descname">get_energy_sob</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>scipy.interpolate.fitpack2.UnivariateSpline<span class="p">]</span><a class="headerlink" href="#mla.models.ThreeMLEventModel.get_energy_sob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the splines of signal-over-background vs. gamma required for each event.</p>
+<p>More function info…</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>events</strong> – An array of events including their positional data.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A list of splines of signal-over-background vs gamma for each event.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.models.ThreeMLEventModel.update_model">
+<code class="sig-name descname">update_model</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">spectrum</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#mla.models.ThreeMLEventModel.update_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update the model</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.models.ThreeMLEventModel.update_position">
+<code class="sig-name descname">update_position</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ra</span><span class="o">=</span><span class="default_value">0.5235987755982988</span></em>, <em class="sig-param"><span class="n">dec</span><span class="o">=</span><span class="default_value">1.5707963267948966</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mla.models.ThreeMLEventModel.update_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>update the position of the model</p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 <div class="section" id="module-mla.time_profiles">
 <span id="mla-time-profiles-module"></span><h2>mla.time_profiles module<a class="headerlink" href="#module-mla.time_profiles" title="Permalink to this headline">¶</a></h2>
@@ -615,7 +882,7 @@ analysis classes. There is also GenericProfile, an abstract parent class to
 inherit from to create other time profiles.</p>
 <dl class="py class">
 <dt id="mla.time_profiles.CustomProfile">
-<em class="property">class </em><code class="sig-prename descclassname">mla.time_profiles.</code><code class="sig-name descname">CustomProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pdf</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span>numpy.array<span class="p">, </span>Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">, </span>numpy.array<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">time_window</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">bins</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">100</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'custom_tp'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.time_profiles.CustomProfile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mla.time_profiles.</code><code class="sig-name descname">CustomProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pdf</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span>numpy.array<span class="p">, </span>Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">, </span>numpy.array<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">time_range</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">bins</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">100</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'custom_tp'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.time_profiles.CustomProfile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">mla.time_profiles.GenericProfile</span></code></a></p>
 <p>Time profile class for a custom binned distribution.</p>
 <p>This time profile uses a binned pdf defined between 0 and 1. Normalization
@@ -702,9 +969,15 @@ distribution function.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mla.time_profiles.CustomProfile.get_range">
-<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.CustomProfile.get_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the min/max values for the distribution.</p>
+<dt id="mla.time_profiles.CustomProfile.effective_exposure">
+<code class="sig-name descname">effective_exposure</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mla.time_profiles.CustomProfile.effective_exposure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the effective exposure</p>
+<p>Args:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>effctive exposure</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -756,9 +1029,14 @@ distribution function.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id7">
-<em class="property">property </em><code class="sig-name descname">window</code><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the min/max values for the distribution.</p>
+<dt id="mla.time_profiles.CustomProfile.range">
+<em class="property">property </em><code class="sig-name descname">range</code><a class="headerlink" href="#mla.time_profiles.CustomProfile.range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the maximum and minimum values for the times in this profile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A tuple of times.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -842,7 +1120,7 @@ parameters.</p>
 
 <dl class="py method">
 <dt id="mla.time_profiles.GaussProfile.bounds">
-<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GaussProfile.bounds" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GaussProfile.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns good bounds for this time profile given another time profile.</p>
 <p>Limits the mean to be within the range of the other profile and limits
 the sigma to be &gt;= 0 and &lt;= the width of the other profile.</p>
@@ -859,15 +1137,21 @@ profile.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id8">
-<em class="property">property </em><code class="sig-name descname">default_params</code><a class="headerlink" href="#id8" title="Permalink to this definition">¶</a></dt>
+<dt id="id7">
+<em class="property">property </em><code class="sig-name descname">default_params</code><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the initial parameters formatted for ts calculation output.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mla.time_profiles.GaussProfile.get_range">
-<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GaussProfile.get_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the min/max values for the distribution.</p>
+<dt id="mla.time_profiles.GaussProfile.effective_exposure">
+<code class="sig-name descname">effective_exposure</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mla.time_profiles.GaussProfile.effective_exposure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the effective exposure of the gaussian</p>
+<p>Args:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>effctive exposure</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -885,8 +1169,8 @@ profile.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id9">
-<em class="property">property </em><code class="sig-name descname">param_dtype</code><a class="headerlink" href="#id9" title="Permalink to this definition">¶</a></dt>
+<dt id="id8">
+<em class="property">property </em><code class="sig-name descname">param_dtype</code><a class="headerlink" href="#id8" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the parameter names and datatypes formatted for numpy dtypes.</p>
 </dd></dl>
 
@@ -914,6 +1198,17 @@ profile.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>An array of times.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="mla.time_profiles.GaussProfile.range">
+<em class="property">property </em><code class="sig-name descname">range</code><a class="headerlink" href="#mla.time_profiles.GaussProfile.range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the maximum and minimum values for the times in this profile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A tuple of times.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -986,20 +1281,9 @@ profile.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id10">
-<em class="property">abstract property </em><code class="sig-name descname">default_params</code><a class="headerlink" href="#id10" title="Permalink to this definition">¶</a></dt>
+<dt id="id9">
+<em class="property">abstract property </em><code class="sig-name descname">default_params</code><a class="headerlink" href="#id9" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the initial parameters formatted for ts calculation output.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="mla.time_profiles.GenericProfile.get_range">
-<em class="property">abstract </em><code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.GenericProfile.get_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gets the maximum and minimum values for the times in this profile.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A tuple of times.</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1017,8 +1301,8 @@ profile.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id11">
-<em class="property">abstract property </em><code class="sig-name descname">param_dtype</code><a class="headerlink" href="#id11" title="Permalink to this definition">¶</a></dt>
+<dt id="id10">
+<em class="property">abstract property </em><code class="sig-name descname">param_dtype</code><a class="headerlink" href="#id10" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the parameter names and datatypes formatted for numpy dtypes.</p>
 </dd></dl>
 
@@ -1051,6 +1335,17 @@ profile.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="mla.time_profiles.GenericProfile.range">
+<em class="property">abstract property </em><code class="sig-name descname">range</code><a class="headerlink" href="#mla.time_profiles.GenericProfile.range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the maximum and minimum values for the times in this profile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A tuple of times.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="mla.time_profiles.GenericProfile.x0">
 <em class="property">abstract </em><code class="sig-name descname">x0</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span> &#x2192; Tuple<a class="headerlink" href="#mla.time_profiles.GenericProfile.x0" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets a tuple of initial guess to use when fitting parameters.</p>
@@ -1071,7 +1366,7 @@ parameters of this time profile.</p>
 
 <dl class="py class">
 <dt id="mla.time_profiles.UniformProfile">
-<em class="property">class </em><code class="sig-prename descclassname">mla.time_profiles.</code><code class="sig-name descname">UniformProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">end</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'uniform_tp'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.time_profiles.UniformProfile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mla.time_profiles.</code><code class="sig-name descname">UniformProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">start</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">length</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'uniform_tp'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.time_profiles.UniformProfile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">mla.time_profiles.GenericProfile</span></code></a></p>
 <p>Time profile class for a uniform distribution.</p>
 <p>Use this for background or if you want to assume a steady signal from
@@ -1128,15 +1423,21 @@ and end.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id12">
-<em class="property">property </em><code class="sig-name descname">default_params</code><a class="headerlink" href="#id12" title="Permalink to this definition">¶</a></dt>
+<dt id="id11">
+<em class="property">property </em><code class="sig-name descname">default_params</code><a class="headerlink" href="#id11" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the initial parameters formatted for ts calculation output.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="mla.time_profiles.UniformProfile.get_range">
-<code class="sig-name descname">get_range</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.UniformProfile.get_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the min/max values for the distribution.</p>
+<dt id="mla.time_profiles.UniformProfile.effective_exposure">
+<code class="sig-name descname">effective_exposure</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#mla.time_profiles.UniformProfile.effective_exposure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the effective exposure</p>
+<p>Args:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>effctive exposure</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1154,8 +1455,8 @@ and end.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id13">
-<em class="property">property </em><code class="sig-name descname">param_dtype</code><a class="headerlink" href="#id13" title="Permalink to this definition">¶</a></dt>
+<dt id="id12">
+<em class="property">property </em><code class="sig-name descname">param_dtype</code><a class="headerlink" href="#id12" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the parameter names and datatypes formatted for numpy dtypes.</p>
 </dd></dl>
 
@@ -1188,9 +1489,14 @@ and end.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="id14">
-<em class="property">property </em><code class="sig-name descname">window</code><a class="headerlink" href="#id14" title="Permalink to this definition">¶</a></dt>
-<dd><p>Equivalent to get_range()</p>
+<dt id="mla.time_profiles.UniformProfile.range">
+<em class="property">property </em><code class="sig-name descname">range</code><a class="headerlink" href="#mla.time_profiles.UniformProfile.range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the maximum and minimum values for the times in this profile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A tuple of times.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
