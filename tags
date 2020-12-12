@@ -90,7 +90,7 @@ __init__	mla/injectors.py	/^    def __init__(self, source: Dict[str, float],$/;"
 __init__	mla/models.py	/^    def __init__(self,  # For an initial release, this implementation is fine... pylint: disable/;"	m	class:EventModel
 __init__	mla/time_profiles.py	/^    def __init__(self) -> None:$/;"	m	class:GenericProfile
 __init__	mla/time_profiles.py	/^    def __init__(self, mean: float, sigma: float,$/;"	m	class:GaussProfile
-__init__	mla/time_profiles.py	/^    def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], float],$/;"	m	class:CustomProfile
+__init__	mla/time_profiles.py	/^    def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], np.array],$/;"	m	class:CustomProfile
 __init__	mla/time_profiles.py	/^    def __init__(self, start: float, end: float,$/;"	m	class:UniformProfile
 __init__	test/workshop/joint_fit_example/VERITASLike.py	/^    def __init__(self, name, veritas_root_data):$/;"	m	class:VERITASLike
 __init__	test/workshop/joint_fit_example/VERITASLike.py	/^    def __init__(self, root_file, run_name):$/;"	m	class:VERITASRun
@@ -130,6 +130,7 @@ __version__	mla/tools.py	/^__version__ = '0.0.1'$/;"	v
 __version__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__version__ = '0.0.1'$/;"	v
 __version__	test/test_data.py	/^__version__ = '0.0.1'$/;"	v
 _bin_counts_log	test/workshop/joint_fit_example/VERITASLike.py	/^    def _bin_counts_log(counts, log_bins):$/;"	m	class:VERITASRun
+_build_rv	mla/time_profiles.py	/^    def _build_rv(self,$/;"	m	class:CustomProfile
 _columns_in_data_tree	test/workshop/joint_fit_example/VERITASLike.py	/^_columns_in_data_tree = ['Time',  # it is the MJD of individual events$/;"	v
 _create_background_dec_spline	mla/models.py	/^    def _create_background_dec_spline(self, sin_dec_bins: np.array, *args,$/;"	m	class:EventModel
 _create_log_sob_gamma_splines	mla/models.py	/^    def _create_log_sob_gamma_splines(self, gamma_bins: np.array, *args,$/;"	m	class:EventModel
@@ -149,7 +150,6 @@ bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: 'GenericProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile$/;"	m	class:CustomProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile$/;"	m	class:GaussProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile$/;"	m	class:UniformProfile
-build_rv	mla/time_profiles.py	/^    def build_rv(self, pdf: Callable[[np.array, Tuple[float, float]], float],$/;"	m	class:CustomProfile
 copyright	docs/source/conf.py	/^copyright = '2020, John Evans, Jason Fan, Michael Larson'$/;"	v
 cross_matrix	mla/tools.py	/^def cross_matrix(mat: np.array) -> np.array:$/;"	f
 data	mla/models.py	/^    def data(self) -> np.ndarray:$/;"	m	class:EventModel

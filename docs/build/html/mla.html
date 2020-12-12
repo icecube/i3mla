@@ -615,10 +615,11 @@ analysis classes. There is also GenericProfile, an abstract parent class to
 inherit from to create other time profiles.</p>
 <dl class="py class">
 <dt id="mla.time_profiles.CustomProfile">
-<em class="property">class </em><code class="sig-prename descclassname">mla.time_profiles.</code><code class="sig-name descname">CustomProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pdf</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span>numpy.array<span class="p">, </span>Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">, </span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">time_window</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">bins</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">100</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'custom_tp'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.time_profiles.CustomProfile" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">mla.time_profiles.</code><code class="sig-name descname">CustomProfile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pdf</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span>numpy.array<span class="p">, </span>Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">, </span>numpy.array<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">time_window</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">bins</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">100</span></em>, <em class="sig-param"><span class="n">name</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'custom_tp'</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.time_profiles.CustomProfile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile"><code class="xref py py-class docutils literal notranslate"><span class="pre">mla.time_profiles.GenericProfile</span></code></a></p>
 <p>Time profile class for a custom binned distribution.</p>
-<p>More class info…</p>
+<p>This time profile uses a binned pdf defined between 0 and 1. Normalization
+is handled internally and not required beforehand.</p>
 <dl class="py attribute">
 <dt id="mla.time_profiles.CustomProfile.window">
 <code class="sig-name descname">window</code><a class="headerlink" href="#mla.time_profiles.CustomProfile.window" title="Permalink to this definition">¶</a></dt>
@@ -633,11 +634,13 @@ inherit from to create other time profiles.</p>
 <dl class="py attribute">
 <dt id="mla.time_profiles.CustomProfile.pdf">
 <code class="sig-name descname">pdf</code><a class="headerlink" href="#mla.time_profiles.CustomProfile.pdf" title="Permalink to this definition">¶</a></dt>
-<dd><p>The distribution
-function.</p>
+<dd><p>The
+distribution function. This function needs to accept an array of bin
+centers and a time window as a tuple, and it needs to return an
+array of probability densities at the given bin centers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
-<dd class="field-odd"><p>Callable[[np.array, Tuple[float, float]], float]</p>
+<dd class="field-odd"><p>Callable[[np.array, Tuple[float, float]], np.array]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -682,32 +685,12 @@ distribution function.</p>
 <dt id="mla.time_profiles.CustomProfile.bounds">
 <code class="sig-name descname">bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">time_profile</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.time_profiles.GenericProfile" title="mla.time_profiles.GenericProfile">mla.time_profiles.GenericProfile</a></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>Optional<span class="p">[</span>float<span class="p">]</span><span class="p">]</span><span class="p">]</span><a class="headerlink" href="#mla.time_profiles.CustomProfile.bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given some other profile, returns allowable ranges for parameters.</p>
-<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>time_profile</strong> – </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="mla.time_profiles.CustomProfile.build_rv">
-<code class="sig-name descname">build_rv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pdf</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span>numpy.array<span class="p">, </span>Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><span class="p">]</span><span class="p">, </span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">bins</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>List<span class="p">[</span>float<span class="p">]</span><span class="p">, </span>int<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; scipy.stats._continuous_distns.rv_histogram<a class="headerlink" href="#mla.time_profiles.CustomProfile.build_rv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function info…</p>
-<p>More function info…</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>pdf</strong> – The normalized distribution function (takes times and time
-window).</p></li>
-<li><p><strong>bins</strong> – Either a list of specific bin edges to use (values should be
-between 0 and 1), or an integer giving the number of linear
-spaced bins to use.</p></li>
-</ul>
+<dd class="field-odd"><p><strong>time_profile</strong> – Another time profile to use to get the bounds.</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>The scipy histogram distribution based on the bin edges and the
-distribution function.</p>
+<dd class="field-even"><p>The fitting bounds for the parameters of this time profile.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -728,13 +711,14 @@ distribution function.</p>
 <dt id="mla.time_profiles.CustomProfile.logpdf">
 <code class="sig-name descname">logpdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.time_profiles.CustomProfile.logpdf" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the log(probability) for each time.</p>
-<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>times</strong> – A numpy list of times to evaluate.</p>
+<dd class="field-odd"><p><strong>times</strong> – An array of times to evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of the log(probability density) for the given times.</p>
 </dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py method">
@@ -746,46 +730,50 @@ distribution function.</p>
 <dl class="py method">
 <dt id="id6">
 <code class="sig-name descname">pdf</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#id6" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates the probability for each time.</p>
-<p>More function info…</p>
+<dd><p>Calculates the probability density for each time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>times</strong> – A numpy list of times to evaluate.</p>
+<dd class="field-odd"><p><strong>times</strong> – An array of times to evaluate.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of probability densities at the given times.</p>
 </dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="mla.time_profiles.CustomProfile.random">
 <code class="sig-name descname">random</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.time_profiles.CustomProfile.random" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns random values following the uniform distribution.</p>
-<p>More function info…</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>size</strong> – The number of random values to return.</p>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An array of random values sampled from the histogram distribution.</p>
+</dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="id7">
 <em class="property">property </em><code class="sig-name descname">window</code><a class="headerlink" href="#id7" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring</p>
+<dd><p>Returns the min/max values for the distribution.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="mla.time_profiles.CustomProfile.x0">
 <code class="sig-name descname">x0</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">times</span><span class="p">:</span> <span class="n">numpy.array</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>float<span class="p">, </span>float<span class="p">]</span><a class="headerlink" href="#mla.time_profiles.CustomProfile.x0" title="Permalink to this definition">¶</a></dt>
-<dd><p>Short function info…</p>
-<p>More function info…</p>
+<dd><p>Gives a guess of the parameters of this type of time profile.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>times</strong> – </p>
+<dd class="field-odd"><p><strong>times</strong> – An array of times to use to guess the parameters.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The guessed start and end times of the distribution that generated
+the given times.</p>
 </dd>
 </dl>
-<p>Returns:</p>
 </dd></dl>
 
 </dd></dl>

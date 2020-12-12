@@ -382,12 +382,15 @@ class UniformProfile(GenericProfile):
 class CustomProfile(GenericProfile):
     """Time profile class for a custom binned distribution.
 
-    More class info...
+    This time profile uses a binned pdf defined between 0 and 1. Normalization
+    is handled internally and not required beforehand.
 
     Attributes:
         window (Tuple[float]): The range of distribution function.
-        pdf (Callable[[np.array, Tuple[float, float]], float]): The distribution
-            function.
+        pdf (Callable[[np.array, Tuple[float, float]], np.array]): The
+            distribution function. This function needs to accept an array of bin
+            centers and a time window as a tuple, and it needs to return an
+            array of probability densities at the given bin centers.
         default_params (Dict[str, float]): A dictionary of fitting parameters
             for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
@@ -396,12 +399,11 @@ class CustomProfile(GenericProfile):
             distribution function.
     """
 
-    def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], float],
-                 time_range: Tuple[float], bins: Union[List[float], int] = 100,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-                 name: str = 'custom_tp') -> None:
-        """Constructs the object.
 
-        More function info...
+    def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], np.array],
+                 time_window: Tuple[float], bins: Union[List[float], int] = 100,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 name: str = 'custom_tp') -> None:
+        """Constructs the time profile.
 
         Args:
             time_range: lower and upper bound for the distribution.
@@ -416,13 +418,12 @@ class CustomProfile(GenericProfile):
                                 '_'.join([name, 'end']): self._range[1]}
         self._param_dtype = [('_'.join([name, 'start']), np.float32),
                              ('_'.join([name, 'end']), np.float32)]
-        self.dist = self.build_rv(pdf, bins)
+        self.dist = self._build_rv(pdf, bins)
 
-    def build_rv(self, pdf: Callable[[np.array, Tuple[float, float]], float],
-                 bins: Union[List[float], int]) -> scipy.stats.rv_histogram:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-        """Function info...
-
-        More function info...
+    def _build_rv(self,
+                  pdf: Callable[[np.array, Tuple[float, float]], np.array],
+                  bins: Union[List[float], int]) -> scipy.stats.rv_histogram:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+        """Builds a scipy.stats.rv_histogram object for this time profile.
 
         Args:
             pdf: The normalized distribution function (takes times and time
@@ -444,6 +445,7 @@ class CustomProfile(GenericProfile):
         bin_widths = np.diff(bin_edges)
         bin_centers = bin_edges[:-1] + bin_widths
         hist = pdf(bin_centers, tuple(self._range))
+
         area_under_hist = np.sum(hist * bin_widths)
         hist *= 1/area_under_hist
         self._exposure = 1/np.max(hist)
@@ -455,56 +457,49 @@ class CustomProfile(GenericProfile):
         return scipy.stats.rv_histogram((hist, bin_edges))
 
     def pdf(self, times: np.array) -> np.array:
-        """Calculates the probability for each time.
-
-        More function info...
+        """Calculates the probability density for each time.
 
         Args:
-            times: A numpy list of times to evaluate.
+            times: An array of times to evaluate.
 
         Returns:
-
+            An array of probability densities at the given times.
         """
         return self.dist.pdf(times)
 
     def logpdf(self, times: np.array) -> np.array:
         """Calculates the log(probability) for each time.
 
-        More function info...
-
         Args:
-            times: A numpy list of times to evaluate.
+            times: An array of times to evaluate.
 
         Returns:
-
+            An array of the log(probability density) for the given times.
         """
         return self.dist.logpdf(times)
 
     def random(self, size: int = 1) -> np.array:
         """Returns random values following the uniform distribution.
 
-        More function info...
-
         Args:
             size: The number of random values to return.
 
         Returns:
-
+            An array of random values sampled from the histogram distribution.
         """
         return self.dist.rvs(size=size)
 
 
 
     def x0(self, times: np.array) -> Tuple[float, float]:
-        """Short function info...
-
-        More function info...
+        """Gives a guess of the parameters of this type of time profile.
 
         Args:
-            times:
+            times: An array of times to use to guess the parameters.
 
         Returns:
-
+            The guessed start and end times of the distribution that generated
+            the given times.
         """
         x0_start = np.min(times)
         x0_end = np.max(times)
@@ -514,10 +509,11 @@ class CustomProfile(GenericProfile):
                ) -> List[Tuple[Optional[float], Optional[float]]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Given some other profile, returns allowable ranges for parameters.
 
-        More function info...
-
         Args:
-            time_profile:
+            time_profile: Another time profile to use to get the bounds.
+
+        Returns:
+            The fitting bounds for the parameters of this time profile.
         """
         return [time_profile.range, time_profile.range]
         
@@ -544,5 +540,4 @@ class CustomProfile(GenericProfile):
     @property
     def param_dtype(self) -> List[Tuple[str, str]]:
         return self._param_dtype
-
 
