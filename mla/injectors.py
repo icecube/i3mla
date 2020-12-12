@@ -250,8 +250,8 @@ class TimeDependentPsInjector(PsInjector):
         event_model (EventModel):
     """
     def __init__(self, source: Dict[str, float],
-                 background_time_profile:Optional[time_profiles.GenericProfile] = None,
-                 signal_time_profile: Optional[time_profiles.GenericProfile] = None) -> None:
+                 background_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 signal_time_profile: Optional[time_profiles.GenericProfile] = None) -> None:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Docstring"""
         super().__init__(source)
         self.background_time_profile = background_time_profile
@@ -298,13 +298,13 @@ class TimeDependentPsInjector(PsInjector):
         return (1/(2*np.pi))*event_model.background_dec_spline(np.sin(events['dec']))
     
     def reduced_sim(self,
-                    event_model: Optional[models.EventModel] = None,
-                    sim: Optional[np.ndarray] = None,
-                    flux_norm: Optional[float] = 0, 
-                    gamma: Optional[float] = -2,
+                    event_model: Optional[models.EventModel] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                    sim: Optional[np.ndarray] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                    flux_norm: Optional[float] = 0, # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                    gamma: Optional[float] = -2,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                     livetime: float = None,
-                    spectrum: Optional[spectral.BaseSpectrum] = None,
-                    sampling_width: Optional[float] = None) -> np.ndarray:
+                    spectrum: Optional[spectral.BaseSpectrum] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                    sampling_width: Optional[float] = None) -> np.ndarray:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Function info...
         
         Prunes the simulation set to only events close to a given source and calculate the
@@ -409,9 +409,9 @@ class TimeDependentPsInjector(PsInjector):
 
     def inject_background_events(self,
                                  event_model: models.EventModel,
-                                 background_time_profile: Optional[time_profiles.GenericProfile] = None,
-                                 background_window: Optional[float] = 14,
-                                 withinwindow: Optional[bool] = False,
+                                 background_time_profile: Optional[time_profiles.GenericProfile] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                                 background_window: Optional[float] = 14,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                                 withinwindow: Optional[bool] = False,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                                  ) -> np.ndarray:
         """Function info...
         
@@ -451,8 +451,8 @@ class TimeDependentPsInjector(PsInjector):
     def set_background_profile(self, 
                                event_model: models.EventModel, 
                                background_time_profile: time_profiles.GenericProfile,
-                               background_window: Optional[float] = 14,
-                               withinwindow: Optional[bool] = False) -> None:
+                               background_window: Optional[float] = 14,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                               withinwindow: Optional[bool] = False) -> None:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Function info...
         
         Setting the background rate for the models
@@ -515,7 +515,7 @@ class TimeDependentPsInjector(PsInjector):
     
     def inject_signal_events(self, 
                              reduced_sim: np.ndarray,
-                             signal_time_profile:Optional[time_profiles.GenericProfile] = None) -> np.ndarray:
+                             signal_time_profile:Optional[time_profiles.GenericProfile] = None) -> np.ndarray:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Function info...
         
         More function info...
@@ -565,7 +565,7 @@ class TimeDependentPsInjector(PsInjector):
     def inject_nsignal_events(self, 
                               reduced_sim: np.ndarray, 
                               n: int,
-                              signal_time_profile:Optional[time_profiles.GenericProfile] = None) -> np.ndarray:
+                              signal_time_profile:Optional[time_profiles.GenericProfile] = None) -> np.ndarray:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Function info...
         
         Inject n signal events.
@@ -615,10 +615,10 @@ class TimeDependentPsInjector(PsInjector):
     def inject_background_and_signal(self,
                                      reduced_sim: np.ndarray, 
                                      event_model: models.EventModel,
-                                     nsignal: Optional[int] = None,
-                                     signal_time_profile:Optional[time_profiles.GenericProfile] = None,
-                                     background_time_profile: Optional[time_profiles.GenericProfile] = None,
-                                     background_window: Optional[float] = 14
+                                     nsignal: Optional[int] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                                     signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                                     background_time_profile: Optional[time_profiles.GenericProfile] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                                     background_window: Optional[float] = 14# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                                      ) -> np.ndarray:
         """Inject both signal and background
         

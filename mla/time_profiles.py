@@ -246,7 +246,6 @@ class GaussProfile(GenericProfile):
 
     @property
     def range(self) -> Tuple[Optional[float], Optional[float]]: # Python 3.9 bug... pylint: disable=unsubscriptable-object
-        """Returns the min/max values for the distribution."""
         return self._range
         
     @property
@@ -283,7 +282,7 @@ class UniformProfile(GenericProfile):
             name: prefix for parameters.
         """
         super().__init__()
-        self._range = [start, start+length]
+        self._range = (start, start+length)
         self._exposure = length
         self._default_params = {'_'.join([name, 'start']):self._range[0],
                                 '_'.join([name, 'end']):self._range[1]}
@@ -368,7 +367,6 @@ class UniformProfile(GenericProfile):
 
     @property
     def range(self) -> Tuple[Optional[float], Optional[float]]: # Python 3.9 bug... pylint: disable=unsubscriptable-object
-        """Returns the min/max values for the distribution."""
         return self._range
 
     @property
@@ -399,23 +397,23 @@ class CustomProfile(GenericProfile):
     """
 
     def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], float],
-                 time_window: Tuple[float], bins: Union[List[float], int] = 100,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 time_range: Tuple[float], bins: Union[List[float], int] = 100,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                  name: str = 'custom_tp') -> None:
         """Constructs the object.
 
         More function info...
 
         Args:
-            time_window: lower and upper bound for the distribution.
+            time_range: lower and upper bound for the distribution.
             bins: Either a list of specific bin edges to use (values should be
                 between 0 and 1), or an integer giving the number of linear
                 spaced bins to use.
             name: prefix for parameters.
         """
         super().__init__()
-        self._range = time_window
-        self._default_params = {'_'.join([name, 'start']): self._window[0],
-                                '_'.join([name, 'end']): self._window[1]}
+        self._range = time_range
+        self._default_params = {'_'.join([name, 'start']): self._range[0],
+                                '_'.join([name, 'end']): self._range[1]}
         self._param_dtype = [('_'.join([name, 'start']), np.float32),
                              ('_'.join([name, 'end']), np.float32)]
         self.dist = self.build_rv(pdf, bins)
@@ -438,14 +436,14 @@ class CustomProfile(GenericProfile):
             distribution function.
         """
         if isinstance(bins, int):
-            bin_edges = np.linspace(*self._window, bins)
+            bin_edges = np.linspace(*self._range, bins)
         else:
-            span = self._window[1] - self._window[0]
+            span = self._range[1] - self._range[0]
             bin_edges = span * np.array(bins)
 
         bin_widths = np.diff(bin_edges)
         bin_centers = bin_edges[:-1] + bin_widths
-        hist = pdf(bin_centers, tuple(self._window))
+        hist = pdf(bin_centers, tuple(self._range))
         area_under_hist = np.sum(hist * bin_widths)
         hist *= 1/area_under_hist
         self._exposure = 1/np.max(hist)
@@ -536,7 +534,6 @@ class CustomProfile(GenericProfile):
 
     @property
     def range(self) -> Tuple[Optional[float], Optional[float]]: # Python 3.9 bug... pylint: disable=unsubscriptable-object
-        """Returns the min/max values for the distribution."""
         return self._range
 
 

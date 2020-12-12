@@ -355,8 +355,8 @@ class ThreeMLPsAnalysis(Analysis):
         injector (injectors.PsInjector):
     """
     def __init__(self,
-                 source: Optional[Dict[str, float]] = None,
-                 injector: Optional[injectors.PsInjector] = None) -> None:
+                 source: Optional[Dict[str, float]] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 injector: Optional[injectors.PsInjector] = None) -> None:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Function info...
         More function info...
         Args:
@@ -372,12 +372,12 @@ class ThreeMLPsAnalysis(Analysis):
                           data: np.ndarray,
                           sim: np.ndarray,
                           grl: np.ndarray,
-                          background_sin_dec_bins: Union[np.array, int] = 500,
-                          signal_sin_dec_bins: Union[np.array, int] = 50,
-                          log_energy_bins: Union[np.array, int] = 50,
-                          spectrum: Optional[spectral.BaseSpectrum] = None,
-                          sampling_width: Optional[float] = np.radians(3),
-                          reduce: Optional[bool] = True,
+                          background_sin_dec_bins: Union[np.array, int] = 500,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                          signal_sin_dec_bins: Union[np.array, int] = 50,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                          log_energy_bins: Union[np.array, int] = 50,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                          spectrum: Optional[spectral.BaseSpectrum] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                          sampling_width: Optional[float] = np.radians(3),# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                          reduce: Optional[bool] = True,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                           verbose: bool = False) -> models.EventModel:
         """Set the event model
         More function info...
@@ -421,11 +421,11 @@ class ThreeMLPsAnalysis(Analysis):
             
     def calculate_TS(self, 
                      event_model: models.EventModel, 
-                     data: Optional[np.ndarray] = None, 
-                     ns: Optional[float] = None,
-                     test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,
-                     test_background_time_profile:Optional[time_profiles.GenericProfile] = None,
-                     recalculate:Optional[bool] = True)-> float:
+                     data: Optional[np.ndarray] = None, # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                     ns: Optional[float] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                     test_signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                     test_background_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                     recalculate:Optional[bool] = True)-> float:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Calculate the signal pdf"""
         if self.N == 0:
             return 0,0
@@ -472,15 +472,15 @@ class ThreeMLPsAnalysis(Analysis):
     
     def produce_trial(self,
                       event_model: models.EventModel,
-                      spectrum:Optional[spectral.BaseSpectrum] = None, 
-                      reduced_sim: Optional[np.ndarray] = None, 
-                      nsignal: Optional[int] = None,
-                      sampling_width: Optional[float] = None, 
-                      random_seed: Optional[int] = None,
-                      signal_time_profile:Optional[time_profiles.GenericProfile] = None,
-                      background_time_profile: Optional[time_profiles.GenericProfile] = None,
-                      background_window: Optional[float] = 14,
-                      withinwindow: Optional[bool] = False,
+                      spectrum:Optional[spectral.BaseSpectrum] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object 
+                      reduced_sim: Optional[np.ndarray] = None, # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                      nsignal: Optional[int] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                      sampling_width: Optional[float] = None, # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                      random_seed: Optional[int] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                      signal_time_profile:Optional[time_profiles.GenericProfile] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                      background_time_profile: Optional[time_profiles.GenericProfile] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                      background_window: Optional[float] = 14,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                      withinwindow: Optional[bool] = False,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                       verbose: bool = False) -> np.ndarray:    
         """Produce trial
         
@@ -544,8 +544,8 @@ class ThreeMLPsAnalysis(Analysis):
         
     def min_ns(self, 
                event_model: models.EventModel, 
-               data: Optional[np.ndarray] = None,
-               recalculate:Optional[bool] = True)-> float:
+               data: Optional[np.ndarray] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+               recalculate:Optional[bool] = True)-> float:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """minimize ns"""
         
         if data is not None:
