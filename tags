@@ -168,7 +168,7 @@ angular_distance	mla/tools.py	/^def angular_distance(ra1: float, dec1: float, ra
 author	docs/source/conf.py	/^author = 'John Evans, Jason Fan, Michael Larson'$/;"	v
 background_dec_spline	mla/models.py	/^    def background_dec_spline(self) -> scipy.interpolate.UnivariateSpline:$/;"	m	class:EventModel
 background_spatial_pdf	mla/injectors.py	/^    def background_spatial_pdf(self, events: np.ndarray,  # This still belongs here even though /;"	m	class:PsInjector
-background_spatial_pdf	mla/injectors.py	/^    def background_spatial_pdf(self, events: np.ndarray, event_model: models.EventModel) -> np.a/;"	m	class:TimeDependentPsInjector
+background_spatial_pdf	mla/injectors.py	/^    def background_spatial_pdf(self, events: np.ndarray,$/;"	m	class:TimeDependentPsInjector
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: 'GenericProfile',$/;"	m	class:GenericProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile$/;"	m	class:CustomProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile$/;"	m	class:UniformProfile
@@ -262,9 +262,9 @@ inject_background_events	mla/injectors.py	/^    def inject_background_events(sel
 inject_background_events	mla/injectors.py	/^    def inject_background_events(self,$/;"	m	class:TimeDependentPsInjector
 inject_background_events_No_time	mla/injectors.py	/^    def inject_background_events_No_time(self, event_model: models.EventModel) -> np.ndarray:$/;"	m	class:TimeDependentPsInjector
 inject_nsignal_events	mla/injectors.py	/^    def inject_nsignal_events(self, $/;"	m	class:PsInjector
-inject_nsignal_events	mla/injectors.py	/^    def inject_nsignal_events(self, $/;"	m	class:TimeDependentPsInjector
-inject_signal_events	mla/injectors.py	/^    def inject_signal_events(self, $/;"	m	class:TimeDependentPsInjector
+inject_nsignal_events	mla/injectors.py	/^    def inject_nsignal_events(self,$/;"	m	class:TimeDependentPsInjector
 inject_signal_events	mla/injectors.py	/^    def inject_signal_events(self, reduced_sim: np.ndarray) -> np.ndarray:$/;"	m	class:PsInjector
+inject_signal_events	mla/injectors.py	/^    def inject_signal_events(self,$/;"	m	class:TimeDependentPsInjector
 inner_fit	test/workshop/joint_fit_example/VERITASLike.py	/^    def inner_fit(self):$/;"	m	class:VERITASLike
 integral	test/workshop/joint_fit_example/VERITASLike.py	/^        def integral(e1, e2):$/;"	f	member:VERITASRun._get_diff_flux_and_integral	file:
 integral_f	test/workshop/joint_fit_example/VERITASLike.py	/^        integral_f = lambda x: -3.0 \/ (x**0.5)$/;"	f	member:VERITASRun._simulated_spectrum_f	file:
@@ -363,11 +363,11 @@ rotate	mla/tools.py	/^def rotate(ra1: float, dec1: float, ra2: float, dec2: floa
 rtd-search-form	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
 rtd-search-form	docs/.ipynb_checkpoints/index-checkpoint.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
 rtd-search-form	docs/.ipynb_checkpoints/modules-checkpoint.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
-set_background_profile	mla/injectors.py	/^    def set_background_profile(self, $/;"	m	class:TimeDependentPsInjector
+set_background_profile	mla/injectors.py	/^    def set_background_profile(self,$/;"	m	class:TimeDependentPsInjector
 set_data	mla/analysis.py	/^    def set_data(self, data: np.ndarray) -> None:$/;"	m	class:ThreeMLPsAnalysis
 set_model	test/workshop/joint_fit_example/VERITASLike.py	/^    def set_model(self, likelihood_model_instance):$/;"	m	class:VERITASLike
-set_position	mla/injectors.py	/^    def set_position(self, ra:float, dec:float) -> None:$/;"	m	class:TimeDependentPsInjector
-set_signal_profile	mla/injectors.py	/^    def set_signal_profile(self, $/;"	m	class:TimeDependentPsInjector
+set_position	mla/injectors.py	/^    def set_position(self, ra: float, dec: float) -> None:$/;"	m	class:TimeDependentPsInjector
+set_signal_profile	mla/injectors.py	/^    def set_signal_profile(self,$/;"	m	class:TimeDependentPsInjector
 signal_spatial_pdf	mla/injectors.py	/^    def signal_spatial_pdf(self, events: np.ndarray) -> np.array:$/;"	m	class:PsInjector
 signal_spatial_pdf	mla/injectors.py	/^    def signal_spatial_pdf(self, events: np.ndarray) -> np.array:$/;"	m	class:TimeDependentPsInjector
 sim	mla/models.py	/^    def sim(self) -> np.ndarray:$/;"	m	class:EventModel
