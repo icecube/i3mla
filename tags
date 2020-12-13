@@ -12,7 +12,7 @@ About threeML	test/workshop/README.md	/^# About threeML$/;"	c
 Analysis	mla/analysis.py	/^class Analysis:$/;"	c
 BUILDDIR	docs/Makefile	/^BUILDDIR      = build$/;"	m
 BUILDDIR	docs/make.bat	/^set BUILDDIR=build$/;"	v
-BaseSpectrum	mla/spectral.py	/^class BaseSpectrum(object):$/;"	c
+BaseSpectrum	mla/spectral.py	/^class BaseSpectrum:$/;"	c
 CustomProfile	mla/time_profiles.py	/^class CustomProfile(GenericProfile):$/;"	c
 CustomSpectrum	mla/spectral.py	/^class CustomSpectrum(BaseSpectrum):$/;"	c
 EOM	test/workshop/install_everything.sh	/^cat > $HOME\/init_conda_hal.sh <<- EOM$/;"	h
@@ -63,8 +63,8 @@ __author__	mla/tools.py	/^__author__ = 'John Evans'$/;"	v
 __author__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__author__ = 'John Evans'$/;"	v
 __author__	test/test_data.py	/^__author__ = 'John Evans'$/;"	v
 __author__	test/workshop/joint_fit_example/VERITASLike.py	/^__author__ = 'giacomov'$/;"	v
-__call__	mla/spectral.py	/^    def __call__(self, E):$/;"	m	class:CustomSpectrum
 __call__	mla/spectral.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:BaseSpectrum
+__call__	mla/spectral.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:CustomSpectrum
 __call__	mla/spectral.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:PowerLaw
 __copyright__	examples/sources.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
 __copyright__	mla/analysis.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
@@ -100,7 +100,7 @@ __init__	mla/models.py	/^    def __init__(self,  # For an initial release, this 
 __init__	mla/models.py	/^    def __init__(self,$/;"	m	class:ThreeMLEventModel
 __init__	mla/spectral.py	/^    def __init__(self):$/;"	m	class:BaseSpectrum
 __init__	mla/spectral.py	/^    def __init__(self, E0, A, gamma, Ecut=None):$/;"	m	class:PowerLaw
-__init__	mla/spectral.py	/^    def __init__(self,spectrum):$/;"	m	class:CustomSpectrum
+__init__	mla/spectral.py	/^    def __init__(self, spectrum):$/;"	m	class:CustomSpectrum
 __init__	mla/time_profiles.py	/^    def __init__(self) -> None:$/;"	m	class:GenericProfile
 __init__	mla/time_profiles.py	/^    def __init__(self, mean: float, sigma: float,$/;"	m	class:GaussProfile
 __init__	mla/time_profiles.py	/^    def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], np.array],$/;"	m	class:CustomProfile
