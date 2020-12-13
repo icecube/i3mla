@@ -72,12 +72,11 @@ class PsAnalysis(Analysis):
     def __init__(self,
                  source: Optional[Dict[str, float]] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                  injector: Optional[injectors.PsInjector] = None) -> None:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-        """Function info...
-
-        More function info...
+        """Initializes the analysis object.
 
         Args:
-            source:
+            source: A dictionary containing the source location for this
+                analysis.
         """
         super().__init__()
         if injector is not None:
@@ -87,17 +86,17 @@ class PsAnalysis(Analysis):
 
     def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel
     ) -> TsPreprocess:
-        """Function info...
+        """Contains all of the calculations for the ts that can be done once.
 
-        More function info...
+        Separated from the main test-statisic functions to improve performance.
 
         Args:
-            events:
+            events: An array of events to calculate the test-statistic for.
             event_model: An object containing data and preprocessed parameters.
 
         Returns:
-            None if there are no events, otherwise the pre-processed signal over
-            background.
+            A list of log(sob) vs gamma splines for each event and the pre-
+            processed signal over background.
 
         Raises:
             ValueError: There must be at least one event.
@@ -112,22 +111,24 @@ class PsAnalysis(Analysis):
         return splines, sig / bkgr
 
     def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel,  # Super class will never be called... pylint: disable=arguments-differ, too-many-arguments
-                    ns: float, gamma: float,
+                    n_signal: float, gamma: float,
                     n_events: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                     preprocessing: TsPreprocess = None) -> np.array:
-        """Function info...
+        """Evaluates the test-statistic for the given events and parameters.
 
-        More function info...
+        Calculates the test-statistic using a given event model, n_signal, and
+        gamma. This function does not attempt to fit n_signal or gamma.
 
         Args:
-            events:
+            events: An array of events to calculate the test statistic for.
             event_model: An object containing data and preprocessed parameters.
-            ns:
-            n_events
-            gamma:
+            n_signal: A guess for the number of signal events.
+            n_events: The total number of events in the trial.
+            gamma: A guess for the spectral index.
 
         Returns:
-
+            The overall test-statistic value for the given events and
+            parameters.
         """
         if n_events is None:
             n_events = len(events)
@@ -137,48 +138,54 @@ class PsAnalysis(Analysis):
         splines, sob = preprocessing
         sob_new = sob * np.exp([spline(gamma) for spline in splines])
 
-        return np.log((ns / n_events * (sob_new - 1)) + 1)
+        return np.log((n_signal / n_events * (sob_new - 1)) + 1)
 
     def minimize_ts(self, events: np.ndarray, event_model: models.EventModel,  # Super class will never be called... pylint: disable=arguments-differ, too-many-arguments, too-many-locals
                     test_ns: float, test_gamma: float,
                     gamma_bounds: Tuple[float] = (-4, -1),
                     **kwargs) -> Dict[str, float]:
-        """Function info...
+        """Calculates the params that minimize the ts for the given events.
 
-        More function info...
+        Accepts guess values for fitting the n_signal and spectral index, and
+        bounds on the spectral index. Uses scipy.optimize.minimize() to fit.
+        The default method is 'L-BFGS-B', but can be overwritten by passing
+        kwargs to this fuction.
 
         Args:
-            events:
+            events: A sample array of events to find the best fit for.
             event_model: An object containing data and preprocessed parameters.
-            test_ns:
-            test_gamma:
+            test_ns: An initial guess for the number of signal events
+                (n_signal).
+            test_gamma: An initial guess for the spectral index (gamma).
 
         Returns:
-
+            A dictionary containing the minimized overall test-statistic, the
+            best-fit n_signal, and the best fit gamma.
         """
-        output = {'ts': np.nan, 'ns': test_ns, 'gamma': test_gamma}
+        output = {'ts': np.nan, 'n_signal': test_ns, 'gamma': test_gamma}
         if len(events) == 0:
             return output
         preprocessing = self._preprocess_ts(events, event_model)
 
-        # Check: ns cannot be larger than n_events
+        # Check: n_signal cannot be larger than n_events
         n_events = len(events)
         if n_events <= test_ns:
             test_ns = n_events - 0.00001
 
         # Drop events with zero spatial or time llh
-        # The contribution of those llh will be accounts in drop*np.log(1-ns/n_events)
+        # The contribution of those llh will be accounts in drop*np.log(1-n_signal/n_events)
         drop = n_events - np.sum(preprocessing[1] != 0)
         drop_index = preprocessing[1] != 0
-        preprocessing = (preprocessing[0][drop_index], preprocessing[1][drop_index])
+        preprocessing = (preprocessing[0][drop_index],
+                         preprocessing[1][drop_index])
 
         def get_ts(args):
-            n_s = args[0]
+            n_signal = args[0]
             gamma = args[1]
-            llhs = self.evaluate_ts(events[drop_index], event_model, n_s, gamma,
-                                    n_events=n_events,
+            llhs = self.evaluate_ts(events[drop_index], event_model, n_signal, 
+                                    gamma, n_events=n_events,
                                     preprocessing=preprocessing)
-            return -2 * (np.sum(llhs) + drop * np.log(1 - n_s / n_events))
+            return -2 * (np.sum(llhs) + drop * np.log(1 - n_signal / n_events))
 
         with np.errstate(divide='ignore', invalid='ignore'):
             # Set the seed values, which tell the minimizer
@@ -194,7 +201,7 @@ class PsAnalysis(Analysis):
 
             # Store the results in the output array
             output['ts'] = -1 * result.fun
-            output['ns'] = result.x[0]
+            output['n_signal'] = result.x[0]
             output['gamma'] = result.x[1]
 
         return output
@@ -208,8 +215,6 @@ class PsAnalysis(Analysis):
                       verbose: bool = False) -> np.ndarray:
         """Produces a single trial of background+signal events based on inputs.
 
-        More function info...
-
         Args:
             event_model: An object containing data and preprocessed parameters.
             reduced_sim: Reweighted and pruned simulated events near the source
@@ -220,7 +225,7 @@ class PsAnalysis(Analysis):
             sampling_width: The bandwidth around the source declination to cut
                 events.
             random_seed: A seed value for the numpy RNG.
-            disable_time_filter:do not cut out events that is not in grl
+            disable_time_filter: do not cut out events that is not in grl
             verbose: A flag to print progress.
 
         Returns:
@@ -265,10 +270,14 @@ class PsAnalysis(Analysis):
             # We need to check to ensure that every event is contained within
             # a good run. If the event happened when we had deadtime (when we
             # were not taking data), then we need to remove it.
-            grl_start = event_model.grl['start'].reshape((1, len(event_model.grl)))
-            grl_stop = event_model.grl['stop'].reshape((1, len(event_model.grl)))
-            after_start = np.less(grl_start, events['time'].reshape(len(events), 1))
-            before_stop = np.less(events['time'].reshape(len(events), 1), grl_stop)
+            grl_start = event_model.grl['start'].reshape((1,
+                                                          len(event_model.grl)))
+            grl_stop = event_model.grl['stop'].reshape((1,
+                                                        len(event_model.grl)))
+            after_start = np.less(grl_start, events['time'].reshape(len(events),
+                                                                    1))
+            before_stop = np.less(events['time'].reshape(len(events), 1),
+                                  grl_stop)
             during_uptime = np.any(after_start & before_stop, axis=1)
             events = events[during_uptime]
 
@@ -322,7 +331,7 @@ class PsAnalysis(Analysis):
             ('ts', np.float32),
             ('ntot', np.int),
             ('ninj', np.int),
-            ('ns', np.float32),
+            ('n_signal', np.float32),
             ('gamma', np.float32),
         ])
         fit_info = np.empty(n_trials, dtype=dtype)
@@ -344,7 +353,7 @@ class PsAnalysis(Analysis):
             fit_info['ts'][i] = bestfit['ts']
             fit_info['ntot'][i] = len(trial)
             fit_info['ninj'][i] = (trial['run'] > 200000).sum()
-            fit_info['ns'][i] = bestfit['ns']
+            fit_info['n_signal'][i] = bestfit['n_signal']
             fit_info['gamma'][i] = bestfit['gamma']
 
             if verbose and i / n_trials > prop_complete:
@@ -397,10 +406,10 @@ class ThreeMLPsAnalysis(Analysis):
             data: data
             sim: simulation set
             grl: grl
-            background_sin_dec_bins: If an int, then the number of bins spanning -1 -> 1,
-                otherwise, a numpy array of bin edges.
-            signal_sin_dec_bins: If an int, then the number of bins spanning -1 -> 1,
-                otherwise, a numpy array of bin edges.
+            background_sin_dec_bins: If an int, then the number of bins spanning
+                -1 -> 1, otherwise, a numpy array of bin edges.
+            signal_sin_dec_bins: If an int, then the number of bins spanning
+                -1 -> 1, otherwise, a numpy array of bin edges.
             log_energy_bins: if an int, then the number of bins spanning 1 -> 8,
                 otherwise, a numpy array of bin edges.
             spectrum: Spectrum for energy weighting
@@ -433,9 +442,9 @@ class ThreeMLPsAnalysis(Analysis):
     def calculate_TS(self,
                      event_model: models.EventModel,
                      data: Optional[np.ndarray] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-                     ns: Optional[float] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-                     test_signal_time_profile: Optional[time_profiles.GenericProfile] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-                     test_background_time_profile: Optional[time_profiles.GenericProfile] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                     n_signal: Optional[float] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                     test_signal_time_profile: Optional[time_profiles.GenericProfile] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                     test_background_time_profile: Optional[time_profiles.GenericProfile] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                      recalculate: Optional[bool] = True) -> float:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Calculate the signal pdf"""
         if self.n_events == 0:
@@ -462,8 +471,10 @@ class ThreeMLPsAnalysis(Analysis):
                         time_s = 1
                         time_b = 1
                     else:
-                        time_s = self.injector.signal_time_profile.pdf(self.data['time'])
-                        time_b = self.injector.background_time_profile.pdf(self.data['time'])
+                        time_s = self.injector.signal_time_profile.pdf(
+                            self.data['time'])
+                        time_b = self.injector.background_time_profile.pdf(
+                            self.data['time'])
                 else:
                     time_s = test_signal_time_profile.pdf(self.data['time'])
                     time_b = test_background_time_profile.pdf(self.data['time'])
@@ -471,25 +482,26 @@ class ThreeMLPsAnalysis(Analysis):
                 self.time_sob = time_s / time_b
                 self.time_sob[np.isnan(self.time_sob)] = 0
             self.energy_sob = event_model.get_energy_sob(self.data)
-        if ns is None:
-            ns = event_model._spectrum(
+        if n_signal is None:
+            n_signal = event_model._spectrum(
                 event_model._reduced_sim_truedec['trueE']
             ) * (
                 event_model._reduced_sim_truedec['ow']
             ) * (
                 self.injector.signal_time_profile.effective_exposure()
             ) * 3600 * 24
-            ns = ns.sum()
+            n_signal = n_signal.sum()
 
-        self.ts = (ns / self.n_events * (
+        self.ts = (n_signal / self.n_events * (
             self.energy_sob * self.spatial_sob * self.time_sob - 1
         )) + 1
         ts_value = 2 * (
-            np.sum(np.log(self.ts)) + self.drop * np.log(1 - ns / self.n_events)
+            np.sum(np.log(self.ts)) + self.drop * np.log(
+                1 - n_signal / self.n_events)
         )
         if np.isnan(ts_value):
             self.ts = 0
-        return ts_value, ns
+        return ts_value, n_signal
 
     def produce_trial(self,
                       event_model: models.EventModel,
@@ -510,7 +522,8 @@ class ThreeMLPsAnalysis(Analysis):
             nsignal: How many signal events(Will overwrite flux_norm)
             random_seed: A seed value for the numpy RNG.
             signal_time_profile: The time profile of the injected signal.
-            background_time_profile: Background time profile to do the injection.
+            background_time_profile: Background time profile to do the
+                injection.
             disable_time_filter:Cut out events that is not in grl
 
         Returns:
@@ -558,11 +571,12 @@ class ThreeMLPsAnalysis(Analysis):
                     raise "No spectrum had even supplied"
             else:
                 event_model._reduced_sim_truedec = self.injector.reduced_sim(
-                    event_model=event_model, spectrum=spectrum, livetime=livetime
+                    event_model=event_model, spectrum=spectrum,
+                    livetime=livetime,
                 )
                 data = self.injector.inject_nsignal_events(
                     event_model._reduced_sim_truedec, nsignal,
-                    signal_time_profile=signal_time_profile
+                    signal_time_profile=signal_time_profile,
                 )
 
         bgrange = self.injector.background_time_profile.range
@@ -579,7 +593,7 @@ class ThreeMLPsAnalysis(Analysis):
                event_model: models.EventModel,
                data: Optional[np.ndarray] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                recalculate: Optional[bool] = True) -> float:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-        """minimize ns"""
+        """minimize n_signal"""
 
         if data is not None:
             self.set_data(data)
@@ -616,12 +630,13 @@ class ThreeMLPsAnalysis(Analysis):
                     self.time_sob[np.isinf(self.time_sob)] = 0
             self.energy_sob = event_model.get_energy_sob(self.data)
 
-        def cal_ts(n_s):
-            t_stat = (n_s / self.n_events * (
+        def cal_ts(n_signal):
+            t_stat = (n_signal / self.n_events * (
                 self.energy_sob * self.spatial_sob * self.time_sob - 1
             )) + 1
             ts_value = -2 * (
-                np.sum(np.log(t_stat)) + self.drop * np.log(1 - n_s / self.n_events)
+                np.sum(np.log(t_stat)) + self.drop * np.log(
+                    1 - n_signal / self.n_events)
             )
             return ts_value
 
@@ -692,7 +707,7 @@ class TimeDependentPsAnalysis(PsAnalysis):
     def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel,
                        test_signal_time_profile: Optional[time_profiles.GenericProfile] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                        test_background_time_profile: Optional[time_profiles.GenericProfile] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                       ) -> Optional[Tuple[List[scipy.interpolate.UnivariateSpline], np.array]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+    ) -> Optional[Tuple[List[scipy.interpolate.UnivariateSpline], np.array]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Function info...
         More function info...
         Args:

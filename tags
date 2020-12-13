@@ -173,7 +173,7 @@ bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: 'GenericProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile$/;"	m	class:CustomProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile$/;"	m	class:UniformProfile
 bounds	mla/time_profiles.py	/^    def bounds(self, time_profile: GenericProfile) -> List[List[float]]:$/;"	m	class:GaussProfile
-cal_ts	mla/analysis.py	/^        def cal_ts(n_s):$/;"	f	member:ThreeMLPsAnalysis.min_ns	file:
+cal_ts	mla/analysis.py	/^        def cal_ts(n_signal):$/;"	f	member:ThreeMLPsAnalysis.min_ns	file:
 calculate_TS	mla/analysis.py	/^    def calculate_TS(self,$/;"	m	class:ThreeMLPsAnalysis
 copy	mla/spectral.py	/^    def copy(self):$/;"	m	class:BaseSpectrum
 copyright	docs/source/conf.py	/^copyright = '2020, John Evans, Jason Fan, Michael Larson'$/;"	v
