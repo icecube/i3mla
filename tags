@@ -149,12 +149,12 @@ _bin_counts_log	test/workshop/joint_fit_example/VERITASLike.py	/^    def _bin_co
 _build_rv	mla/time_profiles.py	/^    def _build_rv(self,$/;"	m	class:CustomProfile
 _columns_in_data_tree	test/workshop/joint_fit_example/VERITASLike.py	/^_columns_in_data_tree = ['Time',  # it is the MJD of individual events$/;"	v
 _create_background_dec_spline	mla/models.py	/^    def _create_background_dec_spline(self, sin_dec_bins: np.array, *args,$/;"	m	class:EventModel
-_create_background_sob_map	mla/models.py	/^    def _create_background_sob_map(self)->None:$/;"	m	class:ThreeMLEventModel
+_create_background_sob_map	mla/models.py	/^    def _create_background_sob_map(self) -> None:$/;"	m	class:ThreeMLEventModel
 _create_log_sob_gamma_splines	mla/models.py	/^    def _create_log_sob_gamma_splines(self, gamma_bins: np.array, *args,$/;"	m	class:EventModel
 _create_sob_map	mla/models.py	/^    def _create_sob_map(self, gamma: float, *args, verbose: bool = False,  # I don't think it's /;"	m	class:EventModel
-_create_sob_ratio	mla/models.py	/^    def _create_sob_ratio(self, *args, **kwargs)-> None:$/;"	m	class:ThreeMLEventModel
-_cut_sim	mla/models.py	/^    def _cut_sim(self, source_dec:float = np.pi\/2, sampling_width = np.radians(3)) -> np.ndarra/;"	m	class:ThreeMLEventModel
-_cut_sim_truedec	mla/models.py	/^    def _cut_sim_truedec(self, source_dec:float = np.pi\/2, sampling_width = np.radians(1)) -> n/;"	m	class:ThreeMLEventModel
+_create_sob_ratio	mla/models.py	/^    def _create_sob_ratio(self, *args, **kwargs) -> None:$/;"	m	class:ThreeMLEventModel
+_cut_sim	mla/models.py	/^    def _cut_sim(self, source_dec: float = np.pi \/ 2,$/;"	m	class:ThreeMLEventModel
+_cut_sim_truedec	mla/models.py	/^    def _cut_sim_truedec(self, source_dec: float = np.pi \/ 2,$/;"	m	class:ThreeMLEventModel
 _get_diff_flux_and_integral	test/workshop/joint_fit_example/VERITASLike.py	/^    def _get_diff_flux_and_integral(self, like_model):$/;"	m	class:VERITASRun
 _init_event_model	mla/analysis.py	/^    def _init_event_model(self,$/;"	m	class:ThreeMLPsAnalysis
 _integrate	test/workshop/joint_fit_example/VERITASLike.py	/^    def _integrate(function, e1, e2):$/;"	m	class:VERITASRun
@@ -218,7 +218,7 @@ fig	test/workshop/hawc_fit/crab_fit_logparabola.py	/^fig = hawc.display_spectrum
 fig	test/workshop/hawc_fit/crab_fit_logparabola.py	/^fig = hawc.display_stacked_image(smoothing_kernel_sigma=0.17)$/;"	v
 fig	test/workshop/hawc_fit/crab_fit_logparabola.py	/^fig = plot_spectra(jl.results,$/;"	v
 find_and_delete	test/workshop/joint_fit_example/example_joint.py	/^def find_and_delete(name, path):$/;"	f
-get_energy_sob	mla/models.py	/^    def get_energy_sob(self, events: np.ndarray) -> List[scipy.interpolate.UnivariateSpline]:$/;"	m	class:ThreeMLEventModel
+get_energy_sob	mla/models.py	/^    def get_energy_sob(self, events: np.ndarray$/;"	m	class:ThreeMLEventModel
 get_log_like	test/workshop/joint_fit_example/VERITASLike.py	/^    def get_log_like(self):$/;"	m	class:VERITASLike
 get_log_like	test/workshop/joint_fit_example/VERITASLike.py	/^    def get_log_like(self, like_model, fast=True):$/;"	m	class:VERITASRun
 get_log_sob_gamma_splines	mla/models.py	/^    def get_log_sob_gamma_splines(self, events: np.ndarray,$/;"	m	class:EventModel
@@ -390,8 +390,8 @@ total_counts	test/workshop/joint_fit_example/VERITASLike.py	/^    def total_coun
 u	test/workshop/joint_fit_example/example_joint.py	/^from astropy import units as u$/;"	x
 umd-icecube-analysis-tutorial	docs/.ipynb_checkpoints/modules-checkpoint.html	/^  <div class="section" id="umd-icecube-analysis-tutorial">$/;"	I
 umd_icecube_analysis_tutorial¶	docs/.ipynb_checkpoints/modules-checkpoint.html	/^<h1>umd_icecube_analysis_tutorial<a class="headerlink" href="#umd-icecube-analysis-tutorial" tit/;"	h
-update_model	mla/models.py	/^    def update_model(self, spectrum)->None:$/;"	m	class:ThreeMLEventModel
-update_position	mla/models.py	/^    def update_position(self, ra = np.pi\/6, dec = np.pi\/2)-> float:$/;"	m	class:ThreeMLEventModel
+update_model	mla/models.py	/^    def update_model(self, spectrum) -> None:$/;"	m	class:ThreeMLEventModel
+update_position	mla/models.py	/^    def update_position(self, r_a=np.pi \/ 6, dec=np.pi \/ 2) -> float:$/;"	m	class:ThreeMLEventModel
 welcome-to-i3pubtools-s-documentation	docs/.ipynb_checkpoints/index-checkpoint.html	/^  <div class="section" id="welcome-to-i3pubtools-s-documentation">$/;"	I
 x0	mla/time_profiles.py	/^    def x0(self, times: np.array) -> Tuple:  # I think this is the best name... pylint: disable=/;"	m	class:GenericProfile
 x0	mla/time_profiles.py	/^    def x0(self, times: np.array) -> Tuple[float, float]:$/;"	m	class:CustomProfile
