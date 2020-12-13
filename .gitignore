@@ -1,1 +1,4 @@
 **/test_outputs
+**/__pycache__
+*.pyc
+*.lock
