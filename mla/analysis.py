@@ -27,40 +27,47 @@ TsPreprocess = Tuple[List[scipy.interpolate.UnivariateSpline], np.array]
 class Analysis:
     """Abstract class defining the structure of analysis classes.
 
-    More class info...
+    Analysis classes based on this one have functions to produce trials one at
+    a time for troubleshooting, and a function produce_and_minimize to run
+    multiple trials.
     """
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def __init__(self, *args, **kwargs) -> None:
-        """Docstring"""
+        """Initializes the analysis object."""
 
     @abc.abstractmethod
-    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array:
-        """Docstring"""
+    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel,
+                    *args, **kwargs) -> np.array:
+        """Evaluates the test statistic for some events given an event model."""
 
     @abc.abstractmethod
-    def minimize_ts(self, events: np.ndarray, *args,
-                    **kwargs) -> Dict[str, float]:
-        """Docstring"""
+    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel,
+                    *args, **kwargs) -> Dict[str, float]:
+        """Finds the params that minimize the test statistic for some events."""
 
     @abc.abstractmethod
-    def produce_trial(self, *args, **kwargs) -> np.ndarray:
-        """Docstring"""
+    def produce_trial(self, event_model: models.EventModel, *args,
+                      **kwargs) -> np.ndarray:
+        """Generates some events based on the given event model."""
 
     @abc.abstractmethod
-    def produce_and_minimize(self, n_trials: int, *args,
-                             **kwargs) -> np.ndarray:
-        """Docstring"""
+    def produce_and_minimize(self, event_model: models.EventModel,
+                             n_trials: int, *args, **kwargs) -> np.ndarray:
+        """Generates events and finds the best fit params n_trials times."""
 
 
 class PsAnalysis(Analysis):
-    """Class info...
+    """A basic point-source analysis class.
 
-    More class info...
+    The is a time integrated analysis class that is useful for fitting the
+    number of signal events and spectral index of a given a source and a time-
+    integrated neutrino flux at the source.
 
     Attributes:
-        injector (injectors.PsInjector):
+        injector (injectors.PsInjector): An injector object used to produce
+            trial events from a given event model.
     """
     def __init__(self,
                  source: Optional[Dict[str, float]] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object

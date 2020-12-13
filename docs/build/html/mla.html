@@ -177,29 +177,31 @@
 <em class="property">class </em><code class="sig-prename descclassname">mla.analysis.</code><code class="sig-name descname">Analysis</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.analysis.Analysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Abstract class defining the structure of analysis classes.</p>
-<p>More class info…</p>
+<p>Analysis classes based on this one have functions to produce trials one at
+a time for troubleshooting, and a function produce_and_minimize to run
+multiple trials.</p>
 <dl class="py method">
 <dt id="mla.analysis.Analysis.evaluate_ts">
-<em class="property">abstract </em><code class="sig-name descname">evaluate_ts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.analysis.Analysis.evaluate_ts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring</p>
+<em class="property">abstract </em><code class="sig-name descname">evaluate_ts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; numpy.array<a class="headerlink" href="#mla.analysis.Analysis.evaluate_ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Evaluates the test statistic for some events given an event model.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="mla.analysis.Analysis.minimize_ts">
-<em class="property">abstract </em><code class="sig-name descname">minimize_ts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>float<span class="p">]</span><a class="headerlink" href="#mla.analysis.Analysis.minimize_ts" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring</p>
+<em class="property">abstract </em><code class="sig-name descname">minimize_ts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">events</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>float<span class="p">]</span><a class="headerlink" href="#mla.analysis.Analysis.minimize_ts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the params that minimize the test statistic for some events.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="mla.analysis.Analysis.produce_and_minimize">
-<em class="property">abstract </em><code class="sig-name descname">produce_and_minimize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">n_trials</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.analysis.Analysis.produce_and_minimize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring</p>
+<em class="property">abstract </em><code class="sig-name descname">produce_and_minimize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="n">n_trials</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.analysis.Analysis.produce_and_minimize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates events and finds the best fit params n_trials times.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt id="mla.analysis.Analysis.produce_trial">
-<em class="property">abstract </em><code class="sig-name descname">produce_trial</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.analysis.Analysis.produce_trial" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring</p>
+<em class="property">abstract </em><code class="sig-name descname">produce_trial</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">event_model</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#mla.models.EventModel" title="mla.models.EventModel">mla.models.EventModel</a></span></em>, <em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#mla.analysis.Analysis.produce_trial" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates some events based on the given event model.</p>
 </dd></dl>
 
 </dd></dl>
@@ -208,12 +210,16 @@
 <dt id="mla.analysis.PsAnalysis">
 <em class="property">class </em><code class="sig-prename descclassname">mla.analysis.</code><code class="sig-name descname">PsAnalysis</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">source</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>float<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">injector</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="#mla.injectors.PsInjector" title="mla.injectors.PsInjector">mla.injectors.PsInjector</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#mla.analysis.PsAnalysis" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#mla.analysis.Analysis" title="mla.analysis.Analysis"><code class="xref py py-class docutils literal notranslate"><span class="pre">mla.analysis.Analysis</span></code></a></p>
-<p>Class info…</p>
-<p>More class info…</p>
+<p>A basic point-source analysis class.</p>
+<p>The is a time integrated analysis class that is useful for fitting the
+number of signal events and spectral index of a given a source and a time-
+integrated neutrino flux at the source.</p>
 <dl class="py attribute">
 <dt id="mla.analysis.PsAnalysis.injector">
 <code class="sig-name descname">injector</code><a class="headerlink" href="#mla.analysis.PsAnalysis.injector" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dd><p>An injector object used to produce
+trial events from a given event model.</p>
+<dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference internal" href="#mla.injectors.PsInjector" title="mla.injectors.PsInjector">injectors.PsInjector</a></p>
 </dd>

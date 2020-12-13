@@ -205,8 +205,8 @@ effective_exposure	mla/time_profiles.py	/^    def effective_exposure(self) -> fl
 effective_exposure	mla/time_profiles.py	/^    def effective_exposure(self) -> float:$/;"	m	class:GaussProfile
 effective_exposure	mla/time_profiles.py	/^    def effective_exposure(self) -> float:$/;"	m	class:UniformProfile
 end	docs/make.bat	/^:end$/;"	l
-evaluate_ts	mla/analysis.py	/^    def evaluate_ts(self, events: np.ndarray, *args, **kwargs) -> np.array:$/;"	m	class:Analysis
 evaluate_ts	mla/analysis.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel,  # Super class wil/;"	m	class:PsAnalysis
+evaluate_ts	mla/analysis.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel,$/;"	m	class:Analysis
 exclude_patterns	docs/source/conf.py	/^exclude_patterns = []$/;"	v
 extensions	docs/source/conf.py	/^extensions = [$/;"	v
 fig	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^fig = hawc.display_fit(smoothing_kernel_sigma=0.3,display_colorbar=True)$/;"	v
@@ -283,8 +283,8 @@ maptree	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoin
 maptree	test/workshop/hawc_fit/crab_fit_logparabola.py	/^maptree = "..\/data\/HAWC_9bin_507days_crab_data.hd5"$/;"	v
 migration_matrix	test/workshop/joint_fit_example/VERITASLike.py	/^    def migration_matrix(self):$/;"	m	class:VERITASRun
 min_ns	mla/analysis.py	/^    def min_ns(self,$/;"	m	class:ThreeMLPsAnalysis
-minimize_ts	mla/analysis.py	/^    def minimize_ts(self, events: np.ndarray, *args,$/;"	m	class:Analysis
 minimize_ts	mla/analysis.py	/^    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel,  # Super class wil/;"	m	class:PsAnalysis
+minimize_ts	mla/analysis.py	/^    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel,$/;"	m	class:Analysis
 mla	docs/source/modules.rst	/^mla$/;"	c
 mla package	docs/source/mla.rst	/^mla package$/;"	c
 mla.analysis module	docs/source/mla.rst	/^mla.analysis module$/;"	s	chapter:mla package
@@ -328,8 +328,8 @@ plt	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py
 plt	test/workshop/hawc_fit/crab_fit_logparabola.py	/^import matplotlib.pyplot as plt$/;"	I
 plt	test/workshop/joint_fit_example/example_joint.py	/^import matplotlib.pyplot as plt$/;"	I
 produce_and_minimize	mla/analysis.py	/^    def produce_and_minimize(self, event_model: models.EventModel,  # Super class will never be /;"	m	class:PsAnalysis
-produce_and_minimize	mla/analysis.py	/^    def produce_and_minimize(self, n_trials: int, *args,$/;"	m	class:Analysis
-produce_trial	mla/analysis.py	/^    def produce_trial(self, *args, **kwargs) -> np.ndarray:$/;"	m	class:Analysis
+produce_and_minimize	mla/analysis.py	/^    def produce_and_minimize(self, event_model: models.EventModel,$/;"	m	class:Analysis
+produce_trial	mla/analysis.py	/^    def produce_trial(self, event_model: models.EventModel, *args,$/;"	m	class:Analysis
 produce_trial	mla/analysis.py	/^    def produce_trial(self, event_model: models.EventModel, flux_norm: float,  # Super class wil/;"	m	class:PsAnalysis
 produce_trial	mla/analysis.py	/^    def produce_trial(self,$/;"	m	class:ThreeMLPsAnalysis
 project	docs/source/conf.py	/^project = 'MLA'$/;"	v
