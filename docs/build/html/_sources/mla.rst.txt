@@ -25,7 +25,7 @@ mla.models module
 
 .. automodule:: mla.models
    :members:
-   :undoc-members:
+   :no-undoc-members:
    :show-inheritance:
 
 mla.spectral module
@@ -41,7 +41,7 @@ mla.time\_profiles module
 
 .. automodule:: mla.time_profiles
    :members:
-   :undoc-members:
+   :no-undoc-members:
    :show-inheritance:
 
 mla.tools module

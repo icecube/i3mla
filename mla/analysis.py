@@ -209,7 +209,6 @@ class PsAnalysis(Analysis):
     def produce_trial(self, event_model: models.EventModel, flux_norm: float,  # Super class will never be called... pylint: disable=arguments-differ, too-many-locals, too-many-arguments
                       reduced_sim: Optional[np.ndarray] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                       gamma: float = -2, sampling_width: Optional[float] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                      n_signal: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                       random_seed: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                       disable_time_filter: Optional[bool] = False,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                       verbose: bool = False) -> np.ndarray:
@@ -221,7 +220,6 @@ class PsAnalysis(Analysis):
                 declination.
             flux_norm: A flux normaliization to adjust weights.
             gamma: A spectral index to adjust weights.
-            n_signal: How many signal events(Will overwrite flux_norm)
             sampling_width: The bandwidth around the source declination to cut
                 events.
             random_seed: A seed value for the numpy RNG.
@@ -241,13 +239,11 @@ class PsAnalysis(Analysis):
                 sampling_width=sampling_width)
 
         background = self.injector.inject_background_events(event_model)
-        if n_signal is None:
-            if flux_norm > 0:
-                signal = self.injector.inject_signal_events(reduced_sim)
-            else:
-                signal = np.empty(0, dtype=background.dtype)
+        
+        if flux_norm > 0:
+            signal = self.injector.inject_signal_events(reduced_sim)
         else:
-            signal = self.injector.inject_nsignal_events(reduced_sim, n_signal)
+            signal = np.empty(0, dtype=background.dtype)
 
         if verbose:
             print(f'number of background events: {len(background)}')
@@ -505,7 +501,6 @@ class ThreeMLPsAnalysis(Analysis):
     def produce_trial(self,
                       event_model: models.EventModel,
                       spectrum: Optional[spectral.BaseSpectrum] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-                      n_signal: Optional[int] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                       random_seed: Optional[int] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                       signal_time_profile: Optional[time_profiles.GenericProfile] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                       background_time_profile: Optional[time_profiles.GenericProfile] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
@@ -518,7 +513,6 @@ class ThreeMLPsAnalysis(Analysis):
         Args:
             event_model: An object containing data and preprocessed parameters.
             spectrum: Spectrum of the injection
-            n_signal: How many signal events(Will overwrite flux_norm)
             random_seed: A seed value for the numpy RNG.
             signal_time_profile: The time profile of the injected signal.
             background_time_profile: Background time profile to do the
@@ -541,42 +535,23 @@ class ThreeMLPsAnalysis(Analysis):
 
         livetime = self.injector.signal_time_profile.exposure
 
-        if n_signal is None:
-            if spectrum is None:
-                try:
-                    data = self.injector.inject_signal_events(
-                        event_model._reduced_sim_truedec,
-                        signal_time_profile=signal_time_profile
-                    )
-                except:
-                    raise "No spectrum had even supplied"
-            else:
-                event_model._reduced_sim_truedec = self.injector.reduced_sim(
-                    event_model=event_model, spectrum=spectrum,
-                    livetime=livetime
-                )
+        if spectrum is None:
+            try:
                 data = self.injector.inject_signal_events(
                     event_model._reduced_sim_truedec,
                     signal_time_profile=signal_time_profile
                 )
+            except:
+                raise "No spectrum had even supplied"
         else:
-            if spectrum is None:
-                try:
-                    data = self.injector.inject_nsignal_events(
-                        event_model._reduced_sim_truedec, n_signal,
-                        signal_time_profile=signal_time_profile
-                    )
-                except:
-                    raise "No spectrum had even supplied"
-            else:
-                event_model._reduced_sim_truedec = self.injector.reduced_sim(
-                    event_model=event_model, spectrum=spectrum,
-                    livetime=livetime,
-                )
-                data = self.injector.inject_nsignal_events(
-                    event_model._reduced_sim_truedec, n_signal,
-                    signal_time_profile=signal_time_profile,
-                )
+            event_model._reduced_sim_truedec = self.injector.reduced_sim(
+                event_model=event_model, spectrum=spectrum,
+                livetime=livetime
+            )
+            data = self.injector.inject_signal_events(
+                event_model._reduced_sim_truedec,
+                signal_time_profile=signal_time_profile
+            )
 
         bgrange = self.injector.background_time_profile.range
         contained_in_background = (

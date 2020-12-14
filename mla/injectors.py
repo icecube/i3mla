@@ -198,47 +198,6 @@ class PsInjector:
 
         return signal
 
-    def inject_nsignal_events(self, 
-                              reduced_sim: np.ndarray, 
-                              n: int,
-                              ) -> np.ndarray:
-        """Function info...
-        
-        Inject n signal events.
-        
-        Args:
-            reduced_sim: Reweighted and pruned simulated events near the source declination.
-            n: Number of events.
-        Returns:
-            An array of injected signal events.
-        """
-        # Pick the signal events
-        total = reduced_sim['weight'].sum()
-
-        n_signal_observed = n
-        signal = np.random.choice(
-            reduced_sim, 
-            n_signal_observed,
-            p=reduced_sim['weight']/total,
-            replace = False).copy()
-
-        # Update this number
-        n_signal_observed = len(signal)
-
-        if n_signal_observed > 0:
-            ones = np.ones_like(signal['trueRa'])
-
-            signal['ra'], signal['dec'] = tools.rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones*self.source['ra'], ones*self.source['dec'],
-                signal['ra'], signal['dec'])
-            signal['trueRa'], signal['trueDec'] = tools.rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones*self.source['ra'], ones*self.source['dec'],
-                signal['trueRa'], signal['trueDec'])
-                
-        return signal
-
 
 class TimeDependentPsInjector(PsInjector):
     """Class info...
@@ -572,55 +531,6 @@ class TimeDependentPsInjector(PsInjector):
                 signal['trueRa'], signal['trueDec'],
                 ones * self.source['ra'], ones * self.source['dec'],
                 signal['trueRa'], signal['trueDec'])
-        # set the signal time profile if provided
-        if signal_time_profile is not None:
-            self.set_signal_profile(signal_time_profile)
-
-        # Randomize the signal time
-        if self.signal_time_profile is not None:
-            signal['time'] = self.signal_time_profile.random(size=len(signal))
-
-        return signal
-
-    def inject_nsignal_events(self,
-                              reduced_sim: np.ndarray,
-                              n: int,
-                              signal_time_profile: Optional[time_profiles.GenericProfile] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-    ) -> np.ndarray:
-        """Function info...
-
-        Inject n signal events.
-
-        Args:
-            reduced_sim: Reweighted and pruned simulated events near the source declination.
-            n: Number of events.
-            signal_time_profile: The time profile of the injected signal
-        Returns:
-            An array of injected signal events.
-        """
-        # Pick the signal events
-        total = reduced_sim['weight'].sum()
-
-        n_signal_observed = n
-        signal = np.random.choice(reduced_sim, n_signal_observed,
-                                  p=reduced_sim['weight'] / total,
-                                  replace=False).copy()
-
-        # Update this number
-        n_signal_observed = len(signal)
-
-        if n_signal_observed > 0:
-            ones = np.ones_like(signal['trueRa'])
-
-            signal['ra'], signal['dec'] = tools.rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones * self.source['ra'], ones * self.source['dec'],
-                signal['ra'], signal['dec'])
-            signal['trueRa'], signal['trueDec'] = tools.rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones * self.source['ra'], ones * self.source['dec'],
-                signal['trueRa'], signal['trueDec'])
-
         # set the signal time profile if provided
         if signal_time_profile is not None:
             self.set_signal_profile(signal_time_profile)
