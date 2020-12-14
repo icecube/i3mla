@@ -487,7 +487,7 @@ class ThreeMLPsAnalysis(Analysis):
             ) * (
                 event_model._reduced_sim_truedec['ow']
             ) * (
-                self.injector.signal_time_profile.effective_exposure()
+                self.injector.signal_time_profile.exposure
             ) * 3600 * 24
             n_signal = n_signal.sum()
 
@@ -539,7 +539,7 @@ class ThreeMLPsAnalysis(Analysis):
         if signal_time_profile is not None:
             self.injector.set_signal_profile(signal_time_profile)
 
-        livetime = self.injector.signal_time_profile.effective_exposure()
+        livetime = self.injector.signal_time_profile.exposure
 
         if n_signal is None:
             if spectrum is None:

@@ -29,6 +29,9 @@ class GenericProfile:
     the PDF is normalized!
 
     Attributes:
+        exposure (float):
+        range (Tuple[Optional[float], Optional[float]]): The range of allowed
+            times for for events injected using this time profile.
         default_params (Dict[str, float]): A dictionary of fitting parameters
             for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
@@ -108,11 +111,13 @@ class GenericProfile:
 
     @property
     @abc.abstractmethod
+    def exposure(self) -> float:
+        """Docstring"""
+
+    @property
+    @abc.abstractmethod
     def range(self) -> Tuple[Optional[float], Optional[float]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Gets the maximum and minimum values for the times in this profile.
-
-        Returns:
-            A tuple of times.
         """
 
     @property
@@ -137,6 +142,9 @@ class GaussProfile(GenericProfile):
         mean (float): The center of the distribution.
         sigma (float): The spread of the distribution.
         scipy_dist(scipy.stats.rv_continuous):
+        exposure (float):
+        range (Tuple[Optional[float], Optional[float]]): The range of allowed
+            times for for events injected using this time profile.
         default_params (Dict[str, float]): A dictionary of fitting parameters
             for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
@@ -207,17 +215,6 @@ class GaussProfile(GenericProfile):
         x0_sigma = np.std(times)
         return x0_mean, x0_sigma
 
-    def effective_exposure(self) -> float:
-        """Return the effective exposure of the gaussian
-
-        Args:
-
-
-        Returns:
-            effctive exposure
-        """
-        return self._exposure
-
     def bounds(self, time_profile: GenericProfile) -> List[List[float]]:
         """Returns good bounds for this time profile given another time profile.
 
@@ -241,6 +238,10 @@ class GaussProfile(GenericProfile):
         return [time_profile.range, (0, diff)]
 
     @property
+    def exposure(self) -> float:
+        return self._exposure
+
+    @property
     def range(self) -> Tuple[Optional[float], Optional[float]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
         return self._range
 
@@ -260,8 +261,9 @@ class UniformProfile(GenericProfile):
     your source.
 
     Attributes:
-        window (Tuple[float, float]): The start and stop times for this time
-            profile.
+        exposure (float):
+        range (Tuple[Optional[float], Optional[float]]): The range of allowed
+            times for for events injected using this time profile.
         default_params (Dict[str, float]): A dictionary of fitting parameters
             for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
@@ -273,18 +275,18 @@ class UniformProfile(GenericProfile):
         """Constructs the time profile.
 
         Args:
-            start:(days) lower bound for the uniform distribution.
-            length:(days) length of the uniform distribution.
+            start: (days) lower bound for the uniform distribution.
+            length: (days) length of the uniform distribution.
             name: prefix for parameters.
         """
         super().__init__()
         self._range = (start, start + length)
         self._exposure = length
         self._default_params = {'_'.join([name, 'start']): self._range[0],
-                                '_'.join([name, 'end']): self._range[1]}
+                                '_'.join([name, 'length']): length}
 
         self._param_dtype = [('_'.join([name, 'start']), np.float32),
-                             ('_'.join([name, 'end']), np.float32)]
+                             ('_'.join([name, 'length']), np.float32)]
 
     def pdf(self, times: np.array) -> np.array:
         """Calculates the probability for each time.
@@ -342,22 +344,16 @@ class UniformProfile(GenericProfile):
 
         Args:
             time_profile: Another time profile used to get the limits of start
-                and end.
+                and length.
 
         Returns:
             A list of tuples of bounds for fitting.
         """
-        return [time_profile.range, time_profile.range]
+        diff = time_profile.range[1] - time_profile.range[0]
+        return [time_profile.range, (0, diff)]
 
-    def effective_exposure(self) -> float:
-        """Return the effective exposure
-
-        Args:
-
-
-        Returns:
-            effctive exposure
-        """
+    @property
+    def exposure(self) -> float:
         return self._exposure
 
     @property
@@ -380,17 +376,19 @@ class CustomProfile(GenericProfile):
     is handled internally and not required beforehand.
 
     Attributes:
-        window (Tuple[float]): The range of distribution function.
         pdf (Callable[[np.array, Tuple[float, float]], np.array]): The
             distribution function. This function needs to accept an array of bin
             centers and a time window as a tuple, and it needs to return an
             array of probability densities at the given bin centers.
+        dist (scipy.stats.rv_histogram): The histogrammed version of the
+            distribution function.
+        exposure (float):
+        range (Tuple[Optional[float], Optional[float]]): The range of allowed
+            times for for events injected using this time profile.
         default_params (Dict[str, float]): A dictionary of fitting parameters
             for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
-        dist (scipy.stats.rv_histogram): The histogrammed version of the
-            distribution function.
     """
 
     def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], np.array],
@@ -505,15 +503,8 @@ class CustomProfile(GenericProfile):
         """
         return [time_profile.range, time_profile.range]
 
-    def effective_exposure(self) -> float:
-        """Return the effective exposure
-
-        Args:
-
-
-        Returns:
-            effctive exposure
-        """
+    @property
+    def exposure(self) -> float:
         return self._exposure
 
     @property

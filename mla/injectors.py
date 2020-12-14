@@ -516,7 +516,7 @@ class TimeDependentPsInjector(PsInjector):
         # Find the background rate
         n_background = background_grl['events'].sum()
         n_background /= background_grl['livetime'].sum()
-        n_background *= background_time_profile.effective_exposure()
+        n_background *= background_time_profile.exposure
         self.n_background = n_background
         self.background_time_profile = background_time_profile
 
