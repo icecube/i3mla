@@ -209,7 +209,7 @@ class PsAnalysis(Analysis):
     def produce_trial(self, event_model: models.EventModel, flux_norm: float,  # Super class will never be called... pylint: disable=arguments-differ, too-many-locals, too-many-arguments
                       reduced_sim: Optional[np.ndarray] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                       gamma: float = -2, sampling_width: Optional[float] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                      nsignal: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                      n_signal: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                       random_seed: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                       disable_time_filter: Optional[bool] = False,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                       verbose: bool = False) -> np.ndarray:
@@ -221,7 +221,7 @@ class PsAnalysis(Analysis):
                 declination.
             flux_norm: A flux normaliization to adjust weights.
             gamma: A spectral index to adjust weights.
-            nsignal: How many signal events(Will overwrite flux_norm)
+            n_signal: How many signal events(Will overwrite flux_norm)
             sampling_width: The bandwidth around the source declination to cut
                 events.
             random_seed: A seed value for the numpy RNG.
@@ -241,13 +241,13 @@ class PsAnalysis(Analysis):
                 sampling_width=sampling_width)
 
         background = self.injector.inject_background_events(event_model)
-        if nsignal is None:
+        if n_signal is None:
             if flux_norm > 0:
                 signal = self.injector.inject_signal_events(reduced_sim)
             else:
                 signal = np.empty(0, dtype=background.dtype)
         else:
-            signal = self.injector.inject_nsignal_events(reduced_sim, nsignal)
+            signal = self.injector.inject_nsignal_events(reduced_sim, n_signal)
 
         if verbose:
             print(f'number of background events: {len(background)}')
@@ -288,13 +288,11 @@ class PsAnalysis(Analysis):
                              test_gamma: float = -2,
                              random_seed: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                              flux_norm: float = 0, gamma: float = -2,
-                             nsignal: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                             n_signal: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                              sampling_width: Optional[float] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                              disable_time_filter: Optional[bool] = False,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                              verbose: bool = False) -> np.ndarray:
         """Produces n trials and calculate a test statistic for each trial.
-
-        More function info...
 
         Args:
             event_model: An object containing data and preprocessed parameters.
@@ -305,7 +303,7 @@ class PsAnalysis(Analysis):
             random_seed: A seed value for the numpy RNG.
             flux_norm: A flux normaliization to adjust weights.
             gamma: A guess for best fit spectral index of the signal.
-            nsignal: How many signal events(Will overwrite flux_norm)
+            n_signal: How many signal events(Will overwrite flux_norm)
             sampling_width: The bandwidth around the source declination to cut
                 events.
             disable_time_filter:do not cut out events that is not in grl
@@ -344,7 +342,8 @@ class PsAnalysis(Analysis):
         for i in range(n_trials):
             # Produce the trial events
             trial = self.produce_trial(event_model, flux_norm, reduced_sim,
-                                       nsignal=nsignal, random_seed=random_seed,
+                                       n_signal=n_signal,
+                                       random_seed=random_seed,
                                        disable_time_filter=disable_time_filter)
 
             # And get the weights
@@ -506,7 +505,7 @@ class ThreeMLPsAnalysis(Analysis):
     def produce_trial(self,
                       event_model: models.EventModel,
                       spectrum: Optional[spectral.BaseSpectrum] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-                      nsignal: Optional[int] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                      n_signal: Optional[int] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                       random_seed: Optional[int] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                       signal_time_profile: Optional[time_profiles.GenericProfile] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                       background_time_profile: Optional[time_profiles.GenericProfile] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
@@ -519,7 +518,7 @@ class ThreeMLPsAnalysis(Analysis):
         Args:
             event_model: An object containing data and preprocessed parameters.
             spectrum: Spectrum of the injection
-            nsignal: How many signal events(Will overwrite flux_norm)
+            n_signal: How many signal events(Will overwrite flux_norm)
             random_seed: A seed value for the numpy RNG.
             signal_time_profile: The time profile of the injected signal.
             background_time_profile: Background time profile to do the
@@ -542,7 +541,7 @@ class ThreeMLPsAnalysis(Analysis):
 
         livetime = self.injector.signal_time_profile.effective_exposure()
 
-        if nsignal is None:
+        if n_signal is None:
             if spectrum is None:
                 try:
                     data = self.injector.inject_signal_events(
@@ -564,7 +563,7 @@ class ThreeMLPsAnalysis(Analysis):
             if spectrum is None:
                 try:
                     data = self.injector.inject_nsignal_events(
-                        event_model._reduced_sim_truedec, nsignal,
+                        event_model._reduced_sim_truedec, n_signal,
                         signal_time_profile=signal_time_profile
                     )
                 except:
@@ -575,7 +574,7 @@ class ThreeMLPsAnalysis(Analysis):
                     livetime=livetime,
                 )
                 data = self.injector.inject_nsignal_events(
-                    event_model._reduced_sim_truedec, nsignal,
+                    event_model._reduced_sim_truedec, n_signal,
                     signal_time_profile=signal_time_profile,
                 )
 
