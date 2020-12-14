@@ -3,3 +3,4 @@
 *.pyc
 *.lock
 **/.ipynb_checkpoints
+tags
