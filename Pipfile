@@ -7,10 +7,11 @@ verify_ssl = true
 sphinx-rtd-theme = "*"
 sphinx-autodoc-typehints = "*"
 sphinx = "*"
+tox = "*"
 
 [packages]
 numpy = "*"
 scipy = "*"
-
 #[requires]
 #python_version = ">=3.6"
+tox-pyenv = "*"

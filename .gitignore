@@ -4,3 +4,4 @@
 *.lock
 **/.ipynb_checkpoints
 tags
+**/*.egg-info
