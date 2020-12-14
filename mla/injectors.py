@@ -562,11 +562,7 @@ class TimeDependentPsInjector(PsInjector):
         Returns:
             Array containing injected signal and background
         """
-        if nsignal is None:
-            signal = self.inject_signal_events(reduced_sim, signal_time_profile)
-        else:
-            signal = self.inject_nsignal_events(
-                reduced_sim, n=nsignal, signal_time_profile=signal_time_profile)
+        signal = self.inject_signal_events(reduced_sim, signal_time_profile)
         background = self.inject_background_events(event_model,
                                                    background_time_profile,
                                                    background_window)

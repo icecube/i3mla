@@ -338,7 +338,6 @@ class PsAnalysis(Analysis):
         for i in range(n_trials):
             # Produce the trial events
             trial = self.produce_trial(event_model, flux_norm, reduced_sim,
-                                       n_signal=n_signal,
                                        random_seed=random_seed,
                                        disable_time_filter=disable_time_filter)
 
