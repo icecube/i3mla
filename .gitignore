@@ -3,6 +3,7 @@
 *.pyc
 *.lock
 **/.ipynb_checkpoints
-tags
+**/tags
 **/*.egg-info
 **/.tox
+.python-version
