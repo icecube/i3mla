@@ -8,29 +8,29 @@
 !_TAG_PROGRAM_URL	https://ctags.io/	/official site/
 !_TAG_PROGRAM_VERSION	0.0.0	/3f0ea94c/
 %	docs/Makefile	/^%: Makefile$/;"	t
-About threeML	test/workshop/README.md	/^# About threeML$/;"	c
+About threeML	tests/old/workshop/README.md	/^# About threeML$/;"	c
 Analysis	mla/analysis.py	/^class Analysis:$/;"	c
 BUILDDIR	docs/Makefile	/^BUILDDIR      = build$/;"	m
 BUILDDIR	docs/make.bat	/^set BUILDDIR=build$/;"	v
 BaseSpectrum	mla/spectral.py	/^class BaseSpectrum:$/;"	c
 CustomProfile	mla/time_profiles.py	/^class CustomProfile(GenericProfile):$/;"	c
 CustomSpectrum	mla/spectral.py	/^class CustomSpectrum(BaseSpectrum):$/;"	c
-EOM	test/workshop/install_everything.sh	/^cat > $HOME\/init_conda_hal.sh <<- EOM$/;"	h
-EOM	test/workshop/install_from_conda.sh	/^cat > $HOME\/init_conda_fvh.sh <<- EOM$/;"	h
+EOM	tests/old/workshop/install_everything.sh	/^cat > $HOME\/init_conda_hal.sh <<- EOM$/;"	h
+EOM	tests/old/workshop/install_from_conda.sh	/^cat > $HOME\/init_conda_fvh.sh <<- EOM$/;"	h
 EventModel	mla/models.py	/^class EventModel:$/;"	c
 GaussProfile	mla/time_profiles.py	/^class GaussProfile(GenericProfile):$/;"	c
 GenericProfile	mla/time_profiles.py	/^class GenericProfile:$/;"	c
-Getting the data	test/workshop/README.md	/^# Getting the data$/;"	c
-HAWC Crab example	test/workshop/README.md	/^# HAWC Crab example$/;"	c
+Getting the data	tests/old/workshop/README.md	/^# Getting the data$/;"	c
+HAWC Crab example	tests/old/workshop/README.md	/^# HAWC Crab example$/;"	c
 Indices and tables	docs/source/index.rst	/^Indices and tables$/;"	c
 Indices and tables¶	docs/.ipynb_checkpoints/index-checkpoint.html	/^<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this /;"	h
-Installation	test/workshop/README.md	/^# Installation$/;"	c
-Joint Crab example	test/workshop/README.md	/^# Joint Crab example$/;"	c
-MacOS:	test/workshop/README.md	/^## MacOS:$/;"	s	chapter:Prerequisites
+Installation	tests/old/workshop/README.md	/^# Installation$/;"	c
+Joint Crab example	tests/old/workshop/README.md	/^# Joint Crab example$/;"	c
+MacOS:	tests/old/workshop/README.md	/^## MacOS:$/;"	s	chapter:Prerequisites
 Module contents	docs/source/mla.rst	/^Module contents$/;"	s	chapter:mla package
 Module contents¶	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	i
 PowerLaw	mla/spectral.py	/^class PowerLaw(BaseSpectrum):$/;"	c
-Prerequisites	test/workshop/README.md	/^# Prerequisites$/;"	c
+Prerequisites	tests/old/workshop/README.md	/^# Prerequisites$/;"	c
 PsAnalysis	mla/analysis.py	/^class PsAnalysis(Analysis):$/;"	c
 PsInjector	mla/injectors.py	/^class PsInjector:$/;"	c
 Public IceCube Analysis Tools	README.md	/^# Public IceCube Analysis Tools$/;"	c
@@ -41,17 +41,32 @@ SPHINXBUILD	docs/make.bat	/^	set SPHINXBUILD=sphinx-build$/;"	v
 SPHINXOPTS	docs/Makefile	/^SPHINXOPTS    ?=$/;"	m
 Submodules	docs/source/mla.rst	/^Submodules$/;"	s	chapter:mla package
 Submodules¶	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶<\/a/;"	i
-TS	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^TS = jl.compute_TS("crab", like_df)$/;"	v
-TS	test/workshop/hawc_fit/crab_fit_logparabola.py	/^TS = jl.compute_TS("crab", like_df)$/;"	v
-Testing the your setup	test/workshop/README.md	/^# Testing the your setup$/;"	c
+TS	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^TS = jl.compute_TS("crab", like_df)$/;"	v
+TS	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^TS = jl.compute_TS("crab", like_df)$/;"	v
+TestAnalysis	tests/test_analysis.py	/^class TestAnalysis(unittest.TestCase):$/;"	c
+TestBaseSpectrum	tests/test_spectral.py	/^class TestBaseSpectrum(unittest.TestCase):$/;"	c
+TestCustomProfile	tests/test_time_profiles.py	/^class TestCustomProfile(unittest.TestCase):$/;"	c
+TestCustomSpectrum	tests/test_spectral.py	/^class TestCustomSpectrum(unittest.TestCase):$/;"	c
+TestEventModel	tests/test_models.py	/^class TestEventModel(unittest.TestCase):$/;"	c
+TestGaussProfile	tests/test_time_profiles.py	/^class TestGaussProfile(unittest.TestCase):$/;"	c
+TestGenericProfile	tests/test_time_profiles.py	/^class TestGenericProfile(unittest.TestCase):$/;"	c
+TestPowerLaw	tests/test_spectral.py	/^class TestPowerLaw(unittest.TestCase):$/;"	c
+TestPsAnalysis	tests/test_analysis.py	/^class TestPsAnalysis(unittest.TestCase):$/;"	c
+TestPsInjector	tests/test_injectors.py	/^class TestPsInjector(unittest.TestCase):$/;"	c
+TestThreeMLEventModel	tests/test_models.py	/^class TestThreeMLEventModel(unittest.TestCase):$/;"	c
+TestThreeMLPsAnalysis	tests/test_analysis.py	/^class TestThreeMLPsAnalysis(unittest.TestCase):$/;"	c
+TestTimeDependentPsAnalysis	tests/test_analysis.py	/^class TestTimeDependentPsAnalysis(unittest.TestCase):$/;"	c
+TestTimeDependentPsInjector	tests/test_injectors.py	/^class TestTimeDependentPsInjector(unittest.TestCase):$/;"	c
+TestUniformProfile	tests/test_time_profiles.py	/^class TestUniformProfile(unittest.TestCase):$/;"	c
+Testing the your setup	tests/old/workshop/README.md	/^# Testing the your setup$/;"	c
 ThreeMLEventModel	mla/models.py	/^class ThreeMLEventModel(EventModel):$/;"	c
 ThreeMLPsAnalysis	mla/analysis.py	/^class ThreeMLPsAnalysis(Analysis):$/;"	c
 TimeDependentPsAnalysis	mla/analysis.py	/^class TimeDependentPsAnalysis(PsAnalysis):$/;"	c
 TimeDependentPsInjector	mla/injectors.py	/^class TimeDependentPsInjector(PsInjector):$/;"	c
 TsPreprocess	mla/analysis.py	/^TsPreprocess = Tuple[List[scipy.interpolate.UnivariateSpline], np.array]$/;"	v
 UniformProfile	mla/time_profiles.py	/^class UniformProfile(GenericProfile):$/;"	c
-VERITASLike	test/workshop/joint_fit_example/VERITASLike.py	/^class VERITASLike(PluginPrototype):$/;"	c
-VERITASRun	test/workshop/joint_fit_example/VERITASLike.py	/^class VERITASRun(object):$/;"	c
+VERITASLike	tests/old/workshop/joint_fit_example/VERITASLike.py	/^class VERITASLike(PluginPrototype):$/;"	c
+VERITASRun	tests/old/workshop/joint_fit_example/VERITASLike.py	/^class VERITASRun(object):$/;"	c
 Welcome to MLA's documentation!	docs/source/index.rst	/^Welcome to MLA's documentation!$/;"	c
 Welcome to i3pubtools’s documentation!¶	docs/.ipynb_checkpoints/index-checkpoint.html	/^<h1>Welcome to i3pubtools’s documentation!<a class="headerlink" href="#welcome-to-i3pubtools-s/;"	h
 __author__	examples/sources.py	/^__author__ = 'John Evans'$/;"	v
@@ -60,9 +75,9 @@ __author__	mla/injectors.py	/^__author__ = 'John Evans'$/;"	v
 __author__	mla/models.py	/^__author__ = 'John Evans'$/;"	v
 __author__	mla/time_profiles.py	/^__author__ = 'John Evans'$/;"	v
 __author__	mla/tools.py	/^__author__ = 'John Evans'$/;"	v
-__author__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__author__ = 'John Evans'$/;"	v
-__author__	test/test_data.py	/^__author__ = 'John Evans'$/;"	v
-__author__	test/workshop/joint_fit_example/VERITASLike.py	/^__author__ = 'giacomov'$/;"	v
+__author__	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^__author__ = 'John Evans'$/;"	v
+__author__	tests/old/workshop/joint_fit_example/VERITASLike.py	/^__author__ = 'giacomov'$/;"	v
+__author__	tests/test_data.py	/^__author__ = 'John Evans'$/;"	v
 __call__	mla/spectral.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:BaseSpectrum
 __call__	mla/spectral.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:CustomSpectrum
 __call__	mla/spectral.py	/^    def __call__(self, E, **kwargs):$/;"	m	class:PowerLaw
@@ -72,24 +87,24 @@ __copyright__	mla/injectors.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"
 __copyright__	mla/models.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
 __copyright__	mla/time_profiles.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
 __copyright__	mla/tools.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
-__copyright__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__copyright__ = ''$/;"	v
-__copyright__	test/test_data.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
+__copyright__	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^__copyright__ = ''$/;"	v
+__copyright__	tests/test_data.py	/^__copyright__ = 'Copyright 2020 John Evans'$/;"	v
 __credits__	examples/sources.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
 __credits__	mla/analysis.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
 __credits__	mla/injectors.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
 __credits__	mla/models.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
 __credits__	mla/time_profiles.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
 __credits__	mla/tools.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
-__credits__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
-__credits__	test/test_data.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
+__credits__	tests/test_data.py	/^__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']$/;"	v
 __email__	examples/sources.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
 __email__	mla/analysis.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
 __email__	mla/injectors.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
 __email__	mla/models.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
 __email__	mla/time_profiles.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
 __email__	mla/tools.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
-__email__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
-__email__	test/test_data.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
+__email__	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
+__email__	tests/test_data.py	/^__email__ = 'john.evans@icecube.wisc.edu'$/;"	v
 __init__	mla/analysis.py	/^    def __init__(self, *args, **kwargs) -> None:$/;"	m	class:Analysis
 __init__	mla/analysis.py	/^    def __init__(self,$/;"	m	class:PsAnalysis
 __init__	mla/analysis.py	/^    def __init__(self,$/;"	m	class:ThreeMLPsAnalysis
@@ -105,25 +120,25 @@ __init__	mla/time_profiles.py	/^    def __init__(self) -> None:$/;"	m	class:Gene
 __init__	mla/time_profiles.py	/^    def __init__(self, mean: float, sigma: float,$/;"	m	class:GaussProfile
 __init__	mla/time_profiles.py	/^    def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], np.array],$/;"	m	class:CustomProfile
 __init__	mla/time_profiles.py	/^    def __init__(self, start: float, length: float,$/;"	m	class:UniformProfile
-__init__	test/workshop/joint_fit_example/VERITASLike.py	/^    def __init__(self, name, veritas_root_data):$/;"	m	class:VERITASLike
-__init__	test/workshop/joint_fit_example/VERITASLike.py	/^    def __init__(self, root_file, run_name):$/;"	m	class:VERITASRun
-__instrument_name	test/workshop/joint_fit_example/VERITASLike.py	/^__instrument_name = "VERITAS"$/;"	v
+__init__	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def __init__(self, name, veritas_root_data):$/;"	m	class:VERITASLike
+__init__	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def __init__(self, root_file, run_name):$/;"	m	class:VERITASRun
+__instrument_name	tests/old/workshop/joint_fit_example/VERITASLike.py	/^__instrument_name = "VERITAS"$/;"	v
 __license__	examples/sources.py	/^__license__ = 'Apache License 2.0'$/;"	v
 __license__	mla/analysis.py	/^__license__ = 'Apache License 2.0'$/;"	v
 __license__	mla/injectors.py	/^__license__ = 'Apache License 2.0'$/;"	v
 __license__	mla/models.py	/^__license__ = 'Apache License 2.0'$/;"	v
 __license__	mla/time_profiles.py	/^__license__ = 'Apache License 2.0'$/;"	v
 __license__	mla/tools.py	/^__license__ = 'Apache License 2.0'$/;"	v
-__license__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__license__ = 'Apache License 2.0'$/;"	v
-__license__	test/test_data.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^__license__ = 'Apache License 2.0'$/;"	v
+__license__	tests/test_data.py	/^__license__ = 'Apache License 2.0'$/;"	v
 __maintainer__	examples/sources.py	/^__maintainer__ = 'John Evans'$/;"	v
 __maintainer__	mla/analysis.py	/^__maintainer__ = 'John Evans'$/;"	v
 __maintainer__	mla/injectors.py	/^__maintainer__ = 'John Evans'$/;"	v
 __maintainer__	mla/models.py	/^__maintainer__ = 'John Evans'$/;"	v
 __maintainer__	mla/time_profiles.py	/^__maintainer__ = 'John Evans'$/;"	v
 __maintainer__	mla/tools.py	/^__maintainer__ = 'John Evans'$/;"	v
-__maintainer__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__maintainer__ = 'John Evans'$/;"	v
-__maintainer__	test/test_data.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^__maintainer__ = 'John Evans'$/;"	v
+__maintainer__	tests/test_data.py	/^__maintainer__ = 'John Evans'$/;"	v
 __metaclass__	mla/analysis.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:Analysis	file:
 __metaclass__	mla/time_profiles.py	/^    __metaclass__ = abc.ABCMeta$/;"	v	class:GenericProfile	file:
 __status__	examples/sources.py	/^__status__ = 'Development'$/;"	v
@@ -132,8 +147,8 @@ __status__	mla/injectors.py	/^__status__ = 'Development'$/;"	v
 __status__	mla/models.py	/^__status__ = 'Development'$/;"	v
 __status__	mla/time_profiles.py	/^__status__ = 'Development'$/;"	v
 __status__	mla/tools.py	/^__status__ = 'Development'$/;"	v
-__status__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__status__ = 'Development'$/;"	v
-__status__	test/test_data.py	/^__status__ = 'Development'$/;"	v
+__status__	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^__status__ = 'Development'$/;"	v
+__status__	tests/test_data.py	/^__status__ = 'Development'$/;"	v
 __str__	mla/spectral.py	/^    def __str__(self):$/;"	m	class:BaseSpectrum
 __str__	mla/spectral.py	/^    def __str__(self):$/;"	m	class:CustomSpectrum
 __str__	mla/spectral.py	/^    def __str__(self):$/;"	m	class:PowerLaw
@@ -143,11 +158,11 @@ __version__	mla/injectors.py	/^__version__ = '0.0.1'$/;"	v
 __version__	mla/models.py	/^__version__ = '0.0.1'$/;"	v
 __version__	mla/time_profiles.py	/^__version__ = '0.0.1'$/;"	v
 __version__	mla/tools.py	/^__version__ = '0.0.1'$/;"	v
-__version__	test/.ipynb_checkpoints/test_data-checkpoint.py	/^__version__ = '0.0.1'$/;"	v
-__version__	test/test_data.py	/^__version__ = '0.0.1'$/;"	v
-_bin_counts_log	test/workshop/joint_fit_example/VERITASLike.py	/^    def _bin_counts_log(counts, log_bins):$/;"	m	class:VERITASRun
+__version__	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^__version__ = '0.0.1'$/;"	v
+__version__	tests/test_data.py	/^__version__ = '0.0.1'$/;"	v
+_bin_counts_log	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def _bin_counts_log(counts, log_bins):$/;"	m	class:VERITASRun
 _build_rv	mla/time_profiles.py	/^    def _build_rv(self,$/;"	m	class:CustomProfile
-_columns_in_data_tree	test/workshop/joint_fit_example/VERITASLike.py	/^_columns_in_data_tree = ['Time',  # it is the MJD of individual events$/;"	v
+_columns_in_data_tree	tests/old/workshop/joint_fit_example/VERITASLike.py	/^_columns_in_data_tree = ['Time',  # it is the MJD of individual events$/;"	v
 _create_background_dec_spline	mla/models.py	/^    def _create_background_dec_spline(self, sin_dec_bins: np.array, *args,$/;"	m	class:EventModel
 _create_background_sob_map	mla/models.py	/^    def _create_background_sob_map(self) -> None:$/;"	m	class:ThreeMLEventModel
 _create_log_sob_gamma_splines	mla/models.py	/^    def _create_log_sob_gamma_splines(self, gamma_bins: np.array, *args,$/;"	m	class:EventModel
@@ -155,15 +170,15 @@ _create_sob_map	mla/models.py	/^    def _create_sob_map(self, gamma: float, *arg
 _create_sob_ratio	mla/models.py	/^    def _create_sob_ratio(self, *args, **kwargs) -> None:$/;"	m	class:ThreeMLEventModel
 _cut_sim	mla/models.py	/^    def _cut_sim(self, source_dec: float = np.pi \/ 2,$/;"	m	class:ThreeMLEventModel
 _cut_sim_truedec	mla/models.py	/^    def _cut_sim_truedec(self, source_dec: float = np.pi \/ 2,$/;"	m	class:ThreeMLEventModel
-_get_diff_flux_and_integral	test/workshop/joint_fit_example/VERITASLike.py	/^    def _get_diff_flux_and_integral(self, like_model):$/;"	m	class:VERITASRun
+_get_diff_flux_and_integral	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def _get_diff_flux_and_integral(self, like_model):$/;"	m	class:VERITASRun
 _init_event_model	mla/analysis.py	/^    def _init_event_model(self,$/;"	m	class:ThreeMLPsAnalysis
-_integrate	test/workshop/joint_fit_example/VERITASLike.py	/^    def _integrate(function, e1, e2):$/;"	m	class:VERITASRun
+_integrate	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def _integrate(function, e1, e2):$/;"	m	class:VERITASRun
 _preprocess_ts	mla/analysis.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel$/;"	m	class:PsAnalysis
 _preprocess_ts	mla/analysis.py	/^    def _preprocess_ts(self, events: np.ndarray, event_model: models.EventModel,$/;"	m	class:TimeDependentPsAnalysis
-_renorm_hMigration	test/workshop/joint_fit_example/VERITASLike.py	/^    def _renorm_hMigration(self):$/;"	m	class:VERITASRun
-_simulated_spectrum	test/workshop/joint_fit_example/VERITASLike.py	/^    def _simulated_spectrum(x):$/;"	m	class:VERITASRun
-_simulated_spectrum_f	test/workshop/joint_fit_example/VERITASLike.py	/^    def _simulated_spectrum_f(e1, e2):$/;"	m	class:VERITASRun
-_trees_in_run	test/workshop/joint_fit_example/VERITASLike.py	/^_trees_in_run = ['data_on',  # Event list in the source region$/;"	v
+_renorm_hMigration	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def _renorm_hMigration(self):$/;"	m	class:VERITASRun
+_simulated_spectrum	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def _simulated_spectrum(x):$/;"	m	class:VERITASRun
+_simulated_spectrum_f	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def _simulated_spectrum_f(e1, e2):$/;"	m	class:VERITASRun
+_trees_in_run	tests/old/workshop/joint_fit_example/VERITASLike.py	/^_trees_in_run = ['data_on',  # Event list in the source region$/;"	v
 angular_distance	mla/tools.py	/^def angular_distance(ra1: float, dec1: float, ra2: float, dec2: float) -> float:$/;"	f
 author	docs/source/conf.py	/^author = 'John Evans, Jason Fan, Michael Larson'$/;"	v
 background_dec_spline	mla/models.py	/^    def background_dec_spline(self) -> scipy.interpolate.UnivariateSpline:$/;"	m	class:EventModel
@@ -179,25 +194,25 @@ copy	mla/spectral.py	/^    def copy(self):$/;"	m	class:BaseSpectrum
 copyright	docs/source/conf.py	/^copyright = '2020, John Evans, Jason Fan, Michael Larson'$/;"	v
 cross_matrix	mla/tools.py	/^def cross_matrix(mat: np.array) -> np.array:$/;"	f
 data	mla/models.py	/^    def data(self) -> np.ndarray:$/;"	m	class:EventModel
-data	test/testmla-liklihood_way.py	/^data = read(glob.glob(data_files))$/;"	v
-data	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^data = DataList(hawc)$/;"	v
-data	test/workshop/hawc_fit/crab_fit_logparabola.py	/^data = DataList(hawc)$/;"	v
-data_dtype	test/.ipynb_checkpoints/test_data-checkpoint.py	/^data_dtype = [$/;"	v
-data_dtype	test/test_data.py	/^data_dtype = [$/;"	v
-data_files	test/testmla-liklihood_way.py	/^data_files = dataset + "IC86_*exp.npy"$/;"	v
-data_radius	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^data_radius = 3.0$/;"	v
-data_radius	test/workshop/hawc_fit/crab_fit_logparabola.py	/^data_radius = 3.0$/;"	v
-dataset	test/testmla-liklihood_way.py	/^dataset = ""$/;"	v
-dec	test/testmla-liklihood_way.py	/^dec = 22.0145*np.pi\/180$/;"	v
-dec_crab	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^ra_crab, dec_crab = 83.63,22.02$/;"	v
-dec_crab	test/workshop/hawc_fit/crab_fit_logparabola.py	/^ra_crab, dec_crab = 83.63,22.02$/;"	v
+data	tests/old/testmla-liklihood_way.py	/^data = read(glob.glob(data_files))$/;"	v
+data	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^data = DataList(hawc)$/;"	v
+data	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^data = DataList(hawc)$/;"	v
+data_dtype	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^data_dtype = [$/;"	v
+data_dtype	tests/test_data.py	/^data_dtype = [$/;"	v
+data_files	tests/old/testmla-liklihood_way.py	/^data_files = dataset + "IC86_*exp.npy"$/;"	v
+data_radius	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^data_radius = 3.0$/;"	v
+data_radius	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^data_radius = 3.0$/;"	v
+dataset	tests/old/testmla-liklihood_way.py	/^dataset = ""$/;"	v
+dec	tests/old/testmla-liklihood_way.py	/^dec = 22.0145*np.pi\/180$/;"	v
+dec_crab	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^ra_crab, dec_crab = 83.63,22.02$/;"	v
+dec_crab	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^ra_crab, dec_crab = 83.63,22.02$/;"	v
 dec_to_rad	examples/sources.py	/^def dec_to_rad(sign: int, deg: float, mins: float, secs: float) -> float:$/;"	f
 default_params	mla/time_profiles.py	/^    def default_params(self) -> Dict[str, float]:$/;"	m	class:CustomProfile
 default_params	mla/time_profiles.py	/^    def default_params(self) -> Dict[str, float]:$/;"	m	class:GaussProfile
 default_params	mla/time_profiles.py	/^    def default_params(self) -> Dict[str, float]:$/;"	m	class:GenericProfile
 default_params	mla/time_profiles.py	/^    def default_params(self) -> Dict[str, float]:$/;"	m	class:UniformProfile
-differential_flux	test/workshop/joint_fit_example/VERITASLike.py	/^        def differential_flux(energies):$/;"	f	member:VERITASRun._get_diff_flux_and_integral	file:
-display	test/workshop/joint_fit_example/VERITASLike.py	/^    def display(self):$/;"	m	class:VERITASRun
+differential_flux	tests/old/workshop/joint_fit_example/VERITASLike.py	/^        def differential_flux(energies):$/;"	f	member:VERITASRun._get_diff_flux_and_integral	file:
+display	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def display(self):$/;"	m	class:VERITASRun
 documentation_options	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
 documentation_options	docs/.ipynb_checkpoints/index-checkpoint.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
 documentation_options	docs/.ipynb_checkpoints/modules-checkpoint.html	/^      <script type="text\/javascript" id="documentation_options" data-url_root=".\/" src="_stati/;"	I
@@ -209,33 +224,33 @@ evaluate_ts	mla/analysis.py	/^    def evaluate_ts(self, events: np.ndarray, even
 evaluate_ts	mla/analysis.py	/^    def evaluate_ts(self, events: np.ndarray, event_model: models.EventModel,$/;"	m	class:Analysis
 exclude_patterns	docs/source/conf.py	/^exclude_patterns = []$/;"	v
 extensions	docs/source/conf.py	/^extensions = [$/;"	v
-fig	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^fig = hawc.display_fit(smoothing_kernel_sigma=0.3,display_colorbar=True)$/;"	v
-fig	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^fig = hawc.display_spectrum()$/;"	v
-fig	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^fig = hawc.display_stacked_image(smoothing_kernel_sigma=0.17)$/;"	v
-fig	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^fig = plot_spectra(jl.results,$/;"	v
-fig	test/workshop/hawc_fit/crab_fit_logparabola.py	/^fig = hawc.display_fit(smoothing_kernel_sigma=0.3,display_colorbar=True)$/;"	v
-fig	test/workshop/hawc_fit/crab_fit_logparabola.py	/^fig = hawc.display_spectrum()$/;"	v
-fig	test/workshop/hawc_fit/crab_fit_logparabola.py	/^fig = hawc.display_stacked_image(smoothing_kernel_sigma=0.17)$/;"	v
-fig	test/workshop/hawc_fit/crab_fit_logparabola.py	/^fig = plot_spectra(jl.results,$/;"	v
-find_and_delete	test/workshop/joint_fit_example/example_joint.py	/^def find_and_delete(name, path):$/;"	f
+fig	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^fig = hawc.display_fit(smoothing_kernel_sigma=0.3,display_colorbar=True)$/;"	v
+fig	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^fig = hawc.display_spectrum()$/;"	v
+fig	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^fig = hawc.display_stacked_image(smoothing_kernel_sigma=0.17)$/;"	v
+fig	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^fig = plot_spectra(jl.results,$/;"	v
+fig	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^fig = hawc.display_fit(smoothing_kernel_sigma=0.3,display_colorbar=True)$/;"	v
+fig	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^fig = hawc.display_spectrum()$/;"	v
+fig	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^fig = hawc.display_stacked_image(smoothing_kernel_sigma=0.17)$/;"	v
+fig	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^fig = plot_spectra(jl.results,$/;"	v
+find_and_delete	tests/old/workshop/joint_fit_example/example_joint.py	/^def find_and_delete(name, path):$/;"	f
 get_energy_sob	mla/models.py	/^    def get_energy_sob(self, events: np.ndarray$/;"	m	class:ThreeMLEventModel
-get_log_like	test/workshop/joint_fit_example/VERITASLike.py	/^    def get_log_like(self):$/;"	m	class:VERITASLike
-get_log_like	test/workshop/joint_fit_example/VERITASLike.py	/^    def get_log_like(self, like_model, fast=True):$/;"	m	class:VERITASRun
+get_log_like	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def get_log_like(self):$/;"	m	class:VERITASLike
+get_log_like	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def get_log_like(self, like_model, fast=True):$/;"	m	class:VERITASRun
 get_log_sob_gamma_splines	mla/models.py	/^    def get_log_sob_gamma_splines(self, events: np.ndarray,$/;"	m	class:EventModel
-get_random_data	test/.ipynb_checkpoints/test_data-checkpoint.py	/^def get_random_data(length: int) -> np.ndarray:$/;"	f
-get_random_data	test/test_data.py	/^def get_random_data(length: int) -> np.ndarray:$/;"	f
-get_random_grl	test/.ipynb_checkpoints/test_data-checkpoint.py	/^def get_random_grl(data: np.ndarray) -> np.ndarray:$/;"	f
-get_random_grl	test/test_data.py	/^def get_random_grl(data: np.ndarray) -> np.ndarray:$/;"	f
-get_random_sim	test/.ipynb_checkpoints/test_data-checkpoint.py	/^def get_random_sim(length: int) -> np.ndarray:$/;"	f
-get_random_sim	test/test_data.py	/^def get_random_sim(length: int) -> np.ndarray:$/;"	f
+get_random_data	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^def get_random_data(length: int) -> np.ndarray:$/;"	f
+get_random_data	tests/test_data.py	/^def get_random_data(length: int) -> np.ndarray:$/;"	f
+get_random_grl	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^def get_random_grl(data: np.ndarray) -> np.ndarray:$/;"	f
+get_random_grl	tests/test_data.py	/^def get_random_grl(data: np.ndarray) -> np.ndarray:$/;"	f
+get_random_sim	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^def get_random_sim(length: int) -> np.ndarray:$/;"	f
+get_random_sim	tests/test_data.py	/^def get_random_sim(length: int) -> np.ndarray:$/;"	f
 get_ts	mla/analysis.py	/^        def get_ts(args):$/;"	f	member:PsAnalysis.minimize_ts	file:
 grl	mla/models.py	/^    def grl(self) -> np.ndarray:$/;"	m	class:EventModel
-grl	test/testmla-liklihood_way.py	/^grl = read(glob.glob(grl_files))$/;"	v
-grl_dtype	test/.ipynb_checkpoints/test_data-checkpoint.py	/^grl_dtype = [$/;"	v
-grl_dtype	test/test_data.py	/^grl_dtype = [$/;"	v
-grl_files	test/testmla-liklihood_way.py	/^grl_files = dataset + "GRL\/IC86_*exp.npy"$/;"	v
-hawc	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^hawc = HAL("HAWC",$/;"	v
-hawc	test/workshop/hawc_fit/crab_fit_logparabola.py	/^hawc = HAL("HAWC",$/;"	v
+grl	tests/old/testmla-liklihood_way.py	/^grl = read(glob.glob(grl_files))$/;"	v
+grl_dtype	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^grl_dtype = [$/;"	v
+grl_dtype	tests/test_data.py	/^grl_dtype = [$/;"	v
+grl_files	tests/old/testmla-liklihood_way.py	/^grl_files = dataset + "GRL\/IC86_*exp.npy"$/;"	v
+hawc	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^hawc = HAL("HAWC",$/;"	v
+hawc	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^hawc = HAL("HAWC",$/;"	v
 help	docs/Makefile	/^help:$/;"	t
 help	docs/make.bat	/^:help$/;"	l
 html_static_path	docs/source/conf.py	/^html_static_path = ['_static']$/;"	v
@@ -261,27 +276,28 @@ inject_background_and_signal	mla/injectors.py	/^    def inject_background_and_si
 inject_background_events	mla/injectors.py	/^    def inject_background_events(self,  # This still belongs here even though it doesn't use sel/;"	m	class:PsInjector
 inject_background_events	mla/injectors.py	/^    def inject_background_events(self,$/;"	m	class:TimeDependentPsInjector
 inject_background_events_No_time	mla/injectors.py	/^    def inject_background_events_No_time(self, event_model: models.EventModel) -> np.ndarray:$/;"	m	class:TimeDependentPsInjector
+inject_n_signal_events	tests/test_injectors.py	/^def inject_n_signal_events(injector: injectors.PsInjector, n_signal: int,$/;"	f
 inject_nsignal_events	mla/injectors.py	/^    def inject_nsignal_events(self, $/;"	m	class:PsInjector
 inject_nsignal_events	mla/injectors.py	/^    def inject_nsignal_events(self,$/;"	m	class:TimeDependentPsInjector
 inject_signal_events	mla/injectors.py	/^    def inject_signal_events(self, reduced_sim: np.ndarray) -> np.ndarray:$/;"	m	class:PsInjector
 inject_signal_events	mla/injectors.py	/^    def inject_signal_events(self,$/;"	m	class:TimeDependentPsInjector
-inner_fit	test/workshop/joint_fit_example/VERITASLike.py	/^    def inner_fit(self):$/;"	m	class:VERITASLike
-integral	test/workshop/joint_fit_example/VERITASLike.py	/^        def integral(e1, e2):$/;"	f	member:VERITASRun._get_diff_flux_and_integral	file:
-integral_f	test/workshop/joint_fit_example/VERITASLike.py	/^        integral_f = lambda x: -3.0 \/ (x**0.5)$/;"	f	member:VERITASRun._simulated_spectrum_f	file:
-jl	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^jl = JointLikelihood(model, data, verbose=False)$/;"	v
-jl	test/workshop/hawc_fit/crab_fit_logparabola.py	/^jl = JointLikelihood(model, data, verbose=False)$/;"	v
-like_df	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^param_df, like_df = jl.fit()$/;"	v
-like_df	test/workshop/hawc_fit/crab_fit_logparabola.py	/^param_df, like_df = jl.fit()$/;"	v
+inner_fit	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def inner_fit(self):$/;"	m	class:VERITASLike
+integral	tests/old/workshop/joint_fit_example/VERITASLike.py	/^        def integral(e1, e2):$/;"	f	member:VERITASRun._get_diff_flux_and_integral	file:
+integral_f	tests/old/workshop/joint_fit_example/VERITASLike.py	/^        integral_f = lambda x: -3.0 \/ (x**0.5)$/;"	f	member:VERITASRun._simulated_spectrum_f	file:
+jl	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^jl = JointLikelihood(model, data, verbose=False)$/;"	v
+jl	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^jl = JointLikelihood(model, data, verbose=False)$/;"	v
+like_df	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^param_df, like_df = jl.fit()$/;"	v
+like_df	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^param_df, like_df = jl.fit()$/;"	v
 logpdf	mla/time_profiles.py	/^    def logpdf(self, times: np.array) -> np.array:$/;"	m	class:CustomProfile
 logpdf	mla/time_profiles.py	/^    def logpdf(self, times: np.array) -> np.array:$/;"	m	class:GaussProfile
 logpdf	mla/time_profiles.py	/^    def logpdf(self, times: np.array) -> np.array:$/;"	m	class:GenericProfile
 logpdf	mla/time_profiles.py	/^    def logpdf(self, times: np.array) -> np.array:$/;"	m	class:UniformProfile
 long_description	.ipynb_checkpoints/setup-checkpoint.py	/^    long_description = fh.read()$/;"	v
 long_description	setup.py	/^    long_description = fh.read()$/;"	v
-main	test/workshop/joint_fit_example/example_joint.py	/^def main():$/;"	f
-maptree	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^maptree = "..\/data\/HAWC_9bin_507days_crab_data.hd5"$/;"	v
-maptree	test/workshop/hawc_fit/crab_fit_logparabola.py	/^maptree = "..\/data\/HAWC_9bin_507days_crab_data.hd5"$/;"	v
-migration_matrix	test/workshop/joint_fit_example/VERITASLike.py	/^    def migration_matrix(self):$/;"	m	class:VERITASRun
+main	tests/old/workshop/joint_fit_example/example_joint.py	/^def main():$/;"	f
+maptree	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^maptree = "..\/data\/HAWC_9bin_507days_crab_data.hd5"$/;"	v
+maptree	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^maptree = "..\/data\/HAWC_9bin_507days_crab_data.hd5"$/;"	v
+migration_matrix	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def migration_matrix(self):$/;"	m	class:VERITASRun
 min_ns	mla/analysis.py	/^    def min_ns(self,$/;"	m	class:ThreeMLPsAnalysis
 minimize_ts	mla/analysis.py	/^    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel,  # Super class wil/;"	m	class:PsAnalysis
 minimize_ts	mla/analysis.py	/^    def minimize_ts(self, events: np.ndarray, event_model: models.EventModel,$/;"	m	class:Analysis
@@ -293,10 +309,10 @@ mla.models module	docs/source/mla.rst	/^mla.models module$/;"	s	chapter:mla pack
 mla.spectral module	docs/source/mla.rst	/^mla.spectral module$/;"	s	chapter:mla package
 mla.time\\_profiles module	docs/source/mla.rst	/^mla.time\\_profiles module$/;"	s	chapter:mla package
 mla.tools module	docs/source/mla.rst	/^mla.tools module$/;"	s	chapter:mla package
-model	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^model = Model(source)$/;"	v
-model	test/workshop/hawc_fit/crab_fit_logparabola.py	/^model = Model(source)$/;"	v
-model_radius	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^model_radius = 8.0$/;"	v
-model_radius	test/workshop/hawc_fit/crab_fit_logparabola.py	/^model_radius = 8.0$/;"	v
+model	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^model = Model(source)$/;"	v
+model	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^model = Model(source)$/;"	v
+model_radius	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^model_radius = 8.0$/;"	v
+model_radius	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^model_radius = 8.0$/;"	v
 module-contents	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<span id="module-contents"><\/span><h2>Module contents<a class="headerlink" href="#module-i3pubt/;"	I
 module-i3pubtools.llhs	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<div class="section" id="module-i3pubtools.llhs">$/;"	I
 module-i3pubtools.llhs.cluster_multiflare_llh	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<div class="section" id="module-i3pubtools.llhs.cluster_multiflare_llh">$/;"	I
@@ -308,13 +324,14 @@ np	mla/models.py	/^import numpy as np$/;"	I
 np	mla/spectral.py	/^import numpy as np$/;"	I
 np	mla/time_profiles.py	/^import numpy as np$/;"	I
 np	mla/tools.py	/^import numpy as np$/;"	I
-np	test/.ipynb_checkpoints/test_data-checkpoint.py	/^import numpy as np$/;"	I
-np	test/test_data.py	/^import numpy as np$/;"	I
-np	test/testmla-liklihood_way.py	/^import numpy as np$/;"	I
-np	test/workshop/joint_fit_example/VERITASLike.py	/^import numpy as np$/;"	I
-np	test/workshop/joint_fit_example/example_joint.py	/^import numpy as np$/;"	I
-param_df	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^param_df, like_df = jl.fit()$/;"	v
-param_df	test/workshop/hawc_fit/crab_fit_logparabola.py	/^param_df, like_df = jl.fit()$/;"	v
+np	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^import numpy as np$/;"	I
+np	tests/old/testmla-liklihood_way.py	/^import numpy as np$/;"	I
+np	tests/old/workshop/joint_fit_example/VERITASLike.py	/^import numpy as np$/;"	I
+np	tests/old/workshop/joint_fit_example/example_joint.py	/^import numpy as np$/;"	I
+np	tests/test_data.py	/^import numpy as np$/;"	I
+np	tests/test_injectors.py	/^import numpy as np$/;"	I
+param_df	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^param_df, like_df = jl.fit()$/;"	v
+param_df	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^param_df, like_df = jl.fit()$/;"	v
 param_dtype	mla/time_profiles.py	/^    def param_dtype(self) -> List[Tuple[str, str]]:$/;"	m	class:CustomProfile
 param_dtype	mla/time_profiles.py	/^    def param_dtype(self) -> List[Tuple[str, str]]:$/;"	m	class:GaussProfile
 param_dtype	mla/time_profiles.py	/^    def param_dtype(self) -> List[Tuple[str, str]]:$/;"	m	class:GenericProfile
@@ -323,19 +340,19 @@ pdf	mla/time_profiles.py	/^    def pdf(self, times: np.array) -> np.array:$/;"	m
 pdf	mla/time_profiles.py	/^    def pdf(self, times: np.array) -> np.array:$/;"	m	class:GaussProfile
 pdf	mla/time_profiles.py	/^    def pdf(self, times: np.array) -> np.array:$/;"	m	class:GenericProfile
 pdf	mla/time_profiles.py	/^    def pdf(self, times: np.array) -> np.array:$/;"	m	class:UniformProfile
-plt	test/testmla-liklihood_way.py	/^from matplotlib import pyplot as plt, colors$/;"	x
-plt	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^import matplotlib.pyplot as plt$/;"	I
-plt	test/workshop/hawc_fit/crab_fit_logparabola.py	/^import matplotlib.pyplot as plt$/;"	I
-plt	test/workshop/joint_fit_example/example_joint.py	/^import matplotlib.pyplot as plt$/;"	I
+plt	tests/old/testmla-liklihood_way.py	/^from matplotlib import pyplot as plt, colors$/;"	x
+plt	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^import matplotlib.pyplot as plt$/;"	I
+plt	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^import matplotlib.pyplot as plt$/;"	I
+plt	tests/old/workshop/joint_fit_example/example_joint.py	/^import matplotlib.pyplot as plt$/;"	I
 produce_and_minimize	mla/analysis.py	/^    def produce_and_minimize(self, event_model: models.EventModel,  # Super class will never be /;"	m	class:PsAnalysis
 produce_and_minimize	mla/analysis.py	/^    def produce_and_minimize(self, event_model: models.EventModel,$/;"	m	class:Analysis
 produce_trial	mla/analysis.py	/^    def produce_trial(self, event_model: models.EventModel, *args,$/;"	m	class:Analysis
 produce_trial	mla/analysis.py	/^    def produce_trial(self, event_model: models.EventModel, flux_norm: float,  # Super class wil/;"	m	class:PsAnalysis
 produce_trial	mla/analysis.py	/^    def produce_trial(self,$/;"	m	class:ThreeMLPsAnalysis
 project	docs/source/conf.py	/^project = 'MLA'$/;"	v
-ra	test/testmla-liklihood_way.py	/^ra = 83.63*np.pi\/180$/;"	v
-ra_crab	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^ra_crab, dec_crab = 83.63,22.02$/;"	v
-ra_crab	test/workshop/hawc_fit/crab_fit_logparabola.py	/^ra_crab, dec_crab = 83.63,22.02$/;"	v
+ra	tests/old/testmla-liklihood_way.py	/^ra = 83.63*np.pi\/180$/;"	v
+ra_crab	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^ra_crab, dec_crab = 83.63,22.02$/;"	v
+ra_crab	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^ra_crab, dec_crab = 83.63,22.02$/;"	v
 ra_to_rad	examples/sources.py	/^def ra_to_rad(hrs: float, mins: float, secs: float) -> float:$/;"	f
 random	mla/time_profiles.py	/^    def random(self, size: int = 1) -> np.array:$/;"	m	class:CustomProfile
 random	mla/time_profiles.py	/^    def random(self, size: int = 1) -> np.array:$/;"	m	class:GaussProfile
@@ -346,49 +363,51 @@ range	mla/time_profiles.py	/^    def range(self) -> Tuple[Optional[float], Optio
 range	mla/time_profiles.py	/^    def range(self) -> Tuple[Optional[float], Optional[float]]:  # Python 3.9 bug... pylint: dis/;"	m	class:GenericProfile
 range	mla/time_profiles.py	/^    def range(self) -> Tuple[Optional[float], Optional[float]]:  # Python 3.9 bug... pylint: dis/;"	m	class:UniformProfile
 read	mla/tools.py	/^def read(filelist: List[str]) -> np.ndarray:$/;"	f
-read	test/testmla-liklihood_way.py	/^def read(filelist):$/;"	f
-rebin_on_background	test/workshop/joint_fit_example/VERITASLike.py	/^    def rebin_on_background(self, *args, **kwargs):$/;"	m	class:VERITASLike
-rebin_on_source	test/workshop/joint_fit_example/VERITASLike.py	/^    def rebin_on_source(self, *args, **kwargs):$/;"	m	class:VERITASLike
+read	tests/old/testmla-liklihood_way.py	/^def read(filelist):$/;"	f
+rebin_on_background	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def rebin_on_background(self, *args, **kwargs):$/;"	m	class:VERITASLike
+rebin_on_source	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def rebin_on_source(self, *args, **kwargs):$/;"	m	class:VERITASLike
 reduced_sim	mla/injectors.py	/^    def reduced_sim(self, event_model: models.EventModel, flux_norm: float = 0,$/;"	m	class:PsInjector
 reduced_sim	mla/injectors.py	/^    def reduced_sim(self,$/;"	m	class:TimeDependentPsInjector
-response	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^response = "..\/data\/HAWC_9bin_507days_crab_response.hd5"$/;"	v
-response	test/workshop/hawc_fit/crab_fit_logparabola.py	/^response = "..\/data\/HAWC_9bin_507days_crab_response.hd5"$/;"	v
-results	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^results=jl.results$/;"	v
-results	test/workshop/hawc_fit/crab_fit_logparabola.py	/^results=jl.results$/;"	v
+response	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^response = "..\/data\/HAWC_9bin_507days_crab_response.hd5"$/;"	v
+response	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^response = "..\/data\/HAWC_9bin_507days_crab_response.hd5"$/;"	v
+results	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^results=jl.results$/;"	v
+results	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^results=jl.results$/;"	v
 rf	mla/analysis.py	/^import numpy.lib.recfunctions as rf$/;"	I
 rf	mla/injectors.py	/^import numpy.lib.recfunctions as rf$/;"	I
 rf	mla/models.py	/^import numpy.lib.recfunctions as rf$/;"	I
-roi	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^roi = HealpixConeROI(data_radius=data_radius,$/;"	v
-roi	test/workshop/hawc_fit/crab_fit_logparabola.py	/^roi = HealpixConeROI(data_radius=data_radius,$/;"	v
+roi	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^roi = HealpixConeROI(data_radius=data_radius,$/;"	v
+roi	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^roi = HealpixConeROI(data_radius=data_radius,$/;"	v
 rotate	mla/tools.py	/^def rotate(ra1: float, dec1: float, ra2: float, dec2: float,  # This is fine for a first release/;"	f
 rtd-search-form	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
 rtd-search-form	docs/.ipynb_checkpoints/index-checkpoint.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
 rtd-search-form	docs/.ipynb_checkpoints/modules-checkpoint.html	/^  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">$/;"	I
 set_background_profile	mla/injectors.py	/^    def set_background_profile(self,$/;"	m	class:TimeDependentPsInjector
 set_data	mla/analysis.py	/^    def set_data(self, data: np.ndarray) -> None:$/;"	m	class:ThreeMLPsAnalysis
-set_model	test/workshop/joint_fit_example/VERITASLike.py	/^    def set_model(self, likelihood_model_instance):$/;"	m	class:VERITASLike
+set_model	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def set_model(self, likelihood_model_instance):$/;"	m	class:VERITASLike
 set_position	mla/injectors.py	/^    def set_position(self, ra: float, dec: float) -> None:$/;"	m	class:TimeDependentPsInjector
 set_signal_profile	mla/injectors.py	/^    def set_signal_profile(self,$/;"	m	class:TimeDependentPsInjector
 signal_spatial_pdf	mla/injectors.py	/^    def signal_spatial_pdf(self, events: np.ndarray) -> np.array:$/;"	m	class:PsInjector
 signal_spatial_pdf	mla/injectors.py	/^    def signal_spatial_pdf(self, events: np.ndarray) -> np.array:$/;"	m	class:TimeDependentPsInjector
 sim	mla/models.py	/^    def sim(self) -> np.ndarray:$/;"	m	class:EventModel
-sim	test/testmla-liklihood_way.py	/^sim = read(glob.glob(sim_files))$/;"	v
-sim_dtype	test/.ipynb_checkpoints/test_data-checkpoint.py	/^sim_dtype = [$/;"	v
-sim_dtype	test/test_data.py	/^sim_dtype = [$/;"	v
-sim_files	test/testmla-liklihood_way.py	/^sim_files = dataset + "IC86*MC*npy"$/;"	v
-source	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^source = PointSource("crab", ra=ra_crab, dec=dec_crab, spectral_shape=spectrum)$/;"	v
-source	test/workshop/hawc_fit/crab_fit_logparabola.py	/^source = PointSource("crab", ra=ra_crab, dec=dec_crab, spectral_shape=spectrum)$/;"	v
+sim	tests/old/testmla-liklihood_way.py	/^sim = read(glob.glob(sim_files))$/;"	v
+sim_dtype	tests/old/.ipynb_checkpoints/test_data-checkpoint.py	/^sim_dtype = [$/;"	v
+sim_dtype	tests/test_data.py	/^sim_dtype = [$/;"	v
+sim_files	tests/old/testmla-liklihood_way.py	/^sim_files = dataset + "IC86*MC*npy"$/;"	v
+source	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^source = PointSource("crab", ra=ra_crab, dec=dec_crab, spectral_shape=spectrum)$/;"	v
+source	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^source = PointSource("crab", ra=ra_crab, dec=dec_crab, spectral_shape=spectrum)$/;"	v
 sources	examples/sources.py	/^sources = {'crab_nebula':{'ra':ra_to_rad(5, 34, 31.94),$/;"	v
-spectrum	test/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^spectrum = Log_parabola()$/;"	v
-spectrum	test/workshop/hawc_fit/crab_fit_logparabola.py	/^spectrum = Log_parabola()$/;"	v
+spectrum	tests/old/workshop/hawc_fit/.ipynb_checkpoints/crab_fit_logparabola-checkpoint.py	/^spectrum = Log_parabola()$/;"	v
+spectrum	tests/old/workshop/hawc_fit/crab_fit_logparabola.py	/^spectrum = Log_parabola()$/;"	v
 spline	mla/models.py	/^        def spline(log_ratios):$/;"	f	member:EventModel._create_log_sob_gamma_splines	file:
 submodules	docs/.ipynb_checkpoints/i3pubtools.llhs-checkpoint.html	/^<div class="section" id="submodules">$/;"	I
 templates_path	docs/source/conf.py	/^templates_path = ['_templates']$/;"	v
-test	test/testmla-liklihood_way.py	/^test=mla.sensitivtiy.PS_sensitivity()$/;"	v
+test	tests/old/testmla-liklihood_way.py	/^test=mla.sensitivtiy.PS_sensitivity()$/;"	v
+test_ns_bias	tests/test_injectors.py	/^    def test_ns_bias(self):$/;"	m	class:TestPsInjector
+test_ns_bias	tests/test_injectors.py	/^    def test_ns_bias(self):$/;"	m	class:TestTimeDependentPsInjector
 to_unit_vector	mla/tools.py	/^def to_unit_vector(r_a: float, dec: float) -> np.array:$/;"	f
-total_background_counts	test/workshop/joint_fit_example/VERITASLike.py	/^    def total_background_counts(self):$/;"	m	class:VERITASRun
-total_counts	test/workshop/joint_fit_example/VERITASLike.py	/^    def total_counts(self):$/;"	m	class:VERITASRun
-u	test/workshop/joint_fit_example/example_joint.py	/^from astropy import units as u$/;"	x
+total_background_counts	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def total_background_counts(self):$/;"	m	class:VERITASRun
+total_counts	tests/old/workshop/joint_fit_example/VERITASLike.py	/^    def total_counts(self):$/;"	m	class:VERITASRun
+u	tests/old/workshop/joint_fit_example/example_joint.py	/^from astropy import units as u$/;"	x
 umd-icecube-analysis-tutorial	docs/.ipynb_checkpoints/modules-checkpoint.html	/^  <div class="section" id="umd-icecube-analysis-tutorial">$/;"	I
 umd_icecube_analysis_tutorial¶	docs/.ipynb_checkpoints/modules-checkpoint.html	/^<h1>umd_icecube_analysis_tutorial<a class="headerlink" href="#umd-icecube-analysis-tutorial" tit/;"	h
 update_model	mla/models.py	/^    def update_model(self, spectrum) -> None:$/;"	m	class:ThreeMLEventModel
