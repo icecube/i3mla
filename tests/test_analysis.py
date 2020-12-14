@@ -10,11 +10,7 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 import unittest
-
-if __name__ == '__main__':
-    from context import mla
-else:
-    from .context import mla
+from context import mla
 from mla import analysis
 
 
