@@ -163,7 +163,6 @@ class GaussProfile(GenericProfile):
         self.sigma = sigma
         self.scipy_dist = scipy.stats.norm(mean, sigma)
         self._range = None, None
-        self._exposure = np.sqrt(2 * np.pi * sigma**2)
         self._default_params = {'_'.join([name, 'mean']): mean,
                                 '_'.join([name, 'sigma']): sigma}
         self._param_dtype = [('_'.join([name, 'mean']), np.float32),
@@ -239,7 +238,7 @@ class GaussProfile(GenericProfile):
 
     @property
     def exposure(self) -> float:
-        return self._exposure
+        return np.sqrt(2 * np.pi * self.sigma**2)
 
     @property
     def range(self) -> Tuple[Optional[float], Optional[float]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
@@ -281,7 +280,6 @@ class UniformProfile(GenericProfile):
         """
         super().__init__()
         self._range = (start, start + length)
-        self._exposure = length
         self._default_params = {'_'.join([name, 'start']): self._range[0],
                                 '_'.join([name, 'length']): length}
 
@@ -354,7 +352,7 @@ class UniformProfile(GenericProfile):
 
     @property
     def exposure(self) -> float:
-        return self._exposure
+        return self._range[1] - self._range[0]
 
     @property
     def range(self) -> Tuple[Optional[float], Optional[float]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
