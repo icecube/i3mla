@@ -14,6 +14,7 @@ from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 import numpy as np
 import scipy
 
+from mla import mla
 from mla import models
 from mla import injectors
 
@@ -32,13 +33,15 @@ class PsTestStatistic:
 
     @staticmethod
     def preprocess_ts(event_model: models.EventModel,
-                      injector: injectors.PsInjector, events: np.ndarray,
+                      injector: injectors.PsInjector, source: mla.Source,
+                      events: np.ndarray,
     ) -> TsPreprocess:
         """Contains all of the calculations for the ts that can be done once.
 
         Separated from the main test-statisic functions to improve performance.
 
         Args:
+            source:
             events: An array of events to calculate the test-statistic for.
             event_model: An object containing data and preprocessed parameters.
 
@@ -52,15 +55,15 @@ class PsTestStatistic:
         if len(events) == 0:
             raise ValueError('len(events) must be > 0.')
 
-        sig = injector.signal_spatial_pdf(events)
+        sig = injector.signal_spatial_pdf(source, events)
         bkgr = injector.background_spatial_pdf(events, event_model)
         splines = event_model.get_log_sob_gamma_splines(events)
 
         return splines, sig / bkgr
 
     @staticmethod
-    def calculate_ts(events: np.ndarray,
-                     preprocessing: TsPreprocess, n_signal: float, gamma: float,
+    def calculate_ts(events: np.ndarray, preprocessing: TsPreprocess,
+                     n_signal: float, gamma: float,
                      n_events: Optional[float] = None) -> np.array:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Evaluates the test-statistic for the given events and parameters.
 

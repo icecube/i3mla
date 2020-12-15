@@ -14,6 +14,7 @@ from typing import Optional
 import numpy as np
 import numpy.lib.recfunctions as rf
 
+from mla import mla
 from mla import models
 from mla import injectors
 
@@ -25,14 +26,75 @@ class PsTrialGenerator:
         """Docstring"""
 
     @staticmethod
-    def preprocess_trial() -> None:
-        """Docstring"""
+    def preprocess_trial(event_model: models.EventModel, source: mla.Source,
+                         flux_norm: float = 0, gamma: float = -2,
+                         sampling_width: Optional[float] = None) -> np.ndarray:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+        """Gets a small simulation dataset to use for injecting signal.
+
+        Prunes the simulation set to only events close to a given source and
+        calculate the weight for each event. Adds the weights as a new column
+        to the simulation set.
+
+        Args:
+            event_model: Preprocessed data and simulation.
+            source:
+            flux_norm: A flux normaliization to adjust weights.
+            gamma: A spectral index to adjust weights.
+            sampling_width: The bandwidth around the source dec to cut events.
+
+        Returns:
+            A reweighted simulation set around the source declination.
+        """
+        # Pick out only those events that are close in
+        # declination. We only want to sample from those.
+        if sampling_width is not None:
+            sindec_dist = np.abs(
+                source['dec'] - event_model.sim['trueDec'])
+            close = sindec_dist < sampling_width
+
+            reduced_sim = rf.append_fields(
+                event_model.sim[close].copy(),
+                'weight',
+                np.zeros(close.sum()),
+                dtypes=np.float32)
+
+            max_dec = np.min([np.sin(source['dec'] + sampling_width), 1])
+            min_dec = np.max([np.sin(source['dec'] - sampling_width), -1])
+            omega = 2 * np.pi * max_dec - min_dec
+
+        else:
+            reduced_sim = rf.append_fields(
+                event_model.sim.copy(),
+                'weight',
+                np.zeros(len(event_model.sim)),
+                dtypes=np.float32)
+            omega = 4 * np.pi
+
+        # Assign the weights using the newly defined "time profile"
+        # classes above. If you want to make this a more complicated
+        # shape, talk to me and we can work it out.
+        rescaled_energy = (reduced_sim['trueE'] / 100.e3)**gamma
+        reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * rescaled_energy
+
+        # Apply the sampling width, which ensures that we
+        # sample events from similar declinations.
+        # When we do this, correct for the solid angle
+        # we're including for sampling
+        reduced_sim['weight'] /= omega
+
+        # Randomly assign times to the simulation events within the data time
+        # range.
+        min_time = np.min(event_model.data['time'])
+        max_time = np.max(event_model.data['time'])
+        reduced_sim['time'] = np.random.uniform(min_time, max_time,
+                                                size=len(reduced_sim))
+
+        return reduced_sim
 
     @classmethod
     def ps_trial_gen(cls, event_model: models.EventModel,  # pylint: disable=too-many-locals, too-many-arguments
-                     injector: injectors.PsInjector, flux_norm: float,
-                     reduced_sim: Optional[np.ndarray] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                     gamma: float = -2, sampling_width: Optional[float] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                     injector: injectors.PsInjector, source: mla.Source,
+                     preprocessing: np.ndarray, flux_norm: float,
                      random_seed: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                      disable_time_filter: Optional[bool] = False,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                      verbose: bool = False) -> np.ndarray:
@@ -41,12 +103,10 @@ class PsTrialGenerator:
         Args:
             event_model: An object containing data and preprocessed parameters.
             injector:
-            reduced_sim: Reweighted and pruned simulated events near the source
+            source:
+            preprocessing: Reweighted and pruned simulated events near the source
                 declination.
             flux_norm: A flux normaliization to adjust weights.
-            gamma: A spectral index to adjust weights.
-            sampling_width: The bandwidth around the source declination to cut
-                events.
             random_seed: A seed value for the numpy RNG.
             disable_time_filter: do not cut out events that is not in grl
             verbose: A flag to print progress.
@@ -57,17 +117,10 @@ class PsTrialGenerator:
         if random_seed is not None:
             np.random.seed(random_seed)
 
-        if reduced_sim is None:
-            reduced_sim = injector.reduced_sim(
-                flux_norm=flux_norm,
-                gamma=gamma,
-                sampling_width=sampling_width,
-            )
-
         background = injector.inject_background_events(event_model)
 
         if flux_norm > 0:
-            signal = injector.inject_signal_events(reduced_sim)
+            signal = injector.inject_signal_events(source, preprocessing)
         else:
             signal = np.empty(0, dtype=background.dtype)
 
@@ -92,10 +145,14 @@ class PsTrialGenerator:
             # We need to check to ensure that every event is contained within
             # a good run. If the event happened when we had deadtime (when we
             # were not taking data), then we need to remove it.
-            grl_start = event_model.grl['start'].reshape((1, len(event_model.grl)))
-            grl_stop = event_model.grl['stop'].reshape((1, len(event_model.grl)))
-            after_start = np.less(grl_start, events['time'].reshape(len(events), 1))
-            before_stop = np.less(events['time'].reshape(len(events), 1), grl_stop)
+            grl_start = event_model.grl['start'].reshape((1,
+                                                          len(event_model.grl)))
+            grl_stop = event_model.grl['stop'].reshape((1,
+                                                        len(event_model.grl)))
+            after_start = np.less(grl_start, events['time'].reshape(len(events),
+                                                                    1))
+            before_stop = np.less(events['time'].reshape(len(events), 1),
+                                  grl_stop)
             during_uptime = np.any(after_start & before_stop, axis=1)
             events = events[during_uptime]
 

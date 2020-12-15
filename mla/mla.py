@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, Dict, List, Tuple
+from typing import Dict, List, Tuple
 
 import dataclasses
 import numpy as np
@@ -21,12 +21,21 @@ from mla import trial_generators
 
 
 @dataclasses.dataclass
+class Source:
+    """Stores a source object name and location"""
+    name: str
+    ra: float
+    dec: float
+
+
+@dataclasses.dataclass
 class Analysis:
     """Stores the components of an analysis."""
     model: models.EventModel
     injector: injectors.PsInjector
     test_statistic: test_statistics.PsTestStatistic
     trial_generator: trial_generators.PsTrialGenerator
+    source: Source
 
 
 def evaluate_ts(analysis: Analysis, events: np.ndarray, *args,
@@ -35,7 +44,7 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray, *args,
     return analysis.test_statistic.calculate_ts(
         events,
         analysis.test_statistic.preprocess_ts(
-            analysis.model, analysis.injector, events),
+            analysis.model, analysis.injector, analysis.source, events),
         *args,
         **kwargs,
     )
@@ -47,7 +56,7 @@ def minimize_ts(analysis: Analysis, events: np.ndarray, *args,
     return analysis.test_statistic.minimize_ts(
         events,
         analysis.test_statistic.preprocess_ts(
-            analysis.model, analysis.injector, events),
+            analysis.model, analysis.injector, analysis.source, events),
         *args,
         **kwargs,
     )
@@ -58,8 +67,10 @@ def produce_trial(analysis: Analysis, *args, **kwargs) -> np.ndarray:
     return analysis.trial_generator.generate(
         analysis.model,
         analysis.injector,
+        analysis.source,
         analysis.trial_generator.preprocess_trial(
-            analysis.model, analysis.injector, *args, **kwargs),
+            analysis.model, analysis.injector, analysis.source, *args, **kwargs
+        ),
         *args,
         **kwargs,
     )
@@ -69,7 +80,7 @@ def produce_and_minimize(analysis: Analysis, n_trials: int, *args,
                          **kwargs) -> List[Dict[str, float]]:
     """Docstring"""
     preprocessing = analysis.trial_generator.preprocess_trial(
-        analysis.model, analysis.injector, *args, **kwargs)
+        analysis.model, analysis.injector, analysis.source, *args, **kwargs)
 
     return [
         minimize_ts(
@@ -77,6 +88,7 @@ def produce_and_minimize(analysis: Analysis, n_trials: int, *args,
             analysis.trial_generator.generate(
                 analysis.model,
                 analysis.injector,
+                analysis.source,
                 preprocessing,
                 *args,
                 **kwargs,
@@ -85,6 +97,36 @@ def produce_and_minimize(analysis: Analysis, n_trials: int, *args,
             **kwargs,
         ) for _ in n_trials
     ]
+
+
+def ra_to_rad(hrs: float, mins: float, secs: float) -> float:
+    """Converts right ascension to radians.
+
+    Args:
+        hrs: Hours.
+        mins: Minutes.
+        secs: Seconds.
+
+    Returns:
+        Radian representation of right ascension.
+    """
+    return (hrs * 15 + mins / 4 + secs / 240) * np.pi / 180
+
+
+def dec_to_rad(sign: int, deg: float, mins: float, secs: float) -> float:
+    """Converts declination to radians.
+
+    Args:
+        sign: A positive integer for a positive sign, a negative integer for a
+            negative sign.
+        deg: Degrees.
+        mins: Minutes.
+        secs: Seconds.
+
+    Returns:
+        Radian representation of declination.
+    """
+    return sign / np.abs(sign) * (deg + mins / 60 + secs / 3600) * np.pi / 180
 
 
 def read(filelist: List[str]) -> np.ndarray:
