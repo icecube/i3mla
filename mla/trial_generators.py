@@ -92,12 +92,12 @@ class PsTrialGenerator:
         return reduced_sim
 
     @classmethod
-    def ps_trial_gen(cls, event_model: models.EventModel,  # pylint: disable=too-many-locals, too-many-arguments
-                     injector: injectors.PsInjector, source: mla.Source,
-                     preprocessing: np.ndarray, flux_norm: float,
-                     random_seed: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                     disable_time_filter: Optional[bool] = False,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                     verbose: bool = False) -> np.ndarray:
+    def generate(cls, event_model: models.EventModel,  # pylint: disable=too-many-locals, too-many-arguments
+                 injector: injectors.PsInjector, source: mla.Source,
+                 preprocessing: np.ndarray, flux_norm: float,
+                 random_seed: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 disable_time_filter: Optional[bool] = False,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 verbose: bool = False) -> np.ndarray:
         """Produces a single trial of background+signal events based on inputs.
 
         Args:
