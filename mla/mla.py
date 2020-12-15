@@ -1,4 +1,7 @@
-"""Functions that are generic enough to not belong in any class"""
+"""
+Top-level analysis code, and functions that are generic enough to not belong
+in any class.
+"""
 
 __author__ = 'John Evans'
 __copyright__ = 'Copyright 2020 John Evans'
