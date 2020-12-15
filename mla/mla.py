@@ -166,24 +166,30 @@ def to_unit_vector(r_a: float, dec: float) -> np.array:
                      np.sin(dec)])
 
 
-def angular_distance(ra1: float, dec1: float, ra2: float, dec2: float) -> float:
-    """Calculates the angle between two points on the unit sphere.
+def angular_distance(src_ra: float, src_dec: float, r_a: float,
+                     dec: float) -> float:
+    """Computes angular distance between source and location.
 
     Args:
-        ra1: The right ascension of the first point (radians).
-        dec1: The declination of the first point (radians).
-        ra2: The right ascension of the second point (radians).
-        dec2: The declination of the second point (radians).
+        src_ra: The right ascension of the first point (radians).
+        src_dec: The declination of the first point (radians).
+        r_a: The right ascension of the second point (radians).
+        dec: The declination of the second point (radians).
 
     Returns:
         The distance, in radians, between the two points.
     """
-    unit1 = to_unit_vector(ra1, dec1)
-    unit2 = to_unit_vector(ra2, dec2)
+    sin_dec = np.sin(dec)
 
-    if len(unit1.shape) != 1:
-        return np.arccos(np.dot(unit1.T, unit2))
-    return np.arccos(np.dot(unit1, unit2))
+    cos_dec = np.sqrt(1. - sin_dec**2)
+
+    cos_dist = (
+        np.cos(src_ra - r_a) * np.cos(src_dec) * cos_dec
+    ) + np.sin(src_dec) * sin_dec
+    # handle possible floating precision errors
+    cos_dist = np.clip(cos_dist, -1, 1)
+
+    return np.arccos(cos_dist)
 
 
 def cross_matrix(mat: np.array) -> np.array:
