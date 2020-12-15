@@ -9,9 +9,82 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import List, Tuple
+from typing import Callable, Dict, List, Tuple
 
+import dataclasses
 import numpy as np
+
+from mla import models
+from mla import injectors
+from mla import test_statistics
+from mla import trial_generators
+
+
+@dataclasses.dataclass
+class Analysis:
+    """Stores the components of an analysis."""
+    model: models.EventModel
+    injector: injectors.PsInjector
+    test_statistic: test_statistics.PsTestStatistic
+    trial_generator: trial_generators.PsTrialGenerator
+
+
+def evaluate_ts(analysis: Analysis, events: np.ndarray, *args,
+                **kwargs) -> float:
+    """Docstring"""
+    return analysis.test_statistic.calculate_ts(
+        events,
+        analysis.test_statistic.preprocess_ts(
+            analysis.model, analysis.injector, events),
+        *args,
+        **kwargs,
+    )
+
+
+def minimize_ts(analysis: Analysis, events: np.ndarray, *args,
+                **kwargs) -> Dict[str, float]:
+    """Docstring"""
+    return analysis.test_statistic.minimize_ts(
+        events,
+        analysis.test_statistic.preprocess_ts(
+            analysis.model, analysis.injector, events),
+        *args,
+        **kwargs,
+    )
+
+
+def produce_trial(analysis: Analysis, *args, **kwargs) -> np.ndarray:
+    """Docstring"""
+    return analysis.trial_generator.generate(
+        analysis.model,
+        analysis.injector,
+        analysis.trial_generator.preprocess_trial(
+            analysis.model, analysis.injector, *args, **kwargs),
+        *args,
+        **kwargs,
+    )
+
+
+def produce_and_minimize(analysis: Analysis, n_trials: int, *args,
+                         **kwargs) -> List[Dict[str, float]]:
+    """Docstring"""
+    preprocessing = analysis.trial_generator.preprocess_trial(
+        analysis.model, analysis.injector, *args, **kwargs)
+
+    return [
+        minimize_ts(
+            analysis,
+            analysis.trial_generator.generate(
+                analysis.model,
+                analysis.injector,
+                preprocessing,
+                *args,
+                **kwargs,
+            ),
+            *args,
+            **kwargs,
+        ) for _ in n_trials
+    ]
 
 
 def read(filelist: List[str]) -> np.ndarray:
