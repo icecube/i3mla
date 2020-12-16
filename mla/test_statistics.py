@@ -12,11 +12,11 @@ __status__ = 'Development'
 from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
-import scipy
+import scipy.optimize
 
-from mla import mla
-from mla import models
-from mla import injectors
+from . import core
+from . import models
+from . import injectors
 
 TsPreprocess = Tuple[List[scipy.interpolate.UnivariateSpline], np.array]
 Minimizer = Callable[
@@ -33,7 +33,7 @@ class PsTestStatistic:
 
     @staticmethod
     def preprocess_ts(event_model: models.EventModel,
-                      injector: injectors.PsInjector, source: mla.Source,
+                      injector: injectors.PsInjector, source: core.Source,
                       events: np.ndarray,
     ) -> TsPreprocess:
         """Contains all of the calculations for the ts that can be done once.

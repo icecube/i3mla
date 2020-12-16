@@ -17,11 +17,6 @@ from typing import Dict, List, Tuple
 import dataclasses
 import numpy as np
 
-from mla import models
-from mla import injectors
-from mla import test_statistics
-from mla import trial_generators
-
 
 @dataclasses.dataclass
 class Source:
@@ -34,6 +29,10 @@ class Source:
 @dataclasses.dataclass
 class Analysis:
     """Stores the components of an analysis."""
+    from . import models
+    from . import injectors
+    from . import test_statistics
+    from . import trial_generators
     model: models.EventModel
     injector: injectors.PsInjector
     test_statistic: test_statistics.PsTestStatistic

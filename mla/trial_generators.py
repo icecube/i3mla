@@ -14,9 +14,9 @@ from typing import Optional
 import numpy as np
 import numpy.lib.recfunctions as rf
 
-from mla import mla
-from mla import models
-from mla import injectors
+from . import core
+from . import models
+from . import injectors
 
 
 class PsTrialGenerator:
@@ -26,7 +26,7 @@ class PsTrialGenerator:
         """Docstring"""
 
     @staticmethod
-    def preprocess_trial(event_model: models.EventModel, source: mla.Source,
+    def preprocess_trial(event_model: models.EventModel, source: core.Source,
                          flux_norm: float = 0, gamma: float = -2,
                          sampling_width: Optional[float] = None) -> np.ndarray:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Gets a small simulation dataset to use for injecting signal.
@@ -93,7 +93,7 @@ class PsTrialGenerator:
 
     @classmethod
     def generate(cls, event_model: models.EventModel,  # pylint: disable=too-many-locals, too-many-arguments
-                 injector: injectors.PsInjector, source: mla.Source,
+                 injector: injectors.PsInjector, source: core.Source,
                  preprocessing: np.ndarray, flux_norm: float,
                  random_seed: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                  disable_time_filter: Optional[bool] = False,  # Python 3.9 bug... pylint: disable=unsubscriptable-object

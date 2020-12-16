@@ -14,8 +14,8 @@ __status__ = 'Development'
 import numpy as np
 import scipy
 
-from mla import mla
-from mla import models
+from . import core
+from . import models
 
 
 class PsInjector:
@@ -29,7 +29,7 @@ class PsInjector:
         """Initializes the PsInjector object and gives it a source."""
 
     @staticmethod
-    def signal_spatial_pdf(source: mla.Source, events: np.ndarray) -> np.array:
+    def signal_spatial_pdf(source: core.Source, events: np.ndarray) -> np.array:
         """Calculates the signal probability of events.
 
         Gives a gaussian probability based on their angular distance from the
@@ -44,8 +44,8 @@ class PsInjector:
             distances.
         """
         sigma = events['angErr']
-        dist = mla.angular_distance(events['ra'], events['dec'],
-                                    source['ra'], source['dec'])
+        dist = core.angular_distance(events['ra'], events['dec'],
+                                     source['ra'], source['dec'])
         norm = 1 / (2 * np.pi * sigma**2)
         return norm * np.exp(-dist**2 / (2 * sigma**2))
 
@@ -92,7 +92,7 @@ class PsInjector:
         return background
 
     @staticmethod
-    def inject_signal_events(source: mla.Source,
+    def inject_signal_events(source: core.Source,
                              trial_preprocessing: np.ndarray) -> np.ndarray:
         """Injects signal events for a trial.
 
@@ -120,11 +120,11 @@ class PsInjector:
         if n_signal_observed > 0:
             ones = np.ones_like(signal['trueRa'])
 
-            signal['ra'], signal['dec'] = mla.rotate(
+            signal['ra'], signal['dec'] = core.rotate(
                 signal['trueRa'], signal['trueDec'],
                 ones * source['ra'], ones * source['dec'],
                 signal['ra'], signal['dec'])
-            signal['trueRa'], signal['trueDec'] = mla.rotate(
+            signal['trueRa'], signal['trueDec'] = core.rotate(
                 signal['trueRa'], signal['trueDec'],
                 ones * source['ra'], ones * source['dec'],
                 signal['trueRa'], signal['trueDec'])

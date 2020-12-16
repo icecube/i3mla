@@ -12,7 +12,7 @@ __status__ = 'Development'
 import unittest
 
 from context import mla
-from mla import mla
+from mla import core
 
 
 if __name__ == '__main__':
