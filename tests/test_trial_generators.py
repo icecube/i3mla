@@ -10,23 +10,12 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 import unittest
+
 from context import mla
-from mla import analysis
+from mla import trial_generators
 
 
-class TestAnalysis(unittest.TestCase):
-    """Docstring"""
-
-
-class TestPsAnalysis(unittest.TestCase):
-    """Docstring"""
-
-
-class TestTimeDependentPsAnalysis(unittest.TestCase):
-    """Docstring"""
-
-
-class TestThreeMLPsAnalysis(unittest.TestCase):
+class TestPsTrialGenerator(unittest.TestCase):
     """Docstring"""
 
 

@@ -10,9 +10,12 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 import unittest
-
 from context import mla
-from mla import tools
+from mla import test_statistics
+
+
+class TestPsTestStatistic(unittest.TestCase):
+    """Docstring"""
 
 
 if __name__ == '__main__':

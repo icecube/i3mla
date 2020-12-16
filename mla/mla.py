@@ -151,21 +151,6 @@ def read(filelist: List[str]) -> np.ndarray:
     return data
 
 
-def to_unit_vector(r_a: float, dec: float) -> np.array:
-    """Converts location on unit sphere to rectangular coordinates.
-
-    Args:
-        r_a: The right ascension of the point on the unit sphere.
-        dec: The declination of the point on the unit sphere.
-
-    Returns:
-        A numpy array of the x, y, and z coordinates of the point.
-    """
-    return np.array([np.cos(r_a) * np.cos(dec),
-                     np.sin(r_a) * np.cos(dec),
-                     np.sin(dec)])
-
-
 def angular_distance(src_ra: float, src_dec: float, r_a: float,
                      dec: float) -> float:
     """Computes angular distance between source and location.

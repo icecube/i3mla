@@ -12,19 +12,7 @@ __status__ = 'Development'
 import unittest
 
 from context import mla
-from mla import spectral
-
-
-class TestBaseSpectrum(unittest.TestCase):
-    """Docstring"""
-
-
-class TestPowerLaw(unittest.TestCase):
-    """Docstring"""
-
-
-class TestCustomSpectrum(unittest.TestCase):
-    """Docstring"""
+from mla import mla
 
 
 if __name__ == '__main__':
