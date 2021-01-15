@@ -130,3 +130,184 @@ class PsInjector:
                 signal['trueRa'], signal['trueDec'])
 
         return signal
+
+
+
+class TimeDependentPsInjector(PsInjector):
+    """Class info...
+    
+    More class info...
+    
+    Attributes:
+        source (Dict[str, float]):
+        event_model (EventModel):
+    """
+    def __init__(self,
+                 event_model: models.EventModel
+                 signal_time_profile: time_profiles.GenericProfile,
+                 background_time_profile: time_profiles.GenericProfile,
+                 background_window: Optional[float] = 14,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 withinwindow: Optional[bool] = False) -> None:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+        """Initialize TimeDependentPsInjector...
+        
+        Initialize and set the background and signal time profile
+        Args:
+            event_model: EventModel that holds the grl
+            signal_time_profile: Signal time profile 
+            background_time_profile: Background time profile 
+            background_window: Days used to estimated the background rate
+            withinwindow: Use data rate within time profile to estimate background rate
+        Returns:
+            None
+        """
+        super().__init__()
+        # Find the run contian in the background time window
+        start_time = background_time_profile.range[0]
+        end_time = background_time_profile.range[1]
+        if withinwindow:
+            fully_contained = (event_model.grl['start'] >= start_time) &\
+                                (event_model.grl['stop'] < end_time)
+            start_contained = (event_model.grl['start'] < start_time) &\
+                                (event_model.grl['stop'] > start_time)
+            background_runs = (fully_contained | start_contained)
+            if not np.any(background_runs):
+                print("ERROR: No runs found in GRL for calculation of "
+                      "background rates!")
+                raise RuntimeError
+            background_grl = event_model.grl[background_runs]
+        else:
+            fully_contained = (event_model.grl['start'] >= start_time-background_window) &\
+                                (event_model.grl['stop'] < start_time)
+            start_contained = (event_model.grl['start'] < start_time-background_window) &\
+                                (event_model.grl['stop'] > start_time-background_window)
+            background_runs = (fully_contained | start_contained)
+            if not np.any(background_runs):
+                print("ERROR: No runs found in GRL for calculation of "
+                      "background rates!")
+                raise RuntimeError
+            background_grl = event_model.grl[background_runs]
+        
+        #Find the background rate
+        n_background = background_grl['events'].sum()
+        n_background /= background_grl['livetime'].sum()
+        n_background *= background_time_profile.effective_exposure()
+        self.n_background = n_background
+        self.background_time_profile = background_time_profile
+        self.signal_time_profile = signal_time_profile
+        
+
+    def inject_background_events(self,
+                                 event_model: models.EventModel) -> np.ndarray:
+        """Injects background events with specific time profile for a trial.
+
+        Args:
+            
+        Returns:
+            An array of injected background events.
+        """
+        n_background_observed = np.random.poisson(self.n_background)
+        background = np.random.choice(event_model.data, n_background_observed).copy()
+        background['ra'] = np.random.uniform(0, 2*np.pi, len(background))
+        background['time'] = self.background_time_profile.random(size = len(background))
+
+        return background
+    
+    
+    def inject_signal_events(self, 
+                             reduced_sim: np.ndarray,
+                             signal_time_profile:Optional[time_profiles.GenericProfile] = None) -> np.ndarray:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+        """Function info...
+        
+        More function info...
+        
+        Args:
+            reduced_sim: Reweighted and pruned simulated events near the source declination.
+            signal_time_profile: The time profile of the injected signal
+            
+        Returns:
+            An array of injected signal events.
+        """
+        # Pick the signal events
+
+        total = reduced_sim['weight'].sum()
+
+        n_signal_observed = scipy.stats.poisson.rvs(total)
+        signal = np.random.choice(
+            reduced_sim, 
+            n_signal_observed,
+            p=reduced_sim['weight']/total,
+            replace = False).copy()
+
+        # Update this number
+        n_signal_observed = len(signal)
+
+        if n_signal_observed > 0:
+            ones = np.ones_like(signal['trueRa'])
+
+            signal['ra'], signal['dec'] = tools.rotate(
+                signal['trueRa'], signal['trueDec'],
+                ones*self.source['ra'], ones*self.source['dec'],
+                signal['ra'], signal['dec'])
+            signal['trueRa'], signal['trueDec'] = tools.rotate(
+                signal['trueRa'], signal['trueDec'],
+                ones*self.source['ra'], ones*self.source['dec'],
+                signal['trueRa'], signal['trueDec'])
+        #set the signal time profile if provided
+        if signal_time_profile is not None:
+            self.signal_time_profile = signal_time_profile
+         
+        #Randomize the signal time
+        if self.signal_time_profile is not None:    
+            signal['time'] = self.signal_time_profile.random(size = len(signal))
+            
+        return signal
+    
+    def inject_nsignal_events(self, 
+                              reduced_sim: np.ndarray, 
+                              n: int,
+                              signal_time_profile:Optional[time_profiles.GenericProfile] = None) -> np.ndarray:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+        """Function info...
+        
+        Inject n signal events.
+        
+        Args:
+            reduced_sim: Reweighted and pruned simulated events near the source declination.
+            n: Number of events.
+            signal_time_profile: The time profile of the injected signal
+        Returns:
+            An array of injected signal events.
+        """
+        # Pick the signal events
+        total = reduced_sim['weight'].sum()
+
+        n_signal_observed = n
+        signal = np.random.choice(
+            reduced_sim, 
+            n_signal_observed,
+            p=reduced_sim['weight']/total,
+            replace = False).copy()
+
+        # Update this number
+        n_signal_observed = len(signal)
+
+        if n_signal_observed > 0:
+            ones = np.ones_like(signal['trueRa'])
+
+            signal['ra'], signal['dec'] = tools.rotate(
+                signal['trueRa'], signal['trueDec'],
+                ones*self.source['ra'], ones*self.source['dec'],
+                signal['ra'], signal['dec'])
+            signal['trueRa'], signal['trueDec'] = tools.rotate(
+                signal['trueRa'], signal['trueDec'],
+                ones*self.source['ra'], ones*self.source['dec'],
+                signal['trueRa'], signal['trueDec'])
+                
+        #set the signal time profile if provided
+        if signal_time_profile is not None:
+            self.signal_time_profile = signal_time_profile
+         
+        #Randomize the signal time
+        if self.signal_time_profile is not None:    
+            signal['time'] = self.signal_time_profile.random(size = len(signal))
+        
+        return signal
