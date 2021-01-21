@@ -17,14 +17,15 @@ from typing import Dict, List, Tuple
 import dataclasses
 import numpy as np
 
-
 @dataclasses.dataclass
 class Source:
     """Stores a source object name and location"""
     name: str
     ra: float
     dec: float
-
+    
+    def __getitem__(cls, x):
+        return getattr(cls, x)
 
 @dataclasses.dataclass
 class Analysis:
@@ -58,7 +59,7 @@ def minimize_ts(analysis: Analysis, events: np.ndarray, *args,
     return analysis.test_statistic.minimize_ts(
         events,
         analysis.test_statistic.preprocess_ts(
-            analysis.model, analysis.injector, analysis.source, events),
+            analysis.model, analysis.injector, analysis.source, events, **kwargs),
         *args,
         **kwargs,
     )
@@ -71,7 +72,7 @@ def produce_trial(analysis: Analysis, *args, **kwargs) -> np.ndarray:
         analysis.injector,
         analysis.source,
         analysis.trial_generator.preprocess_trial(
-            analysis.model, analysis.injector, analysis.source, *args, **kwargs
+            analysis.model, analysis.source, *args, **kwargs
         ),
         *args,
         **kwargs,
@@ -82,7 +83,7 @@ def produce_and_minimize(analysis: Analysis, n_trials: int, *args,
                          **kwargs) -> List[Dict[str, float]]:
     """Docstring"""
     preprocessing = analysis.trial_generator.preprocess_trial(
-        analysis.model, analysis.injector, analysis.source, *args, **kwargs)
+        analysis.model, analysis.source, *args, **kwargs)
 
     return [
         minimize_ts(
@@ -97,7 +98,7 @@ def produce_and_minimize(analysis: Analysis, n_trials: int, *args,
             ),
             *args,
             **kwargs,
-        ) for _ in n_trials
+        ) for _ in range(n_trials)
     ]
 
 

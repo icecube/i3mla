@@ -17,6 +17,7 @@ import numpy.lib.recfunctions as rf
 from . import core
 from . import models
 from . import injectors
+from . import spectral
 
 
 class PsTrialGenerator:
@@ -28,7 +29,9 @@ class PsTrialGenerator:
     @staticmethod
     def preprocess_trial(event_model: models.EventModel, source: core.Source,
                          flux_norm: float = 0, gamma: float = -2,
-                         sampling_width: Optional[float] = None) -> np.ndarray:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                         spectrum:Optional[spectral.BaseSpectrum] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object 
+                         sampling_width: Optional[float] = None,
+                         **kwargs) -> np.ndarray:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Gets a small simulation dataset to use for injecting signal.
 
         Prunes the simulation set to only events close to a given source and
@@ -73,8 +76,11 @@ class PsTrialGenerator:
         # Assign the weights using the newly defined "time profile"
         # classes above. If you want to make this a more complicated
         # shape, talk to me and we can work it out.
-        rescaled_energy = (reduced_sim['trueE'] / 100.e3)**gamma
-        reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * rescaled_energy
+        if spectrum is None:
+            rescaled_energy = (reduced_sim['trueE'] / 100.e3)**gamma
+            reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * rescaled_energy
+        else:
+            reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * spectrum(reduced_sim['trueE'])
 
         # Apply the sampling width, which ensures that we
         # sample events from similar declinations.
@@ -94,10 +100,11 @@ class PsTrialGenerator:
     @classmethod
     def generate(cls, event_model: models.EventModel,  # pylint: disable=too-many-locals, too-many-arguments
                  injector: injectors.PsInjector, source: core.Source,
-                 preprocessing: np.ndarray, flux_norm: float,
+                 preprocessing: np.ndarray, flux_norm: float = 0,
                  random_seed: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                  disable_time_filter: Optional[bool] = False,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 verbose: bool = False) -> np.ndarray:
+                 verbose: bool = False,
+                 **kwargs) -> np.ndarray:
         """Produces a single trial of background+signal events based on inputs.
 
         Args:
@@ -119,8 +126,8 @@ class PsTrialGenerator:
 
         background = injector.inject_background_events(event_model)
 
-        if flux_norm > 0:
-            signal = injector.inject_signal_events(source, preprocessing)
+        if flux_norm > 0 or 'n_signal_observed' in kwargs:
+            signal = injector.inject_signal_events(source, preprocessing, **kwargs)
         else:
             signal = np.empty(0, dtype=background.dtype)
 
