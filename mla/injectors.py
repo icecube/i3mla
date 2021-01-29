@@ -149,7 +149,8 @@ class TimeDependentPsInjector(PsInjector):
                  signal_time_profile: time_profiles.GenericProfile,
                  background_time_profile: time_profiles.GenericProfile,
                  background_window: Optional[float] = 14,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-                 withinwindow: Optional[bool] = False) -> None:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 withinwindow: Optional[bool] = False,
+                 **kwargs) -> None:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Initialize TimeDependentPsInjector...
         
         Initialize and set the background and signal time profile

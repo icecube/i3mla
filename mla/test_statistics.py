@@ -22,6 +22,7 @@ from . import time_profiles
 
 TsPreprocess = Tuple[List[scipy.interpolate.UnivariateSpline], np.array]
 TsTimePreprocess = Tuple[List[scipy.interpolate.UnivariateSpline], np.array, np.array]
+TsThreeMLPreprocess = Tuple[np.array, np.array, np.array, int]
 Minimizer = Callable[
     [Callable, np.ndarray, Union[Sequence, scipy.optimize.Bounds]],  # Python 3.9 bug... pylint: disable=unsubscriptable-object
     scipy.optimize.OptimizeResult,
@@ -56,7 +57,8 @@ class PsTestStatistic:
             ValueError: There must be at least one event.
         """
         if len(events) == 0:
-            raise ValueError('len(events) must be > 0.')
+            #raise ValueError('len(events) must be > 0.')
+            return 0,0
 
         sig = injector.signal_spatial_pdf(source, events)
         bkgr = injector.background_spatial_pdf(events, event_model)
@@ -117,7 +119,7 @@ class PsTestStatistic:
                 return scipy.optimize.minimize(func, x0=x_0, bounds=bounds,
                                                method='L-BFGS-B')
 
-        output = {'ts': np.nan, 'n_signal': test_ns, 'gamma': test_gamma}
+        output = {'ts': 0, 'n_signal': test_ns, 'gamma': test_gamma}
         if len(events) == 0:
             return output
 
@@ -145,7 +147,7 @@ class PsTestStatistic:
             # where to start, and the bounds. First do the
             # shape parameters.
             x_0 = [test_ns, test_gamma]
-            bounds = [(0, n_events), gamma_bounds]  # gamma [min, max]
+            bounds = [(0, n_events-0.0001), gamma_bounds]  # gamma [min, max]
             result = minimizer(get_ts, x0=x_0, bounds=bounds)
 
             # Store the results in the output array
@@ -191,7 +193,8 @@ class PsTimeDependentTestStatistic(PsTestStatistic):
             ValueError: There must be at least one event.
         """
         if len(events) == 0:
-            raise ValueError('len(events) must be > 0.')
+            #raise ValueError('len(events) must be > 0.')
+            return 0,0,0
 
         sig = injector.signal_spatial_pdf(source, events)
         bkgr = injector.background_spatial_pdf(event_model, events)
@@ -258,7 +261,7 @@ class PsTimeDependentTestStatistic(PsTestStatistic):
                 return scipy.optimize.minimize(func, x0=x_0, bounds=bounds,
                                                method='L-BFGS-B')
 
-        output = {'ts': np.nan, 'n_signal': test_ns, 'gamma': test_gamma}
+        output = {'ts': 0, 'n_signal': test_ns, 'gamma': test_gamma}
         if len(events) == 0:
             return output
 
@@ -287,7 +290,7 @@ class PsTimeDependentTestStatistic(PsTestStatistic):
             # where to start, and the bounds. First do the
             # shape parameters.
             x_0 = [test_ns, test_gamma]
-            bounds = [(0, n_events), gamma_bounds]  # gamma [min, max]
+            bounds = [(0, n_events-0.0001), gamma_bounds]  # gamma [min, max]
             result = minimizer(get_ts, x_0=x_0, bounds=bounds)
 
             # Store the results in the output array
@@ -308,7 +311,9 @@ class PsThreeMLTestStatistic(PsTestStatistic):
     def preprocess_ts(event_model: models.EventModel,
                       injector: injectors.TimeDependentPsInjector, source: core.Source,
                       events: np.ndarray,
-    ) -> TsTimePreprocess:
+                      signal_time_profile: time_profiles.GenericProfile,
+                      background_time_profile: time_profiles.GenericProfile,
+    ) -> TsThreeMLPreprocess:
         """Contains all of the calculations for the ts that can be done once.
 
         Separated from the main test-statisic functions to improve performance.
@@ -316,6 +321,8 @@ class PsThreeMLTestStatistic(PsTestStatistic):
         Args:
             source:
             events: An array of events to calculate the test-statistic for.
+            signal_time_profile: Signal time profile for ts calculation
+            background_time_profile: Background time profile for ts calculation            
             event_model: An object containing data and preprocessed parameters.
 
         Returns:
@@ -326,24 +333,29 @@ class PsThreeMLTestStatistic(PsTestStatistic):
             ValueError: There must be at least one event.
         """
         if len(events) == 0:
-            raise ValueError('len(events) must be > 0.')
+            #raise ValueError('len(events) must be > 0.')
+            return 0,0,0
+            
 
+
+        
         sig = injector.signal_spatial_pdf(source, events)
         bkgr = injector.background_spatial_pdf(events, event_model)
-        splines = event_model.get_log_sob_gamma_splines(events)
-        sig_time = injector.signal_time_profile.pdf(events['time'])
-        bkg_time = injector.background_time_profile.pdf(events['time'])
+        sob_spatial = sig / bkgr
+        drop = n_events - np.sum(sob_spatial != 0)
+        drop_index = sob_spatial != 0
+        sig_time = signal_time_profile.pdf(events['time'][drop_index])
+        bkg_time = background_time_profile.pdf(events['time'][drop_index])
         time_ratio = sig_time/bkg_time
         if np.any(np.isfinite(time_ratio)):
             print("Warning,events outside background time profile")
-        
-        
-        return splines, sig / bkgr, time_ratio
+            
+        return sob_spatial[drop_index], time_ratio, drop_index, len(events)
 
     @staticmethod
-    def calculate_ts(events: np.ndarray, preprocessing: TsTimePreprocess,
-                     n_signal: float, gamma: float,
-                     n_events: Optional[float] = None) -> np.array:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+    def calculate_ts(events: np.ndarray, preprocessing: TsThreeMLPreprocess,
+                     event_model: models.EventModel,
+                     n_signal: float) -> np.array:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Evaluates the test-statistic for the given events and parameters.
 
         Calculates the test-statistic using a given event model, n_signal, and
@@ -353,17 +365,16 @@ class PsThreeMLTestStatistic(PsTestStatistic):
             events: An array of events to calculate the test statistic for.
             preprocessing:
             n_signal: A guess for the number of signal events.
-            gamma: A guess for the spectral index.
             n_events:
 
         Returns:
             The overall test-statistic value for the given events and
             parameters.
         """
-        if n_events is None:
-            n_events = len(events)
-        splines, sob , time_sob = preprocessing
-        sob_new = sob * np.exp([spline(gamma) for spline in splines])
+
+        sob , time_sob, drop_index, n_events = preprocessing  
+        energysob = event_model.get_energy_sob(events[drop_index])
+        sob_new = sob * energysob
         return np.log((n_signal / n_events * (sob_new*time_sob - 1)) + 1)
 
     @classmethod
@@ -393,7 +404,7 @@ class PsThreeMLTestStatistic(PsTestStatistic):
                 return scipy.optimize.minimize(func, x0=x_0, bounds=bounds,
                                                method='L-BFGS-B')
 
-        output = {'ts': np.nan, 'n_signal': test_ns, 'gamma': test_gamma}
+        output = {'ts': 0, 'n_signal': test_ns, 'gamma': test_gamma}
         if len(events) == 0:
             return output
 
@@ -421,7 +432,7 @@ class PsThreeMLTestStatistic(PsTestStatistic):
             # where to start, and the bounds. First do the
             # shape parameters.
             x_0 = [test_ns, test_gamma]
-            bounds = [(0, n_events), gamma_bounds]  # gamma [min, max]
+            bounds = [(0, n_events-0.0001), gamma_bounds]  # gamma [min, max]
             result = minimizer(get_ts, x0=x_0, bounds=bounds)
 
             # Store the results in the output array

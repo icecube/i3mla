@@ -23,9 +23,8 @@ class Source:
     name: str
     ra: float
     dec: float
-    
-    def __getitem__(cls, x):
-        return getattr(cls, x)
+    def __getitem__(self, x):
+        return getattr(self, x)
 
 @dataclasses.dataclass
 class Analysis:

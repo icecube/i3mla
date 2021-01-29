@@ -63,7 +63,7 @@ class PsTrialGenerator:
 
             max_dec = np.min([np.sin(source['dec'] + sampling_width), 1])
             min_dec = np.max([np.sin(source['dec'] - sampling_width), -1])
-            omega = 2 * np.pi * max_dec - min_dec
+            omega = 2 * np.pi * (max_dec - min_dec)
 
         else:
             reduced_sim = rf.append_fields(

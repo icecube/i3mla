@@ -126,10 +126,10 @@ class EventModel:
 
         if 'bbox' not in kwargs:
             kwargs['bbox'] = [-1.0, 1.0]
-        if 's' not in kwargs:
-            kwargs['s'] = 1.5e-5
+        #if 's' not in kwargs:
+        #    kwargs['s'] = 1.5e-5
         if 'ext' not in kwargs:
-            kwargs['ext'] = 1
+            kwargs['ext'] = 3
 
         return scipy.interpolate.UnivariateSpline(bin_centers, hist, *args,
                                                   **kwargs)
@@ -301,7 +301,8 @@ class ThreeMLEventModel:
                  spectrum: Optional[spectral.BaseSpectrum] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                  sampling_width: Optional[float] = np.radians(3),# Python 3.9 bug... pylint: disable=unsubscriptable-object
                  reduce_dec: Optional[bool] = True,# Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 verbose: bool = False) -> None:
+                 verbose: bool = False,
+                 **kwargs) -> None:
         """Initializes EventModel and calculates background only signal-over-background (sob) maps for ThreeML.
         
         More function info...
@@ -364,9 +365,8 @@ class ThreeMLEventModel:
         self._ratio = self._create_sob_ratio()
         return
 
-    def _create_background_dec_spline(self, sin_dec_bins: np.array, *args,
-                                      **kwargs,
-    ) -> scipy.interpolate.UnivariateSpline:
+    def _create_background_dec_spline(self, sin_dec_bins: np.array, 
+                                      **kwargs) -> scipy.interpolate.UnivariateSpline:
         """Builds a histogram of neutrino flux vs. sin(dec) and splines it.
 
         The UnivariateSpline function call uses these default arguments:
