@@ -291,7 +291,7 @@ class EventModel:
 
 
 
-class ThreeMLEventModel:
+class ThreeMLEventModel(EventModel):
     def __init__(self,
                  data: np.ndarray,
                  sim: np.ndarray,
@@ -319,28 +319,20 @@ class ThreeMLEventModel:
             reduce_dec: whether reduce the simulation to narrow dec
             verbose: A flag to print progress.
         """
+        super(ThreeMLEventModel,self).__init__(data, sim, grl,
+                                               background_sin_dec_bins = background_sin_dec_bins,
+                                               signal_sin_dec_bins = signal_sin_dec_bins,
+                                               log_energy_bins = log_energy_bins)
         try:
             self._data = rf.append_fields(data,'sindec',np.sin(data['dec']),usemask=False)#The full simulation set,this is for the overall normalization of the Energy S/B ratio
         except ValueError: #sindec already exist
-            self._data = data
             pass
         try:
             self._sim = rf.append_fields(sim,'sindec',np.sin(sim['dec']),usemask=False)#The full simulation set,this is for the overall normalization of the Energy S/B ratio
         except ValueError: #sindec already exist
-            self._sim = sim
             pass
             
-        if isinstance(background_sin_dec_bins, int):
-            background_sin_dec_bins = np.linspace(-1, 1, 1+background_sin_dec_bins)
-        self._background_dec_spline = self._create_background_dec_spline(background_sin_dec_bins)
-            
-        if isinstance(signal_sin_dec_bins, int):
-            signal_sin_dec_bins = np.linspace(-1, 1, 1+signal_sin_dec_bins)
-        self._sin_dec_bins = signal_sin_dec_bins
-            
-        if isinstance(log_energy_bins, int):
-            log_energy_bins = np.linspace(1, 8, 1+log_energy_bins)
-        self._log_energy_bins = log_energy_bins
+
         
         self.sampling_width = sampling_width
         self.reduce_dec = reduce_dec
@@ -351,12 +343,9 @@ class ThreeMLEventModel:
             self.reduced_sim = self._sim
             self.reduced_sim_truedec = self._sim
         
-        min_mjd = np.min(data['time'])
-        max_mjd = np.max(data['time'])
-        self._grl = grl[(grl['start'] < max_mjd) & (grl['stop'] > min_mjd)]
         
 
-        self._log_sob_gamma_splines = None
+        
         self._background_sob_map = self._create_background_sob_map()
         if spectrum is not None:
             self.spectrum = spectrum
@@ -366,51 +355,9 @@ class ThreeMLEventModel:
         self._ratio = self._create_sob_ratio()
         return
 
-    def _create_background_dec_spline(self, sin_dec_bins: np.array, 
-                                      **kwargs) -> scipy.interpolate.UnivariateSpline:
-        """Builds a histogram of neutrino flux vs. sin(dec) and splines it.
-
-        The UnivariateSpline function call uses these default arguments:
-        bbox=[-1.0, 1.0], s=1.5e-5, ext=1. To replace any of these defaults, or
-        to pass any other args/kwargs to UnivariateSpline, just pass them to
-        this function.
-
-        Args:
-            sin_dec_bins: A numpy array of bin edges to use to build the
-                histogram to spline.
-
-        Returns:
-            A spline function of the neutrino flux vs. sin(dec) histogram.
-        """
-        # Our background PDF only depends on declination.
-        # In order for us to capture the dec-dependent
-        # behavior, we first take a look at the dec values
-        # in the data. We can do this by histogramming them.
-        sin_dec = np.sin(self._data['dec'])
-        hist, bins = np.histogram(sin_dec, bins=sin_dec_bins, density=True)
-        bin_centers = bins[:-1] + np.diff(bins)/2
-
-        # These values have a lot of "noise": they jump
-        # up and down quite a lot. We could use fewer
-        # bins, but that may hide some features that
-        # we care about. We want something that captures
-        # the right behavior, but is smooth and continuous.
-        # The best way to do that is to use a "spline",
-        # which will fit a continuous and differentiable
-        # piecewise polynomial function to our data.
-        # We can set a smoothing factor (s) to control
-        # how smooth our spline is.
-
-        if 'bbox' not in kwargs:
-            kwargs['bbox'] = [-1.0, 1.0]
-        if 's' not in kwargs:
-            kwargs['s'] = 1.5e-5
-        if 'ext' not in kwargs:
-            kwargs['ext'] = 1
-
-
-        return scipy.interpolate.UnivariateSpline(bin_centers, hist, **kwargs)
-
+    def _create_log_sob_gamma_splines(self, *args, **kwargs)->None:
+        """Dummy function to override the inheritance"""
+        return None
     
     def _cut_sim(self, source_dec:float = np.pi/2, sampling_width = np.radians(3)) -> np.ndarray:
         """Select simulation events in a reconstruction dec band
@@ -546,28 +493,6 @@ class ThreeMLEventModel:
             self._ratio = self._create_sob_ratio()
         return 
     
-    @property
-    def data(self) -> np.ndarray:
-        """Getter for data.
-        """
-        return self._data
 
-    @property
-    def sim(self) -> np.ndarray:
-        """Getter for sim.
-        """
-        return self._sim
-
-    @property
-    def grl(self) -> np.ndarray:
-        """Getter for GRL.
-        """
-        return self._grl
-    
-    @property
-    def background_dec_spline(self) -> scipy.interpolate.UnivariateSpline:
-        """Getter for background_dec_spline.
-        """
-        return self._background_dec_spline
         
     
