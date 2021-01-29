@@ -164,7 +164,7 @@ class PsTimeDependentTestStatistic(PsTestStatistic):
     def __init__(self) -> None:
         """Docstring"""
         super().__init__()
-        
+
     @staticmethod
     def preprocess_ts(event_model: models.EventModel,
                       injector: injectors.TimeDependentPsInjector, source: core.Source,
@@ -181,10 +181,9 @@ class PsTimeDependentTestStatistic(PsTestStatistic):
             events: An array of events to calculate the test-statistic for.
             source:
             signal_time_profile: Signal time profile for ts calculation
-            background_time_profile: Background time profile for ts calculation            
+            background_time_profile: Background time profile for ts calculation
             event_model: An object containing data and preprocessed parameters.
 
-            
         Returns:
             A list of log(sob) vs gamma splines for each event and the pre-
             processed signal over background.
@@ -204,8 +203,7 @@ class PsTimeDependentTestStatistic(PsTestStatistic):
         time_ratio = sig_time/bkg_time
         if np.logical_not(np.all(np.isfinite(time_ratio))):
             print("Warning,events outside background time profile")
-        
-        
+
         return splines, sig / bkgr, time_ratio
 
     @staticmethod
@@ -299,14 +297,14 @@ class PsTimeDependentTestStatistic(PsTestStatistic):
             output['gamma'] = result.x[1]
 
         return output
-        
+
 class PsThreeMLTestStatistic(PsTestStatistic):
     """Docstring"""
 
     def __init__(self) -> None:
         """Docstring"""
         super().__init__()
-        
+
     @staticmethod
     def preprocess_ts(event_model: models.EventModel,
                       injector: injectors.TimeDependentPsInjector, source: core.Source,
@@ -322,7 +320,7 @@ class PsThreeMLTestStatistic(PsTestStatistic):
             source:
             events: An array of events to calculate the test-statistic for.
             signal_time_profile: Signal time profile for ts calculation
-            background_time_profile: Background time profile for ts calculation            
+            background_time_profile: Background time profile for ts calculation
             event_model: An object containing data and preprocessed parameters.
 
         Returns:
@@ -335,7 +333,6 @@ class PsThreeMLTestStatistic(PsTestStatistic):
         if len(events) == 0:
             #raise ValueError('len(events) must be > 0.')
             return 0,0,0
-            
 
         n_events = len(events)
         sig = injector.signal_spatial_pdf(source, events)
@@ -348,7 +345,7 @@ class PsThreeMLTestStatistic(PsTestStatistic):
         time_ratio = sig_time/bkg_time
         if np.any(np.isfinite(time_ratio)):
             print("Warning,events outside background time profile")
-            
+
         return sob_spatial[drop_index], time_ratio, drop_index, len(events)
 
     @staticmethod
@@ -372,7 +369,7 @@ class PsThreeMLTestStatistic(PsTestStatistic):
             parameters.
         """
 
-        sob , time_sob, drop_index, n_events = preprocessing  
+        sob , time_sob, drop_index, n_events = preprocessing
         energysob = event_model.get_energy_sob(events[drop_index])
         sob_new = sob * energysob
         return np.log((n_signal / n_events * (sob_new*time_sob - 1)) + 1)
