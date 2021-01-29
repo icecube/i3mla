@@ -15,6 +15,7 @@ __status__ = 'Development'
 from typing import List, Union, Optional
 
 import numpy as np
+import numpy.lib.recfunctions as rf
 import scipy.interpolate
 from . import spectral
 
@@ -408,8 +409,7 @@ class ThreeMLEventModel:
             kwargs['ext'] = 1
 
 
-        return scipy.interpolate.UnivariateSpline(bin_centers, hist, *args,
-                                                  **kwargs)
+        return scipy.interpolate.UnivariateSpline(bin_centers, hist, **kwargs)
 
     
     def _cut_sim(self, source_dec:float = np.pi/2, sampling_width = np.radians(3)) -> np.ndarray:

@@ -238,7 +238,7 @@ class PsTimeDependentTestStatistic(PsTestStatistic):
     def minimize_ts(cls, events: np.ndarray, preprocessing: TsTimePreprocess,  # pylint: disable=too-many-arguments
                     test_ns: float = 1, test_gamma: float = -2,
                     gamma_bounds: Tuple[float] = (-4, -1),
-                    minimizer: Optional[Minimizer] = None,
+                    minimizer: Optional[Minimizer] = None, # Python 3.9 bug... pylint: disable=unsubscriptable-object
                     **kwargs) -> Dict[str, float]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Calculates the params that minimize the ts for the given events.
 
@@ -337,8 +337,7 @@ class PsThreeMLTestStatistic(PsTestStatistic):
             return 0,0,0
             
 
-
-        
+        n_events = len(events)
         sig = injector.signal_spatial_pdf(source, events)
         bkgr = injector.background_spatial_pdf(events, event_model)
         sob_spatial = sig / bkgr
@@ -355,7 +354,8 @@ class PsThreeMLTestStatistic(PsTestStatistic):
     @staticmethod
     def calculate_ts(events: np.ndarray, preprocessing: TsThreeMLPreprocess,
                      event_model: models.EventModel,
-                     n_signal: float) -> np.array:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                     n_signal: float,
+                     n_events: Optional[float] = None) -> np.array:   # Python 3.9 bug... pylint: disable=unsubscriptable-object
         """Evaluates the test-statistic for the given events and parameters.
 
         Calculates the test-statistic using a given event model, n_signal, and

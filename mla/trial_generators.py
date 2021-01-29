@@ -30,7 +30,7 @@ class PsTrialGenerator:
     def preprocess_trial(event_model: models.EventModel, source: core.Source,
                          flux_norm: float = 0, gamma: float = -2,
                          spectrum:Optional[spectral.BaseSpectrum] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object 
-                         sampling_width: Optional[float] = None,
+                         sampling_width: Optional[float] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
                          **kwargs) -> np.ndarray:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Gets a small simulation dataset to use for injecting signal.
 
