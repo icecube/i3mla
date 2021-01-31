@@ -58,7 +58,7 @@ class PsPreprocess:
         self.n_events = len(self.events)
 
         if self.n_events == 0:
-            raise ValueError('len(events) must be > 0.')
+            return None
 
         self.sob_spatial = self.injector.signal_spatial_pdf(self.source,
                                                             self.events)
@@ -151,3 +151,42 @@ def td_ps_test_statistic(params: np.ndarray, pp: TdPsPreprocess) -> float:
     return -2 * np.sum(
         np.log((params[0] / pp.n_events * (sob_new - 1)) + 1)
     ) + pp.n_dropped * np.log(1 - params[0] / pp.n_events)
+
+
+
+@dataclasses.dataclass
+class ThreeMLPsPreprocess(PsPreprocess):
+    """Docstring"""
+    sob_energy: np.array = dataclasses.field(init=False)
+
+    def __post_init__(self) -> None:
+        """ThreeML version of TdPsPreprocess
+
+        Args:
+
+        """
+
+        super().__post_init__()
+
+        self.sob_energy = self.event_model.get_energy_sob(self.events)
+
+
+def ThreeML_ps_test_statistic(params: float, pp: ThreeMLPsPreprocess) -> float:
+    """(ThreeML version)Evaluates the test-statistic for the given events and parameters
+
+    Calculates the test-statistic using a given event model, n_signal, and
+    gamma. This function does not attempt to fit n_signal or gamma.
+
+    Args:
+        params: n_signal
+        pp:
+
+    Returns:
+        The overall test-statistic value for the given events and
+        parameters.
+    """
+
+    sob_new = pp.sob_spatial * pp.sob_time * pp.sob_energy
+    return -2 * np.sum(
+        np.log((params / pp.n_events * (sob_new - 1)) + 1)
+    ) + pp.n_dropped * np.log(1 - params / pp.n_events)
