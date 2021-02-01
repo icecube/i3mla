@@ -219,7 +219,7 @@ class TimeDependentPsInjector(PsInjector):
 
         return background
 
-    def inject_signal_events(self, source: core.Source,
+    def inject_signal_events(self, source: core.Source,  # Necessary for compatibility with trial_generator... pylint: disable=unused-argument
                              trial_preprocessing: np.ndarray,
                              n_signal_observed: Optional[int] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
                              **kwargs) -> np.ndarray:
