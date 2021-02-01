@@ -20,7 +20,7 @@ import scipy.optimize
 
 
 Minimizer = Callable[
-    [Callable, np.ndarray, Union[Sequence, scipy.optimize.Bounds]],  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+    [Callable, np.ndarray, Union[Sequence, scipy.optimize.Bounds]],
     scipy.optimize.OptimizeResult,
 ]
 
@@ -64,7 +64,7 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray, params: np.ndarray,
 
 def minimize_ts(analysis: Analysis, test_ns: float, test_gamma: float,
                 gamma_bounds: Tuple[float] = (-4, -1),
-                minimizer: Optional[Minimizer] = None) -> Dict[str, float]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                minimizer: Optional[Minimizer] = None) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.
 
     Accepts guess values for fitting the n_signal and spectral index, and

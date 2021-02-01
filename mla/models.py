@@ -46,10 +46,10 @@ class EventModel:
                  data: np.ndarray,
                  sim: np.ndarray,
                  grl: np.ndarray,
-                 background_sin_dec_bins: Union[np.array, int] = 500,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 signal_sin_dec_bins: Union[np.array, int] = 50,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 log_energy_bins: Union[np.array, int] = 50,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 gamma_bins: Union[np.array, int] = 50,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 background_sin_dec_bins: Union[np.array, int] = 500,
+                 signal_sin_dec_bins: Union[np.array, int] = 50,
+                 log_energy_bins: Union[np.array, int] = 50,
+                 gamma_bins: Union[np.array, int] = 50,
                  verbose: bool = False) -> None:
         """Initializes EventModel and calculates energy sob maps.
 
@@ -297,12 +297,12 @@ class ThreeMLEventModel(EventModel):  # @Jason, can this be fixed? pylint: disab
                  data: np.ndarray,
                  sim: np.ndarray,
                  grl: np.ndarray,
-                 background_sin_dec_bins: Union[np.array, int] = 500,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 signal_sin_dec_bins: Union[np.array, int] = 50,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 log_energy_bins: Union[np.array, int] = 50,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 spectrum: Optional[spectral.BaseSpectrum] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 sampling_width: Optional[float] = np.radians(3),  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 reduce_dec: Optional[bool] = True,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 background_sin_dec_bins: Union[np.array, int] = 500,
+                 signal_sin_dec_bins: Union[np.array, int] = 50,
+                 log_energy_bins: Union[np.array, int] = 50,
+                 spectrum: Optional[spectral.BaseSpectrum] = None,
+                 sampling_width: Optional[float] = np.radians(3),
+                 reduce_dec: Optional[bool] = True,
                  verbose: bool = False) -> None:
         """Initializes EventModel and calculates bg-only sob maps for ThreeML.
 

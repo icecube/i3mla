@@ -37,7 +37,7 @@ class BaseSpectrum:
         """
 
     @abc.abstractmethod
-    def __call__(self, energy: Union[np.ndarray, float],  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+    def __call__(self, energy: Union[np.ndarray, float],
                  **kwargs) -> np.ndarray:
         """return the differential flux at given energy(s).
 
@@ -68,7 +68,7 @@ class PowerLaw(BaseSpectrum):
     """
 
     def __init__(self, energy_0: float, flux_norm: float, gamma: float,
-                 energy_cut: Optional[float] = None) -> None:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 energy_cut: Optional[float] = None) -> None:
         """ Constructor of PowerLaw object.
 
         Args:
@@ -84,7 +84,7 @@ class PowerLaw(BaseSpectrum):
         self.gamma = gamma
         self.energy_cut = energy_cut
 
-    def __call__(self, energy: Union[np.ndarray, float],  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+    def __call__(self, energy: Union[np.ndarray, float],
                  **kwargs) -> np.ndarray:
         """Evaluate spectrum at energy E according to
 
@@ -138,7 +138,7 @@ class CustomSpectrum(BaseSpectrum):
         super().__init__()
         self.spectrum = spectrum
 
-    def __call__(self, energy: Union[np.ndarray, float],  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+    def __call__(self, energy: Union[np.ndarray, float],
                  **kwargs) -> np.ndarray:
         """Evaluate spectrum at energy E
 

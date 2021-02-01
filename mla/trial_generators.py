@@ -29,9 +29,9 @@ class PsTrialGenerator:
     @staticmethod
     def preprocess_trial(event_model: models.EventModel, source: core.Source,  # This is fine... pylint: disable=too-many-locals, too-many-arguments, unused-argument
                          flux_norm: float = 0, gamma: float = -2,
-                         spectrum: Optional[spectral.BaseSpectrum] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-                         sampling_width: Optional[float] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                         **kwargs) -> np.ndarray:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                         spectrum: Optional[spectral.BaseSpectrum] = None,
+                         sampling_width: Optional[float] = None,
+                         **kwargs) -> np.ndarray:
         """Gets a small simulation dataset to use for injecting signal.
 
         Prunes the simulation set to only events close to a given source and
@@ -103,8 +103,8 @@ class PsTrialGenerator:
     def generate(cls, event_model: models.EventModel,  # pylint: disable=too-many-locals, too-many-arguments
                  injector: injectors.PsInjector, source: core.Source,
                  preprocessing: np.ndarray, flux_norm: float = 0,
-                 random_seed: Optional[int] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
-                 disable_time_filter: Optional[bool] = False,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 random_seed: Optional[int] = None,
+                 disable_time_filter: Optional[bool] = False,
                  verbose: bool = False,
                  **kwargs) -> np.ndarray:
         """Produces a single trial of background+signal events based on inputs.

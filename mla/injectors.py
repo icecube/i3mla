@@ -147,8 +147,8 @@ class TimeDependentPsInjector(PsInjector):
     def __init__(self, event_model: models.EventModel,  # pylint: disable=too-many-arguments
                  signal_time_profile: time_profiles.GenericProfile,
                  background_time_profile: time_profiles.GenericProfile,
-                 background_window: Optional[float] = 14,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-                 withinwindow: Optional[bool] = False) -> None:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 background_window: Optional[float] = 14,
+                 withinwindow: Optional[bool] = False) -> None:
         """Initialize TimeDependentPsInjector...
 
         Initialize and set the background and signal time profile
@@ -221,7 +221,7 @@ class TimeDependentPsInjector(PsInjector):
 
     def inject_signal_events(self, source: core.Source,  # Necessary for compatibility with trial_generator... pylint: disable=unused-argument
                              trial_preprocessing: np.ndarray,
-                             n_signal_observed: Optional[int] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                             n_signal_observed: Optional[int] = None,
                              **kwargs) -> np.ndarray:
         """Function info...
 

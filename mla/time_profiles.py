@@ -116,7 +116,7 @@ class GenericProfile:
 
     @property
     @abc.abstractmethod
-    def range(self) -> Tuple[Optional[float], Optional[float]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+    def range(self) -> Tuple[Optional[float], Optional[float]]:
         """Gets the maximum and minimum values for the times in this profile.
         """
 
@@ -241,7 +241,7 @@ class GaussProfile(GenericProfile):
         return np.sqrt(2 * np.pi * self.sigma**2)
 
     @property
-    def range(self) -> Tuple[Optional[float], Optional[float]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+    def range(self) -> Tuple[Optional[float], Optional[float]]:
         return self._range
 
     @property
@@ -337,7 +337,7 @@ class UniformProfile(GenericProfile):
         return x0_start, x0_end
 
     def bounds(self, time_profile: GenericProfile
-               ) -> List[Tuple[Optional[float], Optional[float]]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+               ) -> List[Tuple[Optional[float], Optional[float]]]:
         """Given some other profile, returns allowable ranges for parameters.
 
         Args:
@@ -355,7 +355,7 @@ class UniformProfile(GenericProfile):
         return self._range[1] - self._range[0]
 
     @property
-    def range(self) -> Tuple[Optional[float], Optional[float]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+    def range(self) -> Tuple[Optional[float], Optional[float]]:
         return self._range
 
     @property
@@ -390,7 +390,7 @@ class CustomProfile(GenericProfile):
     """
 
     def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], np.array],
-                 time_range: Tuple[float], bins: Union[List[float], int] = 100,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 time_range: Tuple[float], bins: Union[List[float], int] = 100,
                  name: str = 'custom_tp') -> None:
         """Constructs the time profile.
 
@@ -411,7 +411,7 @@ class CustomProfile(GenericProfile):
 
     def _build_rv(self,
                   pdf: Callable[[np.array, Tuple[float, float]], np.array],
-                  bins: Union[List[float], int]) -> scipy.stats.rv_histogram:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                  bins: Union[List[float], int]) -> scipy.stats.rv_histogram:
         """Builds a scipy.stats.rv_histogram object for this time profile.
 
         Args:
@@ -490,7 +490,7 @@ class CustomProfile(GenericProfile):
         return x0_start, x0_end
 
     def bounds(self, time_profile: GenericProfile
-               ) -> List[Tuple[Optional[float], Optional[float]]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+               ) -> List[Tuple[Optional[float], Optional[float]]]:
         """Given some other profile, returns allowable ranges for parameters.
 
         Args:
@@ -506,7 +506,7 @@ class CustomProfile(GenericProfile):
         return self._exposure
 
     @property
-    def range(self) -> Tuple[Optional[float], Optional[float]]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+    def range(self) -> Tuple[Optional[float], Optional[float]]:
         return self._range
 
     @property
