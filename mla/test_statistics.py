@@ -57,9 +57,9 @@ class PsPreprocess:  # This is fine ... pylint: disable=too-many-instance-attrib
         self.n_events = len(self.events)
 
         if self.n_events == 0:
-            warnings.warn("".join(["You are trying to preprocess zero events. ",
-                                   "This will likely result in unexpected ",
-                                   "behavior"]), RuntimeWarning)
+            warnings.warn(''.join(['You are trying to preprocess zero events. ',
+                                   'This will likely result in unexpected ',
+                                   'behavior']), RuntimeWarning)
 
         self.sob_spatial = self.injector.signal_spatial_pdf(self.source,
                                                             self.events)
@@ -128,7 +128,7 @@ class TdPsPreprocess(PsPreprocess):
         self.sob_time /= self.bg_time_profile.pdf(self.events['time'])
 
         if np.logical_not(np.all(np.isfinite(self.sob_time))):
-            warnings.warn("Warning, events outside background time profile",
+            warnings.warn('Warning, events outside background time profile',
                           RuntimeWarning)
 
 

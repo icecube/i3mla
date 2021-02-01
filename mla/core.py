@@ -298,12 +298,12 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float,  # This is fine for
     nvec[norm > 0] /= norm[np.newaxis, norm > 0].T
 
     one = np.diagflat(np.ones(3))
-    nTn = np.array([np.outer(nv, nv) for nv in nvec])  # This is fine for a first release... pylint: disable=invalid-name
+    ntn = np.array([np.outer(nv, nv) for nv in nvec])  # This is fine for a first release... pylint: disable=invalid-name
     nx = np.array([cross_matrix(nv) for nv in nvec])  # This is fine for a first release... pylint: disable=invalid-name
 
-    R = np.array([(1. - np.cos(a)) * nTn_i + np.cos(a) * one + np.sin(a) * nx_i  # This is fine for a first release... pylint: disable=invalid-name
-                  for a, nTn_i, nx_i in zip(alpha, nTn, nx)])
-    vec = np.array([np.dot(R_i, vec_i.T) for R_i, vec_i in zip(R, vec3)])
+    R = np.array([(1. - np.cos(a)) * ntn_i + np.cos(a) * one + np.sin(a) * nx_i  # This is fine for a first release... pylint: disable=invalid-name
+                  for a, ntn_i, nx_i in zip(alpha, ntn, nx)])
+    vec = np.array([np.dot(r_i, vec_i.T) for r_i, vec_i in zip(R, vec3)])
 
     r_a = np.arctan2(vec[:, 1], vec[:, 0])
     dec = np.arcsin(vec[:, 2])

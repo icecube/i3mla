@@ -175,8 +175,8 @@ class TimeDependentPsInjector(PsInjector):
             ) & (event_model.grl['stop'] > start_time)
             background_runs = (fully_contained | start_contained)
             if not np.any(background_runs):
-                print("ERROR: No runs found in GRL for calculation of "
-                      "background rates!")
+                print('ERROR: No runs found in GRL for calculation of '
+                      'background rates!')
                 raise RuntimeError
             background_grl = event_model.grl[background_runs]
         else:
@@ -188,8 +188,8 @@ class TimeDependentPsInjector(PsInjector):
             ) & (event_model.grl['stop'] > start_time - background_window)
             background_runs = (fully_contained | start_contained)
             if not np.any(background_runs):
-                print("ERROR: No runs found in GRL for calculation of "
-                      "background rates!")
+                print('ERROR: No runs found in GRL for calculation of '
+                      'background rates!')
                 raise RuntimeError
             background_grl = event_model.grl[background_runs]
 

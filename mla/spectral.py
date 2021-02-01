@@ -52,7 +52,7 @@ class BaseSpectrum:
     def __str__(self) -> None:
         """String representation
         """
-        return "Base spectrum"
+        return 'Base spectrum'
 
 
 class PowerLaw(BaseSpectrum):
@@ -103,10 +103,10 @@ class PowerLaw(BaseSpectrum):
         Returns:
             np.ndarray of differential flux
         """
-        flux_norm = kwargs.pop("flux_norm", self.flux_norm)
-        energy_0 = kwargs.pop("energy_0", self.energy_0)
-        energy_cut = kwargs.pop("energy_cut", self.energy_cut)
-        gamma = kwargs.pop("gamma", self.gamma)
+        flux_norm = kwargs.pop('flux_norm', self.flux_norm)
+        energy_0 = kwargs.pop('energy_0', self.energy_0)
+        energy_cut = kwargs.pop('energy_cut', self.energy_cut)
+        gamma = kwargs.pop('gamma', self.gamma)
 
         flux = flux_norm * (energy / energy_0)**(gamma)
 
@@ -119,7 +119,7 @@ class PowerLaw(BaseSpectrum):
     def __str__(self) -> None:
         """String representation
         """
-        return "PowerLaw"
+        return 'PowerLaw'
 
 
 class CustomSpectrum(BaseSpectrum):
@@ -154,4 +154,4 @@ class CustomSpectrum(BaseSpectrum):
 
     def __str__(self):
         r"""String representation of class"""
-        return "CustomSpectrum"
+        return 'CustomSpectrum'
