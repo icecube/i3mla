@@ -144,7 +144,7 @@ class TimeDependentPsInjector(PsInjector):
         source (Dict[str, float]):
         event_model (EventModel):
     """
-    def __init__(self, event_model: models.EventModel,  # pylint: disable=too-many-arguments
+    def __init__(self, event_model: models.EventModel,
                  signal_time_profile: time_profiles.GenericProfile,
                  background_time_profile: time_profiles.GenericProfile,
                  background_window: Optional[float] = 14,

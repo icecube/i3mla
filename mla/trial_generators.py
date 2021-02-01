@@ -27,7 +27,7 @@ class PsTrialGenerator:
         """Docstring"""
 
     @staticmethod
-    def preprocess_trial(event_model: models.EventModel, source: core.Source,  # This is fine... pylint: disable=too-many-locals, too-many-arguments, unused-argument
+    def preprocess_trial(event_model: models.EventModel, source: core.Source,  # This is fine... pylint: disable=unused-argument
                          flux_norm: float = 0, gamma: float = -2,
                          spectrum: Optional[spectral.BaseSpectrum] = None,
                          sampling_width: Optional[float] = None,
@@ -100,7 +100,7 @@ class PsTrialGenerator:
         return reduced_sim
 
     @classmethod
-    def generate(cls, event_model: models.EventModel,  # pylint: disable=too-many-locals, too-many-arguments
+    def generate(cls, event_model: models.EventModel,
                  injector: injectors.PsInjector, source: core.Source,
                  preprocessing: np.ndarray, flux_norm: float = 0,
                  random_seed: Optional[int] = None,

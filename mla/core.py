@@ -248,7 +248,7 @@ def cross_matrix(mat: np.array) -> np.array:
     return skv - skv.T
 
 
-def rotate(ra1: float, dec1: float, ra2: float, dec2: float,  # This is fine for a first release... pylint: disable=too-many-arguments, too-many-locals
+def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
            ra3: float, dec3: float) -> Tuple[float, float]:
     """Rotation matrix for rotation of (ra1, dec1) onto (ra2, dec2).
 
@@ -298,12 +298,12 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float,  # This is fine for
     nvec[norm > 0] /= norm[np.newaxis, norm > 0].T
 
     one = np.diagflat(np.ones(3))
-    ntn = np.array([np.outer(nv, nv) for nv in nvec])  # This is fine for a first release... pylint: disable=invalid-name
-    nx = np.array([cross_matrix(nv) for nv in nvec])  # This is fine for a first release... pylint: disable=invalid-name
+    ntn = np.array([np.outer(nv, nv) for nv in nvec])
+    nx = np.array([cross_matrix(nv) for nv in nvec])
 
-    R = np.array([(1. - np.cos(a)) * ntn_i + np.cos(a) * one + np.sin(a) * nx_i  # This is fine for a first release... pylint: disable=invalid-name
+    r = np.array([(1. - np.cos(a)) * ntn_i + np.cos(a) * one + np.sin(a) * nx_i
                   for a, ntn_i, nx_i in zip(alpha, ntn, nx)])
-    vec = np.array([np.dot(r_i, vec_i.T) for r_i, vec_i in zip(R, vec3)])
+    vec = np.array([np.dot(r_i, vec_i.T) for r_i, vec_i in zip(r, vec3)])
 
     r_a = np.arctan2(vec[:, 1], vec[:, 0])
     dec = np.arcsin(vec[:, 2])

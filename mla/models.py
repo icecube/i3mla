@@ -42,10 +42,7 @@ class EventModel:
             A 2D list of spline fits of the log(signal-over-background) vs.
             gamma at a binned energy and sin(dec).
     """
-    def __init__(self,  # For an initial release, this implementation is fine... pylint: disable=too-many-arguments
-                 data: np.ndarray,
-                 sim: np.ndarray,
-                 grl: np.ndarray,
+    def __init__(self, data: np.ndarray, sim: np.ndarray, grl: np.ndarray,
                  background_sin_dec_bins: Union[np.array, int] = 500,
                  signal_sin_dec_bins: Union[np.array, int] = 50,
                  log_energy_bins: Union[np.array, int] = 50,
@@ -136,7 +133,7 @@ class EventModel:
         return scipy.interpolate.UnivariateSpline(bin_centers, hist, *args,
                                                   **kwargs)
 
-    def _create_sob_map(self, gamma: float, *args, verbose: bool = False,  # I don't think it's necessary to reduce the number of variables... pylint: disable=too-many-locals
+    def _create_sob_map(self, gamma: float, *args, verbose: bool = False,
                         **kwargs) -> np.array:
         """Creates sob histogram for a given spectral index (gamma).
 
@@ -291,12 +288,9 @@ class EventModel:
         return self._background_dec_spline
 
 
-class ThreeMLEventModel(EventModel):  # @Jason, can this be fixed? pylint: disable=too-many-instance-attributes
+class ThreeMLEventModel(EventModel):
     """Docstring"""
-    def __init__(self,  # @Jason, can this be fixed? pylint: disable=too-many-arguments
-                 data: np.ndarray,
-                 sim: np.ndarray,
-                 grl: np.ndarray,
+    def __init__(self, data: np.ndarray, sim: np.ndarray, grl: np.ndarray,
                  background_sin_dec_bins: Union[np.array, int] = 500,
                  signal_sin_dec_bins: Union[np.array, int] = 50,
                  log_energy_bins: Union[np.array, int] = 50,

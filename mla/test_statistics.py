@@ -23,7 +23,7 @@ from . import time_profiles
 
 
 @dataclasses.dataclass
-class PsPreprocess:  # This is fine ... pylint: disable=too-many-instance-attributes
+class PsPreprocess:
     """Docstring"""
     event_model: models.EventModel
     injector: injectors.PsInjector

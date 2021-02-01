@@ -78,7 +78,7 @@ class GenericProfile:
         """
 
     @abc.abstractmethod
-    def x0(self, times: np.array) -> Tuple:  # I think this is the best name... pylint: disable=invalid-name
+    def x0(self, times: np.array) -> Tuple:
         """Gets a tuple of initial guess to use when fitting parameters.
 
         The guesses are arrived at by simple approximations using the given
