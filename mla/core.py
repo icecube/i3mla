@@ -12,56 +12,111 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Dict, List, Tuple
+from typing import Callable, Dict, List, Optional, Tuple, Union, Sequence
 
 import dataclasses
 import numpy as np
+import scipy.optimize
+
+
+Minimizer = Callable[
+    [Callable, np.ndarray, Union[Sequence, scipy.optimize.Bounds]],  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+    scipy.optimize.OptimizeResult,
+]
 
 
 @dataclasses.dataclass
 class Source:
     """Stores a source object name and location"""
     name: str
-    ra: float
+    r_asc: float
     dec: float
 
 
 @dataclasses.dataclass
 class Analysis:
     """Stores the components of an analysis."""
-    from . import models
-    from . import injectors
-    from . import test_statistics
-    from . import trial_generators
+    # These imports only exist for type checking. They are in here to ensure
+    # no circular imports.
+    from . import models  # pylint: disable=import-outside-toplevel
+    from . import injectors  # pylint: disable=import-outside-toplevel
+    from . import test_statistics  # pylint: disable=import-outside-toplevel
+    from . import trial_generators  # pylint: disable=import-outside-toplevel
     model: models.EventModel
     injector: injectors.PsInjector
-    test_statistic: test_statistics.PsTestStatistic
+    ts_preprocessor: test_statistics.PsPreprocess
+    test_statistic: test_statistics.TestStatistic
     trial_generator: trial_generators.PsTrialGenerator
     source: Source
 
 
-def evaluate_ts(analysis: Analysis, events: np.ndarray, *args,
-                **kwargs) -> float:
+def evaluate_ts(analysis: Analysis, events: np.ndarray, params: np.ndarray,
+                *args, **kwargs) -> float:
     """Docstring"""
-    return analysis.test_statistic.calculate_ts(
-        events,
-        analysis.test_statistic.preprocess_ts(
+    return analysis.test_statistic(
+        params,
+        analysis.ts_preprocessor(
             analysis.model, analysis.injector, analysis.source, events),
         *args,
         **kwargs,
     )
 
 
-def minimize_ts(analysis: Analysis, events: np.ndarray, *args,
-                **kwargs) -> Dict[str, float]:
-    """Docstring"""
-    return analysis.test_statistic.minimize_ts(
-        events,
-        analysis.test_statistic.preprocess_ts(
-            analysis.model, analysis.injector, analysis.source, events),
-        *args,
-        **kwargs,
-    )
+def minimize_ts(analysis: Analysis, test_ns: float, test_gamma: float,
+                gamma_bounds: Tuple[float] = (-4, -1),
+                minimizer: Optional[Minimizer] = None) -> Dict[str, float]:  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+    """Calculates the params that minimize the ts for the given events.
+
+    Accepts guess values for fitting the n_signal and spectral index, and
+    bounds on the spectral index. Uses scipy.optimize.minimize() to fit.
+    The default method is 'L-BFGS-B', but can be overwritten by passing
+    kwargs to this fuction.
+
+    Args:
+        analysis:
+        test_ns: An initial guess for the number of signal events (n_signal).
+        test_gamma: An initial guess for the spectral index (gamma).
+        gamma_bounds:
+        minimizer:
+
+    Returns:
+        A dictionary containing the minimized overall test-statistic, the
+        best-fit n_signal, and the best fit gamma.
+    """
+    pre_pro = analysis.ts_preprocessor
+    test_stat = analysis.test_statistic
+
+    if minimizer is None:
+        def minimizer(func, x_0, bounds):
+            return scipy.optimize.minimize(func, x0=x_0, args=(pre_pro),
+                                           bounds=bounds, method='L-BFGS-B')
+
+    pre_pro = analysis.ts_preprocessor
+    test_stat = analysis.test_statistic
+
+    output = {'ts': 0, 'n_signal': test_ns, 'gamma': test_gamma}
+    max_ns = pre_pro.n_events - 1e-5
+
+    if len(pre_pro.events) == 0:
+        return output
+
+    # Check: n_signal cannot be larger than n_events
+    test_ns = max(test_ns, max_ns)
+
+    with np.errstate(divide='ignore', invalid='ignore'):
+        # Set the seed values, which tell the minimizer
+        # where to start, and the bounds. First do the
+        # shape parameters.
+        x_0 = [test_ns, test_gamma]
+        bounds = [(0, max_ns), gamma_bounds]  # gamma [min, max]
+        result = minimizer(test_stat, x0=x_0, bounds=bounds)
+
+        # Store the results in the output array
+        output['ts'] = -1 * result.fun
+        output['n_signal'] = result.x[0]
+        output['gamma'] = result.x[1]
+
+    return output
 
 
 def produce_trial(analysis: Analysis, *args, **kwargs) -> np.ndarray:
@@ -71,18 +126,19 @@ def produce_trial(analysis: Analysis, *args, **kwargs) -> np.ndarray:
         analysis.injector,
         analysis.source,
         analysis.trial_generator.preprocess_trial(
-            analysis.model, analysis.injector, analysis.source, *args, **kwargs
+            analysis.model, analysis.source, *args, **kwargs
         ),
         *args,
         **kwargs,
     )
 
 
-def produce_and_minimize(analysis: Analysis, n_trials: int, *args,
+def produce_and_minimize(analysis: Analysis, n_trials: int,
+                         test_params: np.ndarray, *args,
                          **kwargs) -> List[Dict[str, float]]:
     """Docstring"""
     preprocessing = analysis.trial_generator.preprocess_trial(
-        analysis.model, analysis.injector, analysis.source, *args, **kwargs)
+        analysis.model, analysis.source, *args, **kwargs)
 
     return [
         minimize_ts(
@@ -95,9 +151,10 @@ def produce_and_minimize(analysis: Analysis, n_trials: int, *args,
                 *args,
                 **kwargs,
             ),
+            test_params,
             *args,
             **kwargs,
-        ) for _ in n_trials
+        ) for _ in range(n_trials)
     ]
 
 
@@ -241,12 +298,12 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float,  # This is fine for
     nvec[norm > 0] /= norm[np.newaxis, norm > 0].T
 
     one = np.diagflat(np.ones(3))
-    nTn = np.array([np.outer(nv, nv) for nv in nvec])  # This is fine for a first release... pylint: disable=invalid-name
+    ntn = np.array([np.outer(nv, nv) for nv in nvec])  # This is fine for a first release... pylint: disable=invalid-name
     nx = np.array([cross_matrix(nv) for nv in nvec])  # This is fine for a first release... pylint: disable=invalid-name
 
-    R = np.array([(1. - np.cos(a)) * nTn_i + np.cos(a) * one + np.sin(a) * nx_i  # This is fine for a first release... pylint: disable=invalid-name
-                  for a, nTn_i, nx_i in zip(alpha, nTn, nx)])
-    vec = np.array([np.dot(R_i, vec_i.T) for R_i, vec_i in zip(R, vec3)])
+    R = np.array([(1. - np.cos(a)) * ntn_i + np.cos(a) * one + np.sin(a) * nx_i  # This is fine for a first release... pylint: disable=invalid-name
+                  for a, ntn_i, nx_i in zip(alpha, ntn, nx)])
+    vec = np.array([np.dot(r_i, vec_i.T) for r_i, vec_i in zip(R, vec3)])
 
     r_a = np.arctan2(vec[:, 1], vec[:, 0])
     dec = np.arcsin(vec[:, 2])

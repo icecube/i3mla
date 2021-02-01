@@ -12,10 +12,12 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import List, Union
+from typing import List, Union, Optional
 
 import numpy as np
+import numpy.lib.recfunctions as rf
 import scipy.interpolate
+from . import spectral
 
 
 class EventModel:
@@ -126,10 +128,10 @@ class EventModel:
 
         if 'bbox' not in kwargs:
             kwargs['bbox'] = [-1.0, 1.0]
-        if 's' not in kwargs:
-            kwargs['s'] = 1.5e-5
+        # if 's' not in kwargs:
+        #    kwargs['s'] = 1.5e-5
         if 'ext' not in kwargs:
-            kwargs['ext'] = 1
+            kwargs['ext'] = 3
 
         return scipy.interpolate.UnivariateSpline(bin_centers, hist, *args,
                                                   **kwargs)
@@ -287,3 +289,218 @@ class EventModel:
         """Getter for background_dec_spline.
         """
         return self._background_dec_spline
+
+
+class ThreeMLEventModel(EventModel):  # @Jason, can this be fixed? pylint: disable=too-many-instance-attributes
+    """Docstring"""
+    def __init__(self,  # @Jason, can this be fixed? pylint: disable=too-many-arguments
+                 data: np.ndarray,
+                 sim: np.ndarray,
+                 grl: np.ndarray,
+                 background_sin_dec_bins: Union[np.array, int] = 500,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 signal_sin_dec_bins: Union[np.array, int] = 50,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 log_energy_bins: Union[np.array, int] = 50,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 spectrum: Optional[spectral.BaseSpectrum] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 sampling_width: Optional[float] = np.radians(3),  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 reduce_dec: Optional[bool] = True,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
+                 verbose: bool = False) -> None:
+        """Initializes EventModel and calculates bg-only sob maps for ThreeML.
+
+        More function info...
+
+        Args:
+            background_sin_dec_bins: If an int, then the number of bins spanning
+                -1 -> 1, otherwise, a numpy array of bin edges.
+            signal_sin_dec_bins: If an int, then the number of bins spanning
+                -1 -> 1, otherwise, a numpy array of bin edges.
+            log_energy_bins: if an int, then the number of bins spanning 1 -> 8,
+                otherwise, a numpy array of bin edges.
+            spectrum: Spectrum for energy weighting
+            reduce_dec: whether reduce the simulation to narrow dec
+            verbose: A flag to print progress.
+
+        Raises:
+            ValueError:
+        """
+        super().__init__(data, sim, grl,
+                         background_sin_dec_bins=background_sin_dec_bins,
+                         signal_sin_dec_bins=signal_sin_dec_bins,
+                         log_energy_bins=log_energy_bins)
+        self.edge_point = (None, None)
+        try:
+            self._data = rf.append_fields(data, 'sindec', np.sin(data['dec']),
+                                          usemask=False)
+            # The full simulation set,this is for the overall normalization of
+            # the Energy S/B ratio
+        except ValueError:  # sindec already exist
+            pass
+        try:
+            self._sim = rf.append_fields(sim, 'sindec', np.sin(sim['dec']),
+                                         usemask=False)
+            # The full simulation set,this is for the overall normalization of
+            # the Energy S/B ratio
+        except ValueError:  # sindec already exist
+            pass
+
+        self.sampling_width = sampling_width
+        self.reduce_dec = reduce_dec
+        if reduce_dec:
+            self.reduced_sim = self._cut_sim(self.sampling_width)
+            self.reduced_sim_truedec = self._cut_sim_truedec(
+                self.sampling_width)
+        else:
+            self.reduced_sim = self._sim
+            self.reduced_sim_truedec = self._sim
+
+        self._background_sob_map = self._create_background_sob_map()
+        if spectrum is not None:
+            self.spectrum = spectrum
+        else:
+            self.spectrum = spectral.PowerLaw(1e3, 1e-14, -2)
+
+        self._ratio = self._create_sob_ratio()
+
+    def _create_log_sob_gamma_splines(self, *args, **kwargs) -> None:
+        """Dummy function to override the inheritance"""
+
+    def _cut_sim(self, source_dec: float = np.pi / 2,
+                 sampling_width: float = np.radians(3)) -> np.ndarray:
+        """Select simulation events in a reconstruction dec band
+
+        Args:
+            source_dec: dec
+            sampling_width: width of the dec band
+        """
+        sindec_dist = np.abs(source_dec - self._sim['dec'])
+
+        close = sindec_dist < sampling_width
+
+        reduced_sim = self._sim[close].copy()
+
+        return reduced_sim
+
+    def _cut_sim_truedec(self, source_dec: float = np.pi / 2,
+                         sampling_width: float = np.radians(1)) -> np.ndarray:
+        """Select simulation events in a true dec band(for ns calculation)
+
+        Args:
+            source_dec: dec
+            sampling_width: width of the dec band
+        """
+        sindec_dist = np.abs(source_dec - self._sim['trueDec'])
+
+        close = sindec_dist < sampling_width
+
+        reduced_sim = self._sim[close].copy()
+
+        omega = 2 * np.pi * (np.min(
+            [np.sin(source_dec + sampling_width), 1]
+        ) - np.max([np.sin(source_dec - sampling_width), -1]))
+        reduced_sim['ow'] /= omega
+
+        return reduced_sim
+
+    def _create_background_sob_map(self) -> None:
+        """Create the backgroub SOB map
+        """
+        # background
+        bins = np.array([self._sin_dec_bins, self._log_energy_bins])
+        bg_h, _, _ = np.histogram2d(self._data['sindec'], self._data['logE'],
+                                    bins=bins, density=True)
+        bg_h /= np.sum(bg_h, axis=1)[:, None]
+        return bg_h
+
+    def _create_sob_ratio(self, *args, **kwargs) -> None:
+        """Create the SOB map with a spectrum
+        """
+        bins = np.array([self._sin_dec_bins, self._log_energy_bins])
+        bin_centers = bins[1, :-1] + np.diff(bins[1]) / 2
+        sig_w = self.reduced_sim['ow'] * self.spectrum(
+            self.reduced_sim['trueE'])
+        sig_h, _, _ = np.histogram2d(self.reduced_sim['sindec'],
+                                     self.reduced_sim['logE'], bins=bins,
+                                     weights=sig_w, density=True)
+
+        # Normalize histograms by dec band
+
+        sig_h /= np.sum(sig_h, axis=1)[:, None]
+        if 'k' not in kwargs:
+            kwargs['k'] = 1
+        if 's' not in kwargs:
+            kwargs['s'] = 0
+        if 'ext' not in kwargs:
+            kwargs['ext'] = 3
+        ratio = sig_h / self._background_sob_map
+        for i in range(ratio.shape[0]):
+            # Pick out the values we want to use.
+            # We explicitly want to avoid NaNs and infinities
+            values = ratio[i]
+            good = np.isfinite(values) & (values > 0)
+            x_good, y_good = bin_centers[good], values[good]
+
+            # Do a linear interpolation across the energy range
+            if len(x_good) > 1:
+                spline = scipy.interpolate.UnivariateSpline(x_good, y_good,
+                                                            *args, **kwargs)
+                ratio[i] = spline(bin_centers)
+            elif len(x_good) == 1:
+                ratio[i] = y_good
+            else:
+                ratio[i] = 0
+        return ratio
+
+    def get_energy_sob(self, events: np.ndarray) -> np.ndarray:
+        """Gets the sob vs. gamma required for each event and specific .
+
+        More function info...
+
+        Args:
+            events: An array of events including their positional data.
+
+        Returns:
+            A list of splines of signal-over-background vs gamma for each event.
+        """
+        # Get the bin that each event belongs to
+        try:
+            sin_dec_idx = np.searchsorted(self._sin_dec_bins,
+                                          events['sindec']) - 1
+        except ValueError:
+            sin_dec_idx = np.searchsorted(self._sin_dec_bins,
+                                          np.sin(events['dec'])) - 1
+        log_energy_idx = np.searchsorted(self._log_energy_bins[:-1],
+                                         events['logE']) - 1
+        sin_dec_idx[sin_dec_idx < self.edge_point[0]] = self.edge_point[0]
+        # If events fall outside the sampling width, just gonna approxiamte the
+        # weight using the nearest non-zero sinDec bin.
+        sin_dec_idx[sin_dec_idx > self.edge_point[1]] = self.edge_point[1]
+        return self._ratio[sin_dec_idx, log_energy_idx]
+
+    @property
+    def spectrum(self) -> spectral.BaseSpectrum:
+        """Docstring"""
+        return self._spectrum
+
+    @spectrum.setter
+    def spectrum(self, spectrum) -> None:
+        """Update the spectrum
+        """
+        self._spectrum = spectral.CustomSpectrum(spectrum)
+        self._ratio = self._create_sob_ratio()
+
+    def cut_sim_to_dec_band(self, dec: float = np.pi / 2) -> None:
+        """Setting a new dec band
+
+        Args:
+            dec: declination
+        """
+        self.edge_point = (
+            np.searchsorted(self._sin_dec_bins,
+                            np.sin(dec - self.sampling_width)) - 1,
+            np.searchsorted(self._sin_dec_bins,
+                            np.sin(dec + self.sampling_width)) - 1
+        )
+        if self.reduce_dec:
+            self.reduced_sim = self._cut_sim(dec, self.sampling_width)
+            self.reduced_sim_truedec = self._cut_sim_truedec(
+                dec, self.sampling_width)
+            self._ratio = self._create_sob_ratio()
