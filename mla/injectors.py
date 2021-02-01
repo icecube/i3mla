@@ -11,14 +11,15 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
+from typing import Optional
+
 import numpy as np
 import scipy
-
-from typing import Dict, List, Tuple, Optional
 
 from . import core
 from . import models
 from . import time_profiles
+
 
 class PsInjector:
     """A basic point-source injector.
@@ -47,7 +48,7 @@ class PsInjector:
         """
         sigma = events['angErr']
         dist = core.angular_distance(events['ra'], events['dec'],
-                                     source['ra'], source['dec'])
+                                     source.r_asc, source.dec)
         norm = 1 / (2 * np.pi * sigma**2)
         return norm * np.exp(-dist**2 / (2 * sigma**2))
 
@@ -100,8 +101,8 @@ class PsInjector:
 
         Args:
             source:
-            trial_preprocessing: Reweighted and pruned simulated events near the source
-                declination.
+            trial_preprocessing: Reweighted and pruned simulated events near
+            the source declination.
 
         Returns:
             An array of injected signal events.
@@ -124,42 +125,40 @@ class PsInjector:
 
             signal['ra'], signal['dec'] = core.rotate(
                 signal['trueRa'], signal['trueDec'],
-                ones * source['ra'], ones * source['dec'],
+                ones * source.r_asc, ones * source.dec,
                 signal['ra'], signal['dec'])
             signal['trueRa'], signal['trueDec'] = core.rotate(
                 signal['trueRa'], signal['trueDec'],
-                ones * source['ra'], ones * source['dec'],
+                ones * source.r_asc, ones * source.dec,
                 signal['trueRa'], signal['trueDec'])
 
         return signal
 
 
-
 class TimeDependentPsInjector(PsInjector):
     """Class info...
-    
+
     More class info...
-    
+
     Attributes:
         source (Dict[str, float]):
         event_model (EventModel):
     """
-    def __init__(self,
-                 event_model: models.EventModel,
+    def __init__(self, event_model: models.EventModel,  # pylint: disable=too-many-arguments
                  signal_time_profile: time_profiles.GenericProfile,
                  background_time_profile: time_profiles.GenericProfile,
-                 background_window: Optional[float] = 14,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-                 withinwindow: Optional[bool] = False,
-                 **kwargs) -> None:# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 background_window: Optional[float] = 14,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 withinwindow: Optional[bool] = False) -> None:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Initialize TimeDependentPsInjector...
-        
+
         Initialize and set the background and signal time profile
         Args:
             event_model: EventModel that holds the grl
-            signal_time_profile: Signal time profile 
-            background_time_profile: Background time profile 
+            signal_time_profile: Signal time profile
+            background_time_profile: Background time profile
             background_window: Days used to estimated the background rate
-            withinwindow: Use data rate within time profile to estimate background rate
+            withinwindow: Use data rate within time profile to estimate
+                background rate
         Returns:
             None
         """
@@ -168,10 +167,12 @@ class TimeDependentPsInjector(PsInjector):
         start_time = background_time_profile.range[0]
         end_time = background_time_profile.range[1]
         if withinwindow:
-            fully_contained = (event_model.grl['start'] >= start_time) &\
-                                (event_model.grl['stop'] < end_time)
-            start_contained = (event_model.grl['start'] < start_time) &\
-                                (event_model.grl['stop'] > start_time)
+            fully_contained = (
+                event_model.grl['start'] >= start_time
+            ) & (event_model.grl['stop'] < end_time)
+            start_contained = (
+                event_model.grl['start'] < start_time
+            ) & (event_model.grl['stop'] > start_time)
             background_runs = (fully_contained | start_contained)
             if not np.any(background_runs):
                 print("ERROR: No runs found in GRL for calculation of "
@@ -179,75 +180,74 @@ class TimeDependentPsInjector(PsInjector):
                 raise RuntimeError
             background_grl = event_model.grl[background_runs]
         else:
-            fully_contained = (event_model.grl['start'] >= start_time-background_window) &\
-                                (event_model.grl['stop'] < start_time)
-            start_contained = (event_model.grl['start'] < start_time-background_window) &\
-                                (event_model.grl['stop'] > start_time-background_window)
+            fully_contained = (
+                event_model.grl['start'] >= start_time - background_window
+            ) & (event_model.grl['stop'] < start_time)
+            start_contained = (
+                event_model.grl['start'] < start_time - background_window
+            ) & (event_model.grl['stop'] > start_time - background_window)
             background_runs = (fully_contained | start_contained)
             if not np.any(background_runs):
                 print("ERROR: No runs found in GRL for calculation of "
                       "background rates!")
                 raise RuntimeError
             background_grl = event_model.grl[background_runs]
-        
-        #Find the background rate
+
+        # Find the background rate
         n_background = background_grl['events'].sum()
         n_background /= background_grl['livetime'].sum()
         n_background *= background_time_profile.exposure
         self.n_background = n_background
         self.background_time_profile = background_time_profile
         self.signal_time_profile = signal_time_profile
-        
 
     def inject_background_events(self,
                                  event_model: models.EventModel) -> np.ndarray:
         """Injects background events with specific time profile for a trial.
 
         Args:
-            
+
         Returns:
             An array of injected background events.
         """
         n_background_observed = np.random.poisson(self.n_background)
-        background = np.random.choice(event_model.data, n_background_observed).copy()
-        background['ra'] = np.random.uniform(0, 2*np.pi, len(background))
-        background['time'] = self.background_time_profile.random(size = len(background))
+        background = np.random.choice(event_model.data,
+                                      n_background_observed).copy()
+        background['ra'] = np.random.uniform(0, 2 * np.pi, len(background))
+        background['time'] = self.background_time_profile.random(
+            size=len(background))
 
         return background
-    
-    
-    def inject_signal_events(self, 
-                             source: core.Source,
+
+    def inject_signal_events(self, source: core.Source,
                              trial_preprocessing: np.ndarray,
-                             n_signal_observed:Optional[int] = None,
-                             **kwargs) -> np.ndarray:
+                             n_signal_observed: Optional[int] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+    ) -> np.ndarray:
         """Function info...
-        
+
         More function info...
-        
+
         Args:
             source:
-            trial_preprocessing: Reweighted and pruned simulated events near the source
-                declination.
-            n_signal_observed: Optional,overriding the trial_preprocessing weighted total events
-            
+            trial_preprocessing: Reweighted and pruned simulated events near
+                the source declination.
+            n_signal_observed: Optional,overriding the trial_preprocessing
+                weighted total events
+
         Returns:
             An array of injected signal events.
         """
         # Pick the signal events
         weighttotal = trial_preprocessing['weight'].sum()
-        p = trial_preprocessing['weight'] / weighttotal
+        normed_weight = trial_preprocessing['weight'] / weighttotal
         if n_signal_observed is None:
             total = weighttotal * self.signal_time_profile.exposure * 3600 * 24
         else:
             total = n_signal_observed
 
         n_signal_observed = scipy.stats.poisson.rvs(total)
-        signal = np.random.choice(
-            trial_preprocessing,
-            n_signal_observed,
-            p = p ,
-            replace=False).copy()
+        signal = np.random.choice(trial_preprocessing, n_signal_observed,
+                                  p=normed_weight, replace=False).copy()
 
         # Update this number
         n_signal_observed = len(signal)
@@ -257,16 +257,14 @@ class TimeDependentPsInjector(PsInjector):
 
             signal['ra'], signal['dec'] = core.rotate(
                 signal['trueRa'], signal['trueDec'],
-                ones * source['ra'], ones * source['dec'],
+                ones * source.r_asc, ones * source.dec,
                 signal['ra'], signal['dec'])
             signal['trueRa'], signal['trueDec'] = core.rotate(
                 signal['trueRa'], signal['trueDec'],
-                ones * source['ra'], ones * source['dec'],
+                ones * source.r_asc, ones * source.dec,
                 signal['trueRa'], signal['trueDec'])
 
-         
-        #Randomize the signal time
-        signal['time'] = self.signal_time_profile.random(size = len(signal))
-            
+        # Randomize the signal time
+        signal['time'] = self.signal_time_profile.random(size=len(signal))
+
         return signal
-    

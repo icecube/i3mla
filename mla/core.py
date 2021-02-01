@@ -29,19 +29,19 @@ Minimizer = Callable[
 class Source:
     """Stores a source object name and location"""
     name: str
-    ra: float
+    r_asc: float
     dec: float
-    def __getitem__(self, x):
-        return getattr(self, x)
 
 
 @dataclasses.dataclass
 class Analysis:
     """Stores the components of an analysis."""
-    from . import models
-    from . import injectors
-    from . import test_statistics
-    from . import trial_generators
+    # These imports only exist for type checking. They are in here to ensure
+    # no circular imports.
+    from . import models  # pylint: disable=import-outside-toplevel
+    from . import injectors  # pylint: disable=import-outside-toplevel
+    from . import test_statistics  # pylint: disable=import-outside-toplevel
+    from . import trial_generators  # pylint: disable=import-outside-toplevel
     model: models.EventModel
     injector: injectors.PsInjector
     ts_preprocessor: test_statistics.PsPreprocess
@@ -83,18 +83,21 @@ def minimize_ts(analysis: Analysis, test_ns: float, test_gamma: float,
         A dictionary containing the minimized overall test-statistic, the
         best-fit n_signal, and the best fit gamma.
     """
+    pre_pro = analysis.ts_preprocessor
+    test_stat = analysis.test_statistic
+
     if minimizer is None:
         def minimizer(func, x_0, bounds):
-            return scipy.optimize.minimize(func, x0=x_0, args=(pp),
+            return scipy.optimize.minimize(func, x0=x_0, args=(pre_pro),
                                            bounds=bounds, method='L-BFGS-B')
 
-    pp = analysis.ts_preprocessor
-    ts = analysis.test_statistic
+    pre_pro = analysis.ts_preprocessor
+    test_stat = analysis.test_statistic
 
     output = {'ts': 0, 'n_signal': test_ns, 'gamma': test_gamma}
-    max_ns = pp.n_events - 1e-5
+    max_ns = pre_pro.n_events - 1e-5
 
-    if len(pp.events) == 0:
+    if len(pre_pro.events) == 0:
         return output
 
     # Check: n_signal cannot be larger than n_events
@@ -106,7 +109,7 @@ def minimize_ts(analysis: Analysis, test_ns: float, test_gamma: float,
         # shape parameters.
         x_0 = [test_ns, test_gamma]
         bounds = [(0, max_ns), gamma_bounds]  # gamma [min, max]
-        result = minimizer(ts, x0=x_0, bounds=bounds)
+        result = minimizer(test_stat, x0=x_0, bounds=bounds)
 
         # Store the results in the output array
         output['ts'] = -1 * result.fun

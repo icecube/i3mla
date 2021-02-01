@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Callable, List
 
 import warnings
 import dataclasses
@@ -19,12 +19,11 @@ import scipy.optimize
 from . import core
 from . import models
 from . import injectors
-from . import spectral
 from . import time_profiles
 
 
 @dataclasses.dataclass
-class PsPreprocess:
+class PsPreprocess:  # This is fine ... pylint: disable=too-many-instance-attributes
     """Docstring"""
     event_model: models.EventModel
     injector: injectors.PsInjector
@@ -52,13 +51,15 @@ class PsPreprocess:
             sob_spatial:
 
         Raises:
-            ValueError: There must be at least one event.
+            RuntimeWarning: There should be at least one event.
         """
 
         self.n_events = len(self.events)
 
         if self.n_events == 0:
-            return None
+            warnings.warn("".join(["You are trying to preprocess zero events. ",
+                                   "This will likely result in unexpected ",
+                                   "behavior"]), RuntimeWarning)
 
         self.sob_spatial = self.injector.signal_spatial_pdf(self.source,
                                                             self.events)
@@ -79,7 +80,7 @@ class PsPreprocess:
 TestStatistic = Callable[[np.ndarray, PsPreprocess], float]
 
 
-def ps_test_statistic(params: np.ndarray, pp: PsPreprocess) -> float:
+def ps_test_statistic(params: np.ndarray, pre_pro: PsPreprocess) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -87,18 +88,18 @@ def ps_test_statistic(params: np.ndarray, pp: PsPreprocess) -> float:
 
     Args:
         params: A two item array containing (n_signal, gamma).
-        pp:
+        pre_pro:
 
     Returns:
         The overall test-statistic value for the given events and
         parameters.
     """
 
-    sob_new = pp.sob_spatial * np.exp(
-        [spline(params[1]) for spline in pp.splines])
+    sob_new = pre_pro.sob_spatial * np.exp(
+        [spline(params[1]) for spline in pre_pro.splines])
     return -2 * np.sum(
-        np.log((params[0] / pp.n_events * (sob_new - 1)) + 1)
-    ) + pp.n_dropped * np.log(1 - params[0] / pp.n_events)
+        np.log((params[0] / pre_pro.n_events * (sob_new - 1)) + 1)
+    ) + pre_pro.n_dropped * np.log(1 - params[0] / pre_pro.n_events)
 
 
 @dataclasses.dataclass
@@ -131,7 +132,7 @@ class TdPsPreprocess(PsPreprocess):
                           RuntimeWarning)
 
 
-def td_ps_test_statistic(params: np.ndarray, pp: TdPsPreprocess) -> float:
+def td_ps_test_statistic(params: np.ndarray, pre_pro: TdPsPreprocess) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -139,19 +140,18 @@ def td_ps_test_statistic(params: np.ndarray, pp: TdPsPreprocess) -> float:
 
     Args:
         params: A two item array containing (n_signal, gamma).
-        pp:
+        pre_pro:
 
     Returns:
         The overall test-statistic value for the given events and
         parameters.
     """
 
-    sob_new = pp.sob_spatial * pp.sob_time * np.exp(
-        [spline(params[1]) for spline in pp.splines])
+    sob_new = pre_pro.sob_spatial * pre_pro.sob_time * np.exp(
+        [spline(params[1]) for spline in pre_pro.splines])
     return -2 * np.sum(
-        np.log((params[0] / pp.n_events * (sob_new - 1)) + 1)
-    ) + pp.n_dropped * np.log(1 - params[0] / pp.n_events)
-
+        np.log((params[0] / pre_pro.n_events * (sob_new - 1)) + 1)
+    ) + pre_pro.n_dropped * np.log(1 - params[0] / pre_pro.n_events)
 
 
 @dataclasses.dataclass
@@ -171,22 +171,23 @@ class ThreeMLPsPreprocess(PsPreprocess):
         self.sob_energy = self.event_model.get_energy_sob(self.events)
 
 
-def ThreeML_ps_test_statistic(params: float, pp: ThreeMLPsPreprocess) -> float:
-    """(ThreeML version)Evaluates the test-statistic for the given events and parameters
+def threeml_ps_test_statistic(params: float,
+                              pre_pro: ThreeMLPsPreprocess) -> float:
+    """(ThreeML version) Evaluates the ts for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
     gamma. This function does not attempt to fit n_signal or gamma.
 
     Args:
         params: n_signal
-        pp:
+        pre_pro:
 
     Returns:
         The overall test-statistic value for the given events and
         parameters.
     """
 
-    sob_new = pp.sob_spatial * pp.sob_time * pp.sob_energy
+    sob_new = pre_pro.sob_spatial * pre_pro.sob_time * pre_pro.sob_energy
     return -2 * np.sum(
-        np.log((params / pp.n_events * (sob_new - 1)) + 1)
-    ) + pp.n_dropped * np.log(1 - params / pp.n_events)
+        np.log((params / pre_pro.n_events * (sob_new - 1)) + 1)
+    ) + pre_pro.n_dropped * np.log(1 - params / pre_pro.n_events)
