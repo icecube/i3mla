@@ -27,10 +27,10 @@ class PsTrialGenerator:
         """Docstring"""
 
     @staticmethod
-    def preprocess_trial(event_model: models.EventModel, source: core.Source,
+    def preprocess_trial(event_model: models.EventModel, source: core.Source,  # This is fine... pylint: disable=too-many-locals, too-many-arguments, unused-argument
                          flux_norm: float = 0, gamma: float = -2,
-                         spectrum:Optional[spectral.BaseSpectrum] = None,# Python 3.9 pylint bug... pylint: disable=unsubscriptable-object 
-                         sampling_width: Optional[float] = None,# Python 3.9 bug... pylint: disable=unsubscriptable-object
+                         spectrum: Optional[spectral.BaseSpectrum] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                         sampling_width: Optional[float] = None,  # Python 3.9 bug... pylint: disable=unsubscriptable-object
                          **kwargs) -> np.ndarray:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """Gets a small simulation dataset to use for injecting signal.
 
@@ -78,9 +78,11 @@ class PsTrialGenerator:
         # shape, talk to me and we can work it out.
         if spectrum is None:
             rescaled_energy = (reduced_sim['trueE'] / 100.e3)**gamma
-            reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * rescaled_energy
+            reduced_sim['weight'] = reduced_sim['ow'] * flux_norm
+            reduced_sim['weight'] *= rescaled_energy
         else:
-            reduced_sim['weight'] = reduced_sim['ow'] * flux_norm * spectrum(reduced_sim['trueE'])
+            reduced_sim['weight'] = reduced_sim['ow'] * flux_norm
+            reduced_sim['weight'] *= spectrum(reduced_sim['trueE'])
 
         # Apply the sampling width, which ensures that we
         # sample events from similar declinations.
@@ -111,8 +113,8 @@ class PsTrialGenerator:
             event_model: An object containing data and preprocessed parameters.
             injector:
             source:
-            preprocessing: Reweighted and pruned simulated events near the source
-                declination.
+            preprocessing: Reweighted and pruned simulated events near the
+                source declination.
             flux_norm: A flux normaliization to adjust weights.
             random_seed: A seed value for the numpy RNG.
             disable_time_filter: do not cut out events that is not in grl
@@ -127,7 +129,8 @@ class PsTrialGenerator:
         background = injector.inject_background_events(event_model)
 
         if flux_norm > 0 or 'n_signal_observed' in kwargs:
-            signal = injector.inject_signal_events(source, preprocessing, **kwargs)
+            signal = injector.inject_signal_events(source, preprocessing,
+                                                   **kwargs)
         else:
             signal = np.empty(0, dtype=background.dtype)
 

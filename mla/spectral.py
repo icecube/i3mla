@@ -15,12 +15,13 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 
-import numpy as np
+from typing import Optional, Union
+
 import abc
-from typing import Callable, Dict, List, Optional, Tuple, Union
+import numpy as np
 
 
-class BaseSpectrum(object):
+class BaseSpectrum:
     """A generic base class to standardize the methods for the Spectrum.
 
     Any callable function will work.
@@ -29,33 +30,31 @@ class BaseSpectrum(object):
     """
 
     __metaclass__ = abc.ABCMeta
-    
-    @abc.abstractmethod
-    def __init__(self)-> None:
-        """Initializes the Spectrum.
-        """
-        pass
 
     @abc.abstractmethod
-    def __call__(self, E:Union[np.ndarray,float], **kwargs) -> np.ndarray:
+    def __init__(self) -> None:
+        """Initializes the Spectrum.
+        """
+
+    @abc.abstractmethod
+    def __call__(self, energy: Union[np.ndarray, float],  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 **kwargs) -> np.ndarray:
         """return the differential flux at given energy(s).
 
         Args:
-            E: An array of Energy
+            energy: An array of energy
 
         Returns:
             A numpy array of differential flux.
         """
-        pass
-    
+
     @abc.abstractmethod
     def __str__(self) -> None:
         """String representation
         """
-        return "Base spectrum"
+        return 'Base spectrum'
 
-      
-      
+
 class PowerLaw(BaseSpectrum):
     """Spectrum class for PowerLaw.
 
@@ -67,23 +66,26 @@ class PowerLaw(BaseSpectrum):
         gamma(float): Spectral index
         Ecut(float): Cut-off energy
     """
-    
-    def __init__(self, E0:float, A:float, gamma:float, Ecut:float = None) -> None:
+
+    def __init__(self, energy_0: float, flux_norm: float, gamma: float,
+                 energy_cut: Optional[float] = None) -> None:  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
         """ Constructor of PowerLaw object.
-        
+
         Args:
-            E0: Normalize Energy
-            A: Flux Normalization
+            energy_0: Normalize Energy
+            flux_norm: Flux Normalization
             gamma: Spectral index
-            Ecut(optional): Cut-off energy
+            energy_cut: Cut-off energy
         """
-        self.E0 = E0
-        self.A = A
+
+        super().__init__()
+        self.energy_0 = energy_0
+        self.flux_norm = flux_norm
         self.gamma = gamma
-        self.Ecut = Ecut
-        return
-    
-    def __call__(self, E:Union[np.ndarray,float], **kwargs) -> np.ndarray:
+        self.energy_cut = energy_cut
+
+    def __call__(self, energy: Union[np.ndarray, float],  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 **kwargs) -> np.ndarray:
         """Evaluate spectrum at energy E according to
 
                  dN/dE = A (E / E0)^gamma
@@ -96,58 +98,60 @@ class PowerLaw(BaseSpectrum):
                  dN/dE = A (E / E0)^gamma * exp( -E/Ecut )
 
         Args:
-            E : Evaluation energy [GeV]
-        
+            energy : Evaluation energy [GeV]
+
         Returns:
             np.ndarray of differential flux
         """
-        A = kwargs.pop("A", self.A)
-        E0 = kwargs.pop("E0", self.E0)
-        Ecut = kwargs.pop("Ecut", self.Ecut)
-        gamma = kwargs.pop("gamma", self.gamma)
+        flux_norm = kwargs.pop('flux_norm', self.flux_norm)
+        energy_0 = kwargs.pop('energy_0', self.energy_0)
+        energy_cut = kwargs.pop('energy_cut', self.energy_cut)
+        gamma = kwargs.pop('gamma', self.gamma)
 
-        flux = A * (E / E0)**(gamma)
+        flux = flux_norm * (energy / energy_0)**(gamma)
 
         # apply optional exponential cutoff
-        if Ecut is not None:
-            flux *= np.exp(-E / self.Ecut)
+        if energy_cut is not None:
+            flux *= np.exp(-energy / self.energy_cut)
 
         return flux
-        
+
     def __str__(self) -> None:
         """String representation
         """
-        return "PowerLaw"
-    
-    
+        return 'PowerLaw'
+
+
 class CustomSpectrum(BaseSpectrum):
     '''Custom spectrum using callable object
     '''
-    def __init__(self,spectrum):
+    def __init__(self, spectrum):
         """Constructor of CustomSpectrum object.
-        
+
         Constructor
-        
+
         Args:
             spectrum: Any callable object
-        
+
         """
+
+        super().__init__()
         self.spectrum = spectrum
-        return
-        
-    def __call__(self, E:Union[np.ndarray,float])-> np.ndarray:
+
+    def __call__(self, energy: Union[np.ndarray, float],  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
+                 **kwargs) -> np.ndarray:
         """Evaluate spectrum at energy E
-        
+
         Constructor
-        
+
         Args:
-            E : Evaluation energy 
-        
+            energy : Evaluation energy
+
         Returns:
-            np.ndarray of differential flux 
+            np.ndarray of differential flux
         """
-        return self.spectrum(E)
-        
+        return self.spectrum(energy)
+
     def __str__(self):
         r"""String representation of class"""
-        return "CustomSpectrum"
+        return 'CustomSpectrum'
