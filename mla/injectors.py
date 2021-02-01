@@ -222,7 +222,7 @@ class TimeDependentPsInjector(PsInjector):
     def inject_signal_events(self, source: core.Source,
                              trial_preprocessing: np.ndarray,
                              n_signal_observed: Optional[int] = None,  # Python 3.9 pylint bug... pylint: disable=unsubscriptable-object
-    ) -> np.ndarray:
+                             **kwargs) -> np.ndarray:
         """Function info...
 
         More function info...

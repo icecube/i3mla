@@ -449,8 +449,7 @@ class ThreeMLEventModel(EventModel):  # @Jason, can this be fixed? pylint: disab
                 ratio[i] = 0
         return ratio
 
-    def get_energy_sob(self, events: np.ndarray
-    ) -> List[scipy.interpolate.UnivariateSpline]:
+    def get_energy_sob(self, events: np.ndarray) -> np.ndarray:
         """Gets the sob vs. gamma required for each event and specific .
 
         More function info...
