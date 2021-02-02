@@ -223,7 +223,6 @@ class TimeDependentPsInjector(PsInjector):
 
     def inject_signal_events(self, source: sources.Source,  # Necessary for compatibility with trial_generator... pylint: disable=unused-argument
                              trial_preprocessing: np.ndarray,
-                             n_signal_observed: Optional[int] = None,
                              **kwargs) -> np.ndarray:
         """Function info...
 
@@ -233,8 +232,6 @@ class TimeDependentPsInjector(PsInjector):
             source:
             trial_preprocessing: Reweighted and pruned simulated events near
                 the source declination.
-            n_signal_observed: Optional,overriding the trial_preprocessing
-                weighted total events
 
         Returns:
             An array of injected signal events.
@@ -242,9 +239,8 @@ class TimeDependentPsInjector(PsInjector):
         # Pick the signal events
         weighttotal = trial_preprocessing['weight'].sum()
         normed_weight = trial_preprocessing['weight'] / weighttotal
-        if n_signal_observed is None:
-            total = weighttotal * self.signal_time_profile.exposure * 3600 * 24
-            n_signal_observed = scipy.stats.poisson.rvs(total)
+        total = weighttotal * self.signal_time_profile.exposure * 3600 * 24
+        n_signal_observed = scipy.stats.poisson.rvs(total)
 
         signal = np.random.choice(trial_preprocessing, n_signal_observed,
                                   p=normed_weight, replace=False).copy()
