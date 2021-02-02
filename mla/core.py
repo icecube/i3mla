@@ -12,7 +12,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, Dict, List, Optional, Tuple, Type, Union, Sequence
+from typing import Callable, Dict, List, Optional, Tuple, Union, Sequence
 
 import dataclasses
 import numpy as np
@@ -25,7 +25,7 @@ Minimizer = Callable[
 ]
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(frozen=True)
 class Analysis:
     """Stores the components of an analysis."""
     # These imports only exist for type checking. They are in here to ensure
@@ -37,25 +37,25 @@ class Analysis:
     from . import trial_generators  # pylint: disable=import-outside-toplevel
     model: models.EventModel
     injector: injectors.PsInjector
-    ts_preprocessor: Type[test_statistics.PsPreprocess]
+    ts_preprocessor_factory: test_statistics.PsPreprocessFactory
     test_statistic: test_statistics.TestStatistic
     trial_generator: trial_generators.PsTrialGenerator
     source: sources.Source
 
 
-def evaluate_ts(analysis: Analysis, events: np.ndarray, params: np.ndarray,
-                **kwargs) -> float:
+def evaluate_ts(analysis: Analysis, events: np.ndarray,
+                params: np.ndarray) -> float:
     """Docstring"""
     return analysis.test_statistic(
         params,
-        analysis.ts_preprocessor(analysis.model, analysis.injector,
-                                 analysis.source, events, params, **kwargs),
+        analysis.ts_preprocessor_factory(analysis.model, analysis.injector,
+                                         analysis.source, events, params),
     )
 
 
 def minimize_ts(analysis: Analysis, test_params: List[float],
-                events: np.ndarray, minimizer: Optional[Minimizer] = None,
-                **kwargs) -> Dict[str, float]:
+                events: np.ndarray,
+                minimizer: Optional[Minimizer] = None) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.
 
     Accepts guess values for fitting the n_signal and spectral index, and
@@ -71,13 +71,8 @@ def minimize_ts(analysis: Analysis, test_params: List[float],
         A dictionary containing the minimized overall test-statistic, the
         best-fit n_signal, and the best fit gamma.
     """
-    if kwargs is None:
-        pre_pro = analysis.ts_preprocessor(analysis.model, analysis.injector,
-                                           analysis.source, events, test_params)
-    else:
-        pre_pro = analysis.ts_preprocessor(analysis.model, analysis.injector,
-                                           analysis.source, events, test_params,
-                                           **kwargs)
+    pre_pro = analysis.ts_preprocessor_factory(
+        analysis.model, analysis.injector, analysis.source, events, test_params)
 
     test_stat = analysis.test_statistic
 

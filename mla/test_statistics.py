@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Callable, ClassVar, Dict, List, Optional, Tuple
 
 import warnings
 import dataclasses
@@ -34,8 +34,8 @@ class PsPreprocess:
 
     events: np.ndarray
     _params: Tuple[float, float]
+    _bounds: Bounds
 
-    _bounds: Optional[Bounds] = dataclasses.field(init=False, default=False)
     n_events: int = dataclasses.field(init=False)
     n_dropped: int = dataclasses.field(init=False)
     splines: List[scipy.interpolate.UnivariateSpline] = dataclasses.field(
@@ -87,9 +87,23 @@ class PsPreprocess:
     @property
     def bounds(self) -> Bounds:
         """Docstring"""
-        if self._bounds is not None:
-            return self._bounds
-        return [(0, self.params['n_signal']), (-4, -1)]
+        new_bounds = self._bounds
+        new_bounds[0][1] = min(self._bounds[0][1], self.params['n_signal'])
+        return new_bounds
+
+
+@dataclasses.dataclass
+class PsPreprocessFactory:
+    """Docstring"""
+    bounds: Bounds = [(0, None), (-4, -1)]
+    factory_type: ClassVar = PsPreprocess
+
+    def __call__(self, event_model: models.EventModel,
+                 injector: injectors.PsInjector, source: sources.Source,
+                 events: np.ndarray, params: Tuple) -> PsPreprocess:
+        """Docstring"""
+        return self.factory_type(event_model, injector, source, events, params,
+                                 **dataclasses.asdict(self))
 
 
 TestStatistic = Callable[[np.ndarray, PsPreprocess], float]
@@ -152,6 +166,15 @@ class TdPsPreprocess(PsPreprocess):
                           RuntimeWarning)
 
 
+@dataclasses.dataclass
+class TdPsPreprocessFactory(PsPreprocessFactory):
+    """Docstring"""
+    sig_time_profile: time_profiles.GenericProfile
+    bg_time_profile: time_profiles.GenericProfile
+
+    factory_type: ClassVar = TdPsPreprocess
+
+
 def td_ps_test_statistic(params: np.ndarray, pre_pro: TdPsPreprocess) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
@@ -175,7 +198,7 @@ def td_ps_test_statistic(params: np.ndarray, pre_pro: TdPsPreprocess) -> float:
 
 
 @dataclasses.dataclass
-class ThreeMLPsPreprocess(PsPreprocess):
+class ThreeMLPsPreprocess(TdPsPreprocess):
     """Docstring"""
     event_model: dataclasses.InitVar[models.ThreeMLEventModel]
     injector: dataclasses.InitVar[injectors.TimeDependentPsInjector]
@@ -193,6 +216,12 @@ class ThreeMLPsPreprocess(PsPreprocess):
         super().__post_init__(event_model, injector, source)
 
         self.sob_energy = self.event_model.get_energy_sob(self.events)
+
+
+@dataclasses.dataclass
+class ThreeMLPsPreprocessFactory(TdPsPreprocessFactory):
+    """Docstring"""
+    factory_type: ClassVar = ThreeMLPsPreprocess
 
 
 def threeml_ps_test_statistic(params: float,
