@@ -52,7 +52,7 @@ class PsTrialGenerator:
         # declination. We only want to sample from those.
         if sampling_width is not None:
             sindec_dist = np.abs(
-                source['dec'] - event_model.sim['trueDec'])
+                source.dec - event_model.sim['trueDec'])
             close = sindec_dist < sampling_width
 
             reduced_sim = rf.append_fields(
@@ -61,8 +61,8 @@ class PsTrialGenerator:
                 np.zeros(close.sum()),
                 dtypes=np.float32)
 
-            max_dec = np.min([np.sin(source['dec'] + sampling_width), 1])
-            min_dec = np.max([np.sin(source['dec'] - sampling_width), -1])
+            max_dec = np.min([np.sin(source.dec + sampling_width), 1])
+            min_dec = np.max([np.sin(source.dec - sampling_width), -1])
             omega = 2 * np.pi * (max_dec - min_dec)
 
         else:
