@@ -244,10 +244,8 @@ class TimeDependentPsInjector(PsInjector):
         normed_weight = trial_preprocessing['weight'] / weighttotal
         if n_signal_observed is None:
             total = weighttotal * self.signal_time_profile.exposure * 3600 * 24
-        else:
-            total = n_signal_observed
+            n_signal_observed = scipy.stats.poisson.rvs(total)
 
-        n_signal_observed = scipy.stats.poisson.rvs(total)
         signal = np.random.choice(trial_preprocessing, n_signal_observed,
                                   p=normed_weight, replace=False).copy()
 
