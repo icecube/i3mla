@@ -36,7 +36,7 @@ class Analysis:
     """Stores the components of an analysis."""
     model: models.EventModel
     injector: injectors.PsInjector
-    ts_preprocessor_factory: test_statistics.PsPreprocessFactory
+    ts_preprocessor: test_statistics.PsPreprocessor
     test_statistic: test_statistics.TestStatistic
     trial_generator: trial_generators.PsTrialGenerator
     source: sources.Source
@@ -47,13 +47,13 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
     """Docstring"""
     return analysis.test_statistic(
         params,
-        analysis.ts_preprocessor_factory(analysis.model, analysis.injector,
-                                         analysis.source, events, params),
+        analysis.ts_preprocessor(
+            analysis.model, analysis.injector, analysis.source, events, params),
     )
 
 
 def default_minimizer(ts: test_statistics.TestStatistic,
-                      pre_pro: test_statistics.PsPreprocess):
+                      pre_pro: test_statistics.PsPreprocessed):
     """Docstring"""
     with np.errstate(divide='ignore', invalid='ignore'):
         # Set the seed values, which tell the minimizer
@@ -85,7 +85,7 @@ def minimize_ts(analysis: Analysis, test_params: List[float],
         A dictionary containing the minimized overall test-statistic, the
         best-fit n_signal, and the best fit gamma.
     """
-    pre_pro = analysis.ts_preprocessor_factory(
+    pre_pro = analysis.ts_preprocessor(
         analysis.model, analysis.injector, analysis.source, events, test_params)
 
     test_stat = analysis.test_statistic

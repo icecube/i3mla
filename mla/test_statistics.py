@@ -26,7 +26,7 @@ Bounds = Sequence[Tuple[Optional[float], Optional[float]]]
 
 
 @dataclasses.dataclass
-class PsPreprocess:
+class PsPreprocessed:
     """Docstring"""
     event_model: dataclasses.InitVar[models.EventModel]
     injector: dataclasses.InitVar[injectors.PsInjector]
@@ -96,23 +96,23 @@ class PsPreprocess:
 
 
 @dataclasses.dataclass
-class PsPreprocessFactory:
+class PsPreprocessor:
     """Docstring"""
     bounds: Bounds
-    factory_type: ClassVar = PsPreprocess
+    factory_type: ClassVar = PsPreprocessed
 
     def __call__(self, event_model: models.EventModel,
                  injector: injectors.PsInjector, source: sources.Source,
-                 events: np.ndarray, params: Tuple) -> PsPreprocess:
+                 events: np.ndarray, params: Tuple) -> PsPreprocessed:
         """Docstring"""
         return self.factory_type(event_model, injector, source, events, params,
                                  **dataclasses.asdict(self))
 
 
-TestStatistic = Callable[[np.ndarray, PsPreprocess], float]
+TestStatistic = Callable[[np.ndarray, PsPreprocessed], float]
 
 
-def ps_test_statistic(params: np.ndarray, pre_pro: PsPreprocess) -> float:
+def ps_test_statistic(params: np.ndarray, pre_pro: PsPreprocessed) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -135,7 +135,7 @@ def ps_test_statistic(params: np.ndarray, pre_pro: PsPreprocess) -> float:
 
 
 @dataclasses.dataclass
-class TdPsPreprocess(PsPreprocess):
+class TdPsPreprocessed(PsPreprocessed):
     """Docstring"""
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
@@ -170,15 +170,16 @@ class TdPsPreprocess(PsPreprocess):
 
 
 @dataclasses.dataclass
-class TdPsPreprocessFactory(PsPreprocessFactory):
+class TdPsPreprocessor(PsPreprocessor):
     """Docstring"""
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
 
-    factory_type: ClassVar = TdPsPreprocess
+    factory_type: ClassVar = TdPsPreprocessed
 
 
-def td_ps_test_statistic(params: np.ndarray, pre_pro: TdPsPreprocess) -> float:
+def td_ps_test_statistic(params: np.ndarray,
+                         pre_pro: TdPsPreprocessed) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -201,7 +202,7 @@ def td_ps_test_statistic(params: np.ndarray, pre_pro: TdPsPreprocess) -> float:
 
 
 @dataclasses.dataclass
-class ThreeMLPsPreprocess(TdPsPreprocess):
+class ThreeMLPsPreprocessed(TdPsPreprocessed):
     """Docstring"""
     sob_energy: np.array = dataclasses.field(init=False)
 
@@ -220,13 +221,13 @@ class ThreeMLPsPreprocess(TdPsPreprocess):
 
 
 @dataclasses.dataclass
-class ThreeMLPsPreprocessFactory(TdPsPreprocessFactory):
+class ThreeMLPsPreprocessor(TdPsPreprocessor):
     """Docstring"""
-    factory_type: ClassVar = ThreeMLPsPreprocess
+    factory_type: ClassVar = ThreeMLPsPreprocessed
 
 
 def threeml_ps_test_statistic(params: float,
-                              pre_pro: ThreeMLPsPreprocess) -> float:
+                              pre_pro: ThreeMLPsPreprocessed) -> float:
     """(ThreeML version) Evaluates the ts for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
