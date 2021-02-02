@@ -52,9 +52,22 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
     )
 
 
+def default_minimizer(ts: test_statistics.TestStatistic,
+                      pre_pro: test_statistics.PsPreprocess):
+    """Docstring"""
+    with np.errstate(divide='ignore', invalid='ignore'):
+        # Set the seed values, which tell the minimizer
+        # where to start, and the bounds. First do the
+        # shape parameters.
+        return scipy.optimize.minimize(
+            ts, x0=pre_pro.params.values, args=(pre_pro), bounds=pre_pro.bounds,
+            method='L-BFGS-B'
+        )
+
+
 def minimize_ts(analysis: Analysis, test_params: List[float],
                 events: np.ndarray,
-                minimizer: Optional[Minimizer] = None) -> Dict[str, float]:
+                minimizer: Minimizer = default_minimizer) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.
 
     Accepts guess values for fitting the n_signal and spectral index, and
@@ -64,6 +77,8 @@ def minimize_ts(analysis: Analysis, test_params: List[float],
 
     Args:
         analysis:
+        test_params:
+        events:
         minimizer:
 
     Returns:
@@ -75,28 +90,17 @@ def minimize_ts(analysis: Analysis, test_params: List[float],
 
     test_stat = analysis.test_statistic
 
-    if minimizer is None:
-        def minimizer(func, x_0, bounds):
-            return scipy.optimize.minimize(func, x0=x_0, args=(pre_pro),
-                                           bounds=bounds, method='L-BFGS-B')
-
-    default_params = pre_pro.default_params(test_params)
-    output = {'ts': 0, **default_params}
+    output = {'ts': 0, **pre_pro.params}
 
     if len(pre_pro.events) == 0:
         return output
 
-    with np.errstate(divide='ignore', invalid='ignore'):
-        # Set the seed values, which tell the minimizer
-        # where to start, and the bounds. First do the
-        # shape parameters.
-        result = minimizer(test_stat, default_params.values,
-                           pre_pro.bounds(test_params))
+    result = minimizer(test_stat, pre_pro)
 
-        # Store the results in the output array
-        output['ts'] = -1 * result.fun
-        for i, (param, _) in enumerate(default_params):
-            output[param] = result.x[i]
+    # Store the results in the output array
+    output['ts'] = -1 * result.fun
+    for i, (param, _) in enumerate(pre_pro.params):
+        output[param] = result.x[i]
 
     return output
 
