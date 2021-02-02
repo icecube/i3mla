@@ -188,25 +188,6 @@ def dec_to_rad(sign: int, deg: float, mins: float, secs: float) -> float:
     return sign / np.abs(sign) * (deg + mins / 60 + secs / 3600) * np.pi / 180
 
 
-def read(filelist: List[str]) -> np.ndarray:
-    """Reads in and concatenates a list of numpy files.
-
-    Args:
-        fileList: A list of .npy file paths as strings.
-
-    Returns:
-        An array of data events.
-    """
-    data = []
-    for filename in sorted(filelist):
-        file_data = np.load(filename)
-        if len(data) == 0:
-            data = file_data.copy()
-        else:
-            data = np.concatenate([data, file_data])
-    return data
-
-
 def angular_distance(src_ra: float, src_dec: float, r_a: float,
                      dec: float) -> float:
     """Computes angular distance between source and location.
@@ -233,21 +214,6 @@ def angular_distance(src_ra: float, src_dec: float, r_a: float,
     return np.arccos(cos_dist)
 
 
-def cross_matrix(mat: np.array) -> np.array:
-    """Calculate cross product matrix.
-
-    A[ij] = x_i * y_j - y_i * x_j
-
-    Args:
-        mat: A 2D array to take the cross product of.
-
-    Returns:
-        The cross matrix.
-    """
-    skv = np.roll(np.roll(np.diag(mat.ravel()), 1, 1), -1, 0)
-    return skv - skv.T
-
-
 def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
            ra3: float, dec3: float) -> Tuple[float, float]:
     """Rotation matrix for rotation of (ra1, dec1) onto (ra2, dec2).
@@ -264,6 +230,9 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
 
     Returns:
         The rotated ra3 and dec3.
+
+    Raises:
+        IndexError: Arguments must all have the same dimension.
     """
     ra1 = np.atleast_1d(ra1)
     dec1 = np.atleast_1d(dec1)
@@ -272,9 +241,16 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
     ra3 = np.atleast_1d(ra3)
     dec3 = np.atleast_1d(dec3)
 
-    assert(
-        len(ra1) == len(dec1) == len(ra2) == len(dec2) == len(ra3) == len(dec3)
-    )
+    if not (
+            (
+                len(ra1) == len(dec1)
+            ) == (
+                len(ra2) == len(dec2)
+            ) == (
+                len(ra3) == len(dec3)
+            )
+    ):
+        raise IndexError("Arguments must all have the same dimension.")
 
     cos_alpha = np.cos(ra2 - ra1) * np.cos(dec1) * np.cos(dec2) \
         + np.sin(dec1) * np.sin(dec2)
@@ -299,7 +275,8 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
 
     one = np.diagflat(np.ones(3))
     ntn = np.array([np.outer(nv, nv) for nv in nvec])
-    nx = np.array([cross_matrix(nv) for nv in nvec])
+    nx = np.array([
+        np.roll(np.roll(np.diag(nv.ravel()), 1, 1), -1, 0) for nv in nvec])
 
     r = np.array([(1. - np.cos(a)) * ntn_i + np.cos(a) * one + np.sin(a) * nx_i
                   for a, ntn_i, nx_i in zip(alpha, ntn, nx)])
