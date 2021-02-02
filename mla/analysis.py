@@ -12,7 +12,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, Dict, List, Optional, Union, Sequence
+from typing import Callable, Dict, List, Union, Sequence
 
 import dataclasses
 import numpy as np
