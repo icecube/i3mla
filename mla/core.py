@@ -26,18 +26,11 @@ Minimizer = Callable[
 
 
 @dataclasses.dataclass
-class Source:
-    """Stores a source object name and location"""
-    name: str
-    r_asc: float
-    dec: float
-
-
-@dataclasses.dataclass
 class Analysis:
     """Stores the components of an analysis."""
     # These imports only exist for type checking. They are in here to ensure
     # no circular imports.
+    from . import sources  # pylint: disable=import-outside-toplevel
     from . import models  # pylint: disable=import-outside-toplevel
     from . import injectors  # pylint: disable=import-outside-toplevel
     from . import test_statistics  # pylint: disable=import-outside-toplevel
@@ -47,7 +40,7 @@ class Analysis:
     ts_preprocessor: Type[test_statistics.PsPreprocess]
     test_statistic: test_statistics.TestStatistic
     trial_generator: trial_generators.PsTrialGenerator
-    source: Source
+    source: sources.Source
 
 
 def evaluate_ts(analysis: Analysis, events: np.ndarray, params: np.ndarray,

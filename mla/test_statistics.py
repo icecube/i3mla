@@ -16,7 +16,7 @@ import dataclasses
 import numpy as np
 import scipy.optimize
 
-from . import core
+from . import sources
 from . import models
 from . import injectors
 from . import time_profiles
@@ -30,12 +30,12 @@ class PsPreprocess:
     """Docstring"""
     event_model: dataclasses.InitVar[models.EventModel]
     injector: dataclasses.InitVar[injectors.PsInjector]
-    source: dataclasses.InitVar[core.Source]
+    source: dataclasses.InitVar[sources.Source]
 
     events: np.ndarray
     _params: Tuple[float, float]
-    _bounds: Optional[Bounds] = None
 
+    _bounds: Optional[Bounds] = dataclasses.field(init=False, default=False)
     n_events: int = dataclasses.field(init=False)
     n_dropped: int = dataclasses.field(init=False)
     splines: List[scipy.interpolate.UnivariateSpline] = dataclasses.field(
@@ -122,7 +122,7 @@ class TdPsPreprocess(PsPreprocess):
     """Docstring"""
     event_model: dataclasses.InitVar[models.EventModel]
     injector: dataclasses.InitVar[injectors.TimeDependentPsInjector]
-    source: dataclasses.InitVar[core.Source]
+    source: dataclasses.InitVar[sources.Source]
 
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
@@ -179,7 +179,7 @@ class ThreeMLPsPreprocess(PsPreprocess):
     """Docstring"""
     event_model: dataclasses.InitVar[models.ThreeMLEventModel]
     injector: dataclasses.InitVar[injectors.TimeDependentPsInjector]
-    source: dataclasses.InitVar[core.Source]
+    source: dataclasses.InitVar[sources.Source]
 
     sob_energy: np.array = dataclasses.field(init=False)
 

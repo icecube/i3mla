@@ -17,6 +17,7 @@ import numpy as np
 import scipy
 
 from . import core
+from . import sources
 from . import models
 from . import time_profiles
 
@@ -32,7 +33,8 @@ class PsInjector:
         """Initializes the PsInjector object and gives it a source."""
 
     @staticmethod
-    def signal_spatial_pdf(source: core.Source, events: np.ndarray) -> np.array:
+    def signal_spatial_pdf(source: sources.Source,
+                           events: np.ndarray) -> np.array:
         """Calculates the signal probability of events.
 
         Gives a gaussian probability based on their angular distance from the
@@ -95,7 +97,7 @@ class PsInjector:
         return background
 
     @staticmethod
-    def inject_signal_events(source: core.Source,
+    def inject_signal_events(source: sources.Source,
                              trial_preprocessing: np.ndarray) -> np.ndarray:
         """Injects signal events for a trial.
 
@@ -219,7 +221,7 @@ class TimeDependentPsInjector(PsInjector):
 
         return background
 
-    def inject_signal_events(self, source: core.Source,  # Necessary for compatibility with trial_generator... pylint: disable=unused-argument
+    def inject_signal_events(self, source: sources.Source,  # Necessary for compatibility with trial_generator... pylint: disable=unused-argument
                              trial_preprocessing: np.ndarray,
                              n_signal_observed: Optional[int] = None,
                              **kwargs) -> np.ndarray:

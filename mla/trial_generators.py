@@ -14,7 +14,7 @@ from typing import Optional
 import numpy as np
 import numpy.lib.recfunctions as rf
 
-from . import core
+from . import sources
 from . import models
 from . import injectors
 from . import spectral
@@ -27,7 +27,7 @@ class PsTrialGenerator:
         """Docstring"""
 
     @staticmethod
-    def preprocess_trial(event_model: models.EventModel, source: core.Source,  # This is fine... pylint: disable=unused-argument
+    def preprocess_trial(event_model: models.EventModel, source: sources.Source,  # This is fine... pylint: disable=unused-argument
                          flux_norm: float = 0, gamma: float = -2,
                          spectrum: Optional[spectral.BaseSpectrum] = None,
                          sampling_width: Optional[float] = None,
@@ -101,7 +101,7 @@ class PsTrialGenerator:
 
     @classmethod
     def generate(cls, event_model: models.EventModel,
-                 injector: injectors.PsInjector, source: core.Source,
+                 injector: injectors.PsInjector, source: sources.Source,
                  preprocessing: np.ndarray, flux_norm: float = 0,
                  random_seed: Optional[int] = None,
                  disable_time_filter: Optional[bool] = False,
