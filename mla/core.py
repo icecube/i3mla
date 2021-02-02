@@ -12,7 +12,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, Dict, List, Optional, Tuple, Union, Sequence
+from typing import Callable, Dict, List, Optional, Tuple, Type, Union, Sequence
 
 import dataclasses
 import numpy as np
@@ -44,27 +44,25 @@ class Analysis:
     from . import trial_generators  # pylint: disable=import-outside-toplevel
     model: models.EventModel
     injector: injectors.PsInjector
-    ts_preprocessor: test_statistics.PsPreprocess
+    ts_preprocessor: Type[test_statistics.PsPreprocess]
     test_statistic: test_statistics.TestStatistic
     trial_generator: trial_generators.PsTrialGenerator
     source: Source
 
 
 def evaluate_ts(analysis: Analysis, events: np.ndarray, params: np.ndarray,
-                *args, **kwargs) -> float:
+                **kwargs) -> float:
     """Docstring"""
     return analysis.test_statistic(
         params,
-        analysis.ts_preprocessor(
-            analysis.model, analysis.injector, analysis.source, events),
-        *args,
-        **kwargs,
+        analysis.ts_preprocessor(analysis.model, analysis.injector,
+                                 analysis.source, events, params, **kwargs),
     )
 
 
-def minimize_ts(analysis: Analysis, test_ns: float, test_gamma: float,
-                gamma_bounds: Tuple[float] = (-4, -1),
-                minimizer: Optional[Minimizer] = None) -> Dict[str, float]:
+def minimize_ts(analysis: Analysis, test_params: List[float],
+                events: np.ndarray, minimizer: Optional[Minimizer] = None,
+                **kwargs) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.
 
     Accepts guess values for fitting the n_signal and spectral index, and
@@ -74,16 +72,20 @@ def minimize_ts(analysis: Analysis, test_ns: float, test_gamma: float,
 
     Args:
         analysis:
-        test_ns: An initial guess for the number of signal events (n_signal).
-        test_gamma: An initial guess for the spectral index (gamma).
-        gamma_bounds:
         minimizer:
 
     Returns:
         A dictionary containing the minimized overall test-statistic, the
         best-fit n_signal, and the best fit gamma.
     """
-    pre_pro = analysis.ts_preprocessor
+    if kwargs is None:
+        pre_pro = analysis.ts_preprocessor(analysis.model, analysis.injector,
+                                           analysis.source, events, test_params)
+    else:
+        pre_pro = analysis.ts_preprocessor(analysis.model, analysis.injector,
+                                           analysis.source, events, test_params,
+                                           **kwargs)
+
     test_stat = analysis.test_statistic
 
     if minimizer is None:
@@ -91,30 +93,23 @@ def minimize_ts(analysis: Analysis, test_ns: float, test_gamma: float,
             return scipy.optimize.minimize(func, x0=x_0, args=(pre_pro),
                                            bounds=bounds, method='L-BFGS-B')
 
-    pre_pro = analysis.ts_preprocessor
-    test_stat = analysis.test_statistic
-
-    output = {'ts': 0, 'n_signal': test_ns, 'gamma': test_gamma}
-    max_ns = pre_pro.n_events - 1e-5
+    default_params = pre_pro.default_params(test_params)
+    output = {'ts': 0, **default_params}
 
     if len(pre_pro.events) == 0:
         return output
-
-    # Check: n_signal cannot be larger than n_events
-    test_ns = max(test_ns, max_ns)
 
     with np.errstate(divide='ignore', invalid='ignore'):
         # Set the seed values, which tell the minimizer
         # where to start, and the bounds. First do the
         # shape parameters.
-        x_0 = [test_ns, test_gamma]
-        bounds = [(0, max_ns), gamma_bounds]  # gamma [min, max]
-        result = minimizer(test_stat, x0=x_0, bounds=bounds)
+        result = minimizer(test_stat, default_params.values,
+                           pre_pro.bounds(test_params))
 
         # Store the results in the output array
         output['ts'] = -1 * result.fun
-        output['n_signal'] = result.x[0]
-        output['gamma'] = result.x[1]
+        for i, (param, _) in enumerate(default_params):
+            output[param] = result.x[i]
 
     return output
 
@@ -131,31 +126,6 @@ def produce_trial(analysis: Analysis, *args, **kwargs) -> np.ndarray:
         *args,
         **kwargs,
     )
-
-
-def produce_and_minimize(analysis: Analysis, n_trials: int,
-                         test_params: np.ndarray, *args,
-                         **kwargs) -> List[Dict[str, float]]:
-    """Docstring"""
-    preprocessing = analysis.trial_generator.preprocess_trial(
-        analysis.model, analysis.source, *args, **kwargs)
-
-    return [
-        minimize_ts(
-            analysis,
-            analysis.trial_generator.generate(
-                analysis.model,
-                analysis.injector,
-                analysis.source,
-                preprocessing,
-                *args,
-                **kwargs,
-            ),
-            test_params,
-            *args,
-            **kwargs,
-        ) for _ in range(n_trials)
-    ]
 
 
 def ra_to_rad(hrs: float, mins: float, secs: float) -> float:
