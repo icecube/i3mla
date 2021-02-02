@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, ClassVar, Dict, List, Optional, Tuple
+from typing import Callable, ClassVar, Dict, List, Optional, Sequence, Tuple
 
 import warnings
 import dataclasses
@@ -22,7 +22,7 @@ from . import injectors
 from . import time_profiles
 
 
-Bounds = List[Tuple[Optional[float], Optional[float]]]
+Bounds = Sequence[Tuple[Optional[float], Optional[float]]]
 
 
 @dataclasses.dataclass
@@ -95,7 +95,7 @@ class PsPreprocess:
 @dataclasses.dataclass
 class PsPreprocessFactory:
     """Docstring"""
-    bounds: Bounds = [(0, None), (-4, -1)]
+    bounds: Bounds
     factory_type: ClassVar = PsPreprocess
 
     def __call__(self, event_model: models.EventModel,
