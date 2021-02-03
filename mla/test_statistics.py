@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, ClassVar, Dict, List, Optional, Sequence, Tuple
+from typing import Callable, ClassVar, List, Optional, Sequence, Tuple
 
 import warnings
 import dataclasses
@@ -28,24 +28,25 @@ Bounds = Sequence[Tuple[Optional[float], Optional[float]]]
 @dataclasses.dataclass
 class PsPreprocessed:
     """Docstring"""
-    event_model: dataclasses.InitVar[models.EventModel]
-    injector: dataclasses.InitVar[injectors.PsInjector]
-    source: dataclasses.InitVar[sources.Source]
-    events: dataclasses.InitVar[np.ndarray]
-
     _params: Tuple[float, float]
+    n_events: int
+    n_dropped: int
+    splines: List[scipy.interpolate.UnivariateSpline]
+    sob_spatial: np.array
+    drop_index: np.array
+
     _bounds: Bounds
 
-    n_events: int = dataclasses.field(init=False)
-    n_dropped: int = dataclasses.field(init=False)
-    splines: List[scipy.interpolate.UnivariateSpline] = dataclasses.field(
-        init=False)
-    sob_spatial: np.array = dataclasses.field(init=False)
-    drop_index: np.array = dataclasses.field(init=False)
 
-    def __post_init__(self, event_model: models.EventModel,
-                      injector: injectors.PsInjector, source: sources.Source,
-                      events: np.ndarray) -> None:
+@dataclasses.dataclass
+class PsPreprocessor:
+    """Docstring"""
+    bounds: Bounds
+    factory_type: ClassVar = PsPreprocessed
+
+    def _preprocess(self, event_model: models.EventModel,
+                    injector: injectors.PsInjector, source: sources.Source,
+                    events: np.ndarray) -> Tuple:
         """Contains all of the calculations for the ts that can be done once.
 
         Separated from the main test-statisic functions to improve performance.
@@ -60,59 +61,50 @@ class PsPreprocessed:
             RuntimeWarning: There should be at least one event.
         """
 
-        self.n_events = len(events)
+        n_events = len(events)
 
-        if self.n_events == 0:
+        if n_events == 0:
             warnings.warn(''.join(['You are trying to preprocess zero events. ',
                                    'This will likely result in unexpected ',
                                    'behavior']), RuntimeWarning)
 
-        self.sob_spatial = injector.signal_spatial_pdf(source, events)
+        sob_spatial = injector.signal_spatial_pdf(source, events)
 
         # Drop events with zero spatial or time llh
         # The contribution of those llh will be accounts in
         # n_dropped*np.log(1-n_signal/n_events)
-        self.drop_index = self.sob_spatial != 0
+        drop_index = sob_spatial != 0
 
-        self.n_dropped = len(events) - np.sum(self.drop_index)
-        self.sob_spatial = self.sob_spatial[self.drop_index]
-        self.sob_spatial /= injector.background_spatial_pdf(
-            events[self.drop_index], event_model)
-        self.splines = event_model.get_log_sob_gamma_splines(
-            events[self.drop_index])
+        n_dropped = len(events) - np.sum(drop_index)
+        sob_spatial = sob_spatial[drop_index]
+        sob_spatial /= injector.background_spatial_pdf(
+            events[drop_index], event_model)
+        splines = event_model.get_log_sob_gamma_splines(
+            events[drop_index])
 
-    @property
-    def params(self) -> Dict[str, float]:
-        """Docstring"""
-        return {'n_signal': min(self._params[0], self.n_events - 1e-5),
-                'gamma': self._params[1]}
-
-    @property
-    def bounds(self) -> Bounds:
-        """Docstring"""
-        new_bounds = self._bounds
-        new_bounds[0][1] = min(self._bounds[0][1], self.params['n_signal'])
-        return new_bounds
-
-
-@dataclasses.dataclass
-class PsPreprocessor:
-    """Docstring"""
-    bounds: Bounds
-    factory_type: ClassVar = PsPreprocessed
+        return n_events, n_dropped, splines, sob_spatial, drop_index
 
     def __call__(self, event_model: models.EventModel,
                  injector: injectors.PsInjector, source: sources.Source,
                  events: np.ndarray, params: Tuple) -> PsPreprocessed:
         """Docstring"""
-        return self.factory_type(event_model, injector, source, events, params,
-                                 **dataclasses.asdict(self))
+        prepro = self._preprocess(event_model, injector, source, events)
+
+        if len(prepro) >= 5:
+            return self.factory_type(
+                params,
+                *prepro[:5],
+                *dataclasses.astuple(self),
+                *prepro[5:]
+            )
+
+        return self.factory_type(params, *prepro, *dataclasses.astuple(self))
 
 
 TestStatistic = Callable[[np.ndarray, PsPreprocessed], float]
 
 
-def ps_test_statistic(params: np.ndarray, pre_pro: PsPreprocessed) -> float:
+def ps_test_statistic(params: np.ndarray, prepro: PsPreprocessed) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -120,18 +112,18 @@ def ps_test_statistic(params: np.ndarray, pre_pro: PsPreprocessed) -> float:
 
     Args:
         params: A two item array containing (n_signal, gamma).
-        pre_pro:
+        prepro:
 
     Returns:
         The overall test-statistic value for the given events and
         parameters.
     """
 
-    sob_new = pre_pro.sob_spatial * np.exp(
-        [spline(params[1]) for spline in pre_pro.splines])
+    sob_new = prepro.sob_spatial * np.exp(
+        [spline(params[1]) for spline in prepro.splines])
     return -2 * np.sum(
-        np.log((params[0] / pre_pro.n_events * (sob_new - 1)) + 1)
-    ) + pre_pro.n_dropped * np.log(1 - params[0] / pre_pro.n_events)
+        np.log((params[0] / prepro.n_events * (sob_new - 1)) + 1)
+    ) + prepro.n_dropped * np.log(1 - params[0] / prepro.n_events)
 
 
 @dataclasses.dataclass
@@ -139,34 +131,7 @@ class TdPsPreprocessed(PsPreprocessed):
     """Docstring"""
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
-
-    sob_time: np.array = dataclasses.field(init=False)
-
-    def __post_init__(self, event_model: models.EventModel,
-                      injector: injectors.TimeDependentPsInjector,
-                      source: sources.Source, events: np.ndarray) -> None:
-        """Contains all of the calculations for the ts that can be done once.
-
-        Separated from the main test-statisic functions to improve performance.
-
-        Args:
-            sig_time_profile:
-            bg_time_profile:
-
-        Raises:
-            RuntimeWarning:
-        """
-
-        super().__post_init__(event_model, injector, source, events)
-
-        self.sob_time = self.sig_time_profile.pdf(
-            events[self.drop_index]['time'])
-        self.sob_time /= self.bg_time_profile.pdf(
-            events[self.drop_index]['time'])
-
-        if np.logical_not(np.all(np.isfinite(self.sob_time))):
-            warnings.warn('Warning, events outside background time profile',
-                          RuntimeWarning)
+    sob_time: np.array
 
 
 @dataclasses.dataclass
@@ -177,9 +142,33 @@ class TdPsPreprocessor(PsPreprocessor):
 
     factory_type: ClassVar = TdPsPreprocessed
 
+    def _preprocess(self, event_model: models.EventModel,
+                    injector: injectors.TimeDependentPsInjector,
+                    source: sources.Source, events: np.ndarray) -> Tuple:
+        """Contains all of the calculations for the ts that can be done once.
 
-def td_ps_test_statistic(params: np.ndarray,
-                         pre_pro: TdPsPreprocessed) -> float:
+        Separated from the main test-statisic functions to improve performance.
+
+        Args:
+
+        Raises:
+            RuntimeWarning:
+        """
+
+        super_prepro = super()._preprocess(
+            event_model, injector, source, events)
+        # drop_index == super_prepro[4]
+        sob_time = self.sig_time_profile.pdf(events[super_prepro[4]]['time'])
+        sob_time /= self.bg_time_profile.pdf(events[super_prepro[4]]['time'])
+
+        if np.logical_not(np.all(np.isfinite(sob_time))):
+            warnings.warn('Warning, events outside background time profile',
+                          RuntimeWarning)
+
+        return (*super_prepro, sob_time)
+
+
+def td_ps_test_statistic(params: np.ndarray, prepro: TdPsPreprocessed) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -187,18 +176,18 @@ def td_ps_test_statistic(params: np.ndarray,
 
     Args:
         params: A two item array containing (n_signal, gamma).
-        pre_pro:
+        prepro:
 
     Returns:
         The overall test-statistic value for the given events and
         parameters.
     """
 
-    sob_new = pre_pro.sob_spatial * pre_pro.sob_time * np.exp(
-        [spline(params[1]) for spline in pre_pro.splines])
+    sob_new = prepro.sob_spatial * prepro.sob_time * np.exp(
+        [spline(params[1]) for spline in prepro.splines])
     return -2 * np.sum(
-        np.log((params[0] / pre_pro.n_events * (sob_new - 1)) + 1)
-    ) + pre_pro.n_dropped * np.log(1 - params[0] / pre_pro.n_events)
+        np.log((params[0] / prepro.n_events * (sob_new - 1)) + 1)
+    ) + prepro.n_dropped * np.log(1 - params[0] / prepro.n_events)
 
 
 @dataclasses.dataclass
@@ -206,28 +195,30 @@ class ThreeMLPsPreprocessed(TdPsPreprocessed):
     """Docstring"""
     sob_energy: np.array = dataclasses.field(init=False)
 
-    def __post_init__(self, event_model: models.ThreeMLEventModel,
-                      injector: injectors.TimeDependentPsInjector,
-                      source: sources.Source, events: np.ndarray) -> None:
-        """ThreeML version of TdPsPreprocess
-
-        Args:
-
-        """
-
-        super().__post_init__(event_model, injector, source, events)
-
-        self.sob_energy = event_model.get_energy_sob(events[self.drop_index])
-
 
 @dataclasses.dataclass
 class ThreeMLPsPreprocessor(TdPsPreprocessor):
     """Docstring"""
     factory_type: ClassVar = ThreeMLPsPreprocessed
 
+    def _preprocess(self, event_model: models.ThreeMLEventModel,
+                    injector: injectors.TimeDependentPsInjector,
+                    source: sources.Source, events: np.ndarray) -> Tuple:
+        """ThreeML version of TdPsPreprocess
+
+        Args:
+
+        """
+        super_prepro = super()._preprocess(
+            event_model, injector, source, events)
+
+        # drop_index == super_prepro[4]
+        sob_energy = event_model.get_energy_sob(events[super_prepro[4]])
+        return (*super_prepro, sob_energy)
+
 
 def threeml_ps_test_statistic(params: float,
-                              pre_pro: ThreeMLPsPreprocessed) -> float:
+                              prepro: ThreeMLPsPreprocessed) -> float:
     """(ThreeML version) Evaluates the ts for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -235,14 +226,14 @@ def threeml_ps_test_statistic(params: float,
 
     Args:
         params: n_signal
-        pre_pro:
+        prepro:
 
     Returns:
         The overall test-statistic value for the given events and
         parameters.
     """
 
-    sob_new = pre_pro.sob_spatial * pre_pro.sob_time * pre_pro.sob_energy
+    sob_new = prepro.sob_spatial * prepro.sob_time * prepro.sob_energy
     return -2 * np.sum(
-        np.log((params / pre_pro.n_events * (sob_new - 1)) + 1)
-    ) + pre_pro.n_dropped * np.log(1 - params / pre_pro.n_events)
+        np.log((params / prepro.n_events * (sob_new - 1)) + 1)
+    ) + prepro.n_dropped * np.log(1 - params / prepro.n_events)
