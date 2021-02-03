@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, ClassVar, List, Optional, Sequence, Tuple
+from typing import Callable, ClassVar, Dict, List, Optional, Sequence, Tuple
 
 import warnings
 import dataclasses
@@ -28,7 +28,7 @@ Bounds = Sequence[Tuple[Optional[float], Optional[float]]]
 @dataclasses.dataclass
 class Preprocessing:
     """Docstring"""
-    _params: Tuple[float, float]
+    _params: Tuple
     n_events: int
     n_dropped: int
     splines: List[scipy.interpolate.UnivariateSpline]
@@ -36,6 +36,19 @@ class Preprocessing:
     drop_index: np.array
 
     _bounds: Bounds
+
+    @property
+    def params(self) -> Dict[str, float]:
+        """Docstring"""
+        return {'n_signal': min(self._params[0], self.n_events - 1e-5),
+                'gamma': self._params[1]}
+
+    @property
+    def bounds(self) -> Bounds:
+        """Docstring"""
+        new_bounds = self._bounds
+        new_bounds[0][1] = min(self._bounds[0][1], self.params['n_signal'])
+        return new_bounds
 
 
 @dataclasses.dataclass

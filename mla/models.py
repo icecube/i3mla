@@ -22,6 +22,32 @@ from . import sources
 from . import spectral
 
 
+def angular_distance(src_ra: float, src_dec: float, r_a: float,
+                     dec: float) -> float:
+    """Computes angular distance between source and location.
+
+    Args:
+        src_ra: The right ascension of the first point (radians).
+        src_dec: The declination of the first point (radians).
+        r_a: The right ascension of the second point (radians).
+        dec: The declination of the second point (radians).
+
+    Returns:
+        The distance, in radians, between the two points.
+    """
+    sin_dec = np.sin(dec)
+
+    cos_dec = np.sqrt(1. - sin_dec**2)
+
+    cos_dist = (
+        np.cos(src_ra - r_a) * np.cos(src_dec) * cos_dec
+    ) + np.sin(src_dec) * sin_dec
+    # handle possible floating precision errors
+    cos_dist = np.clip(cos_dist, -1, 1)
+
+    return np.arccos(cos_dist)
+
+
 class EventModel:
     """Stores the events and pre-processed parameters used in analyses.
 
@@ -335,6 +361,43 @@ class EventModel:
         reduced_sim['weight'] *= rescaled_energy
 
         return reduced_sim
+
+    def signal_spatial_pdf(self, source: sources.Source,
+                           events: np.ndarray) -> np.array:
+        """Calculates the signal probability of events.
+
+        Gives a gaussian probability based on their angular distance from the
+        source object.
+
+        Args:
+            source:
+            events: An array of events including their positional data.
+
+        Returns:
+            The value for the signal spatial pdf for the given events angular
+            distances.
+        """
+        sigma = events['angErr']
+        dist = angular_distance(events['ra'], events['dec'], source.r_asc,
+                                source.dec)
+        norm = 1 / (2 * np.pi * sigma**2)
+        return norm * np.exp(-dist**2 / (2 * sigma**2))
+
+    def background_spatial_pdf(self, events: np.array) -> np.array:
+        """Calculates the background probability of events based on their dec.
+
+        Uses the background_dec_spline() function from the given event_model to
+        get the probabilities.
+
+        Args:
+            events: An array of events including their declination.
+            event_model: Preprocessed data and simulation.
+
+        Returns:
+            The value for the background space pdf for the given events decs.
+        """
+        bg_densities = self.background_dec_spline(np.sin(events['dec']))
+        return (1 / (2 * np.pi)) * bg_densities
 
     @property
     def data(self) -> np.ndarray:

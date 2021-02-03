@@ -187,7 +187,7 @@ def produce_and_minimize(
     minimizer: Minimizer = default_minimizer,
     random_seed: Optional[int] = None,
     grl_filter: bool = True,
-    verbose: int = False,
+    verbose: bool = False,
     n_trials: int = 1,
 ) -> List[List[List[Dict[str, float]]]]:
     """Docstring"""
