@@ -26,7 +26,7 @@ Bounds = Sequence[Tuple[Optional[float], Optional[float]]]
 
 
 @dataclasses.dataclass
-class PsPreprocessed:
+class Preprocessing:
     """Docstring"""
     _params: Tuple[float, float]
     n_events: int
@@ -39,10 +39,10 @@ class PsPreprocessed:
 
 
 @dataclasses.dataclass
-class PsPreprocessor:
+class Preprocessor:
     """Docstring"""
     bounds: Bounds
-    factory_type: ClassVar = PsPreprocessed
+    factory_type: ClassVar = Preprocessing
 
     def _preprocess(self, event_model: models.EventModel,
                     injector: injectors.PsInjector, source: sources.Source,
@@ -86,7 +86,7 @@ class PsPreprocessor:
 
     def __call__(self, event_model: models.EventModel,
                  injector: injectors.PsInjector, source: sources.Source,
-                 events: np.ndarray, params: Tuple) -> PsPreprocessed:
+                 events: np.ndarray, params: Tuple) -> Preprocessing:
         """Docstring"""
         prepro = self._preprocess(event_model, injector, source, events)
 
@@ -101,10 +101,10 @@ class PsPreprocessor:
         return self.factory_type(params, *prepro, *dataclasses.astuple(self))
 
 
-TestStatistic = Callable[[np.ndarray, PsPreprocessed], float]
+TestStatistic = Callable[[np.ndarray, Preprocessing], float]
 
 
-def ps_test_statistic(params: np.ndarray, prepro: PsPreprocessed) -> float:
+def ps_test_statistic(params: np.ndarray, prepro: Preprocessing) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -127,7 +127,7 @@ def ps_test_statistic(params: np.ndarray, prepro: PsPreprocessed) -> float:
 
 
 @dataclasses.dataclass
-class TdPsPreprocessed(PsPreprocessed):
+class TdPreprocessing(Preprocessing):
     """Docstring"""
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
@@ -135,12 +135,12 @@ class TdPsPreprocessed(PsPreprocessed):
 
 
 @dataclasses.dataclass
-class TdPsPreprocessor(PsPreprocessor):
+class TdPreprocessor(Preprocessor):
     """Docstring"""
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
 
-    factory_type: ClassVar = TdPsPreprocessed
+    factory_type: ClassVar = TdPreprocessing
 
     def _preprocess(self, event_model: models.EventModel,
                     injector: injectors.TimeDependentPsInjector,
@@ -168,7 +168,7 @@ class TdPsPreprocessor(PsPreprocessor):
         return (*super_prepro, sob_time)
 
 
-def td_ps_test_statistic(params: np.ndarray, prepro: TdPsPreprocessed) -> float:
+def td_ps_test_statistic(params: np.ndarray, prepro: TdPreprocessing) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -191,20 +191,20 @@ def td_ps_test_statistic(params: np.ndarray, prepro: TdPsPreprocessed) -> float:
 
 
 @dataclasses.dataclass
-class ThreeMLPsPreprocessed(TdPsPreprocessed):
+class ThreeMLPreprocessing(TdPreprocessing):
     """Docstring"""
     sob_energy: np.array = dataclasses.field(init=False)
 
 
 @dataclasses.dataclass
-class ThreeMLPsPreprocessor(TdPsPreprocessor):
+class ThreeMLPreprocessor(TdPreprocessor):
     """Docstring"""
-    factory_type: ClassVar = ThreeMLPsPreprocessed
+    factory_type: ClassVar = ThreeMLPreprocessing
 
     def _preprocess(self, event_model: models.ThreeMLEventModel,
                     injector: injectors.TimeDependentPsInjector,
                     source: sources.Source, events: np.ndarray) -> Tuple:
-        """ThreeML version of TdPsPreprocess
+        """ThreeML version of TdPreprocess
 
         Args:
 
@@ -218,7 +218,7 @@ class ThreeMLPsPreprocessor(TdPsPreprocessor):
 
 
 def threeml_ps_test_statistic(params: float,
-                              prepro: ThreeMLPsPreprocessed) -> float:
+                              prepro: ThreeMLPreprocessing) -> float:
     """(ThreeML version) Evaluates the ts for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
