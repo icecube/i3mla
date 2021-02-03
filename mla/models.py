@@ -17,6 +17,8 @@ from typing import List, Union, Optional
 import numpy as np
 import numpy.lib.recfunctions as rf
 import scipy.interpolate
+
+from . import sources
 from . import spectral
 
 
@@ -70,7 +72,7 @@ class EventModel:
             background_sin_dec_bins = np.linspace(-1, 1,
                                                   1 + background_sin_dec_bins)
 
-        self._background_dec_spline = self._create_background_dec_spline(
+        self._background_dec_spline = self._init_background_dec_spline(
             background_sin_dec_bins)
 
         if isinstance(signal_sin_dec_bins, int):
@@ -84,11 +86,11 @@ class EventModel:
         if isinstance(gamma_bins, int):
             gamma_bins = np.linspace(-4.25, -0.5, 1 + gamma_bins)
 
-        self._log_sob_gamma_splines = self._create_log_sob_gamma_splines(
+        self._log_sob_gamma_splines = self._init_log_sob_gamma_splines(
             gamma_bins, verbose=verbose)
 
-    def _create_background_dec_spline(self, sin_dec_bins: np.array, *args,
-                                      **kwargs,
+    def _init_background_dec_spline(self, sin_dec_bins: np.array, *args,
+                                    **kwargs,
     ) -> scipy.interpolate.UnivariateSpline:
         """Builds a histogram of neutrino flux vs. sin(dec) and splines it.
 
@@ -133,8 +135,8 @@ class EventModel:
         return scipy.interpolate.UnivariateSpline(bin_centers, hist, *args,
                                                   **kwargs)
 
-    def _create_sob_map(self, gamma: float, *args, verbose: bool = False,
-                        **kwargs) -> np.array:
+    def _init_sob_map(self, gamma: float, *args, verbose: bool = False,
+                      **kwargs) -> np.array:
         """Creates sob histogram for a given spectral index (gamma).
 
         The UnivariateSpline function call uses these default arguments:
@@ -195,8 +197,8 @@ class EventModel:
             print('done')
         return ratio
 
-    def _create_log_sob_gamma_splines(self, gamma_bins: np.array, *args,
-                                      verbose: bool = False, **kwargs,
+    def _init_log_sob_gamma_splines(self, gamma_bins: np.array, *args,
+                                    verbose: bool = False, **kwargs,
     ) -> List[List[scipy.interpolate.UnivariateSpline]]:
         """Builds a 3D hist of sob vs. sin(dec), log(energy), and gamma, then
             returns splines of sob vs. gamma.
@@ -215,7 +217,7 @@ class EventModel:
         """
         if verbose:
             print('Building signal-over-background maps...')
-        sob_maps = np.array([self._create_sob_map(gamma, verbose=verbose)
+        sob_maps = np.array([self._init_sob_map(gamma, verbose=verbose)
                              for gamma in gamma_bins])
         if verbose:
             print('done.')
@@ -244,7 +246,7 @@ class EventModel:
 
         return splines
 
-    def get_log_sob_gamma_splines(self, events: np.ndarray,
+    def log_sob_gamma_splines(self, events: np.ndarray,
     ) -> List[scipy.interpolate.UnivariateSpline]:
         """Gets the splines of sob vs. gamma required for each event.
 
@@ -262,6 +264,77 @@ class EventModel:
 
         return [self._log_sob_gamma_splines[i - 1][j - 1]
                 for i, j in zip(sin_dec_idx, log_energy_idx)]
+
+    def reduced_sim(self, source: sources.Source, flux_norm: float = 0,
+                    gamma: float = -2,
+                    sampling_width: Optional[float] = None) -> np.ndarray:
+        """Gets a small simulation dataset to use for injecting signal.
+
+        Prunes the simulation set to only events close to a given source and
+        calculate the weight for each event. Adds the weights as a new column
+        to the simulation set.
+
+        Args:
+            source:
+            flux_norm: A flux normaliization to adjust weights.
+            gamma: A spectral index to adjust weights.
+            sampling_width: The bandwidth around the source dec to cut events.
+
+        Returns:
+            A reweighted simulation set around the source declination.
+        """
+        if sampling_width is not None:
+            reduced_sim = self._cut_sim_truedec(source, sampling_width)
+        reduced_sim = self._weight_reduced_sim(reduced_sim, flux_norm, gamma)
+        reduced_sim = self._randomize_sim_times(reduced_sim)
+        return reduced_sim
+
+    def _randomize_sim_times(self, reduced_sim: np.ndarray) -> np.ndarray:
+        """Docstring"""
+        # Randomly assign times to the simulation events within the data time
+        # range.
+        min_time = np.min(self.data['time'])
+        max_time = np.max(self.data['time'])
+        reduced_sim['time'] = np.random.uniform(min_time, max_time,
+                                                size=len(reduced_sim))
+        return reduced_sim
+
+    def _cut_sim_truedec(self, source: sources.Source,
+                         sampling_width: float) -> np.ndarray:
+        """Select simulation events in a true dec band(for ns calculation)
+
+        Args:
+            source:
+            sampling_width: width of the dec band
+        """
+        sindec_dist = np.abs(source.dec - self._sim['trueDec'])
+
+        close = sindec_dist < sampling_width
+
+        reduced_sim = self._sim[close].copy()
+
+        omega = 2 * np.pi * (np.min(
+            [np.sin(source.dec + sampling_width), 1]
+        ) - np.max([np.sin(source.dec - sampling_width), -1]))
+        reduced_sim['ow'] /= omega
+
+        return reduced_sim
+
+    def _weight_reduced_sim(self, reduced_sim: np.ndarray, flux_norm: float,
+                            gamma: float) -> np.ndarray:
+        """Docstring"""
+        reduced_sim = rf.append_fields(reduced_sim, 'weight',
+                                       np.zeros(len(reduced_sim)),
+                                       dtypes=np.float32)
+
+        # Assign the weights using the newly defined "time profile"
+        # classes above. If you want to make this a more complicated
+        # shape, talk to me and we can work it out.
+        rescaled_energy = (reduced_sim['trueE'] / 100.e3)**gamma
+        reduced_sim['weight'] = reduced_sim['ow'] * flux_norm
+        reduced_sim['weight'] *= rescaled_energy
+
+        return reduced_sim
 
     @property
     def data(self) -> np.ndarray:
@@ -291,6 +364,7 @@ class EventModel:
 class ThreeMLEventModel(EventModel):
     """Docstring"""
     def __init__(self, data: np.ndarray, sim: np.ndarray, grl: np.ndarray,
+                 source: sources.Source,
                  background_sin_dec_bins: Union[np.array, int] = 500,
                  signal_sin_dec_bins: Union[np.array, int] = 50,
                  log_energy_bins: Union[np.array, int] = 50,
@@ -339,62 +413,25 @@ class ThreeMLEventModel(EventModel):
         self.sampling_width = sampling_width
         self.reduce_dec = reduce_dec
         if reduce_dec:
-            self.reduced_sim = self._cut_sim(self.sampling_width)
+            self.reduced_sim = self._cut_sim(source, self.sampling_width)
             self.reduced_sim_truedec = self._cut_sim_truedec(
-                self.sampling_width)
+                source, self.sampling_width)
         else:
             self.reduced_sim = self._sim
             self.reduced_sim_truedec = self._sim
 
-        self._background_sob_map = self._create_background_sob_map()
+        self._background_sob_map = self._init_background_sob_map()
         if spectrum is not None:
             self.spectrum = spectrum
         else:
             self.spectrum = spectral.PowerLaw(1e3, 1e-14, -2)
 
-        self._ratio = self._create_sob_ratio()
+        self._ratio = self._init_sob_ratio()
 
-    def _create_log_sob_gamma_splines(self, *args, **kwargs) -> None:
+    def _init_log_sob_gamma_splines(self, *args, **kwargs) -> None:
         """Dummy function to override the inheritance"""
 
-    def _cut_sim(self, source_dec: float = np.pi / 2,
-                 sampling_width: float = np.radians(3)) -> np.ndarray:
-        """Select simulation events in a reconstruction dec band
-
-        Args:
-            source_dec: dec
-            sampling_width: width of the dec band
-        """
-        sindec_dist = np.abs(source_dec - self._sim['dec'])
-
-        close = sindec_dist < sampling_width
-
-        reduced_sim = self._sim[close].copy()
-
-        return reduced_sim
-
-    def _cut_sim_truedec(self, source_dec: float = np.pi / 2,
-                         sampling_width: float = np.radians(1)) -> np.ndarray:
-        """Select simulation events in a true dec band(for ns calculation)
-
-        Args:
-            source_dec: dec
-            sampling_width: width of the dec band
-        """
-        sindec_dist = np.abs(source_dec - self._sim['trueDec'])
-
-        close = sindec_dist < sampling_width
-
-        reduced_sim = self._sim[close].copy()
-
-        omega = 2 * np.pi * (np.min(
-            [np.sin(source_dec + sampling_width), 1]
-        ) - np.max([np.sin(source_dec - sampling_width), -1]))
-        reduced_sim['ow'] /= omega
-
-        return reduced_sim
-
-    def _create_background_sob_map(self) -> None:
+    def _init_background_sob_map(self) -> None:
         """Create the backgroub SOB map
         """
         # background
@@ -404,7 +441,7 @@ class ThreeMLEventModel(EventModel):
         bg_h /= np.sum(bg_h, axis=1)[:, None]
         return bg_h
 
-    def _create_sob_ratio(self, *args, **kwargs) -> None:
+    def _init_sob_ratio(self, *args, **kwargs) -> None:
         """Create the SOB map with a spectrum
         """
         bins = np.array([self._sin_dec_bins, self._log_energy_bins])
@@ -443,7 +480,7 @@ class ThreeMLEventModel(EventModel):
                 ratio[i] = 0
         return ratio
 
-    def get_energy_sob(self, events: np.ndarray) -> np.ndarray:
+    def energy_sob(self, events: np.ndarray) -> np.ndarray:
         """Gets the sob vs. gamma required for each event and specific .
 
         More function info...
@@ -469,6 +506,80 @@ class ThreeMLEventModel(EventModel):
         sin_dec_idx[sin_dec_idx > self.edge_point[1]] = self.edge_point[1]
         return self._ratio[sin_dec_idx, log_energy_idx]
 
+    def cut_sim_to_dec_band(self, source: sources.Source) -> None:
+        """Setting a new dec band
+
+        Args:
+            dec: declination
+        """
+        self.edge_point = (
+            np.searchsorted(self._sin_dec_bins,
+                            np.sin(source.dec - self.sampling_width)) - 1,
+            np.searchsorted(self._sin_dec_bins,
+                            np.sin(source.dec + self.sampling_width)) - 1
+        )
+        if self.reduce_dec:
+            self.reduced_sim = self._cut_sim(source, self.sampling_width)
+            self.reduced_sim_truedec = self._cut_sim_truedec(
+                source, self.sampling_width)
+            self._ratio = self._init_sob_ratio()
+
+    def reduced_sim(self, source: sources.Source, flux_norm: float,
+                    spectrum: spectral.BaseSpectrum,
+                    sampling_width: Optional[float] = None) -> np.ndarray:
+        """Gets a small simulation dataset to use for injecting signal.
+
+        Prunes the simulation set to only events close to a given source and
+        calculate the weight for each event. Adds the weights as a new column
+        to the simulation set.
+
+        Args:
+            source:
+            flux_norm:
+            spectrum:
+            sampling_width: The bandwidth around the source dec to cut events.
+
+        Returns:
+            A reweighted simulation set around the source declination.
+        """
+        if sampling_width is not None:
+            reduced_sim = self._cut_sim_truedec(source, sampling_width)
+        reduced_sim = self._weight_reduced_sim(reduced_sim, flux_norm,
+                                               spectrum)
+        reduced_sim = self._randomize_sim_times(reduced_sim)
+        return reduced_sim
+
+    def _cut_sim(self, source: sources.Source,
+                 sampling_width: float = np.radians(3)) -> np.ndarray:
+        """Select simulation events in a reconstruction dec band
+
+        Args:
+            source:
+            sampling_width: width of the dec band
+        """
+        sindec_dist = np.abs(source.dec - self._sim['dec'])
+
+        close = sindec_dist < sampling_width
+
+        reduced_sim = self._sim[close].copy()
+
+        return reduced_sim
+
+    def _weight_reduced_sim(self, reduced_sim: np.ndarray, flux_norm: float,
+                            spectrum: spectral.BaseSpectrum) -> np.ndarray:
+        """Docstring"""
+        reduced_sim = rf.append_fields(reduced_sim, 'weight',
+                                       np.zeros(len(reduced_sim)),
+                                       dtypes=np.float32)
+
+        # Assign the weights using the newly defined "time profile"
+        # classes above. If you want to make this a more complicated
+        # shape, talk to me and we can work it out.
+        reduced_sim['weight'] = reduced_sim['ow'] * flux_norm
+        reduced_sim['weight'] *= spectrum(reduced_sim['trueE'])
+
+        return reduced_sim
+
     @property
     def spectrum(self) -> spectral.BaseSpectrum:
         """Docstring"""
@@ -479,22 +590,4 @@ class ThreeMLEventModel(EventModel):
         """Update the spectrum
         """
         self._spectrum = spectral.CustomSpectrum(spectrum)
-        self._ratio = self._create_sob_ratio()
-
-    def cut_sim_to_dec_band(self, dec: float = np.pi / 2) -> None:
-        """Setting a new dec band
-
-        Args:
-            dec: declination
-        """
-        self.edge_point = (
-            np.searchsorted(self._sin_dec_bins,
-                            np.sin(dec - self.sampling_width)) - 1,
-            np.searchsorted(self._sin_dec_bins,
-                            np.sin(dec + self.sampling_width)) - 1
-        )
-        if self.reduce_dec:
-            self.reduced_sim = self._cut_sim(dec, self.sampling_width)
-            self.reduced_sim_truedec = self._cut_sim_truedec(
-                dec, self.sampling_width)
-            self._ratio = self._create_sob_ratio()
+        self._ratio = self._init_sob_ratio()
