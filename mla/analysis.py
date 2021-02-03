@@ -26,7 +26,7 @@ from . import trial_generators
 
 
 Minimizer = Callable[
-    [Callable, np.ndarray, Union[Sequence, scipy.optimize.Bounds]],
+    [test_statistics.TestStatistic, test_statistics.PsPreprocessed],
     scipy.optimize.OptimizeResult,
 ]
 
