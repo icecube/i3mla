@@ -282,7 +282,9 @@ class EventModel(_EventModelDefaultsBase, _EventModelBase):
         """
         if self._sampling_width is not None:
             self._cut_sim_truedec(source)
-        self._weight_reduced_sim()
+        else:
+            self._reduced_sim = self._sim.copy()
+        self._reduced_sim = self._weight_reduced_sim(self._reduced_sim)
         self._randomize_sim_times()
 
     def _randomize_sim_times(self) -> None:
@@ -309,19 +311,20 @@ class EventModel(_EventModelDefaultsBase, _EventModelBase):
         ) - np.max([np.sin(source.dec - self._sampling_width), -1]))
         self._reduced_sim['ow'] /= omega
 
-    def _weight_reduced_sim(self) -> None:
+    def _weight_reduced_sim(self, reduced_sim: np.ndarray) -> np.ndarray:
         """Docstring"""
-        self._reduced_sim = rf.append_fields(
-            self._reduced_sim, 'weight',
-            np.zeros(len(self._reduced_sim)),
+        reduced_sim = rf.append_fields(
+            reduced_sim, 'weight',
+            np.zeros(len(reduced_sim)),
             dtypes=np.float32
         )
 
         # Assign the weights using the newly defined "time profile"
         # classes above. If you want to make this a more complicated
         # shape, talk to me and we can work it out.
-        rescaled_energy = (self._reduced_sim['trueE'] / 100.e3)**self._gamma
-        self._reduced_sim['weight'] = self._reduced_sim['ow'] * rescaled_energy
+        rescaled_energy = (reduced_sim['trueE'] / 100.e3)**self._gamma
+        reduced_sim['weight'] = reduced_sim['ow'] * rescaled_energy
+        return reduced_sim
 
     def signal_spatial_pdf(self, source: sources.Source,
                            events: np.ndarray) -> np.array:
@@ -777,8 +780,7 @@ class ThreeMLEventModel(
                               background_window, withinwindow)
 
         self._background_sob_map = self._init_background_sob_map()
-        self._ratio = self._init_sob_ratio()
-        self._init_reduced_sim_reconstructed(source)
+        self._ratio = self._init_sob_ratio(source)
 
     def _init_background_sob_map(self) -> None:
         """Create the backgroub SOB map
@@ -790,16 +792,17 @@ class ThreeMLEventModel(
         bg_h /= np.sum(bg_h, axis=1)[:, None]
         return bg_h
 
-    def _init_sob_ratio(self, *args, **kwargs) -> None:
+    def _init_sob_ratio(self, source: sources.Source, *args, **kwargs) -> None:
         """Create the SOB map with a spectrum
         """
+        self._init_reduced_sim_reconstructed(source)
         bins = np.array([self._sin_dec_bins, self._log_energy_bins])
         bin_centers = bins[1, :-1] + np.diff(bins[1]) / 2
-        sig_w = self._reduced_sim['ow'] * self.spectrum(
-            self._reduced_sim['trueE'])
-        sig_h, _, _ = np.histogram2d(self._reduced_sim['sindec'],
-                                     self._reduced_sim['logE'], bins=bins,
-                                     weights=sig_w, density=True)
+        sig_w = self._reduced_sim_reconstructed['ow'] * self.spectrum(
+            self._reduced_sim_reconstructed['trueE'])
+        sig_h, _, _ = np.histogram2d(self._reduced_sim_reconstructed['sindec'],
+                                     self._reduced_sim_reconstructed['logE'],
+                                     bins=bins, weights=sig_w, density=True)
 
         # Normalize histograms by dec band
 
@@ -843,8 +846,11 @@ class ThreeMLEventModel(
         """
         if self._sampling_width is not None:
             self._cut_sim_reconstructed(source)
-        self._weight_reduced_sim()
-        self._randomize_sim_times()
+        else:
+            self._reduced_sim_reconstructed = self._sim.copy()
+
+        self._reduced_sim_reconstructed = self._weight_reduced_sim(
+            self._reduced_sim_reconstructed)
 
     def _cut_sim_reconstructed(self, source: sources.Source) -> np.ndarray:
         """Select simulation events in a reconstruction dec band
@@ -856,17 +862,18 @@ class ThreeMLEventModel(
         close = sindec_dist < self._sampling_width
         self._reduced_sim_reconstructed = self._sim[close].copy()
 
-    def _weight_reduced_sim(self) -> None:
+    def _weight_reduced_sim(self, reduced_sim: np.ndarray) -> np.ndarray:
         """Docstring"""
-        self._reduced_sim = rf.append_fields(self._reduced_sim, 'weight',
-                                             np.zeros(len(self._reduced_sim)),
-                                             dtypes=np.float32)
+        reduced_sim = rf.append_fields(reduced_sim, 'weight',
+                                       np.zeros(len(reduced_sim)),
+                                       dtypes=np.float32)
 
         # Assign the weights using the newly defined "time profile"
         # classes above. If you want to make this a more complicated
         # shape, talk to me and we can work it out.
-        self._reduced_sim['weight'] = self._reduced_sim['ow'] * self._spectrum(
-            self._reduced_sim['trueE'])
+        reduced_sim['weight'] = reduced_sim['ow'] * self._spectrum(
+            reduced_sim['trueE'])
+        return reduced_sim
 
     def energy_sob(self, events: np.ndarray) -> np.ndarray:
         """Gets the sob vs. gamma required for each event and specific .
