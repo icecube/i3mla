@@ -18,7 +18,6 @@ import scipy.optimize
 
 from . import sources
 from . import models
-from . import injectors
 from . import time_profiles
 
 
@@ -58,15 +57,13 @@ class Preprocessor:
     factory_type: ClassVar = Preprocessing
 
     def _preprocess(self, event_model: models.EventModel,
-                    injector: injectors.PsInjector, source: sources.Source,
-                    events: np.ndarray) -> Tuple:
+                    source: sources.Source, events: np.ndarray) -> Tuple:
         """Contains all of the calculations for the ts that can be done once.
 
         Separated from the main test-statisic functions to improve performance.
 
         Args:
             event_model: An object containing data and preprocessed parameters.
-            injector:
             source:
             events:
 
@@ -81,7 +78,7 @@ class Preprocessor:
                                    'This will likely result in unexpected ',
                                    'behavior']), RuntimeWarning)
 
-        sob_spatial = injector.signal_spatial_pdf(source, events)
+        sob_spatial = event_model.signal_spatial_pdf(source, events)
 
         # Drop events with zero spatial or time llh
         # The contribution of those llh will be accounts in
@@ -90,7 +87,7 @@ class Preprocessor:
 
         n_dropped = len(events) - np.sum(drop_index)
         sob_spatial = sob_spatial[drop_index]
-        sob_spatial /= injector.background_spatial_pdf(
+        sob_spatial /= event_model.background_spatial_pdf(
             events[drop_index], event_model)
         splines = event_model.get_log_sob_gamma_splines(
             events[drop_index])
@@ -98,10 +95,10 @@ class Preprocessor:
         return n_events, n_dropped, splines, sob_spatial, drop_index
 
     def __call__(self, event_model: models.EventModel,
-                 injector: injectors.PsInjector, source: sources.Source,
-                 events: np.ndarray, params: Tuple) -> Preprocessing:
+                 source: sources.Source, events: np.ndarray,
+                 params: Tuple) -> Preprocessing:
         """Docstring"""
-        prepro = self._preprocess(event_model, injector, source, events)
+        prepro = self._preprocess(event_model, source, events)
 
         if len(prepro) >= 5:
             return self.factory_type(
@@ -156,7 +153,6 @@ class TdPreprocessor(Preprocessor):
     factory_type: ClassVar = TdPreprocessing
 
     def _preprocess(self, event_model: models.EventModel,
-                    injector: injectors.TimeDependentPsInjector,
                     source: sources.Source, events: np.ndarray) -> Tuple:
         """Contains all of the calculations for the ts that can be done once.
 
@@ -167,9 +163,8 @@ class TdPreprocessor(Preprocessor):
         Raises:
             RuntimeWarning:
         """
+        super_prepro = super()._preprocess(event_model, source, events)
 
-        super_prepro = super()._preprocess(
-            event_model, injector, source, events)
         # drop_index == super_prepro[4]
         sob_time = self.sig_time_profile.pdf(events[super_prepro[4]]['time'])
         sob_time /= self.bg_time_profile.pdf(events[super_prepro[4]]['time'])
@@ -215,15 +210,13 @@ class ThreeMLPreprocessor(TdPreprocessor):
     factory_type: ClassVar = ThreeMLPreprocessing
 
     def _preprocess(self, event_model: models.ThreeMLEventModel,
-                    injector: injectors.TimeDependentPsInjector,
                     source: sources.Source, events: np.ndarray) -> Tuple:
         """ThreeML version of TdPreprocess
 
         Args:
 
         """
-        super_prepro = super()._preprocess(
-            event_model, injector, source, events)
+        super_prepro = super()._preprocess(event_model, source, events)
 
         # drop_index == super_prepro[4]
         sob_energy = event_model.get_energy_sob(events[super_prepro[4]])
