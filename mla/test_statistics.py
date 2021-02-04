@@ -66,17 +66,12 @@ class Preprocessor:
             event_model: An object containing data and preprocessed parameters.
             source:
             events:
-
-        Raises:
-            RuntimeWarning: There should be at least one event.
         """
 
         n_events = len(events)
 
         if n_events == 0:
-            warnings.warn(''.join(['You are trying to preprocess zero events. ',
-                                   'This will likely result in unexpected ',
-                                   'behavior']), RuntimeWarning)
+            return 0, 0, [], np.array([]), np.array([])
 
         sob_spatial = event_model.signal_spatial_pdf(source, events)
 
@@ -128,6 +123,8 @@ def ps_test_statistic(params: np.ndarray, prepro: Preprocessing) -> float:
         The overall test-statistic value for the given events and
         parameters.
     """
+    if prepro.n_events == 0:
+        return 0
 
     sob_new = prepro.sob_spatial * np.exp(
         [spline(params[1]) for spline in prepro.splines])
@@ -190,6 +187,8 @@ def td_ps_test_statistic(params: np.ndarray, prepro: TdPreprocessing) -> float:
         The overall test-statistic value for the given events and
         parameters.
     """
+    if prepro.n_events == 0:
+        return 0
 
     sob_new = prepro.sob_spatial * prepro.sob_time * np.exp(
         [spline(params[1]) for spline in prepro.splines])
@@ -238,6 +237,8 @@ def threeml_ps_test_statistic(params: float,
         The overall test-statistic value for the given events and
         parameters.
     """
+    if prepro.n_events == 0:
+        return 0
 
     sob_new = prepro.sob_spatial * prepro.sob_time * prepro.sob_energy
     return -2 * np.sum(
