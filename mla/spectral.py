@@ -1,56 +1,92 @@
-'''Spectral Modelling'''
+"""
+The classes in this file are example time profiles that can be used in the
+analysis classes. There is also GenericProfile, an abstract parent class to
+inherit from to create other time profiles.
+"""
 
-from __future__ import print_function, division
+
+__author__ = 'John Evans'
+__copyright__ = 'Copyright 2020 John Evans'
+__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
+__license__ = 'Apache License 2.0'
+__version__ = '0.0.1'
+__maintainer__ = 'John Evans'
+__email__ = 'john.evans@icecube.wisc.edu'
+__status__ = 'Development'
+
+
+from typing import Optional, Union
+
+import abc
 import numpy as np
 
 
 class BaseSpectrum:
-    r"""Base class for spectral models of the form"""
+    """A generic base class to standardize the methods for the Spectrum.
 
-    def __init__(self):
-        pass
+    Any callable function will work.
 
-    def __call__(self, E, **kwargs):
-        pass
+    Attributes:
+    """
 
-    def __str__(self):
-        r"""String representation"""
-        return "Base spectrum"
+    __metaclass__ = abc.ABCMeta
 
-    def copy(self):
-        r"""Return copy of this class"""
-        c = type(self).__new__(type(self))
-        c.__dict__.update(self.__dict__)
-        return c
+    @abc.abstractmethod
+    def __init__(self) -> None:
+        """Initializes the Spectrum.
+        """
+
+    @abc.abstractmethod
+    def __call__(self, energy: Union[np.ndarray, float],
+                 **kwargs) -> np.ndarray:
+        """return the differential flux at given energy(s).
+
+        Args:
+            energy: An array of energy
+
+        Returns:
+            A numpy array of differential flux.
+        """
+
+    @abc.abstractmethod
+    def __str__(self) -> None:
+        """String representation
+        """
+        return 'Base spectrum'
 
 
 class PowerLaw(BaseSpectrum):
-    r"""Powerlaw spectrum"""
+    """Spectrum class for PowerLaw.
 
-    def __init__(self, E0, A, gamma, Ecut=None):
-        r""" Constructor of PowerLaw object.
+    Use this to produce PowerLaw spectrum.
 
-        args:
-        E0: Float
-        Normalize Energy
+    Attributes:
+        E0 (float): pivot energy
+        A (float): Flux Norm
+        gamma(float): Spectral index
+        Ecut(float): Cut-off energy
+    """
 
-        A: Float
-        Flux Normalization
+    def __init__(self, energy_0: float, flux_norm: float, gamma: float,
+                 energy_cut: Optional[float] = None) -> None:
+        """ Constructor of PowerLaw object.
 
-        gamma: Float
-        Spectral index
-
-        Ecut(optional): Float
-        Powerlaw cutoff
+        Args:
+            energy_0: Normalize Energy
+            flux_norm: Flux Normalization
+            gamma: Spectral index
+            energy_cut: Cut-off energy
         """
-        super().__init__()
-        self.E0 = E0
-        self.A = A
-        self.gamma = gamma
-        self.Ecut = Ecut
 
-    def __call__(self, E, **kwargs):
-        r"""Evaluate spectrum at energy E according to
+        super().__init__()
+        self.energy_0 = energy_0
+        self.flux_norm = flux_norm
+        self.gamma = gamma
+        self.energy_cut = energy_cut
+
+    def __call__(self, energy: Union[np.ndarray, float],
+                 **kwargs) -> np.ndarray:
+        """Evaluate spectrum at energy E according to
 
                  dN/dE = A (E / E0)^gamma
 
@@ -61,57 +97,61 @@ class PowerLaw(BaseSpectrum):
 
                  dN/dE = A (E / E0)^gamma * exp( -E/Ecut )
 
-        args:
-        E : Float or array
-        Evaluation energy [GeV]
-        \*\*kwargs
-        Additional arguments for over-riding member data
+        Args:
+            energy : Evaluation energy [GeV]
 
-        returns:
-        flux : Float or array
-        Flux at energy E in [GeV^-1cm^-2s^-1]
+        Returns:
+            np.ndarray of differential flux
         """
-        A = kwargs.pop("A", self.A)
-        E0 = kwargs.pop("E0", self.E0)
-        Ecut = kwargs.pop("Ecut", self.Ecut)
-        gamma = kwargs.pop("gamma", self.gamma)
+        flux_norm = kwargs.pop('flux_norm', self.flux_norm)
+        energy_0 = kwargs.pop('energy_0', self.energy_0)
+        energy_cut = kwargs.pop('energy_cut', self.energy_cut)
+        gamma = kwargs.pop('gamma', self.gamma)
 
-        flux = A * (E / E0)**(gamma)
+        flux = flux_norm * (energy / energy_0)**(gamma)
 
         # apply optional exponential cutoff
-        if Ecut is not None:
-            flux *= np.exp(-E / self.Ecut)
+        if energy_cut is not None:
+            flux *= np.exp(-energy / self.energy_cut)
 
         return flux
 
-    def __str__(self):
-        r"""String representation"""
-        return "PowerLaw"
+    def __str__(self) -> None:
+        """String representation
+        """
+        return 'PowerLaw'
 
 
 class CustomSpectrum(BaseSpectrum):
-    r'''Custom spectrum using astromodel'''
+    '''Custom spectrum using callable object
+    '''
     def __init__(self, spectrum):
-        r"""Constructor of CustomSpectrum object.
-        args:
-        spectrum:
-        Any callable object
+        """Constructor of CustomSpectrum object.
+
+        Constructor
+
+        Args:
+            spectrum: Any callable object
+
         """
+
         super().__init__()
         self.spectrum = spectrum
 
-    def __call__(self, E, **kwargs):
-        r"""Evaluate spectrum at E
-        args:
-        E: Float or array
-        Evaluation energy
+    def __call__(self, energy: Union[np.ndarray, float],
+                 **kwargs) -> np.ndarray:
+        """Evaluate spectrum at energy E
 
-        returns:
-        flux : Float or array
-        Flux at evaluation energy.
+        Constructor
+
+        Args:
+            energy : Evaluation energy
+
+        Returns:
+            np.ndarray of differential flux
         """
-        return self.spectrum(E)
+        return self.spectrum(energy)
 
     def __str__(self):
         r"""String representation of class"""
-        return "CustomSpectrum"
+        return 'CustomSpectrum'

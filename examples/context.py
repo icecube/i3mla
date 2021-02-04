@@ -1,4 +1,4 @@
-"""Docstring"""
+"""Appends the repository directory to the python path for running tests."""
 
 __author__ = 'John Evans'
 __copyright__ = 'Copyright 2020 John Evans'
@@ -9,11 +9,9 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-import unittest
+import os
+import sys
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__),
+                                                '..')))
 
-from context import mla
-from mla import analysis
-
-
-if __name__ == '__main__':
-    unittest.main()
+import mla
