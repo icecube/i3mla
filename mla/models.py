@@ -12,11 +12,16 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import List, Union, Optional
+from typing import List, Union, Optional, Tuple
 
+import scipy
 import numpy as np
 import numpy.lib.recfunctions as rf
-import scipy.interpolate
+from scipy.interpolate import UnivariateSpline as Spline
+
+from dataclasses import dataclass
+from dataclasses import field
+from dataclasses import InitVar
 
 from . import sources
 from . import spectral
@@ -48,6 +53,77 @@ def angular_distance(src_ra: float, src_dec: float, r_a: float,
     return np.arccos(cos_dist)
 
 
+def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
+           ra3: float, dec3: float) -> Tuple[float, float]:
+    """Rotation matrix for rotation of (ra1, dec1) onto (ra2, dec2).
+
+    The rotation is performed on (ra3, dec3).
+
+    Args:
+        ra1: The right ascension of the point to be rotated from.
+        dec1: The declination of the point to be rotated from.
+        ra2: the right ascension of the point to be rotated onto.
+        dec2: the declination of the point to be rotated onto.
+        ra3: the right ascension of the point that will actually be rotated.
+        dec3: the declination of the point that will actually be rotated.
+
+    Returns:
+        The rotated ra3 and dec3.
+
+    Raises:
+        IndexError: Arguments must all have the same dimension.
+    """
+    ra1 = np.atleast_1d(ra1)
+    dec1 = np.atleast_1d(dec1)
+    ra2 = np.atleast_1d(ra2)
+    dec2 = np.atleast_1d(dec2)
+    ra3 = np.atleast_1d(ra3)
+    dec3 = np.atleast_1d(dec3)
+
+    if not (
+        len(ra1) == len(dec1) == len(ra2) == len(dec2) == len(ra3) == len(dec3)
+    ):
+        raise IndexError('Arguments must all have the same dimension.')
+
+    cos_alpha = np.cos(ra2 - ra1) * np.cos(dec1) * np.cos(dec2) \
+        + np.sin(dec1) * np.sin(dec2)
+
+    # correct rounding errors
+    cos_alpha[cos_alpha > 1] = 1
+    cos_alpha[cos_alpha < -1] = -1
+
+    alpha = np.arccos(cos_alpha)
+    vec1 = np.vstack([np.cos(ra1) * np.cos(dec1),
+                      np.sin(ra1) * np.cos(dec1),
+                      np.sin(dec1)]).T
+    vec2 = np.vstack([np.cos(ra2) * np.cos(dec2),
+                      np.sin(ra2) * np.cos(dec2),
+                      np.sin(dec2)]).T
+    vec3 = np.vstack([np.cos(ra3) * np.cos(dec3),
+                      np.sin(ra3) * np.cos(dec3),
+                      np.sin(dec3)]).T
+    nvec = np.cross(vec1, vec2)
+    norm = np.sqrt(np.sum(nvec**2, axis=1))
+    nvec[norm > 0] /= norm[np.newaxis, norm > 0].T
+
+    one = np.diagflat(np.ones(3))
+    ntn = np.array([np.outer(nv, nv) for nv in nvec])
+    nx = np.array([
+        np.roll(np.roll(np.diag(nv.ravel()), 1, 1), -1, 0) for nv in nvec])
+
+    r = np.array([(1. - np.cos(a)) * ntn_i + np.cos(a) * one + np.sin(a) * nx_i
+                  for a, ntn_i, nx_i in zip(alpha, ntn, nx)])
+    vec = np.array([np.dot(r_i, vec_i.T) for r_i, vec_i in zip(r, vec3)])
+
+    r_a = np.arctan2(vec[:, 1], vec[:, 0])
+    dec = np.arcsin(vec[:, 2])
+
+    r_a += np.where(r_a < 0., 2. * np.pi, 0.)
+
+    return r_a, dec
+
+
+@dataclass
 class EventModel:
     """Stores the events and pre-processed parameters used in analyses.
 
@@ -60,6 +136,9 @@ class EventModel:
         sim (np.ndarray): Simulated neutrino events.
         grl (np.ndarray): A list of runs/times when the detector was working
             properly.
+        reduced_sim (np.ndarray):
+        gamma (float):
+        sampling_width (float):
         sin_dec_bins (np.array): An array of sin(dec) bin edges for the energy
             maps.
         log_energy_bins (np.array): An array of log(energy) bin edges for the
@@ -70,29 +149,55 @@ class EventModel:
             A 2D list of spline fits of the log(signal-over-background) vs.
             gamma at a binned energy and sin(dec).
     """
-    def __init__(self, data: np.ndarray, sim: np.ndarray, grl: np.ndarray,
-                 background_sin_dec_bins: Union[np.array, int] = 500,
-                 signal_sin_dec_bins: Union[np.array, int] = 50,
-                 log_energy_bins: Union[np.array, int] = 50,
-                 gamma_bins: Union[np.array, int] = 50,
-                 verbose: bool = False) -> None:
+    source: InitVar[sources.Source]
+
+    _data: np.ndarray
+    _sim: np.ndarray
+
+    grl: InitVar[np.ndarray]
+
+    gamma: float
+    sampling_width: Optional[float] = field(default=None)
+
+    background_sin_dec_bins: InitVar[Union[np.array, int]] = field(default=500)
+    signal_sin_dec_bins: InitVar[Union[np.array, int]] = field(default=50)
+    log_energy_bins: InitVar[Union[np.array, int]] = field(default=50)
+    gamma_bins: InitVar[Union[np.array, int]] = field(default=50)
+    verbose: InitVar[bool] = field(default=False)
+
+    _grl: np.ndarray = field(init=False)
+    _reduced_sim: np.ndarray = field(init=False)
+    _sin_dec_bins: np.array = field(init=False)
+    _log_energy_bins: np.array = field(init=False)
+    _background_dec_spline: Spline = field(init=False)
+    _log_sob_gamma_splines: List[List[Spline]] = field(init=False)
+
+    def __post_init__(self, source: sources.Source, grl: np.ndarray,
+                      background_sin_dec_bins: Union[np.array, int],
+                      signal_sin_dec_bins: Union[np.array, int],
+                      log_energy_bins: Union[np.array, int],
+                      gamma_bins: Union[np.array, int],
+                      verbose: bool) -> None:
         """Initializes EventModel and calculates energy sob maps.
 
         Args:
+            source:
+            grl:
             background_sin_dec_bins: If an int, then the number of bins
                 spanning -1 -> 1, otherwise, a numpy array of bin edges.
             signal_sin_dec_bins: If an int, then the number of bins spanning
                 -1 -> 1, otherwise, a numpy array of bin edges.
+            log_energy_bins:
             gamma_bins: If an int, then the number of bins spanning
                 -4.25 -> -0.5, otherwise, a numpy array of bin edges.
             verbose: A flag to print progress.
         """
-        self._data = data
-        self._sim = sim
 
-        min_mjd = np.min(data['time'])
-        max_mjd = np.max(data['time'])
+        min_mjd = np.min(self._data['time'])
+        max_mjd = np.max(self._data['time'])
         self._grl = grl[(grl['start'] < max_mjd) & (grl['stop'] > min_mjd)]
+
+        self._init_reduced_sim(source)
 
         if isinstance(background_sin_dec_bins, int):
             background_sin_dec_bins = np.linspace(-1, 1,
@@ -117,7 +222,7 @@ class EventModel:
 
     def _init_background_dec_spline(self, sin_dec_bins: np.array, *args,
                                     **kwargs,
-    ) -> scipy.interpolate.UnivariateSpline:
+    ) -> Spline:
         """Builds a histogram of neutrino flux vs. sin(dec) and splines it.
 
         The UnivariateSpline function call uses these default arguments:
@@ -158,8 +263,7 @@ class EventModel:
         if 'ext' not in kwargs:
             kwargs['ext'] = 3
 
-        return scipy.interpolate.UnivariateSpline(bin_centers, hist, *args,
-                                                  **kwargs)
+        return Spline(bin_centers, hist, *args, **kwargs)
 
     def _init_sob_map(self, gamma: float, *args, verbose: bool = False,
                       **kwargs) -> np.array:
@@ -214,8 +318,7 @@ class EventModel:
             good_bins, good_vals = bin_centers[good], ratio[i][good]
 
             # Do a linear interpolation across the energy range
-            spline = scipy.interpolate.UnivariateSpline(good_bins, good_vals,
-                                                        *args, **kwargs)
+            spline = Spline(good_bins, good_vals, *args, **kwargs)
 
             # And store the interpolated values
             ratio[i] = spline(bin_centers)
@@ -225,7 +328,7 @@ class EventModel:
 
     def _init_log_sob_gamma_splines(self, gamma_bins: np.array, *args,
                                     verbose: bool = False, **kwargs,
-    ) -> List[List[scipy.interpolate.UnivariateSpline]]:
+    ) -> List[List[Spline]]:
         """Builds a 3D hist of sob vs. sin(dec), log(energy), and gamma, then
             returns splines of sob vs. gamma.
 
@@ -262,8 +365,7 @@ class EventModel:
                   end='')
 
         def spline(log_ratios):
-            return scipy.interpolate.UnivariateSpline(gamma_bins, log_ratios,
-                                                      *args, **kwargs)
+            return Spline(gamma_bins, log_ratios, *args, **kwargs)
 
         splines = [[spline(log_ratios) for log_ratios in dec_bin]
                    for dec_bin in transposed_log_sob_maps]
@@ -272,8 +374,66 @@ class EventModel:
 
         return splines
 
+    def _init_reduced_sim(self, source: sources.Source) -> None:
+        """Gets a small simulation dataset to use for injecting signal.
+
+        Prunes the simulation set to only events close to a given source and
+        calculate the weight for each event. Adds the weights as a new column
+        to the simulation set.
+
+        Args:
+            source:
+
+        Returns:
+            A reweighted simulation set around the source declination.
+        """
+        if self.sampling_width is not None:
+            self._cut_sim_truedec(source)
+        self._weight_reduced_sim()
+        self._randomize_sim_times()
+
+    def _randomize_sim_times(self) -> None:
+        """Docstring"""
+        # Randomly assign times to the simulation events within the data time
+        # range.
+        min_time = np.min(self._data['time'])
+        max_time = np.max(self._data['time'])
+        self._reduced_sim['time'] = np.random.uniform(
+            min_time, max_time, size=len(self._reduced_sim))
+
+    def _cut_sim_truedec(self, source: sources.Source) -> None:
+        """Select simulation events in a true dec band(for ns calculation)
+
+        Args:
+            source:
+        """
+        sindec_dist = np.abs(source.dec - self._sim['trueDec'])
+
+        close = sindec_dist < self.sampling_width
+
+        reduced_sim = self._sim[close].copy()
+
+        omega = 2 * np.pi * (np.min(
+            [np.sin(source.dec + self.sampling_width), 1]
+        ) - np.max([np.sin(source.dec - self.sampling_width), -1]))
+        reduced_sim['ow'] /= omega
+
+    def _weight_reduced_sim(self) -> None:
+        """Docstring"""
+        self._reduced_sim = rf.append_fields(
+            self._reduced_sim, 'weight',
+            np.zeros(len(self._reduced_sim)),
+            dtypes=np.float32
+        )
+
+        # Assign the weights using the newly defined "time profile"
+        # classes above. If you want to make this a more complicated
+        # shape, talk to me and we can work it out.
+        rescaled_energy = (self._reduced_sim['trueE'] / 100.e3)**self.gamma
+        self._reduced_sim['weight'] = self._reduced_sim['ow'] * rescaled_energy
+
     def log_sob_gamma_splines(self, events: np.ndarray,
-    ) -> List[scipy.interpolate.UnivariateSpline]:
+    ) -> List[Spline]:
         """Gets the splines of sob vs. gamma required for each event.
 
         Args:
@@ -290,77 +450,6 @@ class EventModel:
 
         return [self._log_sob_gamma_splines[i - 1][j - 1]
                 for i, j in zip(sin_dec_idx, log_energy_idx)]
-
-    def reduced_sim(self, source: sources.Source, flux_norm: float = 0,
-                    gamma: float = -2,
-                    sampling_width: Optional[float] = None) -> np.ndarray:
-        """Gets a small simulation dataset to use for injecting signal.
-
-        Prunes the simulation set to only events close to a given source and
-        calculate the weight for each event. Adds the weights as a new column
-        to the simulation set.
-
-        Args:
-            source:
-            flux_norm: A flux normaliization to adjust weights.
-            gamma: A spectral index to adjust weights.
-            sampling_width: The bandwidth around the source dec to cut events.
-
-        Returns:
-            A reweighted simulation set around the source declination.
-        """
-        if sampling_width is not None:
-            reduced_sim = self._cut_sim_truedec(source, sampling_width)
-        reduced_sim = self._weight_reduced_sim(reduced_sim, flux_norm, gamma)
-        reduced_sim = self._randomize_sim_times(reduced_sim)
-        return reduced_sim
-
-    def _randomize_sim_times(self, reduced_sim: np.ndarray) -> np.ndarray:
-        """Docstring"""
-        # Randomly assign times to the simulation events within the data time
-        # range.
-        min_time = np.min(self.data['time'])
-        max_time = np.max(self.data['time'])
-        reduced_sim['time'] = np.random.uniform(min_time, max_time,
-                                                size=len(reduced_sim))
-        return reduced_sim
-
-    def _cut_sim_truedec(self, source: sources.Source,
-                         sampling_width: float) -> np.ndarray:
-        """Select simulation events in a true dec band(for ns calculation)
-
-        Args:
-            source:
-            sampling_width: width of the dec band
-        """
-        sindec_dist = np.abs(source.dec - self._sim['trueDec'])
-
-        close = sindec_dist < sampling_width
-
-        reduced_sim = self._sim[close].copy()
-
-        omega = 2 * np.pi * (np.min(
-            [np.sin(source.dec + sampling_width), 1]
-        ) - np.max([np.sin(source.dec - sampling_width), -1]))
-        reduced_sim['ow'] /= omega
-
-        return reduced_sim
-
-    def _weight_reduced_sim(self, reduced_sim: np.ndarray, flux_norm: float,
-                            gamma: float) -> np.ndarray:
-        """Docstring"""
-        reduced_sim = rf.append_fields(reduced_sim, 'weight',
-                                       np.zeros(len(reduced_sim)),
-                                       dtypes=np.float32)
-
-        # Assign the weights using the newly defined "time profile"
-        # classes above. If you want to make this a more complicated
-        # shape, talk to me and we can work it out.
-        rescaled_energy = (reduced_sim['trueE'] / 100.e3)**gamma
-        reduced_sim['weight'] = reduced_sim['ow'] * flux_norm
-        reduced_sim['weight'] *= rescaled_energy
-
-        return reduced_sim
 
     def signal_spatial_pdf(self, source: sources.Source,
                            events: np.ndarray) -> np.array:
@@ -396,32 +485,83 @@ class EventModel:
         Returns:
             The value for the background space pdf for the given events decs.
         """
-        bg_densities = self.background_dec_spline(np.sin(events['dec']))
+        bg_densities = self._background_dec_spline(np.sin(events['dec']))
         return (1 / (2 * np.pi)) * bg_densities
 
-    @property
-    def data(self) -> np.ndarray:
-        """Getter for data.
-        """
-        return self._data
+    def inject_background_events(self) -> np.ndarray:
+        """Injects background events for a trial.
 
-    @property
-    def sim(self) -> np.ndarray:
-        """Getter for sim.
-        """
-        return self._sim
+        Args:
+            event_model: Preprocessed data and simulation.
 
-    @property
-    def grl(self) -> np.ndarray:
-        """Getter for GRL.
+        Returns:
+            An array of injected background events.
         """
-        return self._grl
+        # Get the number of events we see from these runs
+        n_background = self._grl['events'].sum()
+        n_background_observed = np.random.poisson(n_background)
 
-    @property
-    def background_dec_spline(self) -> scipy.interpolate.UnivariateSpline:
-        """Getter for background_dec_spline.
+        # How many events should we add in? This will now be based on the
+        # total number of events actually observed during these runs
+        background = np.random.choice(self._data, n_background_observed).copy()
+
+        # Randomize the background RA
+        background['ra'] = np.random.uniform(0, 2 * np.pi, len(background))
+
+        return background
+
+    def inject_signal_events(self, source: sources.Source,
+                             flux_norm: float) -> np.ndarray:
+        """Injects signal events for a trial.
+
+        Args:
+            source:
+            flux_norm:
+
+        Returns:
+            An array of injected signal events.
         """
-        return self._background_dec_spline
+
+        # Pick the signal events
+        total = self._reduced_sim['weight'].sum()
+
+        n_signal_observed = scipy.stats.poisson.rvs(total * flux_norm)
+        signal = np.random.choice(
+            self._reduced_sim,
+            n_signal_observed,
+            p=self._reduced_sim['weight'] / total,
+            replace=False).copy()
+
+        if len(signal) > 0:
+            ones = np.ones_like(signal['trueRa'])
+
+            signal['ra'], signal['dec'] = rotate(
+                signal['trueRa'], signal['trueDec'],
+                ones * source.r_asc, ones * source.dec,
+                signal['ra'], signal['dec'])
+            signal['trueRa'], signal['trueDec'] = rotate(
+                signal['trueRa'], signal['trueDec'],
+                ones * source.r_asc, ones * source.dec,
+                signal['trueRa'], signal['trueDec'])
+
+        return signal
+
+    def grl_filter(self, events: np.ndarray) -> np.ndarray:
+        """Docstring"""
+        sorting_indices = np.argsort(events['time'])
+        events = events[sorting_indices]
+
+        # We need to check to ensure that every event is contained within
+        # a good run. If the event happened when we had deadtime (when we
+        # were not taking data), then we need to remove it.
+        grl_start = self._grl['start'].reshape((1, len(self._grl)))
+        grl_stop = self._grl['stop'].reshape((1, len(self._grl)))
+        after_start = np.less(grl_start, events['time'].reshape(len(events), 1))
+        before_stop = np.less(events['time'].reshape(len(events), 1), grl_stop)
+        during_uptime = np.any(after_start & before_stop, axis=1)
+        events = events[during_uptime]
+
+        return events
 
 
 class ThreeMLEventModel(EventModel):
@@ -476,12 +616,12 @@ class ThreeMLEventModel(EventModel):
         self.sampling_width = sampling_width
         self.reduce_dec = reduce_dec
         if reduce_dec:
-            self.reduced_sim = self._cut_sim(source, self.sampling_width)
-            self.reduced_sim_truedec = self._cut_sim_truedec(
+            self._reduced_sim = self._cut_sim(source, self.sampling_width)
+            self._reduced_sim_truedec = self._cut_sim_truedec(
                 source, self.sampling_width)
         else:
-            self.reduced_sim = self._sim
-            self.reduced_sim_truedec = self._sim
+            self._reduced_sim = self._sim
+            self._reduced_sim_truedec = self._sim
 
         self._background_sob_map = self._init_background_sob_map()
         if spectrum is not None:
@@ -509,10 +649,10 @@ class ThreeMLEventModel(EventModel):
         """
         bins = np.array([self._sin_dec_bins, self._log_energy_bins])
         bin_centers = bins[1, :-1] + np.diff(bins[1]) / 2
-        sig_w = self.reduced_sim['ow'] * self.spectrum(
-            self.reduced_sim['trueE'])
-        sig_h, _, _ = np.histogram2d(self.reduced_sim['sindec'],
-                                     self.reduced_sim['logE'], bins=bins,
+        sig_w = self._reduced_sim['ow'] * self.spectrum(
+            self._reduced_sim['trueE'])
+        sig_h, _, _ = np.histogram2d(self._reduced_sim['sindec'],
+                                     self._reduced_sim['logE'], bins=bins,
                                      weights=sig_w, density=True)
 
         # Normalize histograms by dec band
@@ -534,8 +674,7 @@ class ThreeMLEventModel(EventModel):
 
             # Do a linear interpolation across the energy range
             if len(x_good) > 1:
-                spline = scipy.interpolate.UnivariateSpline(x_good, y_good,
-                                                            *args, **kwargs)
+                spline = Spline(x_good, y_good, *args, **kwargs)
                 ratio[i] = spline(bin_centers)
             elif len(x_good) == 1:
                 ratio[i] = y_good
@@ -582,8 +721,8 @@ class ThreeMLEventModel(EventModel):
                             np.sin(source.dec + self.sampling_width)) - 1
         )
         if self.reduce_dec:
-            self.reduced_sim = self._cut_sim(source, self.sampling_width)
-            self.reduced_sim_truedec = self._cut_sim_truedec(
+            self._reduced_sim = self._cut_sim(source, self.sampling_width)
+            self._reduced_sim_truedec = self._cut_sim_truedec(
                 source, self.sampling_width)
             self._ratio = self._init_sob_ratio()
 

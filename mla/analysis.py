@@ -21,7 +21,6 @@ import scipy.optimize
 
 from . import sources
 from . import models
-from . import injectors
 from . import test_statistics
 
 
@@ -35,7 +34,6 @@ Minimizer = Callable[
 class Analysis:
     """Stores the components of an analysis."""
     model: models.EventModel
-    injector: injectors.PsInjector
     ts_preprocessor: test_statistics.Preprocessor
     test_statistic: test_statistics.TestStatistic
     source: sources.Source
@@ -47,7 +45,7 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
     return analysis.test_statistic(
         params,
         analysis.ts_preprocessor(
-            analysis.model, analysis.injector, analysis.source, events, params),
+            analysis.model, analysis.source, events, params),
     )
 
 
@@ -90,7 +88,7 @@ def minimize_ts(analysis: Analysis, test_params: List[float],
         print('Preprocessing...', end='')
 
     prepro = analysis.ts_preprocessor(
-        analysis.model, analysis.injector, analysis.source, events, test_params)
+        analysis.model, analysis.source, events, test_params)
 
     if verbose:
         print('done')
@@ -135,12 +133,11 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
     if random_seed is not None:
         np.random.seed(random_seed)
 
-    background = analysis.injector.inject_background_events(
-        analysis.event_model)
+    background = analysis.event_model.inject_background_events()
 
     if flux_norm > 0:
-        signal = analysis.injector.inject_signal_events(
-            analysis.event_model, analysis.source, flux_norm)
+        signal = analysis.event_model.inject_signal_events(analysis.source,
+                                                           flux_norm)
     else:
         signal = np.empty(0, dtype=background.dtype)
 
@@ -160,22 +157,7 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
     events = np.concatenate([background, signal])
 
     if grl_filter:
-        sorting_indices = np.argsort(events['time'])
-        events = events[sorting_indices]
-
-        # We need to check to ensure that every event is contained within
-        # a good run. If the event happened when we had deadtime (when we
-        # were not taking data), then we need to remove it.
-        grl_start = analysis.event_model.grl['start'].reshape(
-            (1, len(analysis.event_model.grl)))
-        grl_stop = analysis.event_model.grl['stop'].reshape(
-            (1, len(analysis.event_model.grl)))
-        after_start = np.less(grl_start, events['time'].reshape(len(events),
-                                                                1))
-        before_stop = np.less(events['time'].reshape(len(events), 1),
-                              grl_stop)
-        during_uptime = np.any(after_start & before_stop, axis=1)
-        events = events[during_uptime]
+        events = analysis.event_model.grl_filter(events)
 
     return events
 
