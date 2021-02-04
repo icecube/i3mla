@@ -106,6 +106,37 @@ class Preprocessor:
         return self.factory_type(params, *prepro, *dataclasses.astuple(self))
 
 
+def _calculate_ns_ratio(sob: np.array, iterations: int = 3) -> float:
+    """Docstring
+
+    Args:
+        sob:
+        iterations:
+
+    Returns:
+
+    """
+    k = 1 / (1 - sob)
+    x = [0]
+
+    for _ in range(iterations):
+        x.append(x[-1] + np.sum(1 / (x[-1] + k)) / np.sum(1 / (x[-1] + k)**2))
+
+    return x[-1]
+
+
+def _i3_ts(sob: np.ndarray, prepro: Preprocessing) -> float:
+    """Docstring"""
+    if prepro.n_events == 0:
+        return 0
+
+    ns_ratio = _calculate_ns_ratio(sob)
+
+    return -2 * np.sum(
+        np.log(ns_ratio * (sob - 1)) + 1
+    ) + prepro.n_dropped * np.log(1 - ns_ratio)
+
+
 TestStatistic = Callable[[np.ndarray, Preprocessing], float]
 
 
@@ -116,21 +147,16 @@ def ps_test_statistic(params: np.ndarray, prepro: Preprocessing) -> float:
     gamma. This function does not attempt to fit n_signal or gamma.
 
     Args:
-        params: A two item array containing (n_signal, gamma).
+        params: A one item array containing (gamma).
         prepro:
 
     Returns:
         The overall test-statistic value for the given events and
         parameters.
     """
-    if prepro.n_events == 0:
-        return 0
-
-    sob_new = prepro.sob_spatial * np.exp(
-        [spline(params[1]) for spline in prepro.splines])
-    return -2 * np.sum(
-        np.log((params[0] / prepro.n_events * (sob_new - 1)) + 1)
-    ) + prepro.n_dropped * np.log(1 - params[0] / prepro.n_events)
+    sob = prepro.sob_spatial * np.exp(
+        [spline(params[0]) for spline in prepro.splines])
+    return _i3_ts(sob, prepro)
 
 
 @dataclasses.dataclass
@@ -180,21 +206,16 @@ def td_ps_test_statistic(params: np.ndarray, prepro: TdPreprocessing) -> float:
     gamma. This function does not attempt to fit n_signal or gamma.
 
     Args:
-        params: A two item array containing (n_signal, gamma).
+        params: A one item array containing (gamma).
         prepro:
 
     Returns:
         The overall test-statistic value for the given events and
         parameters.
     """
-    if prepro.n_events == 0:
-        return 0
-
-    sob_new = prepro.sob_spatial * prepro.sob_time * np.exp(
-        [spline(params[1]) for spline in prepro.splines])
-    return -2 * np.sum(
-        np.log((params[0] / prepro.n_events * (sob_new - 1)) + 1)
-    ) + prepro.n_dropped * np.log(1 - params[0] / prepro.n_events)
+    sob = prepro.sob_spatial * prepro.sob_time * np.exp(
+        [spline(params[0]) for spline in prepro.splines])
+    return _i3_ts(sob, prepro)
 
 
 @dataclasses.dataclass
@@ -230,18 +251,15 @@ def threeml_ps_test_statistic(params: np.ndarray,
     gamma. This function does not attempt to fit n_signal or gamma.
 
     Args:
-        params: n_signal
+        params:
         prepro:
 
     Returns:
         The overall test-statistic value for the given events and
         parameters.
     """
-    if prepro.n_events == 0:
-        return 0
+    # Temporary no-op for params
+    len(params)
 
-    # n_signal == params[0]
-    sob_new = prepro.sob_spatial * prepro.sob_time * prepro.sob_energy
-    return -2 * np.sum(
-        np.log((params[0] / prepro.n_events * (sob_new - 1)) + 1)
-    ) + prepro.n_dropped * np.log(1 - params[0] / prepro.n_events)
+    sob = prepro.sob_spatial * prepro.sob_time * prepro.sob_energy
+    return _i3_ts(sob, prepro)
