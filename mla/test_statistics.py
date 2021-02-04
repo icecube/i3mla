@@ -222,7 +222,7 @@ class ThreeMLPreprocessor(TdPreprocessor):
         return (*super_prepro, sob_energy)
 
 
-def threeml_ps_test_statistic(params: float,
+def threeml_ps_test_statistic(params: np.ndarray,
                               prepro: ThreeMLPreprocessing) -> float:
     """(ThreeML version) Evaluates the ts for the given events and parameters
 
@@ -240,7 +240,8 @@ def threeml_ps_test_statistic(params: float,
     if prepro.n_events == 0:
         return 0
 
+    # n_signal == params[0]
     sob_new = prepro.sob_spatial * prepro.sob_time * prepro.sob_energy
     return -2 * np.sum(
-        np.log((params / prepro.n_events * (sob_new - 1)) + 1)
-    ) + prepro.n_dropped * np.log(1 - params / prepro.n_events)
+        np.log((params[0] / prepro.n_events * (sob_new - 1)) + 1)
+    ) + prepro.n_dropped * np.log(1 - params[0] / prepro.n_events)
