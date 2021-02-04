@@ -163,12 +163,16 @@ class _EventModelDefaultsBase:
     release.
 
     Attributes:
-        sampling_width (float):
-        background_dec_spline (scipy.interpolate.UnivariateSpline): A spline
-            fit of neutrino flux vs. sin(dec).
+        sampling_width:
+        background_dec_spline: A spline fit of neutrino flux vs. sin(dec).
     """
     _sampling_width: Optional[float] = field(default=None)
     background_sin_dec_bins: InitVar[Union[np.array, int]] = field(default=500)
+
+    @property
+    def sampling_width(self) -> float:
+        """Docstring"""
+        return self._sampling_width
 
 
 @dataclass
@@ -385,13 +389,17 @@ class EventModel(_EventModelDefaultsBase, _EventModelBase):
 
         return background
 
-    def inject_signal_events(self, source: sources.Source,
-                             flux_norm: float) -> np.ndarray:
+    def inject_signal_events(
+        self, source: sources.Source,
+        flux_norm: float,
+        n_signal_observed: Optional[int] = None,
+    ) -> np.ndarray:
         """Injects signal events for a trial.
 
         Args:
             source:
             flux_norm:
+            n_signal_observed:
 
         Returns:
             An array of injected signal events.
@@ -399,8 +407,8 @@ class EventModel(_EventModelDefaultsBase, _EventModelBase):
 
         # Pick the signal events
         total = self._reduced_sim['weight'].sum()
-
-        n_signal_observed = scipy.stats.poisson.rvs(total * flux_norm)
+        if n_signal_observed is None:
+            n_signal_observed = scipy.stats.poisson.rvs(total * flux_norm)
         signal = np.random.choice(
             self._reduced_sim,
             n_signal_observed,
@@ -522,8 +530,11 @@ class TdEventModel(EventModel, _TdEventModelDefaultsBase, _TdEventModelBase):
 
         return background
 
-    def inject_signal_events(self, source: sources.Source,
-                             flux_norm: float) -> np.ndarray:
+    def inject_signal_events(
+        self, source: sources.Source,
+        flux_norm: float,
+        n_signal_observed: Optional[int] = None,
+    ) -> np.ndarray:
         """Function info...
 
         More function info...
@@ -531,6 +542,7 @@ class TdEventModel(EventModel, _TdEventModelDefaultsBase, _TdEventModelBase):
         Args:
             source:
             flux_norm:
+            n_signal_observed:
 
         Returns:
             An array of injected signal events.
@@ -538,8 +550,10 @@ class TdEventModel(EventModel, _TdEventModelDefaultsBase, _TdEventModelBase):
         # Pick the signal events
         weighttotal = self._reduced_sim['weight'].sum()
         normed_weight = self._reduced_sim['weight'] / weighttotal
-        total = weighttotal * self.signal_time_profile.exposure * flux_norm
-        n_signal_observed = scipy.stats.poisson.rvs(total)
+
+        if n_signal_observed is None:
+            n_signal_observed = scipy.stats.poisson.rvs(
+                weighttotal * self.signal_time_profile.exposure * flux_norm)
 
         signal = np.random.choice(self._reduced_sim, n_signal_observed,
                                   p=normed_weight, replace=False).copy()

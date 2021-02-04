@@ -117,6 +117,7 @@ def minimize_ts(analysis: Analysis, test_params: List[float],
 def produce_trial(analysis: Analysis, flux_norm: float = 0,
                   random_seed: Optional[int] = None,
                   grl_filter: bool = True,
+                  n_signal_observed: Optional[int] = None,
                   verbose: bool = False) -> np.ndarray:
     """Produces a single trial of background+signal events based on inputs.
 
@@ -125,6 +126,7 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
         flux_norm: A flux normaliization to adjust weights.
         random_seed: A seed value for the numpy RNG.
         grl_filter: cut out events that is not in grl
+        n_signal_observed:
         verbose: A flag to print progress.
 
     Returns:
@@ -137,7 +139,8 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
 
     if flux_norm > 0:
         signal = analysis.event_model.inject_signal_events(analysis.source,
-                                                           flux_norm)
+                                                           flux_norm,
+                                                           n_signal_observed)
     else:
         signal = np.empty(0, dtype=background.dtype)
 
@@ -169,6 +172,7 @@ def produce_and_minimize(
     minimizer: Minimizer = default_minimizer,
     random_seed: Optional[int] = None,
     grl_filter: bool = True,
+    n_signal_observed: Optional[int] = None,
     verbose: bool = False,
     n_trials: int = 1,
 ) -> List[List[List[Dict[str, float]]]]:
@@ -178,7 +182,8 @@ def produce_and_minimize(
             analysis,
             test_params,
             produce_trial(
-                analysis, flux_norm, random_seed, grl_filter, verbose),
+                analysis, flux_norm, random_seed, grl_filter, n_signal_observed,
+                verbose),
             minimizer,
             verbose,
         ) for _ in range(n_trials)
