@@ -25,6 +25,7 @@ from dataclasses import InitVar
 
 from . import sources
 from . import spectral
+from . import time_profiles
 
 
 def angular_distance(src_ra: float, src_dec: float, r_a: float,
@@ -187,12 +188,6 @@ class EventModel(_EventModelDefaultsBase, _EventModelBase):
             grl:
             background_sin_dec_bins: If an int, then the number of bins
                 spanning -1 -> 1, otherwise, a numpy array of bin edges.
-            signal_sin_dec_bins: If an int, then the number of bins spanning
-                -1 -> 1, otherwise, a numpy array of bin edges.
-            log_energy_bins:
-            gamma_bins: If an int, then the number of bins spanning
-                -4.25 -> -0.5, otherwise, a numpy array of bin edges.
-            verbose: A flag to print progress.
 
         Raises:
             ValueError:
@@ -442,7 +437,130 @@ class EventModel(_EventModelDefaultsBase, _EventModelBase):
 
 
 @dataclass
-class _PsEventModelBase(_EventModelBase):
+class _TdEventModelBase(_EventModelBase):
+    """Docstring"""
+    _background_time_profile: time_profiles.GenericProfile
+    _signal_time_profile: time_profiles.GenericProfile
+    _n_background: int = field(init=False)
+
+
+@dataclass
+class _TdEventModelDefaultsBase(_EventModelDefaultsBase):
+    """Docstring"""
+    background_window: InitVar[float] = field(default=14)
+    withinwindow: InitVar[bool] = field(default=False)
+
+
+@dataclass
+class TdEventModel(EventModel, _TdEventModelDefaultsBase, _TdEventModelBase):
+    """Docstring"""
+    def __post_init__(self, source: sources.Source, grl: np.ndarray,
+                      background_sin_dec_bins: Union[np.array, int],
+                      background_window: float, withinwindow: bool) -> None:
+        """Initializes EventModel and calculates energy sob maps.
+
+        Args:
+            source:
+            grl:
+            background_sin_dec_bins: If an int, then the number of bins
+                spanning -1 -> 1, otherwise, a numpy array of bin edges.
+            background_window:
+            withinwindow:
+
+        Raises:
+            RuntimeError:
+        """
+        super().__post_init__(source, grl, background_sin_dec_bins)
+
+        # Find the run contian in the background time window
+        start_time, end_time = self._background_time_profile.range
+        if withinwindow:
+            fully_contained = (self._grl['start'] >= start_time
+            ) & (self._grl['stop'] < end_time)
+            start_contained = (self._grl['start'] < start_time
+            ) & (self._grl['stop'] > start_time)
+            background_runs = (fully_contained | start_contained)
+            if not np.any(background_runs):
+                print('ERROR: No runs found in GRL for calculation of '
+                      'background rates!')
+                raise RuntimeError
+            background_grl = self._grl[background_runs]
+        else:
+            fully_contained = (
+                self._grl['start'] >= start_time - background_window
+            ) & (self._grl['stop'] < start_time)
+            start_contained = (
+                self._grl['start'] < start_time - background_window
+            ) & (self._grl['stop'] > start_time - background_window)
+            background_runs = (fully_contained | start_contained)
+            if not np.any(background_runs):
+                print('ERROR: No runs found in GRL for calculation of '
+                      'background rates!')
+                raise RuntimeError
+            background_grl = self._grl[background_runs]
+
+        # Find the background rate
+        n_background = background_grl['events'].sum()
+        n_background /= background_grl['livetime'].sum()
+        n_background *= self._background_time_profile.exposure
+        self._n_background = n_background
+
+    def inject_background_events(self) -> np.ndarray:
+        """Injects background events with specific time profile for a trial.
+
+        Returns:
+            An array of injected background events.
+        """
+        n_background_observed = np.random.poisson(self._n_background)
+        background = np.random.choice(self._data, n_background_observed).copy()
+        background['ra'] = np.random.uniform(0, 2 * np.pi, len(background))
+        background['time'] = self._background_time_profile.random(
+            size=len(background))
+
+        return background
+
+    def inject_signal_events(self, source: sources.Source,
+                             flux_norm: float) -> np.ndarray:
+        """Function info...
+
+        More function info...
+
+        Args:
+            source:
+            flux_norm:
+
+        Returns:
+            An array of injected signal events.
+        """
+        # Pick the signal events
+        weighttotal = self._reduced_sim['weight'].sum()
+        normed_weight = self._reduced_sim['weight'] / weighttotal
+        total = weighttotal * self.signal_time_profile.exposure * flux_norm
+        n_signal_observed = scipy.stats.poisson.rvs(total)
+
+        signal = np.random.choice(self._reduced_sim, n_signal_observed,
+                                  p=normed_weight, replace=False).copy()
+
+        if len(signal) > 0:
+            ones = np.ones_like(signal['trueRa'])
+
+            signal['ra'], signal['dec'] = rotate(
+                signal['trueRa'], signal['trueDec'],
+                ones * source.r_asc, ones * source.dec,
+                signal['ra'], signal['dec'])
+            signal['trueRa'], signal['trueDec'] = rotate(
+                signal['trueRa'], signal['trueDec'],
+                ones * source.r_asc, ones * source.dec,
+                signal['trueRa'], signal['trueDec'])
+
+        # Randomize the signal time
+        signal['time'] = self._signal_time_profile.random(size=len(signal))
+
+        return signal
+
+
+@dataclass
+class _I3EventModelBase(_TdEventModelBase):
     """Docstring
 
     Attributes:
@@ -460,7 +578,7 @@ class _PsEventModelBase(_EventModelBase):
 
 
 @dataclass
-class _PsEventModelDefaultsBase(_EventModelDefaultsBase):
+class _I3EventModelDefaultsBase(_TdEventModelDefaultsBase):
     """Docstring"""
     signal_sin_dec_bins: InitVar[Union[np.array, int]] = field(default=50)
     log_energy_bins: InitVar[Union[np.array, int]] = field(default=50)
@@ -469,16 +587,18 @@ class _PsEventModelDefaultsBase(_EventModelDefaultsBase):
 
 
 @dataclass
-class PsEventModel(EventModel, _PsEventModelDefaultsBase, _PsEventModelBase):
+class I3EventModel(TdEventModel, _I3EventModelDefaultsBase, _I3EventModelBase):
     """Docstring"""
     def __post_init__(self, source: sources.Source, grl: np.ndarray,
                       background_sin_dec_bins: Union[np.array, int],
+                      background_window: float, withinwindow: bool,
                       signal_sin_dec_bins: Union[np.array, int],
                       log_energy_bins: Union[np.array, int],
                       gamma_bins: Union[np.array, int],
                       verbose: bool) -> None:
         """Docstring"""
-        super().__post_init__(source, grl, background_sin_dec_bins)
+        super().__post_init__(source, grl, background_sin_dec_bins,
+                              background_window, withinwindow)
 
         if isinstance(signal_sin_dec_bins, int):
             signal_sin_dec_bins = np.linspace(-1, 1, 1 + signal_sin_dec_bins)
@@ -622,7 +742,7 @@ class PsEventModel(EventModel, _PsEventModelDefaultsBase, _PsEventModelBase):
 
 
 @dataclass
-class _ThreeMLEventModelBase(_EventModelBase):
+class _ThreeMLEventModelBase(_TdEventModelBase):
     """Docstring"""
     _edge_point: Tuple[float, float]
     _background_sob_map: np.ndarray = field(init=False)
@@ -631,7 +751,7 @@ class _ThreeMLEventModelBase(_EventModelBase):
 
 
 @dataclass
-class _ThreeMLEventModelDefaultsBase(_EventModelDefaultsBase):
+class _ThreeMLEventModelDefaultsBase(_TdEventModelDefaultsBase):
     """Docstring"""
     _spectrum: spectral.BaseSpectrum = field(
         default=spectral.PowerLaw(1e3, 1e-14, -2))
@@ -639,18 +759,22 @@ class _ThreeMLEventModelDefaultsBase(_EventModelDefaultsBase):
 
 @dataclass
 class ThreeMLEventModel(
-        EventModel, _ThreeMLEventModelDefaultsBase, _ThreeMLEventModelBase):
+        TdEventModel, _ThreeMLEventModelDefaultsBase, _ThreeMLEventModelBase):
     """Docstring"""
     def __post_init__(self, source: sources.Source, grl: np.ndarray,
-                      background_sin_dec_bins: Union[np.array, int]) -> None:
+                      background_sin_dec_bins: Union[np.array, int],
+                      background_window: float, withinwindow: bool) -> None:
         """
         Args:
             source:
             grl:
             background_sin_dec_bins: If an int, then the number of bins
                 spanning -1 -> 1, otherwise, a numpy array of bin edges.
+            background_window:
+            withinwindow:
         """
-        super().__post_init__(source, grl, background_sin_dec_bins)
+        super().__post_init__(source, grl, background_sin_dec_bins,
+                              background_window, withinwindow)
 
         self._background_sob_map = self._init_background_sob_map()
         self._ratio = self._init_sob_ratio()
