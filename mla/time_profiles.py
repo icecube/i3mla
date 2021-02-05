@@ -513,7 +513,7 @@ class CustomProfile(GenericProfile):
     @property
     def exposure(self) -> float:
         return self._exposure
-        
+
     @property
     def offset(self) -> float:
         return self._offset
@@ -521,7 +521,7 @@ class CustomProfile(GenericProfile):
     @offset.setter
     def offset(self, x):
         self._offset = x
-        
+
     @property
     def range(self) -> Tuple[Optional[float], Optional[float]]:
         return self._range
