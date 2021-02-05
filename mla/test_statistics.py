@@ -163,7 +163,9 @@ def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
     """Docstring"""
     time_params = [name for name, _ in prepro.sig_time_profile.param_dtype]
 
-    if set(time_params).issubset(set(params)):
+    param_names = [name for name, _ in params.dtype]
+
+    if set(time_params).issubset(set(param_names)):
         sig_time_profile = prepro.sig_time_profile.from_params(
             params[time_params])
     else:
