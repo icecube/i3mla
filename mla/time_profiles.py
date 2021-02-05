@@ -395,7 +395,8 @@ class CustomProfile(GenericProfile):
 
     def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], np.array],
                  time_range: Tuple[float],
-                 bins: Union[List[float], int] = 100) -> None:
+                 bins: Union[List[float], int] = 100,
+                 offset: Optional[float] = 0) -> None:
         """Constructs the time profile.
 
         Args:
@@ -403,12 +404,13 @@ class CustomProfile(GenericProfile):
             bins: Either a list of specific bin edges to use (values should be
                 between 0 and 1), or an integer giving the number of linear
                 spaced bins to use.
-            name: prefix for parameters.
+            offset: the offset to the time pdf
         """
         super().__init__()
-        self._range = time_range
-        self._default_params = {'start': self._range[0], 'end': self._range[1]}
-        self._param_dtype = [('start', np.float32), ('end', np.float32)]
+        self._range = (time_range[0] + offset, time_range[1] + offset)
+        self._offset = offset
+        self._default_params = {'offset': self._offset}
+        self._param_dtype = [('offset', np.float32)]
         self.dist = self._build_rv(pdf, bins)
 
     def _build_rv(self,
@@ -453,7 +455,7 @@ class CustomProfile(GenericProfile):
         Returns:
             An array of probability densities at the given times.
         """
-        return self.dist.pdf(times)
+        return self.dist.pdf(times + self.offset)
 
     def logpdf(self, times: np.array) -> np.array:
         """Calculates the log(probability) for each time.
@@ -464,7 +466,7 @@ class CustomProfile(GenericProfile):
         Returns:
             An array of the log(probability density) for the given times.
         """
-        return self.dist.logpdf(times)
+        return self.dist.logpdf(times + self.offset)
 
     def random(self, size: int = 1) -> np.array:
         """Returns random values following the uniform distribution.
@@ -475,7 +477,7 @@ class CustomProfile(GenericProfile):
         Returns:
             An array of random values sampled from the histogram distribution.
         """
-        return self.dist.rvs(size=size)
+        return self.dist.rvs(size=size) + self.offset
 
     def x0(self, times: np.array) -> Tuple[float, float]:
         """Gives a guess of the parameters of this type of time profile.
@@ -503,14 +505,22 @@ class CustomProfile(GenericProfile):
         """
         return [time_profile.range, time_profile.range]
 
-    @classmethod
-    def from_params(cls, params: np.ndarray) -> 'CustomProfile':
+    def from_params(self, params: np.ndarray) -> 'CustomProfile':
         """Docstring"""
-        return cls(params['start'], params['end'])
+        self.offset = params['offset']
+        return self
 
     @property
     def exposure(self) -> float:
         return self._exposure
+
+    @property
+    def offset(self) -> float:
+        return self._offset
+
+    @offset.setter
+    def offset(self, x):
+        self._offset = x
 
     @property
     def range(self) -> Tuple[Optional[float], Optional[float]]:
