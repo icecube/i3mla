@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, ClassVar, Dict, List, Optional, Sequence, Tuple
+from typing import Callable, ClassVar, List, Optional, Sequence, Tuple
 
 import warnings
 import dataclasses
@@ -27,33 +27,16 @@ Bounds = Sequence[Tuple[Optional[float], Optional[float]]]
 @dataclasses.dataclass
 class Preprocessing:
     """Docstring"""
-    _params: Tuple
+    params: np.ndarray
     n_events: int
     n_dropped: int
-    splines: List[scipy.interpolate.UnivariateSpline]
     sob_spatial: np.array
     drop_index: np.array
-
-    _bounds: Bounds
-
-    @property
-    def params(self) -> Dict[str, float]:
-        """Docstring"""
-        return {'n_signal': min(self._params[0], self.n_events - 1e-5),
-                'gamma': self._params[1]}
-
-    @property
-    def bounds(self) -> Bounds:
-        """Docstring"""
-        new_bounds = self._bounds
-        new_bounds[0][1] = min(self._bounds[0][1], self.params['n_signal'])
-        return new_bounds
 
 
 @dataclasses.dataclass
 class Preprocessor:
     """Docstring"""
-    bounds: Bounds
     factory_type: ClassVar = Preprocessing
 
     def _preprocess(self, event_model: models.EventModel,
@@ -84,14 +67,12 @@ class Preprocessor:
         sob_spatial = sob_spatial[drop_index]
         sob_spatial /= event_model.background_spatial_pdf(
             events[drop_index], event_model)
-        splines = event_model.get_log_sob_gamma_splines(
-            events[drop_index])
 
-        return n_events, n_dropped, splines, sob_spatial, drop_index
+        return drop_index, n_events, n_dropped, sob_spatial
 
     def __call__(self, event_model: models.EventModel,
                  source: sources.Source, events: np.ndarray,
-                 params: Tuple) -> Preprocessing:
+                 params: np.ndarray) -> Preprocessing:
         """Docstring"""
         prepro = self._preprocess(event_model, source, events)
 
@@ -140,27 +121,8 @@ def _i3_ts(sob: np.ndarray, prepro: Preprocessing) -> float:
 TestStatistic = Callable[[np.ndarray, Preprocessing], float]
 
 
-def ps_test_statistic(params: np.ndarray, prepro: Preprocessing) -> float:
-    """Evaluates the test-statistic for the given events and parameters
-
-    Calculates the test-statistic using a given event model, n_signal, and
-    gamma. This function does not attempt to fit n_signal or gamma.
-
-    Args:
-        params: A one item array containing (gamma).
-        prepro:
-
-    Returns:
-        The overall test-statistic value for the given events and
-        parameters.
-    """
-    sob = prepro.sob_spatial * np.exp(
-        [spline(params[0]) for spline in prepro.splines])
-    return _i3_ts(sob, prepro)
-
-
 @dataclasses.dataclass
-class TdPreprocessing(Preprocessing):
+class _TdPreprocessing(Preprocessing):
     """Docstring"""
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
@@ -168,12 +130,12 @@ class TdPreprocessing(Preprocessing):
 
 
 @dataclasses.dataclass
-class TdPreprocessor(Preprocessor):
+class _TdPreprocessor(Preprocessor):
     """Docstring"""
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
 
-    factory_type: ClassVar = TdPreprocessing
+    factory_type: ClassVar = _TdPreprocessing
 
     def _preprocess(self, event_model: models.EventModel,
                     source: sources.Source, events: np.ndarray) -> Tuple:
@@ -182,50 +144,92 @@ class TdPreprocessor(Preprocessor):
         Separated from the main test-statisic functions to improve performance.
 
         Args:
-
-        Raises:
-            RuntimeWarning:
+            event_model: An object containing data and preprocessed parameters.
+            source:
+            events:
         """
         super_prepro = super()._preprocess(event_model, source, events)
 
-        # drop_index == super_prepro[4]
-        sob_time = self.sig_time_profile.pdf(events[super_prepro[4]]['time'])
-        sob_time /= self.bg_time_profile.pdf(events[super_prepro[4]]['time'])
+        # super_prepro[0] == drop_index
+        sob_time = 1 / self.bg_time_profile.pdf(events[super_prepro[0]]['time'])
 
         if np.logical_not(np.all(np.isfinite(sob_time))):
             warnings.warn('Warning, events outside background time profile',
                           RuntimeWarning)
-
         return (*super_prepro, sob_time)
 
 
-def td_ps_test_statistic(params: np.ndarray, prepro: TdPreprocessing) -> float:
+def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
+    """Docstring"""
+    time_params = prepro.sig_time_profile.param_dtype[:][0]
+
+    sig_time_profile = prepro.sig_time_profile.from_params(params[time_params])
+
+    sob_time = prepro.sob_time * sig_time_profile.pdf(
+        prepro.events[prepro.drop_index]['time'])
+
+    return sob_time
+
+
+@dataclasses.dataclass
+class I3Preprocessing(_TdPreprocessing):
+    """Docstring"""
+    splines: List[scipy.interpolate.UnivariateSpline]
+
+
+@dataclasses.dataclass
+class I3Preprocessor(_TdPreprocessor):
+    """Docstring"""
+    factory_type: ClassVar = I3Preprocessing
+
+    def _preprocess(self, event_model: models.EventModel,
+                    source: sources.Source, events: np.ndarray) -> Tuple:
+        """Contains all of the calculations for the ts that can be done once.
+
+        Separated from the main test-statisic functions to improve performance.
+
+        Args:
+            event_model: An object containing data and preprocessed parameters.
+            source:
+            events:
+        """
+        super_prepro = super()._preprocess(event_model, source, events)
+
+        # drop_index == super_prepro[0]
+        splines = event_model.get_log_sob_gamma_splines(
+            events[super_prepro[0]])
+
+        return (*super_prepro, splines)
+
+
+def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
     gamma. This function does not attempt to fit n_signal or gamma.
 
     Args:
-        params: A one item array containing (gamma).
+        params: An array containing (*time_params, gamma).
         prepro:
 
     Returns:
         The overall test-statistic value for the given events and
         parameters.
     """
-    sob = prepro.sob_spatial * prepro.sob_time * np.exp(
-        [spline(params[0]) for spline in prepro.splines])
+
+    sob = prepro.sob_spatial * _sob_time(params, prepro) * np.exp(
+        [spline(params['gamma']) for spline in prepro.splines])
     return _i3_ts(sob, prepro)
 
 
 @dataclasses.dataclass
-class ThreeMLPreprocessing(TdPreprocessing):
+class ThreeMLPreprocessing(_TdPreprocessing):
     """Docstring"""
     sob_energy: np.array = dataclasses.field(init=False)
 
 
 @dataclasses.dataclass
-class ThreeMLPreprocessor(TdPreprocessor):
+class ThreeMLPreprocessor(_TdPreprocessor):
     """Docstring"""
     factory_type: ClassVar = ThreeMLPreprocessing
 
@@ -238,8 +242,8 @@ class ThreeMLPreprocessor(TdPreprocessor):
         """
         super_prepro = super()._preprocess(event_model, source, events)
 
-        # drop_index == super_prepro[4]
-        sob_energy = event_model.get_energy_sob(events[super_prepro[4]])
+        # drop_index == super_prepro[0]
+        sob_energy = event_model.get_energy_sob(events[super_prepro[0]])
         return (*super_prepro, sob_energy)
 
 
@@ -261,5 +265,5 @@ def threeml_ps_test_statistic(params: np.ndarray,
     # Temporary no-op for params
     len(params)
 
-    sob = prepro.sob_spatial * prepro.sob_time * prepro.sob_energy
+    sob = prepro.sob_spatial * _sob_time(params, prepro) * prepro.sob_energy
     return _i3_ts(sob, prepro)
