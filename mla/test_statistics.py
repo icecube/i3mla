@@ -106,12 +106,16 @@ def _calculate_ns_ratio(sob: np.array, iterations: int = 3) -> float:
     return x[-1]
 
 
-def _i3_ts(sob: np.ndarray, prepro: Preprocessing) -> float:
+def _i3_ts(sob: np.ndarray, prepro: Preprocessing,
+           ns: Optional[float] = None) -> float:
     """Docstring"""
     if prepro.n_events == 0:
         return 0
 
-    ns_ratio = _calculate_ns_ratio(sob)
+    if ns is not None:
+        ns_ratio = ns / prepro.n_events
+    else:
+        ns_ratio = _calculate_ns_ratio(sob)
 
     return -2 * np.sum(
         np.log(ns_ratio * (sob - 1)) + 1
@@ -208,7 +212,8 @@ class I3Preprocessor(_TdPreprocessor):
         return (*super_prepro, splines)
 
 
-def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing) -> float:
+def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing,
+                      ns: Optional[float] = None) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -225,7 +230,7 @@ def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing) -> float:
 
     sob = prepro.sob_spatial * _sob_time(params, prepro) * np.exp(
         [spline(params['gamma']) for spline in prepro.splines])
-    return _i3_ts(sob, prepro)
+    return _i3_ts(sob, prepro, ns)
 
 
 @dataclasses.dataclass
@@ -254,7 +259,8 @@ class ThreeMLPreprocessor(_TdPreprocessor):
 
 
 def threeml_ps_test_statistic(params: np.ndarray,
-                              prepro: ThreeMLPreprocessing) -> float:
+                              prepro: ThreeMLPreprocessing,
+                              ns: Optional[float] = None) -> float:
     """(ThreeML version) Evaluates the ts for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -263,6 +269,7 @@ def threeml_ps_test_statistic(params: np.ndarray,
     Args:
         params:
         prepro:
+        ns: fixing the ns
 
     Returns:
         The overall test-statistic value for the given events and
@@ -272,4 +279,4 @@ def threeml_ps_test_statistic(params: np.ndarray,
     len(params)
 
     sob = prepro.sob_spatial * _sob_time(params, prepro) * prepro.sob_energy
-    return _i3_ts(sob, prepro)
+    return _i3_ts(sob, prepro, ns)
