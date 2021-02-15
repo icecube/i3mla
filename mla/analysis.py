@@ -62,7 +62,7 @@ def default_minimizer(ts: test_statistics.TestStatistic,
         )
 
 
-def minimize_ts(analysis: Analysis, test_params: List[float],
+def minimize_ts(analysis: Analysis, test_params: np.ndarray,
                 events: np.ndarray,
                 minimizer: Minimizer = default_minimizer,
                 verbose: bool = False) -> Dict[str, float]:
@@ -93,7 +93,7 @@ def minimize_ts(analysis: Analysis, test_params: List[float],
     if verbose:
         print('done')
 
-    output = {'ts': 0, **prepro.params}
+    output = {'ts': 0, 'ns': 0}
 
     if len(prepro.events) == 0:
         return output
@@ -108,8 +108,9 @@ def minimize_ts(analysis: Analysis, test_params: List[float],
 
     # Store the results in the output array
     output['ts'] = -1 * result.fun
-    for i, (param, _) in enumerate(prepro.params):
-        output[param] = result.x[i]
+    output['ns'] = analysis.test_statistic(result.x, prepro, return_ns=True)
+    for param, _ in prepro.params.dtype:
+        output[param] = result.x[param]
 
     return output
 
@@ -168,7 +169,7 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
 def produce_and_minimize(
     analysis: Analysis,
     flux_norms: List[float],
-    test_params_list: List[List[float]],
+    test_params: np.ndarray,
     minimizer: Minimizer = default_minimizer,
     random_seed: Optional[int] = None,
     grl_filter: bool = True,
@@ -180,11 +181,11 @@ def produce_and_minimize(
     return [[[
         minimize_ts(
             analysis,
-            test_params,
+            test_params[:, i],
             produce_trial(
                 analysis, flux_norm, random_seed, grl_filter, n_signal_observed,
                 verbose),
             minimizer,
             verbose,
         ) for _ in range(n_trials)
-    ] for test_params in test_params_list] for flux_norm in flux_norms]
+    ] for i in range(test_params.shape[1])] for flux_norm in flux_norms]

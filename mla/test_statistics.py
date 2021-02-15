@@ -84,6 +84,7 @@ class Preprocessor:
                 *prepro[5:]
             )
 
+        # astuple returns a deepcopy of the instance attributes.
         return self.factory_type(params, *prepro, *dataclasses.astuple(self))
 
 
@@ -106,12 +107,15 @@ def _calculate_ns_ratio(sob: np.array, iterations: int = 3) -> float:
     return x[-1]
 
 
-def _i3_ts(sob: np.ndarray, prepro: Preprocessing) -> float:
+def _i3_ts(sob: np.ndarray, prepro: Preprocessing, return_ns: bool) -> float:
     """Docstring"""
     if prepro.n_events == 0:
         return 0
 
     ns_ratio = _calculate_ns_ratio(sob)
+
+    if return_ns:
+        return ns_ratio
 
     return -2 * np.sum(
         np.log(ns_ratio * (sob - 1)) + 1
@@ -162,7 +166,6 @@ class _TdPreprocessor(Preprocessor):
 def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
     """Docstring"""
     time_params = [name for name, _ in prepro.sig_time_profile.param_dtype]
-
     param_names = [name for name, _ in params.dtype]
 
     if set(time_params).issubset(set(param_names)):
@@ -208,7 +211,8 @@ class I3Preprocessor(_TdPreprocessor):
         return (*super_prepro, splines)
 
 
-def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing) -> float:
+def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing,
+                      return_ns: bool = False) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -217,6 +221,7 @@ def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing) -> float:
     Args:
         params: An array containing (*time_params, gamma).
         prepro:
+        return_ns:
 
     Returns:
         The overall test-statistic value for the given events and
@@ -225,7 +230,7 @@ def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing) -> float:
 
     sob = prepro.sob_spatial * _sob_time(params, prepro) * np.exp(
         [spline(params['gamma']) for spline in prepro.splines])
-    return _i3_ts(sob, prepro)
+    return _i3_ts(sob, prepro, return_ns)
 
 
 @dataclasses.dataclass
@@ -254,7 +259,8 @@ class ThreeMLPreprocessor(_TdPreprocessor):
 
 
 def threeml_ps_test_statistic(params: np.ndarray,
-                              prepro: ThreeMLPreprocessing) -> float:
+                              prepro: ThreeMLPreprocessing,
+                              return_ns: bool = False) -> float:
     """(ThreeML version) Evaluates the ts for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -263,13 +269,11 @@ def threeml_ps_test_statistic(params: np.ndarray,
     Args:
         params:
         prepro:
+        return_ns:
 
     Returns:
         The overall test-statistic value for the given events and
         parameters.
     """
-    # Temporary no-op for params
-    len(params)
-
     sob = prepro.sob_spatial * _sob_time(params, prepro) * prepro.sob_energy
-    return _i3_ts(sob, prepro)
+    return _i3_ts(sob, prepro, return_ns)
