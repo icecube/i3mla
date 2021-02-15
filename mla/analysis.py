@@ -45,7 +45,7 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
     return analysis.test_statistic(
         params,
         analysis.ts_preprocessor(
-            analysis.model, analysis.source, events, params),
+            analysis.model, analysis.source, events, params, bounds=None),
     )
 
 
@@ -57,13 +57,14 @@ def default_minimizer(ts: test_statistics.TestStatistic,
         # where to start, and the bounds. First do the
         # shape parameters.
         return scipy.optimize.minimize(
-            ts, x0=prepro.params.values, args=(prepro), bounds=prepro.bounds,
+            ts, x0=prepro.params, args=(prepro), bounds=prepro.bounds,
             method='L-BFGS-B'
         )
 
 
 def minimize_ts(analysis: Analysis, test_params: np.ndarray,
                 events: np.ndarray,
+                bounds: test_statistics.Bounds = None,
                 minimizer: Minimizer = default_minimizer,
                 verbose: bool = False) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.
@@ -88,7 +89,7 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
         print('Preprocessing...', end='')
 
     prepro = analysis.ts_preprocessor(
-        analysis.model, analysis.source, events, test_params)
+        analysis.model, analysis.source, events, test_params, bounds)
 
     if verbose:
         print('done')
@@ -170,6 +171,7 @@ def produce_and_minimize(
     analysis: Analysis,
     flux_norms: List[float],
     test_params: np.ndarray,
+    bounds: test_statistics.Bounds = None,
     minimizer: Minimizer = default_minimizer,
     random_seed: Optional[int] = None,
     grl_filter: bool = True,
@@ -183,9 +185,15 @@ def produce_and_minimize(
             analysis,
             test_params[:, i],
             produce_trial(
-                analysis, flux_norm, random_seed, grl_filter, n_signal_observed,
-                verbose),
-            minimizer,
-            verbose,
+                analysis,
+                flux_norm=flux_norm,
+                random_seed=random_seed,
+                grl_filter=grl_filter,
+                n_signal_observed=n_signal_observed,
+                verbose=verbose,
+            ),
+            bounds=bounds,
+            minimizer=minimizer,
+            verbose=verbose,
         ) for _ in range(n_trials)
     ] for i in range(test_params.shape[1])] for flux_norm in flux_norms]

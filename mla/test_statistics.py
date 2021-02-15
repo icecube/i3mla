@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, ClassVar, List
+from typing import Callable, ClassVar, List, Optional, Union, Sequence, Tuple
 
 import warnings
 import dataclasses
@@ -21,14 +21,23 @@ from . import models
 from . import time_profiles
 
 
+Bounds = Optional[Union[Sequence[Tuple[float, float]], scipy.optimize.Bounds]]
+
+
 @dataclasses.dataclass
 class Preprocessing:
     """Docstring"""
     params: np.ndarray
+    _bounds: Bounds
     n_events: int
     n_dropped: int
     sob_spatial: np.array
     drop_index: np.array
+
+    @property
+    def bounds(self) -> Bounds:
+        """Docstring"""
+        return self._bounds
 
 
 @dataclasses.dataclass
@@ -70,7 +79,7 @@ class Preprocessor:
 
     def __call__(self, event_model: models.EventModel,
                  source: sources.Source, events: np.ndarray,
-                 params: np.ndarray) -> Preprocessing:
+                 params: np.ndarray, bounds: Bounds) -> Preprocessing:
         """Docstring"""
         prepro = self._preprocess(event_model, source, events)
         basic_keys = {'drop_index', 'n_events', 'n_dropped', 'sob_spatial'}
@@ -79,6 +88,7 @@ class Preprocessor:
         if keys:
             return self.factory_type(
                 params,
+                bounds,
                 prepro['n_events'],
                 prepro['n_dropped'],
                 prepro['sob_spatial'],
@@ -90,6 +100,7 @@ class Preprocessor:
         # astuple returns a deepcopy of the instance attributes.
         return self.factory_type(
             params,
+            bounds,
             prepro['n_events'],
             prepro['n_dropped'],
             prepro['sob_spatial'],
@@ -162,15 +173,15 @@ class _TdPreprocessor(Preprocessor):
             source:
             events:
         """
-        super_prepro = super()._preprocess(event_model, source, events)
+        super_prepro_dict = super()._preprocess(event_model, source, events)
 
-        # super_prepro[0] == drop_index
-        sob_time = 1 / self.bg_time_profile.pdf(events[super_prepro[0]]['time'])
+        sob_time = 1 / self.bg_time_profile.pdf(
+            events[super_prepro_dict['drop_index']]['time'])
 
         if np.logical_not(np.all(np.isfinite(sob_time))):
             warnings.warn('Warning, events outside background time profile',
                           RuntimeWarning)
-        return {**super_prepro, 'sob_time': sob_time}
+        return {**super_prepro_dict, 'sob_time': sob_time}
 
 
 def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
@@ -212,13 +223,12 @@ class I3Preprocessor(_TdPreprocessor):
             source:
             events:
         """
-        super_prepro = super()._preprocess(event_model, source, events)
+        super_prepro_dict = super()._preprocess(event_model, source, events)
 
-        # drop_index == super_prepro[0]
         splines = event_model.get_log_sob_gamma_splines(
-            events[super_prepro[0]])
+            events[super_prepro_dict['drop_index']])
 
-        return {**super_prepro, 'splines': splines}
+        return {**super_prepro_dict, 'splines': splines}
 
 
 def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing,
@@ -261,11 +271,12 @@ class ThreeMLPreprocessor(_TdPreprocessor):
         Args:
 
         """
-        super_prepro = super()._preprocess(event_model, source, events)
+        super_prepro_dict = super()._preprocess(event_model, source, events)
 
-        # drop_index == super_prepro[0]
-        sob_energy = event_model.get_energy_sob(events[super_prepro[0]])
-        return {**super_prepro, 'sob_energy': sob_energy}
+        sob_energy = event_model.get_energy_sob(
+            events[super_prepro_dict['drop_index']])
+
+        return {**super_prepro_dict, 'sob_energy': sob_energy}
 
 
 def threeml_ps_test_statistic(params: np.ndarray,
