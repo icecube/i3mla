@@ -64,7 +64,7 @@ class Preprocessor:
         sob_spatial = sob_spatial[drop_index]
         sob_spatial /= event_model.background_spatial_pdf(events[drop_index])
 
-        return {'drop_index': drop_index, 'n_events: ': n_events,
+        return {'drop_index': drop_index, 'n_events': n_events,
                 'n_dropped': n_dropped, 'sob_spatial': sob_spatial}
 
     def __call__(self, event_model: models.EventModel,
