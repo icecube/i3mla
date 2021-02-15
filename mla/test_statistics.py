@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, ClassVar, List, Optional, Sequence, Tuple
+from typing import Callable, ClassVar, List
 
 import warnings
 import dataclasses
@@ -19,9 +19,6 @@ import scipy.optimize
 from . import sources
 from . import models
 from . import time_profiles
-
-
-Bounds = Sequence[Tuple[Optional[float], Optional[float]]]
 
 
 @dataclasses.dataclass
@@ -40,7 +37,7 @@ class Preprocessor:
     factory_type: ClassVar = Preprocessing
 
     def _preprocess(self, event_model: models.EventModel,
-                    source: sources.Source, events: np.ndarray) -> Tuple:
+                    source: sources.Source, events: np.ndarray) -> dict:
         """Contains all of the calculations for the ts that can be done once.
 
         Separated from the main test-statisic functions to improve performance.
@@ -68,24 +65,37 @@ class Preprocessor:
         sob_spatial /= event_model.background_spatial_pdf(
             events[drop_index], event_model)
 
-        return drop_index, n_events, n_dropped, sob_spatial
+        return {'drop_index': drop_index, 'n_events: ': n_events,
+                'n_dropped': n_dropped, 'sob_spatial': sob_spatial}
 
     def __call__(self, event_model: models.EventModel,
                  source: sources.Source, events: np.ndarray,
                  params: np.ndarray) -> Preprocessing:
         """Docstring"""
         prepro = self._preprocess(event_model, source, events)
+        basic_keys = {'drop_index', 'n_events', 'n_dropped', 'sob_spatial'}
+        keys = [key for key, _ in prepro if key not in basic_keys]
 
-        if len(prepro) >= 5:
+        if keys:
             return self.factory_type(
                 params,
-                *prepro[:5],
+                prepro['n_events'],
+                prepro['n_dropped'],
+                prepro['sob_spatial'],
+                prepro['drop_index'],
                 *dataclasses.astuple(self),
-                *prepro[5:]
+                *[prepro[key] for key in keys],
             )
 
         # astuple returns a deepcopy of the instance attributes.
-        return self.factory_type(params, *prepro, *dataclasses.astuple(self))
+        return self.factory_type(
+            params,
+            prepro['n_events'],
+            prepro['n_dropped'],
+            prepro['sob_spatial'],
+            prepro['drop_index'],
+            *dataclasses.astuple(self),
+        )
 
 
 def _calculate_ns_ratio(sob: np.array, iterations: int = 3) -> float:
@@ -142,7 +152,7 @@ class _TdPreprocessor(Preprocessor):
     factory_type: ClassVar = _TdPreprocessing
 
     def _preprocess(self, event_model: models.EventModel,
-                    source: sources.Source, events: np.ndarray) -> Tuple:
+                    source: sources.Source, events: np.ndarray) -> dict:
         """Contains all of the calculations for the ts that can be done once.
 
         Separated from the main test-statisic functions to improve performance.
@@ -160,7 +170,7 @@ class _TdPreprocessor(Preprocessor):
         if np.logical_not(np.all(np.isfinite(sob_time))):
             warnings.warn('Warning, events outside background time profile',
                           RuntimeWarning)
-        return (*super_prepro, sob_time)
+        return {**super_prepro, 'sob_time': sob_time}
 
 
 def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
@@ -192,7 +202,7 @@ class I3Preprocessor(_TdPreprocessor):
     factory_type: ClassVar = I3Preprocessing
 
     def _preprocess(self, event_model: models.EventModel,
-                    source: sources.Source, events: np.ndarray) -> Tuple:
+                    source: sources.Source, events: np.ndarray) -> dict:
         """Contains all of the calculations for the ts that can be done once.
 
         Separated from the main test-statisic functions to improve performance.
@@ -208,7 +218,7 @@ class I3Preprocessor(_TdPreprocessor):
         splines = event_model.get_log_sob_gamma_splines(
             events[super_prepro[0]])
 
-        return (*super_prepro, splines)
+        return {**super_prepro, 'splines': splines}
 
 
 def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing,
@@ -245,7 +255,7 @@ class ThreeMLPreprocessor(_TdPreprocessor):
     factory_type: ClassVar = ThreeMLPreprocessing
 
     def _preprocess(self, event_model: models.ThreeMLEventModel,
-                    source: sources.Source, events: np.ndarray) -> Tuple:
+                    source: sources.Source, events: np.ndarray) -> dict:
         """ThreeML version of TdPreprocess
 
         Args:
@@ -255,7 +265,7 @@ class ThreeMLPreprocessor(_TdPreprocessor):
 
         # drop_index == super_prepro[0]
         sob_energy = event_model.get_energy_sob(events[super_prepro[0]])
-        return (*super_prepro, sob_energy)
+        return {**super_prepro, 'sob_energy': sob_energy}
 
 
 def threeml_ps_test_statistic(params: np.ndarray,
