@@ -141,12 +141,12 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
     if random_seed is not None:
         np.random.seed(random_seed)
 
-    background = analysis.event_model.inject_background_events()
+    background = analysis.model.inject_background_events()
 
     if flux_norm > 0:
-        signal = analysis.event_model.inject_signal_events(analysis.source,
-                                                           flux_norm,
-                                                           n_signal_observed)
+        signal = analysis.model.inject_signal_events(analysis.source,
+                                                     flux_norm,
+                                                     n_signal_observed)
     else:
         signal = np.empty(0, dtype=background.dtype)
 
