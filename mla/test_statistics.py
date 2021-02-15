@@ -125,7 +125,7 @@ def _i3_ts(sob: np.ndarray, prepro: Preprocessing, return_ns: bool) -> float:
     ns_ratio = _calculate_ns_ratio(sob)
 
     if return_ns:
-        return ns_ratio
+        return ns_ratio * prepro.n_events
 
     return -2 * np.sum(
         np.log(ns_ratio * (sob - 1)) + 1
