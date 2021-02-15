@@ -210,7 +210,7 @@ class I3Preprocessor(_TdPreprocessor):
         """
         super_prepro_dict = super()._preprocess(event_model, source, events)
 
-        splines = event_model.get_log_sob_gamma_splines(
+        splines = event_model.log_sob_gamma_splines(
             events[super_prepro_dict['drop_index']])
 
         return {**super_prepro_dict, 'splines': splines}
