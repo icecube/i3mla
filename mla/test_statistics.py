@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, ClassVar, List, Optional, Union, Sequence, Tuple
+from typing import Callable, ClassVar, List
 
 import warnings
 import dataclasses
@@ -21,23 +21,14 @@ from . import models
 from . import time_profiles
 
 
-Bounds = Optional[Union[Sequence[Tuple[float, float]], scipy.optimize.Bounds]]
-
-
 @dataclasses.dataclass
 class Preprocessing:
     """Docstring"""
     params: np.ndarray
-    _bounds: Bounds
     n_events: int
     n_dropped: int
     sob_spatial: np.array
     drop_index: np.array
-
-    @property
-    def bounds(self) -> Bounds:
-        """Docstring"""
-        return self._bounds
 
 
 @dataclasses.dataclass
@@ -79,7 +70,7 @@ class Preprocessor:
 
     def __call__(self, event_model: models.EventModel,
                  source: sources.Source, events: np.ndarray,
-                 params: np.ndarray, bounds: Bounds) -> Preprocessing:
+                 params: np.ndarray) -> Preprocessing:
         """Docstring"""
         prepro = self._preprocess(event_model, source, events)
         basic_keys = {'drop_index', 'n_events', 'n_dropped', 'sob_spatial'}
@@ -88,7 +79,6 @@ class Preprocessor:
         if keys:
             return self.factory_type(
                 params,
-                bounds,
                 prepro['n_events'],
                 prepro['n_dropped'],
                 prepro['sob_spatial'],
@@ -100,7 +90,6 @@ class Preprocessor:
         # astuple returns a deepcopy of the instance attributes.
         return self.factory_type(
             params,
-            bounds,
             prepro['n_events'],
             prepro['n_dropped'],
             prepro['sob_spatial'],
