@@ -62,8 +62,7 @@ class Preprocessor:
 
         n_dropped = len(events) - np.sum(drop_index)
         sob_spatial = sob_spatial[drop_index]
-        sob_spatial /= event_model.background_spatial_pdf(
-            events[drop_index], event_model)
+        sob_spatial /= event_model.background_spatial_pdf(events[drop_index])
 
         return {'drop_index': drop_index, 'n_events: ': n_events,
                 'n_dropped': n_dropped, 'sob_spatial': sob_spatial}
