@@ -109,9 +109,8 @@ class GenericProfile:
             profile.
         """
 
-    @classmethod
     @abc.abstractmethod
-    def from_params(cls, params: np.ndarray) -> 'GenericProfile':
+    def update_params(self, params: np.ndarray) -> None:
         """Docstring"""
 
     @property
@@ -235,10 +234,10 @@ class GaussProfile(GenericProfile):
 
         return [time_profile.range, (0, diff)]
 
-    @classmethod
-    def from_params(cls, params: np.ndarray) -> 'GaussProfile':
+    def update_params(self, params: np.ndarray) -> None:
         """Docstring"""
-        return cls(mean=params['mean'], sigma=params['sigma'])
+        self.mean = params['mean']
+        self.sigma = params['sigma']
 
     @property
     def exposure(self) -> float:
@@ -349,10 +348,10 @@ class UniformProfile(GenericProfile):
         diff = time_profile.range[1] - time_profile.range[0]
         return [time_profile.range, (0, diff)]
 
-    @classmethod
-    def from_params(cls, params: np.ndarray) -> 'UniformProfile':
+    def update_params(self, params: np.ndarray) -> None:
         """Docstring"""
-        return cls(params['start'], params['length'])
+        self.start = params['start']
+        self.length = params['length']
 
     @property
     def exposure(self) -> float:
@@ -505,10 +504,9 @@ class CustomProfile(GenericProfile):
         """
         return [time_profile.range, time_profile.range]
 
-    def from_params(self, params: np.ndarray) -> 'CustomProfile':
+    def update_params(self, params: np.ndarray) -> None:
         """Docstring"""
         self.offset = params['offset']
-        return self
 
     @property
     def exposure(self) -> float:

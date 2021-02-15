@@ -179,12 +179,9 @@ def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
     param_names = [name for name, _ in params.dtype]
 
     if set(time_params).issubset(set(param_names)):
-        sig_time_profile = prepro.sig_time_profile.from_params(
-            params[time_params])
-    else:
-        sig_time_profile = prepro.sig_time_profile
+        prepro.sig_time_profile.update_params(params[time_params])
 
-    sob_time = prepro.sob_time * sig_time_profile.pdf(
+    sob_time = prepro.sob_time * prepro.sig_time_profile.pdf(
         prepro.events[prepro.drop_index]['time'])
 
     return sob_time
