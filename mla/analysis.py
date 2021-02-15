@@ -166,7 +166,7 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
     events = np.concatenate([background, signal])
 
     if grl_filter:
-        events = analysis.event_model.grl_filter(events)
+        events = analysis.model.grl_filter(events)
 
     return events
 
