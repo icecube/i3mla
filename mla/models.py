@@ -54,6 +54,18 @@ def angular_distance(src_ra: float, src_dec: float, r_a: float,
     return np.arccos(cos_dist)
 
 
+def cross_matrix(mat: np.array) -> np.array:
+    """Calculate cross product matrix.
+    A[ij] = x_i * y_j - y_i * x_j
+    Args:
+        mat: A 2D array to take the cross product of.
+    Returns:
+        The cross matrix.
+    """
+    skv = np.roll(np.roll(np.diag(mat.ravel()), 1, 1), -1, 0)
+    return skv - skv.T
+
+
 def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
            ra3: float, dec3: float) -> Tuple[float, float]:
     """Rotation matrix for rotation of (ra1, dec1) onto (ra2, dec2).
@@ -109,8 +121,7 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
 
     one = np.diagflat(np.ones(3))
     ntn = np.array([np.outer(nv, nv) for nv in nvec])
-    nx = np.array([
-        np.roll(np.roll(np.diag(nv.ravel()), 1, 1), -1, 0) for nv in nvec])
+    nx = np.array([cross_matrix(nv) for nv in nvec])
 
     r = np.array([(1. - np.cos(a)) * ntn_i + np.cos(a) * one + np.sin(a) * nx_i
                   for a, ntn_i, nx_i in zip(alpha, ntn, nx)])
@@ -553,7 +564,7 @@ class TdEventModel(EventModel, _TdEventModelDefaultsBase, _TdEventModelBase):
 
         if n_signal_observed is None:
             n_signal_observed = scipy.stats.poisson.rvs(
-                weighttotal * self.signal_time_profile.exposure * flux_norm)
+                weighttotal * self._signal_time_profile.exposure * flux_norm)
 
         signal = np.random.choice(self._reduced_sim, n_signal_observed,
                                   p=normed_weight, replace=False).copy()
@@ -761,7 +772,9 @@ class I3EventModel(TdEventModel, _I3EventModelDefaultsBase, _I3EventModelBase):
 @dataclass
 class _ThreeMLEventModelBase(_TdEventModelBase):
     """Docstring"""
-    _edge_point: Tuple[float, float]
+    _sin_dec_bins: np.array = field(init=False)
+    _log_energy_bins: np.array = field(init=False)
+    _edge_point: Tuple[float, float] = field(init=False)
     _background_sob_map: np.ndarray = field(init=False)
     _ratio: np.ndarray = field(init=False)
     _reduced_sim_reconstructed: np.ndarray = field(init=False)
@@ -770,6 +783,8 @@ class _ThreeMLEventModelBase(_TdEventModelBase):
 @dataclass
 class _ThreeMLEventModelDefaultsBase(_TdEventModelDefaultsBase):
     """Docstring"""
+    signal_sin_dec_bins: InitVar[Union[np.array, int]] = field(default=50)
+    log_energy_bins: InitVar[Union[np.array, int]] = field(default=50)
     _spectrum: spectral.BaseSpectrum = field(
         default=spectral.PowerLaw(1e3, 1e-14, -2))
 
@@ -780,7 +795,9 @@ class ThreeMLEventModel(
     """Docstring"""
     def __post_init__(self, source: sources.Source, grl: np.ndarray,
                       background_sin_dec_bins: Union[np.array, int],
-                      background_window: float, withinwindow: bool) -> None:
+                      background_window: float, withinwindow: bool,
+                      signal_sin_dec_bins: Union[np.array, int],
+                      log_energy_bins: Union[np.array, int]) -> None:
         """
         Args:
             source:
@@ -792,7 +809,14 @@ class ThreeMLEventModel(
         """
         super().__post_init__(source, grl, background_sin_dec_bins,
                               background_window, withinwindow)
+        if isinstance(signal_sin_dec_bins, int):
+            signal_sin_dec_bins = np.linspace(-1, 1, 1 + signal_sin_dec_bins)
+        self._sin_dec_bins = signal_sin_dec_bins
 
+        if isinstance(log_energy_bins, int):
+            log_energy_bins = np.linspace(1, 8, 1 + log_energy_bins)
+
+        self._log_energy_bins = log_energy_bins
         self._background_sob_map = self._init_background_sob_map()
         self._ratio = self._init_sob_ratio(source)
 
@@ -812,7 +836,7 @@ class ThreeMLEventModel(
         self._init_reduced_sim_reconstructed(source)
         bins = np.array([self._sin_dec_bins, self._log_energy_bins])
         bin_centers = bins[1, :-1] + np.diff(bins[1]) / 2
-        sig_w = self._reduced_sim_reconstructed['ow'] * self.spectrum(
+        sig_w = self._reduced_sim_reconstructed['ow'] * self._spectrum(
             self._reduced_sim_reconstructed['trueE'])
         sig_h, _, _ = np.histogram2d(self._reduced_sim_reconstructed['sindec'],
                                      self._reduced_sim_reconstructed['logE'],
@@ -861,10 +885,7 @@ class ThreeMLEventModel(
         if self._sampling_width is not None:
             self._cut_sim_reconstructed(source)
         else:
-            self._reduced_sim_reconstructed = self._sim.copy()
-
-        self._reduced_sim_reconstructed = self._weight_reduced_sim(
-            self._reduced_sim_reconstructed)
+            self._reduced_sim_reconstructed = self._sim
 
     def _cut_sim_reconstructed(self, source: sources.Source) -> np.ndarray:
         """Select simulation events in a reconstruction dec band
@@ -872,6 +893,12 @@ class ThreeMLEventModel(
         Args:
             source:
         """
+        self._edge_point = (np.searchsorted(
+                            self._sin_dec_bins,
+                            np.sin(source.dec - self.sampling_width)) - 1,
+                            np.searchsorted(
+                            self._sin_dec_bins,
+                            np.sin(source.dec + self.sampling_width)) - 1)
         sindec_dist = np.abs(source.dec - self._sim['dec'])
         close = sindec_dist < self._sampling_width
         self._reduced_sim_reconstructed = self._sim[close].copy()
