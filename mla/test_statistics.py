@@ -73,7 +73,7 @@ class Preprocessor:
         """Docstring"""
         prepro = self._preprocess(event_model, source, events)
         basic_keys = {'drop_index', 'n_events', 'n_dropped', 'sob_spatial'}
-        keys = [key for key, _ in prepro if key not in basic_keys]
+        keys = [key for key in prepro if key not in basic_keys]
 
         if keys:
             return self.factory_type(
