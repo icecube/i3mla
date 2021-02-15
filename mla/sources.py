@@ -25,6 +25,11 @@ class Source:
     dec: float
 
 
+def deg_to_rad(deg: float) -> float:
+    """Docstring"""
+    return deg * 2 * np.pi / 360
+
+
 def ra_to_rad(hrs: float, mins: float, secs: float) -> float:
     """Converts right ascension to radians.
 

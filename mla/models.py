@@ -166,7 +166,7 @@ class _EventModelDefaultsBase:
         sampling_width:
         background_dec_spline: A spline fit of neutrino flux vs. sin(dec).
     """
-    _sampling_width: Optional[float] = field(default=None)
+    _sampling_width: Optional[float] = field(default=sources.deg_to_rad(3))
     background_sin_dec_bins: InitVar[Union[np.array, int]] = field(default=500)
 
     @property
