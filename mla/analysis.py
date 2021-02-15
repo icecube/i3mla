@@ -100,7 +100,7 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
 
     output = {'ts': 0, 'ns': 0}
 
-    if len(prepro.events) == 0:
+    if prepro.n_events - prepro.n_dropped <= 0:
         return output
 
     if verbose:
