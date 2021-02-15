@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, ClassVar, List, Optional, Sequence, Tuple
+from typing import Callable, ClassVar, List
 
 import warnings
 import dataclasses
@@ -19,9 +19,6 @@ import scipy.optimize
 from . import sources
 from . import models
 from . import time_profiles
-
-
-Bounds = Sequence[Tuple[Optional[float], Optional[float]]]
 
 
 @dataclasses.dataclass
@@ -40,7 +37,7 @@ class Preprocessor:
     factory_type: ClassVar = Preprocessing
 
     def _preprocess(self, event_model: models.EventModel,
-                    source: sources.Source, events: np.ndarray) -> Tuple:
+                    source: sources.Source, events: np.ndarray) -> dict:
         """Contains all of the calculations for the ts that can be done once.
 
         Separated from the main test-statisic functions to improve performance.
@@ -68,23 +65,37 @@ class Preprocessor:
         sob_spatial /= event_model.background_spatial_pdf(
             events[drop_index], event_model)
 
-        return drop_index, n_events, n_dropped, sob_spatial
+        return {'drop_index': drop_index, 'n_events: ': n_events,
+                'n_dropped': n_dropped, 'sob_spatial': sob_spatial}
 
     def __call__(self, event_model: models.EventModel,
                  source: sources.Source, events: np.ndarray,
                  params: np.ndarray) -> Preprocessing:
         """Docstring"""
         prepro = self._preprocess(event_model, source, events)
+        basic_keys = {'drop_index', 'n_events', 'n_dropped', 'sob_spatial'}
+        keys = [key for key, _ in prepro if key not in basic_keys]
 
-        if len(prepro) >= 5:
+        if keys:
             return self.factory_type(
                 params,
-                *prepro[:5],
+                prepro['n_events'],
+                prepro['n_dropped'],
+                prepro['sob_spatial'],
+                prepro['drop_index'],
                 *dataclasses.astuple(self),
-                *prepro[5:]
+                *[prepro[key] for key in keys],
             )
 
-        return self.factory_type(params, *prepro, *dataclasses.astuple(self))
+        # astuple returns a deepcopy of the instance attributes.
+        return self.factory_type(
+            params,
+            prepro['n_events'],
+            prepro['n_dropped'],
+            prepro['sob_spatial'],
+            prepro['drop_index'],
+            *dataclasses.astuple(self),
+        )
 
 
 def _calculate_ns_ratio(sob: np.array, iterations: int = 3) -> float:
@@ -107,7 +118,7 @@ def _calculate_ns_ratio(sob: np.array, iterations: int = 3) -> float:
 
 
 def _i3_ts(sob: np.ndarray, prepro: Preprocessing,
-           ns: Optional[float] = None) -> float:
+           ns: Optional[float] = None, return_ns: bool) -> float:
     """Docstring"""
     if prepro.n_events == 0:
         return 0
@@ -116,6 +127,9 @@ def _i3_ts(sob: np.ndarray, prepro: Preprocessing,
         ns_ratio = ns / prepro.n_events
     else:
         ns_ratio = _calculate_ns_ratio(sob)
+
+    if return_ns:
+        return ns_ratio * prepro.n_events
 
     return -2 * np.sum(
         np.log(ns_ratio * (sob - 1)) + 1
@@ -142,7 +156,7 @@ class _TdPreprocessor(Preprocessor):
     factory_type: ClassVar = _TdPreprocessing
 
     def _preprocess(self, event_model: models.EventModel,
-                    source: sources.Source, events: np.ndarray) -> Tuple:
+                    source: sources.Source, events: np.ndarray) -> dict:
         """Contains all of the calculations for the ts that can be done once.
 
         Separated from the main test-statisic functions to improve performance.
@@ -152,30 +166,26 @@ class _TdPreprocessor(Preprocessor):
             source:
             events:
         """
-        super_prepro = super()._preprocess(event_model, source, events)
+        super_prepro_dict = super()._preprocess(event_model, source, events)
 
-        # super_prepro[0] == drop_index
-        sob_time = 1 / self.bg_time_profile.pdf(events[super_prepro[0]]['time'])
+        sob_time = 1 / self.bg_time_profile.pdf(
+            events[super_prepro_dict['drop_index']]['time'])
 
         if np.logical_not(np.all(np.isfinite(sob_time))):
             warnings.warn('Warning, events outside background time profile',
                           RuntimeWarning)
-        return (*super_prepro, sob_time)
+        return {**super_prepro_dict, 'sob_time': sob_time}
 
 
 def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
     """Docstring"""
     time_params = [name for name, _ in prepro.sig_time_profile.param_dtype]
-
     param_names = [name for name, _ in params.dtype]
 
     if set(time_params).issubset(set(param_names)):
-        sig_time_profile = prepro.sig_time_profile.from_params(
-            params[time_params])
-    else:
-        sig_time_profile = prepro.sig_time_profile
+        prepro.sig_time_profile.update_params(params[time_params])
 
-    sob_time = prepro.sob_time * sig_time_profile.pdf(
+    sob_time = prepro.sob_time * prepro.sig_time_profile.pdf(
         prepro.events[prepro.drop_index]['time'])
 
     return sob_time
@@ -193,7 +203,7 @@ class I3Preprocessor(_TdPreprocessor):
     factory_type: ClassVar = I3Preprocessing
 
     def _preprocess(self, event_model: models.EventModel,
-                    source: sources.Source, events: np.ndarray) -> Tuple:
+                    source: sources.Source, events: np.ndarray) -> dict:
         """Contains all of the calculations for the ts that can be done once.
 
         Separated from the main test-statisic functions to improve performance.
@@ -203,17 +213,17 @@ class I3Preprocessor(_TdPreprocessor):
             source:
             events:
         """
-        super_prepro = super()._preprocess(event_model, source, events)
+        super_prepro_dict = super()._preprocess(event_model, source, events)
 
-        # drop_index == super_prepro[0]
         splines = event_model.get_log_sob_gamma_splines(
-            events[super_prepro[0]])
+            events[super_prepro_dict['drop_index']])
 
-        return (*super_prepro, splines)
+        return {**super_prepro_dict, 'splines': splines}
 
 
 def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing,
-                      ns: Optional[float] = None) -> float:
+                      ns: Optional[float] = None, return_ns: bool = False) -> float:
+                      ) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -222,6 +232,7 @@ def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing,
     Args:
         params: An array containing (*time_params, gamma).
         prepro:
+        return_ns:
 
     Returns:
         The overall test-statistic value for the given events and
@@ -230,7 +241,7 @@ def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing,
 
     sob = prepro.sob_spatial * _sob_time(params, prepro) * np.exp(
         [spline(params['gamma']) for spline in prepro.splines])
-    return _i3_ts(sob, prepro, ns)
+    return _i3_ts(sob, prepro, ns, return_ns)
 
 
 @dataclasses.dataclass
@@ -245,22 +256,25 @@ class ThreeMLPreprocessor(_TdPreprocessor):
     factory_type: ClassVar = ThreeMLPreprocessing
 
     def _preprocess(self, event_model: models.ThreeMLEventModel,
-                    source: sources.Source, events: np.ndarray) -> Tuple:
+                    source: sources.Source, events: np.ndarray) -> dict:
         """ThreeML version of TdPreprocess
 
         Args:
 
         """
-        super_prepro = super()._preprocess(event_model, source, events)
+        super_prepro_dict = super()._preprocess(event_model, source, events)
 
-        # drop_index == super_prepro[0]
-        sob_energy = event_model.get_energy_sob(events[super_prepro[0]])
-        return (*super_prepro, sob_energy)
+        sob_energy = event_model.get_energy_sob(
+            events[super_prepro_dict['drop_index']])
+
+        return {**super_prepro_dict, 'sob_energy': sob_energy}
 
 
 def threeml_ps_test_statistic(params: np.ndarray,
                               prepro: ThreeMLPreprocessing,
-                              ns: Optional[float] = None) -> float:
+                              ns: Optional[float] = None,
+                              return_ns: bool = False) -> float:
+
     """(ThreeML version) Evaluates the ts for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -270,13 +284,11 @@ def threeml_ps_test_statistic(params: np.ndarray,
         params:
         prepro:
         ns: fixing the ns
+        return_ns:
 
     Returns:
         The overall test-statistic value for the given events and
         parameters.
     """
-    # Temporary no-op for params
-    len(params)
-
     sob = prepro.sob_spatial * _sob_time(params, prepro) * prepro.sob_energy
-    return _i3_ts(sob, prepro, ns)
+    return _i3_ts(sob, prepro, ns, return_ns)

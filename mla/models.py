@@ -164,6 +164,21 @@ class _EventModelBase:
     _reduced_sim: np.ndarray = field(init=False)
     _background_dec_spline: Spline = field(init=False)
 
+    @property
+    def data(self) -> np.ndarray:
+        """Docstring"""
+        return self._data
+
+    @property
+    def sim(self) -> np.ndarray:
+        """Docstring"""
+        return self._sim
+
+    @property
+    def gamma(self) -> float:
+        """Docstring"""
+        return self._gamma
+
 
 @dataclass
 class _EventModelDefaultsBase:
@@ -464,6 +479,16 @@ class _TdEventModelBase(_EventModelBase):
     _background_time_profile: time_profiles.GenericProfile
     _signal_time_profile: time_profiles.GenericProfile
     _n_background: int = field(init=False)
+
+    @property
+    def background_time_profile(self) -> time_profiles.GenericProfile:
+        """Docstring"""
+        return self._background_time_profile
+
+    @property
+    def signal_time_profile(self) -> time_profiles.GenericProfile:
+        """Docstring"""
+        return self._signal_time_profile
 
 
 @dataclass
@@ -779,6 +804,11 @@ class _ThreeMLEventModelBase(_TdEventModelBase):
     _ratio: np.ndarray = field(init=False)
     _reduced_sim_reconstructed: np.ndarray = field(init=False)
 
+    @property
+    def edge_point(self) -> Tuple[float, float]:
+        """Docstring"""
+        return self._edge_point
+
 
 @dataclass
 class _ThreeMLEventModelDefaultsBase(_TdEventModelDefaultsBase):
@@ -787,6 +817,11 @@ class _ThreeMLEventModelDefaultsBase(_TdEventModelDefaultsBase):
     log_energy_bins: InitVar[Union[np.array, int]] = field(default=50)
     _spectrum: spectral.BaseSpectrum = field(
         default=spectral.PowerLaw(1e3, 1e-14, -2))
+
+    @property
+    def spectrum(self) -> spectral.BaseSpectrum:
+        """Docstring"""
+        return self._spectrum
 
 
 @dataclass

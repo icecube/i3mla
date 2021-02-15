@@ -12,7 +12,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import dataclasses
 import numpy as np
@@ -30,6 +30,9 @@ Minimizer = Callable[
 ]
 
 
+Bounds = Optional[Union[Sequence[Tuple[float, float]], scipy.optimize.Bounds]]
+
+
 @dataclasses.dataclass(frozen=True)
 class Analysis:
     """Stores the components of an analysis."""
@@ -45,25 +48,27 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
     return analysis.test_statistic(
         params,
         analysis.ts_preprocessor(
-            analysis.model, analysis.source, events, params),
+            analysis.model, analysis.source, events, params, bounds=None),
     )
 
 
 def default_minimizer(ts: test_statistics.TestStatistic,
-                      prepro: test_statistics.Preprocessing):
+                      prepro: test_statistics.Preprocessing,
+                      bounds: Bounds = None):
     """Docstring"""
     with np.errstate(divide='ignore', invalid='ignore'):
         # Set the seed values, which tell the minimizer
         # where to start, and the bounds. First do the
         # shape parameters.
         return scipy.optimize.minimize(
-            ts, x0=prepro.params.values, args=(prepro), bounds=prepro.bounds,
+            ts, x0=prepro.params, args=(prepro), bounds=bounds,
             method='L-BFGS-B'
         )
 
 
-def minimize_ts(analysis: Analysis, test_params: List[float],
+def minimize_ts(analysis: Analysis, test_params: np.ndarray,
                 events: np.ndarray,
+                bounds: Bounds = None,
                 minimizer: Minimizer = default_minimizer,
                 verbose: bool = False) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.
@@ -93,7 +98,7 @@ def minimize_ts(analysis: Analysis, test_params: List[float],
     if verbose:
         print('done')
 
-    output = {'ts': 0, **prepro.params}
+    output = {'ts': 0, 'ns': 0}
 
     if len(prepro.events) == 0:
         return output
@@ -101,15 +106,16 @@ def minimize_ts(analysis: Analysis, test_params: List[float],
     if verbose:
         print(f'Minimizing: {prepro.params}...', end='')
 
-    result = minimizer(analysis.test_statistic, prepro)
+    result = minimizer(analysis.test_statistic, prepro, bounds)
 
     if verbose:
         print('done')
 
     # Store the results in the output array
     output['ts'] = -1 * result.fun
-    for i, (param, _) in enumerate(prepro.params):
-        output[param] = result.x[i]
+    output['ns'] = analysis.test_statistic(result.x, prepro, return_ns=True)
+    for param, _ in prepro.params.dtype:
+        output[param] = result.x[param]
 
     return output
 
@@ -168,7 +174,8 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
 def produce_and_minimize(
     analysis: Analysis,
     flux_norms: List[float],
-    test_params_list: List[List[float]],
+    test_params: np.ndarray,
+    bounds: Bounds = None,
     minimizer: Minimizer = default_minimizer,
     random_seed: Optional[int] = None,
     grl_filter: bool = True,
@@ -180,11 +187,17 @@ def produce_and_minimize(
     return [[[
         minimize_ts(
             analysis,
-            test_params,
+            test_params[:, i],
             produce_trial(
-                analysis, flux_norm, random_seed, grl_filter, n_signal_observed,
-                verbose),
-            minimizer,
-            verbose,
+                analysis,
+                flux_norm=flux_norm,
+                random_seed=random_seed,
+                grl_filter=grl_filter,
+                n_signal_observed=n_signal_observed,
+                verbose=verbose,
+            ),
+            bounds=bounds,
+            minimizer=minimizer,
+            verbose=verbose,
         ) for _ in range(n_trials)
-    ] for test_params in test_params_list] for flux_norm in flux_norms]
+    ] for i in range(test_params.shape[1])] for flux_norm in flux_norms]
