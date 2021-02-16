@@ -132,7 +132,7 @@ class GenericProfile:
 
     @property
     @abc.abstractmethod
-    def param_dtype(self) -> List[Tuple[str, str]]:
+    def param_dtype(self) -> np.dtype:
         """Returns the parameter names and datatypes formatted for numpy dtypes.
         """
 
@@ -164,7 +164,8 @@ class GaussProfile(GenericProfile):
         self.scipy_dist = scipy.stats.norm(mean, sigma)
         self._range = None, None
         self._default_params = {'mean': mean, 'sigma': sigma}
-        self._param_dtype = [('mean', np.float32), ('sigma', np.float32)]
+        self._param_dtype = np.dtype(
+            [('mean', np.float32), ('sigma', np.float32)])
 
     def pdf(self, times: np.array) -> np.array:
         """Calculates the probability for each time.
@@ -252,7 +253,7 @@ class GaussProfile(GenericProfile):
         return self._default_params
 
     @property
-    def param_dtype(self) -> List[Tuple[str, str]]:
+    def param_dtype(self) -> np.dtype:
         return self._param_dtype
 
 
@@ -282,7 +283,8 @@ class UniformProfile(GenericProfile):
         super().__init__()
         self._range = (start, start + length)
         self._default_params = {'start': self._range[0], 'length': length}
-        self._param_dtype = [('start', np.float32), ('length', np.float32)]
+        self._param_dtype = np.dtype(
+            [('start', np.float32), ('length', np.float32)])
 
     def pdf(self, times: np.array) -> np.array:
         """Calculates the probability for each time.
@@ -366,7 +368,7 @@ class UniformProfile(GenericProfile):
         return self._default_params
 
     @property
-    def param_dtype(self) -> List[Tuple[str, str]]:
+    def param_dtype(self) -> np.dtype:
         return self._param_dtype
 
 
@@ -409,7 +411,7 @@ class CustomProfile(GenericProfile):
         self._range = (time_range[0] + offset, time_range[1] + offset)
         self._offset = offset
         self._default_params = {'offset': self._offset}
-        self._param_dtype = [('offset', np.float32)]
+        self._param_dtype = np.dtype([('offset', np.float32)])
         self.dist = self._build_rv(pdf, bins)
 
     def _build_rv(self,
@@ -529,5 +531,5 @@ class CustomProfile(GenericProfile):
         return self._default_params
 
     @property
-    def param_dtype(self) -> List[Tuple[str, str]]:
+    def param_dtype(self) -> np.dtype:
         return self._param_dtype

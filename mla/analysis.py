@@ -24,13 +24,18 @@ from . import models
 from . import test_statistics
 
 
+Bounds = Optional[Union[Sequence[Tuple[float, float]], scipy.optimize.Bounds]]
+
+
 Minimizer = Callable[
-    [test_statistics.TestStatistic, test_statistics.Preprocessing],
+    [
+        test_statistics.TestStatistic,
+        np.ndarray,
+        test_statistics.Preprocessing,
+        Bounds,
+    ],
     scipy.optimize.OptimizeResult,
 ]
-
-
-Bounds = Optional[Union[Sequence[Tuple[float, float]], scipy.optimize.Bounds]]
 
 
 @dataclasses.dataclass(frozen=True)
@@ -53,6 +58,7 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
 
 
 def default_minimizer(ts: test_statistics.TestStatistic,
+                      params: np.ndarray,
                       prepro: test_statistics.Preprocessing,
                       bounds: Bounds = None):
     """Docstring"""
@@ -61,9 +67,7 @@ def default_minimizer(ts: test_statistics.TestStatistic,
         # where to start, and the bounds. First do the
         # shape parameters.
         return scipy.optimize.minimize(
-            ts, x0=prepro.params, args=(prepro), bounds=bounds,
-            method='L-BFGS-B'
-        )
+            ts, x0=params, args=(prepro), bounds=bounds, method='L-BFGS-B')
 
 
 def minimize_ts(analysis: Analysis, test_params: np.ndarray,
@@ -100,13 +104,14 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
 
     output = {'ts': 0, 'ns': 0}
 
-    if len(prepro.events) == 0:
+    if prepro.n_events - prepro.n_dropped <= 0:
         return output
 
     if verbose:
         print(f'Minimizing: {prepro.params}...', end='')
 
-    result = minimizer(analysis.test_statistic, prepro, bounds)
+    params = rf.structured_to_unstructured(prepro.params, copy=True)[0]
+    result = minimizer(analysis.test_statistic, params, prepro, bounds)
 
     if verbose:
         print('done')
@@ -114,8 +119,10 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
     # Store the results in the output array
     output['ts'] = -1 * result.fun
     output['ns'] = analysis.test_statistic(result.x, prepro, return_ns=True)
-    for param, _ in prepro.params.dtype:
-        output[param] = result.x[param]
+    result.x = rf.unstructured_to_structured(
+        result.x, dtype=prepro.params.dtype, copy=True)
+    for param in prepro.params.dtype.names:
+        output[param] = np.asscalar(result.x[param])
 
     return output
 
@@ -141,12 +148,12 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
     if random_seed is not None:
         np.random.seed(random_seed)
 
-    background = analysis.event_model.inject_background_events()
+    background = analysis.model.inject_background_events()
 
     if flux_norm > 0:
-        signal = analysis.event_model.inject_signal_events(analysis.source,
-                                                           flux_norm,
-                                                           n_signal_observed)
+        signal = analysis.model.inject_signal_events(analysis.source,
+                                                     flux_norm,
+                                                     n_signal_observed)
     else:
         signal = np.empty(0, dtype=background.dtype)
 
@@ -166,7 +173,7 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
     events = np.concatenate([background, signal])
 
     if grl_filter:
-        events = analysis.event_model.grl_filter(events)
+        events = analysis.model.grl_filter(events)
 
     return events
 
