@@ -60,10 +60,12 @@ def default_minimizer(ts: test_statistics.TestStatistic,
         # Set the seed values, which tell the minimizer
         # where to start, and the bounds. First do the
         # shape parameters.
-        return scipy.optimize.minimize(
-            ts, x0=prepro.params, args=(prepro), bounds=bounds,
-            method='L-BFGS-B'
-        )
+        params = prepro.params
+        params.dtype = np.float32
+        result = scipy.optimize.minimize(
+            ts, x0=params, args=(prepro), bounds=bounds, method='L-BFGS-B')
+        result.x.dtype = prepro.params.dtype
+        return result
 
 
 def minimize_ts(analysis: Analysis, test_params: np.ndarray,
