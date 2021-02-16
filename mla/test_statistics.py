@@ -130,6 +130,8 @@ def _i3_ts(sob: np.ndarray, prepro: Preprocessing,
     if prepro.n_events == 0:
         return 0
 
+    ns_ratio = _calculate_ns_ratio(sob)
+
     if return_ns:
         return ns_ratio * prepro.n_events
 
