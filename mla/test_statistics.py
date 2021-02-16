@@ -124,7 +124,8 @@ def _calculate_ns_ratio(sob: np.array, iterations: int = 5) -> float:
     return x[-1]
 
 
-def _i3_ts(sob: np.ndarray, prepro: Preprocessing, return_ns: bool) -> float:
+def _i3_ts(sob: np.ndarray, prepro: Preprocessing,
+           return_ns: bool) -> float:
     """Docstring"""
     if prepro.n_events == 0:
         return 0
@@ -223,7 +224,8 @@ class I3Preprocessor(_TdPreprocessor):
         return {**super_prepro_dict, 'splines': splines}
 
 
-def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing,
+def i3_test_statistic(params: np.ndarray,
+                      prepro: I3Preprocessing,
                       return_ns: bool = False) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
@@ -243,13 +245,19 @@ def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing,
         params, dtype=prepro.params.dtype, copy=True)
     sob = prepro.sob_spatial * _sob_time(temp_params, prepro) * np.exp(
         [spline(temp_params['gamma']) for spline in prepro.splines])
+
+    if 'ns' in temp_params.dtype.names:
+        ns_ratio = temp_params['ns'] / prepro.n_events
+        return -2 * np.sum(np.log(ns_ratio * (sob - 1)) + 1) \
+            + prepro.n_dropped * np.log(1 - ns_ratio)
+
     return _i3_ts(sob, prepro, return_ns)
 
 
 @dataclasses.dataclass
 class ThreeMLPreprocessing(_TdPreprocessing):
     """Docstring"""
-    sob_energy: np.array = dataclasses.field(init=False)
+    event_model: models.ThreeMLEventModel
 
 
 @dataclasses.dataclass
@@ -257,24 +265,11 @@ class ThreeMLPreprocessor(_TdPreprocessor):
     """Docstring"""
     factory_type: ClassVar = ThreeMLPreprocessing
 
-    def _preprocess(self, event_model: models.ThreeMLEventModel,
-                    source: sources.Source, events: np.ndarray) -> dict:
-        """ThreeML version of TdPreprocess
-
-        Args:
-
-        """
-        super_prepro_dict = super()._preprocess(event_model, source, events)
-
-        sob_energy = event_model.get_energy_sob(
-            events[super_prepro_dict['drop_index']])
-
-        return {**super_prepro_dict, 'sob_energy': sob_energy}
-
 
 def threeml_ps_test_statistic(params: np.ndarray,
                               prepro: ThreeMLPreprocessing,
                               return_ns: bool = False) -> float:
+
     """(ThreeML version) Evaluates the ts for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -282,6 +277,8 @@ def threeml_ps_test_statistic(params: np.ndarray,
 
     Args:
         params:
+        event_model:
+        events:
         prepro:
         return_ns:
 
@@ -291,6 +288,17 @@ def threeml_ps_test_statistic(params: np.ndarray,
     """
     temp_params = rf.unstructured_to_structured(
         params, dtype=prepro.params.dtype, copy=True)
+
+    sob_energy = prepro.event_model.get_energy_sob(
+        prepro.events[prepro['drop_index']])
+
+    sob = prepro.sob_spatial * _sob_time(params, prepro) * sob_energy
+
     sob = prepro.sob_spatial * _sob_time(
-        temp_params, prepro) * prepro.sob_energy
+        temp_params, prepro) * sob_energy
+    if 'ns' in temp_params.dtype.names:
+        ns_ratio = temp_params['ns'] / prepro.n_events
+        return -2 * np.sum(np.log(ns_ratio * (sob - 1)) + 1) \
+            + prepro.n_dropped * np.log(1 - ns_ratio)
+
     return _i3_ts(sob, prepro, return_ns)
