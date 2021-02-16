@@ -15,6 +15,7 @@ import warnings
 import dataclasses
 import numpy as np
 import scipy.optimize
+import numpy.lib.recfunctions as rf
 
 from . import sources
 from . import models
@@ -25,6 +26,7 @@ from . import time_profiles
 class Preprocessing:
     """Docstring"""
     params: np.ndarray
+    events: np.ndarray
     n_events: int
     n_dropped: int
     sob_spatial: np.array
@@ -78,6 +80,7 @@ class Preprocessor:
         if keys:
             return self.factory_type(
                 params,
+                events,
                 prepro['n_events'],
                 prepro['n_dropped'],
                 prepro['sob_spatial'],
@@ -97,7 +100,7 @@ class Preprocessor:
         )
 
 
-def _calculate_ns_ratio(sob: np.array, iterations: int = 3) -> float:
+def _calculate_ns_ratio(sob: np.array, iterations: int = 5) -> float:
     """Docstring
 
     Args:
@@ -107,11 +110,16 @@ def _calculate_ns_ratio(sob: np.array, iterations: int = 3) -> float:
     Returns:
 
     """
-    k = 1 / (1 - sob)
-    x = [0]
+    k = 1 / (sob - 1)
+    lo = -min(1, np.min(k))
+    x = [0] * iterations
 
-    for _ in range(iterations):
-        x.append(x[-1] + np.sum(1 / (x[-1] + k)) / np.sum(1 / (x[-1] + k)**2))
+    for i in range(iterations - 1):
+        # get next iteration and clamp
+        x[i + 1] = min(1, max(
+            lo,
+            x[i] + np.sum(1 / (x[i] + k)) / np.sum(1 / (x[i] + k)**2),
+        ))
 
     return x[-1]
 
@@ -174,12 +182,10 @@ class _TdPreprocessor(Preprocessor):
 
 def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
     """Docstring"""
-    temp_params = params.copy()
-    temp_params.dtype = prepro.params.dtype
     time_params = prepro.sig_time_profile.param_dtype.names
 
-    if set(time_params).issubset(set(temp_params.dtype.names)):
-        prepro.sig_time_profile.update_params(temp_params[time_params])
+    if set(time_params).issubset(set(params.dtype.names)):
+        prepro.sig_time_profile.update_params(params[time_params])
 
     sob_time = prepro.sob_time * prepro.sig_time_profile.pdf(
         prepro.events[prepro.drop_index]['time'])
@@ -233,9 +239,10 @@ def i3_test_statistic(params: np.ndarray, prepro: I3Preprocessing,
         The overall test-statistic value for the given events and
         parameters.
     """
-
-    sob = prepro.sob_spatial * _sob_time(params, prepro) * np.exp(
-        [spline(params['gamma']) for spline in prepro.splines])
+    temp_params = rf.unstructured_to_structured(
+        params, dtype=prepro.params.dtype, copy=True)
+    sob = prepro.sob_spatial * _sob_time(temp_params, prepro) * np.exp(
+        [spline(temp_params['gamma']) for spline in prepro.splines])
     return _i3_ts(sob, prepro, return_ns)
 
 
@@ -282,5 +289,8 @@ def threeml_ps_test_statistic(params: np.ndarray,
         The overall test-statistic value for the given events and
         parameters.
     """
-    sob = prepro.sob_spatial * _sob_time(params, prepro) * prepro.sob_energy
+    temp_params = rf.unstructured_to_structured(
+        params, dtype=prepro.params.dtype, copy=True)
+    sob = prepro.sob_spatial * _sob_time(
+        temp_params, prepro) * prepro.sob_energy
     return _i3_ts(sob, prepro, return_ns)

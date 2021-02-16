@@ -24,13 +24,18 @@ from . import models
 from . import test_statistics
 
 
+Bounds = Optional[Union[Sequence[Tuple[float, float]], scipy.optimize.Bounds]]
+
+
 Minimizer = Callable[
-    [test_statistics.TestStatistic, test_statistics.Preprocessing],
+    [
+        test_statistics.TestStatistic,
+        np.ndarray,
+        test_statistics.Preprocessing,
+        Bounds,
+    ],
     scipy.optimize.OptimizeResult,
 ]
-
-
-Bounds = Optional[Union[Sequence[Tuple[float, float]], scipy.optimize.Bounds]]
 
 
 @dataclasses.dataclass(frozen=True)
@@ -53,6 +58,7 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
 
 
 def default_minimizer(ts: test_statistics.TestStatistic,
+                      params: np.ndarray,
                       prepro: test_statistics.Preprocessing,
                       bounds: Bounds = None):
     """Docstring"""
@@ -60,12 +66,8 @@ def default_minimizer(ts: test_statistics.TestStatistic,
         # Set the seed values, which tell the minimizer
         # where to start, and the bounds. First do the
         # shape parameters.
-        params = prepro.params
-        params.dtype = np.float32
-        result = scipy.optimize.minimize(
+        return scipy.optimize.minimize(
             ts, x0=params, args=(prepro), bounds=bounds, method='L-BFGS-B')
-        result.x.dtype = prepro.params.dtype
-        return result
 
 
 def minimize_ts(analysis: Analysis, test_params: np.ndarray,
@@ -107,8 +109,9 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
 
     if verbose:
         print(f'Minimizing: {prepro.params}...', end='')
-
-    result = minimizer(analysis.test_statistic, prepro, bounds)
+    
+    params = rf.structured_to_unstructured(prepro.params, copy=True)[0]
+    result = minimizer(analysis.test_statistic, params, prepro, bounds)
 
     if verbose:
         print('done')
@@ -116,8 +119,10 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
     # Store the results in the output array
     output['ts'] = -1 * result.fun
     output['ns'] = analysis.test_statistic(result.x, prepro, return_ns=True)
-    for param, _ in prepro.params.dtype:
-        output[param] = result.x[param]
+    result.x = rf.unstructured_to_structured(
+            result.x, dtype=prepro.params.dtype, copy=True)
+    for param in prepro.params.dtype.names:
+        output[param] = np.asscalar(result.x[param])
 
     return output
 
