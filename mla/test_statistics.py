@@ -242,16 +242,17 @@ def i3_test_statistic(params: np.ndarray,
     Returns:
         The overall test-statistic value for the given events and
         parameters.
-    """    
+    """
+    temp_params = rf.unstructured_to_structured(
+        params, dtype=prepro.params.dtype, copy=True)
+    sob = prepro.sob_spatial * _sob_time(temp_params, prepro) * np.exp(
+        [spline(temp_params['gamma']) for spline in prepro.splines])
+
     if ns is not None:
         ns_ratio = ns / prepro.n_events
         return -2 * np.sum(np.log(ns_ratio * (sob - 1)) + 1) \
             + prepro.n_dropped * np.log(1 - ns_ratio)
 
-    temp_params = rf.unstructured_to_structured(
-        params, dtype=prepro.params.dtype, copy=True)
-    sob = prepro.sob_spatial * _sob_time(temp_params, prepro) * np.exp(
-        [spline(temp_params['gamma']) for spline in prepro.splines])
     return _i3_ts(sob, prepro, return_ns)
 
 
@@ -279,15 +280,16 @@ def threeml_ps_test_statistic(params: np.ndarray,
         The overall test-statistic value for the given events and
         parameters.
     """
-    if ns is not None:
-        ns_ratio = ns / prepro.n_events
-        return -2 * np.sum(np.log(ns_ratio * (sob - 1)) + 1) \
-            + prepro.n_dropped * np.log(1 - ns_ratio)
-
     sob_energy = event_model.get_energy_sob(events[prepro['drop_index']])
     sob = prepro.sob_spatial * _sob_time(params, prepro) * sob_energy
     temp_params = rf.unstructured_to_structured(
         params, dtype=prepro.params.dtype, copy=True)
     sob = prepro.sob_spatial * _sob_time(
         temp_params, prepro) * sob_energy
+
+    if ns is not None:
+        ns_ratio = ns / prepro.n_events
+        return -2 * np.sum(np.log(ns_ratio * (sob - 1)) + 1) \
+            + prepro.n_dropped * np.log(1 - ns_ratio)
+
     return _i3_ts(sob, prepro, return_ns)
