@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, ClassVar, List, Optional
+from typing import Callable, ClassVar, List
 
 import warnings
 import dataclasses
@@ -145,7 +145,7 @@ TestStatistic = Callable[[np.ndarray, Preprocessing], float]
 
 
 @dataclasses.dataclass
-class TdPreprocessing(Preprocessing):
+class _TdPreprocessing(Preprocessing):
     """Docstring"""
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
@@ -153,12 +153,12 @@ class TdPreprocessing(Preprocessing):
 
 
 @dataclasses.dataclass
-class TdPreprocessor(Preprocessor):
+class _TdPreprocessor(Preprocessor):
     """Docstring"""
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
 
-    factory_type: ClassVar = TdPreprocessing
+    factory_type: ClassVar = _TdPreprocessing
 
     def _preprocess(self, event_model: models.EventModel,
                     source: sources.Source, events: np.ndarray) -> dict:
@@ -182,7 +182,7 @@ class TdPreprocessor(Preprocessor):
         return {**super_prepro_dict, 'sob_time': sob_time}
 
 
-def _sob_time(params: np.ndarray, prepro: TdPreprocessing) -> float:
+def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
     """Docstring"""
     time_params = prepro.sig_time_profile.param_dtype.names
 
@@ -196,13 +196,13 @@ def _sob_time(params: np.ndarray, prepro: TdPreprocessing) -> float:
 
 
 @dataclasses.dataclass
-class I3Preprocessing(TdPreprocessing):
+class I3Preprocessing(_TdPreprocessing):
     """Docstring"""
     splines: List[scipy.interpolate.UnivariateSpline]
 
 
 @dataclasses.dataclass
-class I3Preprocessor(TdPreprocessor):
+class I3Preprocessor(_TdPreprocessor):
     """Docstring"""
     factory_type: ClassVar = I3Preprocessing
 
@@ -227,8 +227,7 @@ class I3Preprocessor(TdPreprocessor):
 
 def i3_test_statistic(params: np.ndarray,
                       prepro: I3Preprocessing,
-                      return_ns: bool = False,
-                      ns: Optional[float] = None) -> float:
+                      return_ns: bool = False) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -248,20 +247,29 @@ def i3_test_statistic(params: np.ndarray,
     sob = prepro.sob_spatial * _sob_time(temp_params, prepro) * np.exp(
         [spline(temp_params['gamma']) for spline in prepro.splines])
 
-    if ns is not None:
-        ns_ratio = ns / prepro.n_events
+    if 'ns' in temp_params.dtype.fields:
+        ns_ratio = temp_params['ns'] / prepro.n_events
         return -2 * np.sum(np.log(ns_ratio * (sob - 1)) + 1) \
             + prepro.n_dropped * np.log(1 - ns_ratio)
 
     return _i3_ts(sob, prepro, return_ns)
 
 
+@dataclasses.dataclass
+class ThreeMLPreprocessing(_TdPreprocessing):
+    """Docstring"""
+    event_model: models.ThreeMLEventModel
+
+
+@dataclasses.dataclass
+class ThreeMLPreprocessor(_TdPreprocessor):
+    """Docstring"""
+    factory_type: ClassVar = ThreeMLPreprocessing
+
+
 def threeml_ps_test_statistic(params: np.ndarray,
-                              event_model: models.ThreeMLEventModel,
-                              events: np.ndarray,
-                              prepro: TdPreprocessing,
-                              return_ns: bool = False,
-                              ns: Optional[float] = None) -> float:
+                              prepro: ThreeMLPreprocessing,
+                              return_ns: bool = False) -> float:
 
     """(ThreeML version) Evaluates the ts for the given events and parameters
 
@@ -273,22 +281,24 @@ def threeml_ps_test_statistic(params: np.ndarray,
         event_model:
         events:
         prepro:
-        ns: fixing the ns
         return_ns:
 
     Returns:
         The overall test-statistic value for the given events and
         parameters.
     """
-    sob_energy = event_model.get_energy_sob(events[prepro['drop_index']])
-    sob = prepro.sob_spatial * _sob_time(params, prepro) * sob_energy
     temp_params = rf.unstructured_to_structured(
         params, dtype=prepro.params.dtype, copy=True)
+
+    sob_energy = prepro.event_model.get_energy_sob(
+        prepro.events[prepro['drop_index']])
+
+    sob = prepro.sob_spatial * _sob_time(params, prepro) * sob_energy
+
     sob = prepro.sob_spatial * _sob_time(
         temp_params, prepro) * sob_energy
-
-    if ns is not None:
-        ns_ratio = ns / prepro.n_events
+    if 'ns' in temp_params.dtype.fields:
+        ns_ratio = temp_params['ns'] / prepro.n_events
         return -2 * np.sum(np.log(ns_ratio * (sob - 1)) + 1) \
             + prepro.n_dropped * np.log(1 - ns_ratio)
 
