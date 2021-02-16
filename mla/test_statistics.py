@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, ClassVar, List
+from typing import Callable, ClassVar, List, Optional
 
 import warnings
 import dataclasses
@@ -125,12 +125,13 @@ def _calculate_ns_ratio(sob: np.array, iterations: int = 5) -> float:
 
 
 def _i3_ts(sob: np.ndarray, prepro: Preprocessing,
-           return_ns: bool) -> float:
+           return_ns: bool, ns_ratio: Optional[float] = None) -> float:
     """Docstring"""
     if prepro.n_events == 0:
         return 0
 
-    ns_ratio = _calculate_ns_ratio(sob)
+    if ns_ratio is None:
+        ns_ratio = _calculate_ns_ratio(sob)
 
     if return_ns:
         return ns_ratio * prepro.n_events
@@ -246,12 +247,10 @@ def i3_test_statistic(params: np.ndarray,
     sob = prepro.sob_spatial * _sob_time(temp_params, prepro) * np.exp(
         [spline(temp_params['gamma']) for spline in prepro.splines])
 
+    ns_ratio = None
     if 'ns' in temp_params.dtype.names:
         ns_ratio = temp_params['ns'] / prepro.n_events
-        return -2 * np.sum(np.log(ns_ratio * (sob - 1)) + 1) \
-            + prepro.n_dropped * np.log(1 - ns_ratio)
-
-    return _i3_ts(sob, prepro, return_ns)
+    return _i3_ts(sob, prepro, return_ns, ns_ratio)
 
 
 @dataclasses.dataclass
@@ -296,9 +295,8 @@ def threeml_ps_test_statistic(params: np.ndarray,
 
     sob = prepro.sob_spatial * _sob_time(
         temp_params, prepro) * sob_energy
+
+    ns_ratio = None
     if 'ns' in temp_params.dtype.names:
         ns_ratio = temp_params['ns'] / prepro.n_events
-        return -2 * np.sum(np.log(ns_ratio * (sob - 1)) + 1) \
-            + prepro.n_dropped * np.log(1 - ns_ratio)
-
-    return _i3_ts(sob, prepro, return_ns)
+    return _i3_ts(sob, prepro, return_ns, ns_ratio)
