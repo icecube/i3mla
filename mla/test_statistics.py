@@ -14,8 +14,8 @@ from typing import Callable, ClassVar, List
 import warnings
 import dataclasses
 import numpy as np
-import scipy.optimize
 import numpy.lib.recfunctions as rf
+import scipy.optimize
 
 from . import sources
 from . import models

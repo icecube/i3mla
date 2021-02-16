@@ -109,7 +109,7 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
 
     if verbose:
         print(f'Minimizing: {prepro.params}...', end='')
-    
+
     params = rf.structured_to_unstructured(prepro.params, copy=True)[0]
     result = minimizer(analysis.test_statistic, params, prepro, bounds)
 
@@ -120,7 +120,7 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
     output['ts'] = -1 * result.fun
     output['ns'] = analysis.test_statistic(result.x, prepro, return_ns=True)
     result.x = rf.unstructured_to_structured(
-            result.x, dtype=prepro.params.dtype, copy=True)
+        result.x, dtype=prepro.params.dtype, copy=True)
     for param in prepro.params.dtype.names:
         output[param] = np.asscalar(result.x[param])
 
