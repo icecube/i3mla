@@ -130,9 +130,6 @@ def _i3_ts(sob: np.ndarray, prepro: Preprocessing,
     if prepro.n_events == 0:
         return 0
 
-    else:
-        ns_ratio = _calculate_ns_ratio(sob)
-
     if return_ns:
         return ns_ratio * prepro.n_events
 
@@ -247,7 +244,7 @@ def i3_test_statistic(params: np.ndarray,
     sob = prepro.sob_spatial * _sob_time(temp_params, prepro) * np.exp(
         [spline(temp_params['gamma']) for spline in prepro.splines])
 
-    if 'ns' in temp_params.dtype.fields:
+    if 'ns' in temp_params.dtype.names:
         ns_ratio = temp_params['ns'] / prepro.n_events
         return -2 * np.sum(np.log(ns_ratio * (sob - 1)) + 1) \
             + prepro.n_dropped * np.log(1 - ns_ratio)
@@ -297,7 +294,7 @@ def threeml_ps_test_statistic(params: np.ndarray,
 
     sob = prepro.sob_spatial * _sob_time(
         temp_params, prepro) * sob_energy
-    if 'ns' in temp_params.dtype.fields:
+    if 'ns' in temp_params.dtype.names:
         ns_ratio = temp_params['ns'] / prepro.n_events
         return -2 * np.sum(np.log(ns_ratio * (sob - 1)) + 1) \
             + prepro.n_dropped * np.log(1 - ns_ratio)
