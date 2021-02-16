@@ -928,12 +928,15 @@ class ThreeMLEventModel(
         Args:
             source:
         """
-        self._edge_point = (np.searchsorted(
-                            self._sin_dec_bins,
-                            np.sin(source.dec - self.sampling_width)) - 1,
-                            np.searchsorted(
-                            self._sin_dec_bins,
-                            np.sin(source.dec + self.sampling_width)) - 1)
+        if self.sampling_width is not None:
+            self._edge_point = (np.searchsorted(
+                                self._sin_dec_bins,
+                                np.sin(source.dec - self.sampling_width)) - 1,
+                                np.searchsorted(
+                                self._sin_dec_bins,
+                                np.sin(source.dec + self.sampling_width)) - 1)
+        else:
+            self._edge_point = (self._sin_dec_bins[0], self._sin_dec_bins[-1])
         sindec_dist = np.abs(source.dec - self._sim['dec'])
         close = sindec_dist < self._sampling_width
         self._reduced_sim_reconstructed = self._sim[close].copy()
