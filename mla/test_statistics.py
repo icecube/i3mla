@@ -174,11 +174,13 @@ class _TdPreprocessor(Preprocessor):
 
 def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
     """Docstring"""
+    temp_params = params.copy()
+    temp_params.dtype = prepro.params.dtype
     time_params = [name for name, _ in prepro.sig_time_profile.param_dtype]
-    param_names = [name for name, _ in params.dtype]
+    param_names = [name for name, _ in temp_params.dtype]
 
     if set(time_params).issubset(set(param_names)):
-        prepro.sig_time_profile.update_params(params[time_params])
+        prepro.sig_time_profile.update_params(temp_params[time_params])
 
     sob_time = prepro.sob_time * prepro.sig_time_profile.pdf(
         prepro.events[prepro.drop_index]['time'])
