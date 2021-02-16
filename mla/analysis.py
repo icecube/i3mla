@@ -12,7 +12,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
 
 import dataclasses
 import numpy as np
@@ -24,8 +24,16 @@ from . import models
 from . import test_statistics
 
 
+Bounds = Optional[Union[Sequence[Tuple[float, float]], scipy.optimize.Bounds]]
+
+
 Minimizer = Callable[
-    [test_statistics.TestStatistic, test_statistics.Preprocessing],
+    [
+        test_statistics.TestStatistic,
+        np.ndarray,
+        test_statistics.Preprocessing,
+        Bounds,
+    ],
     scipy.optimize.OptimizeResult,
 ]
 
@@ -45,25 +53,26 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
     return analysis.test_statistic(
         params,
         analysis.ts_preprocessor(
-            analysis.model, analysis.source, events, params),
+            analysis.model, analysis.source, events, params, bounds=None),
     )
 
 
 def default_minimizer(ts: test_statistics.TestStatistic,
-                      prepro: test_statistics.Preprocessing):
+                      params: np.ndarray,
+                      prepro: test_statistics.Preprocessing,
+                      bounds: Bounds = None):
     """Docstring"""
     with np.errstate(divide='ignore', invalid='ignore'):
         # Set the seed values, which tell the minimizer
         # where to start, and the bounds. First do the
         # shape parameters.
         return scipy.optimize.minimize(
-            ts, x0=prepro.params.values, args=(prepro), bounds=prepro.bounds,
-            method='L-BFGS-B'
-        )
+            ts, x0=params, args=(prepro), bounds=bounds, method='L-BFGS-B')
 
 
-def minimize_ts(analysis: Analysis, test_params: List[float],
+def minimize_ts(analysis: Analysis, test_params: np.ndarray,
                 events: np.ndarray,
+                bounds: Bounds = None,
                 minimizer: Minimizer = default_minimizer,
                 verbose: bool = False) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.
@@ -93,23 +102,27 @@ def minimize_ts(analysis: Analysis, test_params: List[float],
     if verbose:
         print('done')
 
-    output = {'ts': 0, **prepro.params}
+    output = {'ts': 0, 'ns': 0}
 
-    if len(prepro.events) == 0:
+    if prepro.n_events - prepro.n_dropped <= 0:
         return output
 
     if verbose:
         print(f'Minimizing: {prepro.params}...', end='')
 
-    result = minimizer(analysis.test_statistic, prepro)
+    params = rf.structured_to_unstructured(prepro.params, copy=True)[0]
+    result = minimizer(analysis.test_statistic, params, prepro, bounds)
 
     if verbose:
         print('done')
 
     # Store the results in the output array
     output['ts'] = -1 * result.fun
-    for i, (param, _) in enumerate(prepro.params):
-        output[param] = result.x[i]
+    output['ns'] = analysis.test_statistic(result.x, prepro, return_ns=True)
+    result.x = rf.unstructured_to_structured(
+        result.x, dtype=prepro.params.dtype, copy=True)
+    for param in prepro.params.dtype.names:
+        output[param] = np.asscalar(result.x[param])
 
     return output
 
@@ -135,12 +148,12 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
     if random_seed is not None:
         np.random.seed(random_seed)
 
-    background = analysis.event_model.inject_background_events()
+    background = analysis.model.inject_background_events()
 
     if flux_norm > 0:
-        signal = analysis.event_model.inject_signal_events(analysis.source,
-                                                           flux_norm,
-                                                           n_signal_observed)
+        signal = analysis.model.inject_signal_events(analysis.source,
+                                                     flux_norm,
+                                                     n_signal_observed)
     else:
         signal = np.empty(0, dtype=background.dtype)
 
@@ -160,7 +173,7 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
     events = np.concatenate([background, signal])
 
     if grl_filter:
-        events = analysis.event_model.grl_filter(events)
+        events = analysis.model.grl_filter(events)
 
     return events
 
@@ -168,7 +181,8 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
 def produce_and_minimize(
     analysis: Analysis,
     flux_norms: List[float],
-    test_params_list: List[List[float]],
+    test_params: np.ndarray,
+    bounds: Bounds = None,
     minimizer: Minimizer = default_minimizer,
     random_seed: Optional[int] = None,
     grl_filter: bool = True,
@@ -180,11 +194,17 @@ def produce_and_minimize(
     return [[[
         minimize_ts(
             analysis,
-            test_params,
+            test_params[:, i],
             produce_trial(
-                analysis, flux_norm, random_seed, grl_filter, n_signal_observed,
-                verbose),
-            minimizer,
-            verbose,
+                analysis,
+                flux_norm=flux_norm,
+                random_seed=random_seed,
+                grl_filter=grl_filter,
+                n_signal_observed=n_signal_observed,
+                verbose=verbose,
+            ),
+            bounds=bounds,
+            minimizer=minimizer,
+            verbose=verbose,
         ) for _ in range(n_trials)
-    ] for test_params in test_params_list] for flux_norm in flux_norms]
+    ] for i in range(test_params.shape[1])] for flux_norm in flux_norms]

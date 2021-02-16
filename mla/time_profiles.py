@@ -109,6 +109,10 @@ class GenericProfile:
             profile.
         """
 
+    @abc.abstractmethod
+    def update_params(self, params: np.ndarray) -> None:
+        """Docstring"""
+
     @property
     @abc.abstractmethod
     def exposure(self) -> float:
@@ -128,7 +132,7 @@ class GenericProfile:
 
     @property
     @abc.abstractmethod
-    def param_dtype(self) -> List[Tuple[str, str]]:
+    def param_dtype(self) -> np.dtype:
         """Returns the parameter names and datatypes formatted for numpy dtypes.
         """
 
@@ -151,22 +155,17 @@ class GaussProfile(GenericProfile):
             parameters.
     """
 
-    def __init__(self, mean: float, sigma: float,
-                 name: str = 'gauss_tp') -> None:
+    def __init__(self, mean: float, sigma: float) -> None:
         """Initializes the time profile.
-
-        Args:
-            name: prefix for printing parameters.
         """
         super().__init__()
         self.mean = mean
         self.sigma = sigma
         self.scipy_dist = scipy.stats.norm(mean, sigma)
         self._range = None, None
-        self._default_params = {'_'.join([name, 'mean']): mean,
-                                '_'.join([name, 'sigma']): sigma}
-        self._param_dtype = [('_'.join([name, 'mean']), np.float32),
-                             ('_'.join([name, 'sigma']), np.float32)]
+        self._default_params = {'mean': mean, 'sigma': sigma}
+        self._param_dtype = np.dtype(
+            [('mean', np.float32), ('sigma', np.float32)])
 
     def pdf(self, times: np.array) -> np.array:
         """Calculates the probability for each time.
@@ -236,6 +235,11 @@ class GaussProfile(GenericProfile):
 
         return [time_profile.range, (0, diff)]
 
+    def update_params(self, params: np.ndarray) -> None:
+        """Docstring"""
+        self.mean = params['mean']
+        self.sigma = params['sigma']
+
     @property
     def exposure(self) -> float:
         return np.sqrt(2 * np.pi * self.sigma**2)
@@ -249,7 +253,7 @@ class GaussProfile(GenericProfile):
         return self._default_params
 
     @property
-    def param_dtype(self) -> List[Tuple[str, str]]:
+    def param_dtype(self) -> np.dtype:
         return self._param_dtype
 
 
@@ -269,22 +273,18 @@ class UniformProfile(GenericProfile):
             parameters.
     """
 
-    def __init__(self, start: float, length: float,
-                 name: str = 'uniform_tp') -> None:
+    def __init__(self, start: float, length: float) -> None:
         """Constructs the time profile.
 
         Args:
             start: (days) lower bound for the uniform distribution.
             length: (days) length of the uniform distribution.
-            name: prefix for parameters.
         """
         super().__init__()
         self._range = (start, start + length)
-        self._default_params = {'_'.join([name, 'start']): self._range[0],
-                                '_'.join([name, 'length']): length}
-
-        self._param_dtype = [('_'.join([name, 'start']), np.float32),
-                             ('_'.join([name, 'length']), np.float32)]
+        self._default_params = {'start': self._range[0], 'length': length}
+        self._param_dtype = np.dtype(
+            [('start', np.float32), ('length', np.float32)])
 
     def pdf(self, times: np.array) -> np.array:
         """Calculates the probability for each time.
@@ -350,6 +350,11 @@ class UniformProfile(GenericProfile):
         diff = time_profile.range[1] - time_profile.range[0]
         return [time_profile.range, (0, diff)]
 
+    def update_params(self, params: np.ndarray) -> None:
+        """Docstring"""
+        self.start = params['start']
+        self.length = params['length']
+
     @property
     def exposure(self) -> float:
         return self._range[1] - self._range[0]
@@ -363,7 +368,7 @@ class UniformProfile(GenericProfile):
         return self._default_params
 
     @property
-    def param_dtype(self) -> List[Tuple[str, str]]:
+    def param_dtype(self) -> np.dtype:
         return self._param_dtype
 
 
@@ -390,8 +395,9 @@ class CustomProfile(GenericProfile):
     """
 
     def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], np.array],
-                 time_range: Tuple[float], bins: Union[List[float], int] = 100,
-                 name: str = 'custom_tp') -> None:
+                 time_range: Tuple[float],
+                 bins: Union[List[float], int] = 100,
+                 offset: Optional[float] = 0) -> None:
         """Constructs the time profile.
 
         Args:
@@ -399,14 +405,13 @@ class CustomProfile(GenericProfile):
             bins: Either a list of specific bin edges to use (values should be
                 between 0 and 1), or an integer giving the number of linear
                 spaced bins to use.
-            name: prefix for parameters.
+            offset: the offset to the time pdf
         """
         super().__init__()
-        self._range = time_range
-        self._default_params = {'_'.join([name, 'start']): self._range[0],
-                                '_'.join([name, 'end']): self._range[1]}
-        self._param_dtype = [('_'.join([name, 'start']), np.float32),
-                             ('_'.join([name, 'end']), np.float32)]
+        self._range = (time_range[0] + offset, time_range[1] + offset)
+        self._offset = offset
+        self._default_params = {'offset': self._offset}
+        self._param_dtype = np.dtype([('offset', np.float32)])
         self.dist = self._build_rv(pdf, bins)
 
     def _build_rv(self,
@@ -451,7 +456,7 @@ class CustomProfile(GenericProfile):
         Returns:
             An array of probability densities at the given times.
         """
-        return self.dist.pdf(times)
+        return self.dist.pdf(times + self.offset)
 
     def logpdf(self, times: np.array) -> np.array:
         """Calculates the log(probability) for each time.
@@ -462,7 +467,7 @@ class CustomProfile(GenericProfile):
         Returns:
             An array of the log(probability density) for the given times.
         """
-        return self.dist.logpdf(times)
+        return self.dist.logpdf(times + self.offset)
 
     def random(self, size: int = 1) -> np.array:
         """Returns random values following the uniform distribution.
@@ -473,7 +478,7 @@ class CustomProfile(GenericProfile):
         Returns:
             An array of random values sampled from the histogram distribution.
         """
-        return self.dist.rvs(size=size)
+        return self.dist.rvs(size=size) + self.offset
 
     def x0(self, times: np.array) -> Tuple[float, float]:
         """Gives a guess of the parameters of this type of time profile.
@@ -501,9 +506,21 @@ class CustomProfile(GenericProfile):
         """
         return [time_profile.range, time_profile.range]
 
+    def update_params(self, params: np.ndarray) -> None:
+        """Docstring"""
+        self.offset = params['offset']
+
     @property
     def exposure(self) -> float:
         return self._exposure
+
+    @property
+    def offset(self) -> float:
+        return self._offset
+
+    @offset.setter
+    def offset(self, x):
+        self._offset = x
 
     @property
     def range(self) -> Tuple[Optional[float], Optional[float]]:
@@ -514,5 +531,5 @@ class CustomProfile(GenericProfile):
         return self._default_params
 
     @property
-    def param_dtype(self) -> List[Tuple[str, str]]:
+    def param_dtype(self) -> np.dtype:
         return self._param_dtype
