@@ -243,7 +243,7 @@ def i3_test_statistic(params: np.ndarray,
     if ns is not None:
         ns_ratio = ns / prepro.n_events
         return -2 * np.sum(np.log(ns_ratio * (sob - 1)) + 1) \
-        + prepro.n_dropped * np.log(1 - ns_ratio)
+            + prepro.n_dropped * np.log(1 - ns_ratio)
 
     return _i3_ts(sob, prepro, return_ns)
 
@@ -278,6 +278,6 @@ def threeml_ps_test_statistic(params: np.ndarray,
     if ns is not None:
         ns_ratio = ns / prepro.n_events
         return -2 * np.sum(np.log(ns_ratio * (sob - 1)) + 1) \
-        + prepro.n_dropped * np.log(1 - ns_ratio)
+            + prepro.n_dropped * np.log(1 - ns_ratio)
 
     return _i3_ts(sob, prepro, return_ns)
