@@ -100,7 +100,9 @@ class Preprocessor:
         )
 
 
-def _calculate_ns_ratio(sob: np.array, iterations: int = 5) -> float:
+def _calculate_ns_ratio(sob: np.array,
+                        n_dropped: int,
+                        iterations: int = 30) -> float:
     """Docstring
 
     Args:
@@ -111,14 +113,17 @@ def _calculate_ns_ratio(sob: np.array, iterations: int = 5) -> float:
 
     """
     k = 1 / (sob - 1)
-    lo = -min(1, np.min(k))
+    lo = max(-1, 1 / (1 - np.max(sob)))
     x = [0] * iterations
 
     for i in range(iterations - 1):
         # get next iteration and clamp
+        first_derivative = np.sum(1 / (x[i] + k)) + n_dropped * (1 / (x[i] - 1))
+        second_derivative = np.sum(1 / (x[i] + k)**2
+                                   ) + (n_dropped * (1 / (x[i] - 1)**2))
         x[i + 1] = min(1, max(
             lo,
-            x[i] + np.sum(1 / (x[i] + k)) / np.sum(1 / (x[i] + k)**2),
+            x[i] + first_derivative / second_derivative,
         ))
 
     return x[-1]
@@ -131,14 +136,14 @@ def i3_ts(sob: np.ndarray, prepro: Preprocessing,
         return 0
 
     if ns_ratio is None:
-        ns_ratio = _calculate_ns_ratio(sob)
+        ns_ratio = _calculate_ns_ratio(sob, prepro.n_dropped)
 
     if return_ns:
         return ns_ratio * prepro.n_events
 
-    return -2 * np.sum(
-        np.log(ns_ratio * (sob - 1)) + 1
-    ) + prepro.n_dropped * np.log(1 - ns_ratio)
+    return -2 * (np.sum(
+        np.log(ns_ratio * (sob - 1) + 1)
+    ) + prepro.n_dropped * np.log(1 - ns_ratio))
 
 
 TestStatistic = Callable[[np.ndarray, Preprocessing], float]
