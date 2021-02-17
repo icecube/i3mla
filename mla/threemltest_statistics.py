@@ -58,9 +58,9 @@ def threeml_ps_test_statistic(params: np.ndarray,
         prepro.events[prepro['drop_index']])
 
     sob = prepro.sob_spatial * \
-        test_statistics._sob_time(params, prepro) * sob_energy
+        test_statistics.cal_sob_time(params, prepro) * sob_energy
 
     ns_ratio = None
     if 'ns' in temp_params.dtype.names:
         ns_ratio = temp_params['ns'] / prepro.n_events
-    return test_statistics._i3_ts(sob, prepro, return_ns, ns_ratio)
+    return test_statistics.i3_ts(sob, prepro, return_ns, ns_ratio)

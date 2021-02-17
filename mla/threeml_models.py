@@ -59,7 +59,9 @@ class _ThreeMLEventModelDefaultsBase(models.TdEventModelDefaultsBase):
 
 @dataclass
 class ThreeMLEventModel(
-        models.TdEventModel, _ThreeMLEventModelDefaultsBase, _ThreeMLEventModelBase):
+        models.TdEventModel,
+        _ThreeMLEventModelDefaultsBase,
+        _ThreeMLEventModelBase):
     """Docstring"""
     def __post_init__(self, source: sources.Source, grl: np.ndarray,
                       background_sin_dec_bins: Union[np.array, int],

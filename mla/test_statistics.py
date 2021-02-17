@@ -124,8 +124,8 @@ def _calculate_ns_ratio(sob: np.array, iterations: int = 5) -> float:
     return x[-1]
 
 
-def _i3_ts(sob: np.ndarray, prepro: Preprocessing,
-           return_ns: bool, ns_ratio: Optional[float] = None) -> float:
+def i3_ts(sob: np.ndarray, prepro: Preprocessing,
+          return_ns: bool, ns_ratio: Optional[float] = None) -> float:
     """Docstring"""
     if prepro.n_events == 0:
         return 0
@@ -182,7 +182,7 @@ class TdPreprocessor(Preprocessor):
         return {**super_prepro_dict, 'sob_time': sob_time}
 
 
-def _sob_time(params: np.ndarray, prepro: TdPreprocessing) -> float:
+def cal_sob_time(params: np.ndarray, prepro: TdPreprocessing) -> float:
     """Docstring"""
     time_params = prepro.sig_time_profile.param_dtype.names
 
@@ -244,10 +244,10 @@ def i3_test_statistic(params: np.ndarray,
     """
     temp_params = rf.unstructured_to_structured(
         params, dtype=prepro.params.dtype, copy=True)
-    sob = prepro.sob_spatial * _sob_time(temp_params, prepro) * np.exp(
+    sob = prepro.sob_spatial * cal_sob_time(temp_params, prepro) * np.exp(
         [spline(temp_params['gamma']) for spline in prepro.splines])
 
     ns_ratio = None
     if 'ns' in temp_params.dtype.names:
         ns_ratio = temp_params['ns'] / prepro.n_events
-    return _i3_ts(sob, prepro, return_ns, ns_ratio)
+    return i3_ts(sob, prepro, return_ns, ns_ratio)
