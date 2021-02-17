@@ -473,7 +473,7 @@ class EventModel(_EventModelDefaultsBase, _EventModelBase):
 
 
 @dataclass
-class _TdEventModelBase(_EventModelBase):
+class TdEventModelBase(_EventModelBase):
     """Docstring"""
     _background_time_profile: time_profiles.GenericProfile
     _signal_time_profile: time_profiles.GenericProfile
@@ -491,14 +491,14 @@ class _TdEventModelBase(_EventModelBase):
 
 
 @dataclass
-class _TdEventModelDefaultsBase(_EventModelDefaultsBase):
+class TdEventModelDefaultsBase(_EventModelDefaultsBase):
     """Docstring"""
     background_window: InitVar[float] = field(default=14)
     withinwindow: InitVar[bool] = field(default=False)
 
 
 @dataclass
-class TdEventModel(EventModel, _TdEventModelDefaultsBase, _TdEventModelBase):
+class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
     """Docstring"""
     def __post_init__(self, source: sources.Source, grl: np.ndarray,
                       background_sin_dec_bins: Union[np.array, int],
@@ -612,7 +612,7 @@ class TdEventModel(EventModel, _TdEventModelDefaultsBase, _TdEventModelBase):
 
 
 @dataclass
-class _I3EventModelBase(_TdEventModelBase):
+class _I3EventModelBase(TdEventModelBase):
     """Docstring
 
     Attributes:
@@ -630,7 +630,7 @@ class _I3EventModelBase(_TdEventModelBase):
 
 
 @dataclass
-class _I3EventModelDefaultsBase(_TdEventModelDefaultsBase):
+class _I3EventModelDefaultsBase(TdEventModelDefaultsBase):
     """Docstring"""
     signal_sin_dec_bins: InitVar[Union[np.array, int]] = field(default=50)
     log_energy_bins: InitVar[Union[np.array, int]] = field(default=50)
