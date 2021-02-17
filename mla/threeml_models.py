@@ -28,7 +28,7 @@ from . import models
 
 
 @dataclass
-class _ThreeMLEventModelBase(models._TdEventModelBase):
+class _ThreeMLEventModelBase(models.TdEventModelBase):
     """Docstring"""
     _sin_dec_bins: np.array = field(init=False)
     _log_energy_bins: np.array = field(init=False)
@@ -44,7 +44,7 @@ class _ThreeMLEventModelBase(models._TdEventModelBase):
 
 
 @dataclass
-class _ThreeMLEventModelDefaultsBase(models._TdEventModelDefaultsBase):
+class _ThreeMLEventModelDefaultsBase(models.TdEventModelDefaultsBase):
     """Docstring"""
     signal_sin_dec_bins: InitVar[Union[np.array, int]] = field(default=50)
     log_energy_bins: InitVar[Union[np.array, int]] = field(default=50)
