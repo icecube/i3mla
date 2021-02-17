@@ -145,7 +145,7 @@ TestStatistic = Callable[[np.ndarray, Preprocessing], float]
 
 
 @dataclasses.dataclass
-class _TdPreprocessing(Preprocessing):
+class TdPreprocessing(Preprocessing):
     """Docstring"""
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
@@ -153,12 +153,12 @@ class _TdPreprocessing(Preprocessing):
 
 
 @dataclasses.dataclass
-class _TdPreprocessor(Preprocessor):
+class TdPreprocessor(Preprocessor):
     """Docstring"""
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
 
-    factory_type: ClassVar = _TdPreprocessing
+    factory_type: ClassVar = TdPreprocessing
 
     def _preprocess(self, event_model: models.EventModel,
                     source: sources.Source, events: np.ndarray) -> dict:
@@ -182,7 +182,7 @@ class _TdPreprocessor(Preprocessor):
         return {**super_prepro_dict, 'sob_time': sob_time}
 
 
-def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
+def _sob_time(params: np.ndarray, prepro: TdPreprocessing) -> float:
     """Docstring"""
     time_params = prepro.sig_time_profile.param_dtype.names
 
@@ -196,13 +196,13 @@ def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
 
 
 @dataclasses.dataclass
-class I3Preprocessing(_TdPreprocessing):
+class I3Preprocessing(TdPreprocessing):
     """Docstring"""
     splines: List[scipy.interpolate.UnivariateSpline]
 
 
 @dataclasses.dataclass
-class I3Preprocessor(_TdPreprocessor):
+class I3Preprocessor(TdPreprocessor):
     """Docstring"""
     factory_type: ClassVar = I3Preprocessing
 
