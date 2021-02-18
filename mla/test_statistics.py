@@ -124,8 +124,8 @@ def _calculate_ns_ratio(sob: np.array, iterations: int = 5) -> float:
     return x[-1]
 
 
-def _i3_ts(sob: np.ndarray, prepro: Preprocessing,
-           return_ns: bool, ns_ratio: Optional[float] = None) -> float:
+def i3_ts(sob: np.ndarray, prepro: Preprocessing,
+          return_ns: bool, ns_ratio: Optional[float] = None) -> float:
     """Docstring"""
     if prepro.n_events == 0:
         return 0
@@ -145,7 +145,7 @@ TestStatistic = Callable[[np.ndarray, Preprocessing], float]
 
 
 @dataclasses.dataclass
-class _TdPreprocessing(Preprocessing):
+class TdPreprocessing(Preprocessing):
     """Docstring"""
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
@@ -153,12 +153,12 @@ class _TdPreprocessing(Preprocessing):
 
 
 @dataclasses.dataclass
-class _TdPreprocessor(Preprocessor):
+class TdPreprocessor(Preprocessor):
     """Docstring"""
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
 
-    factory_type: ClassVar = _TdPreprocessing
+    factory_type: ClassVar = TdPreprocessing
 
     def _preprocess(self, event_model: models.EventModel,
                     source: sources.Source, events: np.ndarray) -> dict:
@@ -182,7 +182,7 @@ class _TdPreprocessor(Preprocessor):
         return {**super_prepro_dict, 'sob_time': sob_time}
 
 
-def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
+def cal_sob_time(params: np.ndarray, prepro: TdPreprocessing) -> float:
     """Docstring"""
     time_params = prepro.sig_time_profile.param_dtype.names
 
@@ -196,13 +196,13 @@ def _sob_time(params: np.ndarray, prepro: _TdPreprocessing) -> float:
 
 
 @dataclasses.dataclass
-class I3Preprocessing(_TdPreprocessing):
+class I3Preprocessing(TdPreprocessing):
     """Docstring"""
     splines: List[scipy.interpolate.UnivariateSpline]
 
 
 @dataclasses.dataclass
-class I3Preprocessor(_TdPreprocessor):
+class I3Preprocessor(TdPreprocessor):
     """Docstring"""
     factory_type: ClassVar = I3Preprocessing
 
@@ -244,59 +244,10 @@ def i3_test_statistic(params: np.ndarray,
     """
     temp_params = rf.unstructured_to_structured(
         params, dtype=prepro.params.dtype, copy=True)
-    sob = prepro.sob_spatial * _sob_time(temp_params, prepro) * np.exp(
+    sob = prepro.sob_spatial * cal_sob_time(temp_params, prepro) * np.exp(
         [spline(temp_params['gamma']) for spline in prepro.splines])
 
     ns_ratio = None
     if 'ns' in temp_params.dtype.names:
         ns_ratio = temp_params['ns'] / prepro.n_events
-    return _i3_ts(sob, prepro, return_ns, ns_ratio)
-
-
-@dataclasses.dataclass
-class ThreeMLPreprocessing(_TdPreprocessing):
-    """Docstring"""
-    event_model: models.ThreeMLEventModel
-
-
-@dataclasses.dataclass
-class ThreeMLPreprocessor(_TdPreprocessor):
-    """Docstring"""
-    factory_type: ClassVar = ThreeMLPreprocessing
-
-
-def threeml_ps_test_statistic(params: np.ndarray,
-                              prepro: ThreeMLPreprocessing,
-                              return_ns: bool = False) -> float:
-
-    """(ThreeML version) Evaluates the ts for the given events and parameters
-
-    Calculates the test-statistic using a given event model, n_signal, and
-    gamma. This function does not attempt to fit n_signal or gamma.
-
-    Args:
-        params:
-        event_model:
-        events:
-        prepro:
-        return_ns:
-
-    Returns:
-        The overall test-statistic value for the given events and
-        parameters.
-    """
-    temp_params = rf.unstructured_to_structured(
-        params, dtype=prepro.params.dtype, copy=True)
-
-    sob_energy = prepro.event_model.get_energy_sob(
-        prepro.events[prepro['drop_index']])
-
-    sob = prepro.sob_spatial * _sob_time(params, prepro) * sob_energy
-
-    sob = prepro.sob_spatial * _sob_time(
-        temp_params, prepro) * sob_energy
-
-    ns_ratio = None
-    if 'ns' in temp_params.dtype.names:
-        ns_ratio = temp_params['ns'] / prepro.n_events
-    return _i3_ts(sob, prepro, return_ns, ns_ratio)
+    return i3_ts(sob, prepro, return_ns, ns_ratio)
