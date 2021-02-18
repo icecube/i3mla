@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, ClassVar, List, Optional, Sequence, Tuple
+from typing import ClassVar, List, Optional, Sequence, Tuple
 
 import warnings
 import dataclasses
@@ -123,26 +123,6 @@ class Preprocessor:
         )
 
 
-def i3_ts(sob: np.ndarray, prepro: Preprocessing,
-          return_ns: bool, ns_ratio: Optional[float] = None) -> float:
-    """Docstring"""
-    if prepro.n_events == 0:
-        return 0
-
-    if ns_ratio is None:
-        ns_ratio = cal_ns_ratio(sob, prepro.n_dropped)
-
-    if return_ns:
-        return ns_ratio * prepro.n_events
-
-    return -2 * (np.sum(
-        np.log(ns_ratio * (sob - 1) + 1)
-    ) + prepro.n_dropped * np.log(1 - ns_ratio))
-
-
-TestStatistic = Callable[[np.ndarray, Preprocessing], float]
-
-
 @dataclasses.dataclass
 class TdPreprocessing(Preprocessing):
     """Docstring"""
@@ -179,6 +159,23 @@ class TdPreprocessor(Preprocessor):
             warnings.warn('Warning, events outside background time profile',
                           RuntimeWarning)
         return {**super_prepro_dict, 'sob_time': sob_time}
+
+
+def i3_ts(sob: np.ndarray, prepro: Preprocessing,
+          return_ns: bool, ns_ratio: Optional[float] = None) -> float:
+    """Docstring"""
+    if prepro.n_events == 0:
+        return 0
+
+    if ns_ratio is None:
+        ns_ratio = cal_ns_ratio(sob, prepro.n_dropped)
+
+    if return_ns:
+        return ns_ratio * prepro.n_events
+
+    return -2 * (np.sum(
+        np.log(ns_ratio * (sob - 1) + 1)
+    ) + prepro.n_dropped * np.log(1 - ns_ratio))
 
 
 def cal_ns_ratio(sob: np.array, n_dropped: int, iterations: int = 30) -> float:
