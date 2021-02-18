@@ -12,7 +12,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, Dict, List, Optional, Sequence, Tuple, Union
+from typing import Callable, Dict, List, Optional
 
 import dataclasses
 import numpy as np
@@ -22,17 +22,15 @@ import scipy.optimize
 from . import sources
 from . import models
 from . import test_statistics
-
-
-Bounds = Optional[Union[Sequence[Tuple[float, float]], scipy.optimize.Bounds]]
-
+from . import _test_statistics
+from . import _models
 
 Minimizer = Callable[
     [
         test_statistics.TestStatistic,
         np.ndarray,
-        test_statistics.Preprocessing,
-        Bounds,
+        _test_statistics.Preprocessing,
+        _test_statistics.Bounds,
     ],
     scipy.optimize.OptimizeResult,
 ]
@@ -41,8 +39,8 @@ Minimizer = Callable[
 @dataclasses.dataclass(frozen=True)
 class Analysis:
     """Stores the components of an analysis."""
-    model: models.EventModel
-    ts_preprocessor: test_statistics.Preprocessor
+    model: _models.EventModel
+    ts_preprocessor: _test_statistics.Preprocessor
     test_statistic: test_statistics.TestStatistic
     source: sources.Source
 
@@ -57,10 +55,10 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
     )
 
 
-def default_minimizer(ts: test_statistics.TestStatistic,
-                      params: np.ndarray,
-                      prepro: test_statistics.Preprocessing,
-                      bounds: Bounds = None):
+def _default_minimizer(ts: test_statistics.TestStatistic,
+                       params: np.ndarray,
+                       prepro: _test_statistics.Preprocessing,
+                       bounds: _test_statistics.Bounds = None):
     """Docstring"""
     with np.errstate(divide='ignore', invalid='ignore'):
         # Set the seed values, which tell the minimizer
@@ -72,8 +70,8 @@ def default_minimizer(ts: test_statistics.TestStatistic,
 
 def minimize_ts(analysis: Analysis, test_params: np.ndarray,
                 events: np.ndarray,
-                bounds: Bounds = None,
-                minimizer: Minimizer = default_minimizer,
+                bounds: _test_statistics.Bounds = None,
+                minimizer: Minimizer = _default_minimizer,
                 verbose: bool = False) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.
 
@@ -97,7 +95,7 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
         print('Preprocessing...', end='')
 
     prepro = analysis.ts_preprocessor(
-        analysis.model, analysis.source, events, test_params)
+        analysis.model, analysis.source, events, test_params, bounds)
 
     if verbose:
         print('done')
@@ -111,7 +109,7 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
         print(f'Minimizing: {prepro.params}...', end='')
 
     params = rf.structured_to_unstructured(prepro.params, copy=True)[0]
-    result = minimizer(analysis.test_statistic, params, prepro, bounds)
+    result = minimizer(analysis.test_statistic, params, prepro, prepro.bounds)
 
     if verbose:
         print('done')
@@ -182,8 +180,8 @@ def produce_and_minimize(
     analysis: Analysis,
     flux_norms: List[float],
     test_params: np.ndarray,
-    bounds: Bounds = None,
-    minimizer: Minimizer = default_minimizer,
+    bounds: _test_statistics.Bounds = None,
+    minimizer: Minimizer = _default_minimizer,
     random_seed: Optional[int] = None,
     grl_filter: bool = True,
     n_signal_observed: Optional[int] = None,

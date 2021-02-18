@@ -24,11 +24,11 @@ from dataclasses import InitVar
 
 from . import sources
 from . import spectral
-from . import models
+from . import _models
 
 
 @dataclass
-class _ThreeMLEventModelBase(models.TdEventModelBase):
+class _ThreeMLEventModelBase(_models.TdEventModelBase):
     """Docstring"""
     _sin_dec_bins: np.array = field(init=False)
     _log_energy_bins: np.array = field(init=False)
@@ -44,7 +44,7 @@ class _ThreeMLEventModelBase(models.TdEventModelBase):
 
 
 @dataclass
-class _ThreeMLEventModelDefaultsBase(models.TdEventModelDefaultsBase):
+class _ThreeMLEventModelDefaultsBase(_models.TdEventModelDefaultsBase):
     """Docstring"""
     signal_sin_dec_bins: InitVar[Union[np.array, int]] = field(default=50)
     log_energy_bins: InitVar[Union[np.array, int]] = field(default=50)
@@ -59,7 +59,7 @@ class _ThreeMLEventModelDefaultsBase(models.TdEventModelDefaultsBase):
 
 @dataclass
 class ThreeMLEventModel(
-        models.TdEventModel,
+        _models.TdEventModel,
         _ThreeMLEventModelDefaultsBase,
         _ThreeMLEventModelBase):
     """Docstring"""

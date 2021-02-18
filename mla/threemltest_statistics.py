@@ -15,18 +15,18 @@ import dataclasses
 import numpy as np
 import numpy.lib.recfunctions as rf
 
-from . import test_statistics
+from . import _test_statistics
 from . import threeml_models
 
 
 @dataclasses.dataclass
-class ThreeMLPreprocessing(test_statistics.TdPreprocessing):
+class ThreeMLPreprocessing(_test_statistics.TdPreprocessing):
     """Docstring"""
     event_model: threeml_models.ThreeMLEventModel
 
 
 @dataclasses.dataclass
-class ThreeMLPreprocessor(test_statistics.TdPreprocessor):
+class ThreeMLPreprocessor(_test_statistics.TdPreprocessor):
     """Docstring"""
     factory_type: ClassVar = ThreeMLPreprocessing
 
@@ -58,9 +58,9 @@ def threeml_ps_test_statistic(params: np.ndarray,
         prepro.events[prepro['drop_index']])
 
     sob = prepro.sob_spatial * \
-        test_statistics.cal_sob_time(params, prepro) * sob_energy
+        _test_statistics.cal_sob_time(params, prepro) * sob_energy
 
     ns_ratio = None
     if 'ns' in temp_params.dtype.names:
         ns_ratio = temp_params['ns'] / prepro.n_events
-    return test_statistics.i3_ts(sob, prepro, return_ns, ns_ratio)
+    return _test_statistics.i3_ts(sob, prepro, return_ns, ns_ratio)
