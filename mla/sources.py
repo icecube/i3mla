@@ -21,13 +21,8 @@ import numpy as np
 class Source:
     """Stores a source object name and location"""
     name: str
-    r_asc: float
+    ra: float
     dec: float
-
-
-def deg_to_rad(deg: float) -> float:
-    """Docstring"""
-    return deg * 2 * np.pi / 360
 
 
 def ra_to_rad(hrs: float, mins: float, secs: float) -> float:
