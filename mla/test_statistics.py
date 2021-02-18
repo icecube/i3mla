@@ -120,7 +120,7 @@ def _calculate_ns_ratio(sob: np.array,
         # get next iteration and clamp
         first_derivative = np.sum(1 / (x[i] + k)) + n_dropped * (1 / (x[i] - 1))
         second_derivative = np.sum(1 / (x[i] + k)**2
-                                   ) + (n_dropped * (1 / (x[i] - 1)**2))
+                                  ) + (n_dropped * (1 / (x[i] - 1)**2))
         x[i + 1] = min(1, max(
             lo,
             x[i] + first_derivative / second_derivative,
@@ -250,7 +250,7 @@ def i3_test_statistic(params: np.ndarray,
     temp_params = rf.unstructured_to_structured(
         params, dtype=prepro.params.dtype, copy=True)
     sob = prepro.sob_spatial * cal_sob_time(temp_params, prepro) * np.exp(
-        [spline(temp_params['gamma']) for spline in prepro.splines])
+        [spline(temp_params['gamma'], ext=3) for spline in prepro.splines])
 
     ns_ratio = None
     if 'ns' in temp_params.dtype.names:
