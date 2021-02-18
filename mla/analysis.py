@@ -20,10 +20,10 @@ import numpy.lib.recfunctions as rf
 import scipy.optimize
 
 from . import sources
-from . import models
 from . import test_statistics
 from . import _test_statistics
 from . import _models
+
 
 Minimizer = Callable[
     [
