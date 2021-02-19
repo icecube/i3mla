@@ -15,14 +15,14 @@ import dataclasses
 import numpy as np
 import numpy.lib.recfunctions as rf
 
-from . import _test_statistics
-from . import threeml_models
+from .. import _test_statistics
+from . import models
 
 
 @dataclasses.dataclass
 class ThreeMLPreprocessing(_test_statistics.TdPreprocessing):
     """Docstring"""
-    event_model: threeml_models.ThreeMLEventModel
+    event_model: models.ThreeMLEventModel
 
 
 @dataclasses.dataclass

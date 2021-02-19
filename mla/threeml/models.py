@@ -22,9 +22,9 @@ from dataclasses import dataclass
 from dataclasses import field
 from dataclasses import InitVar
 
-from . import sources
+from .. import sources
+from .. import _models
 from . import spectral
-from . import _models
 
 
 @dataclass
