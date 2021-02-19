@@ -194,9 +194,10 @@ def cal_ns_ratio(sob: np.array, n_dropped: int, iterations: int = 30) -> float:
 
     for i in range(iterations - 1):
         # get next iteration and clamp
-        first_derivative = np.sum(1 / (x[i] + k)) + n_dropped * (1 / (x[i] - 1))
-        second_derivative = np.sum(1 / (x[i] + k)**2
-                                  ) + (n_dropped * (1 / (x[i] - 1)**2))
+        terms = 1 / (x[i] + k)
+        zero_term = 1 / (x[i] - 1)
+        first_derivative = np.sum(terms) + n_dropped * zero_term
+        second_derivative = np.sum(terms**2) + n_dropped * zero_term**2
         x[i + 1] = min(1, max(
             lo,
             x[i] + first_derivative / second_derivative,
