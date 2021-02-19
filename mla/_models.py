@@ -342,11 +342,12 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
 
     def _weight_reduced_sim(self, reduced_sim: np.ndarray) -> np.ndarray:
         """Docstring"""
-        reduced_sim = rf.append_fields(
-            reduced_sim, 'weight',
-            np.zeros(len(reduced_sim)),
-            dtypes=np.float32
-        )
+        if 'weight' not in reduced_sim.dtype.names:
+            reduced_sim = rf.append_fields(
+                reduced_sim, 'weight',
+                np.zeros(len(reduced_sim)),
+                dtypes=np.float32
+            )
 
         # Assign the weights using the newly defined "time profile"
         # classes above. If you want to make this a more complicated
@@ -470,6 +471,16 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         events = events[during_uptime]
 
         return events
+
+    @property
+    def gamma(self) -> float:
+        return self._gamma
+
+    @gamma.setter
+    def gamma(self, new_gamma) -> None:
+        """Docstring"""
+        self._gamma = new_gamma
+        self._reduced_sim = self._weight_reduced_sim(self._reduced_sim)
 
 
 @dataclass
