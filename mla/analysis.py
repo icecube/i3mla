@@ -148,7 +148,7 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
 
     background = analysis.model.inject_background_events()
 
-    if flux_norm > 0:
+    if flux_norm > 0 or n_signal_observed > 0:
         signal = analysis.model.inject_signal_events(analysis.source,
                                                      flux_norm,
                                                      n_signal_observed)
@@ -178,8 +178,8 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
 
 def produce_and_minimize(
     analysis: Analysis,
-    flux_norms: List[float],
     test_params: np.ndarray,
+    flux_norm: float = 0,
     bounds: _test_statistics.Bounds = None,
     minimizer: Minimizer = _default_minimizer,
     random_seed: Optional[int] = None,
@@ -187,22 +187,20 @@ def produce_and_minimize(
     n_signal_observed: Optional[int] = None,
     verbose: bool = False,
     n_trials: int = 1,
-) -> List[List[List[Dict[str, float]]]]:
+) -> List[Dict[str, float]]:
     """Docstring"""
-    return [[[
-        minimize_ts(
+    return [minimize_ts(
+        analysis,
+        test_params,
+        produce_trial(
             analysis,
-            test_params[:, i],
-            produce_trial(
-                analysis,
-                flux_norm=flux_norm,
-                random_seed=random_seed,
-                grl_filter=grl_filter,
-                n_signal_observed=n_signal_observed,
-                verbose=verbose,
-            ),
-            bounds=bounds,
-            minimizer=minimizer,
+            flux_norm=flux_norm,
+            random_seed=random_seed,
+            grl_filter=grl_filter,
+            n_signal_observed=n_signal_observed,
             verbose=verbose,
-        ) for _ in range(n_trials)
-    ] for i in range(test_params.shape[1])] for flux_norm in flux_norms]
+        ),
+        bounds=bounds,
+        minimizer=minimizer,
+        verbose=verbose,
+    ) for _ in range(n_trials)]
