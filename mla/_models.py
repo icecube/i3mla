@@ -479,15 +479,19 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
     def scramble_times(self, times: np.ndarray,
                        profile: time_profiles.GenericProfile) -> np.ndarray:
         """Docstring"""
-        grl_start_cdf = profile.cdf(self._grl['start'])
-        grl_stop_cdf = profile.cdf(self._grl['stop'])
+        grl_start_cdf = profile.cdf(
+            self._grl['start'])
+        grl_stop_cdf = profile.cdf(
+            self._grl['stop'])
+        
+        valid = np.logical_and(grl_start_cdf < 1, grl_stop_cdf > 0)
 
         grl_weighted_livetime = (
-            self._grl['stop'] - self._grl['start']
-        ) * (grl_stop_cdf - grl_start_cdf)
+            self._grl[valid]['stop'] - self._grl[valid]['start']
+        ) * (grl_stop_cdf[valid] - grl_start_cdf[valid])
 
         runs = np.random.choice(
-            self._grl,
+            self._grl[valid],
             size=len(times),
             replace=True,
             p=grl_weighted_livetime / grl_weighted_livetime.sum(),

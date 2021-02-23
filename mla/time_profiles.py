@@ -370,14 +370,19 @@ class UniformProfile(GenericProfile):
         return [time_profile.range, (0, diff)]
 
     def cdf(self, times: np.array) -> np.array:
-        return self.scipy_dist.cdf(times)
+        return np.clip(
+            (times - self.range[0]) / (self.range[1] - self.range[0]),
+            0,
+            1,
+        )
 
     def inverse_transform_sample(self, start_times: np.array,
                                  stop_times: np.array) -> np.array:
-        start_cdfs = self.cdf(start_times)
-        stop_cdfs = self.cdf(stop_times)
-        cdfs = np.random.uniform(start_cdfs, stop_cdfs)
-        return self.scipy_dist.ppf(cdfs)
+        return np.clip(
+            np.random.uniform(start_times, stop_times),
+            self.range[0],
+            self.range[1],
+        )
 
     def update_params(self, params: np.ndarray) -> None:
         """Docstring"""
