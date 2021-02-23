@@ -129,6 +129,7 @@ class TdPreprocessing(Preprocessing):
     sig_time_profile: time_profiles.GenericProfile
     bg_time_profile: time_profiles.GenericProfile
     sob_time: np.array
+    times: np.array
 
 
 @dataclasses.dataclass
@@ -151,14 +152,13 @@ class TdPreprocessor(Preprocessor):
             events:
         """
         super_prepro_dict = super()._preprocess(event_model, source, events)
-
-        sob_time = 1 / self.bg_time_profile.pdf(
-            events[super_prepro_dict['drop_index']]['time'])
+        times = np.array(events[super_prepro_dict['drop_index']]['time'])
+        sob_time = 1 / self.bg_time_profile.pdf(times)
 
         if np.logical_not(np.all(np.isfinite(sob_time))):
             warnings.warn('Warning, events outside background time profile',
                           RuntimeWarning)
-        return {**super_prepro_dict, 'sob_time': sob_time}
+        return {**super_prepro_dict, 'sob_time': sob_time, 'times': times}
 
 
 def i3_ts(sob: np.ndarray, prepro: Preprocessing,
@@ -213,7 +213,6 @@ def cal_sob_time(params: np.ndarray, prepro: TdPreprocessing) -> float:
     if set(time_params).issubset(set(params.dtype.names)):
         prepro.sig_time_profile.update_params(params[time_params])
 
-    sob_time = prepro.sob_time * prepro.sig_time_profile.pdf(
-        prepro.events[prepro.drop_index]['time'])
+    sob_time = prepro.sob_time * prepro.sig_time_profile.pdf(prepro.times)
 
     return sob_time

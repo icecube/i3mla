@@ -127,7 +127,6 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
 
 def produce_trial(analysis: Analysis, flux_norm: float = 0,
                   random_seed: Optional[int] = None,
-                  grl_filter: bool = True,
                   n_signal_observed: Optional[int] = None,
                   verbose: bool = False) -> np.ndarray:
     """Produces a single trial of background+signal events based on inputs.
@@ -136,7 +135,6 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
         analysis:
         flux_norm: A flux normaliization to adjust weights.
         random_seed: A seed value for the numpy RNG.
-        grl_filter: cut out events that is not in grl
         n_signal_observed:
         verbose: A flag to print progress.
 
@@ -147,11 +145,13 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
         np.random.seed(random_seed)
 
     background = analysis.model.inject_background_events()
+    background['time'] = analysis.model.scramble_times(background['time'])
 
     if flux_norm > 0:
         signal = analysis.model.inject_signal_events(analysis.source,
                                                      flux_norm,
                                                      n_signal_observed)
+        signal['time'] = analysis.model.scramble_times(signal['time'])
     else:
         signal = np.empty(0, dtype=background.dtype)
 
@@ -170,9 +170,6 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
     # Combine the signal background events and time-sort them.
     events = np.concatenate([background, signal])
 
-    if grl_filter:
-        events = analysis.model.grl_filter(events)
-
     return events
 
 
@@ -183,7 +180,6 @@ def produce_and_minimize(
     bounds: _test_statistics.Bounds = None,
     minimizer: Minimizer = _default_minimizer,
     random_seed: Optional[int] = None,
-    grl_filter: bool = True,
     n_signal_observed: Optional[int] = None,
     verbose: bool = False,
     n_trials: int = 1,
@@ -197,7 +193,6 @@ def produce_and_minimize(
                 analysis,
                 flux_norm=flux_norm,
                 random_seed=random_seed,
-                grl_filter=grl_filter,
                 n_signal_observed=n_signal_observed,
                 verbose=verbose,
             ),

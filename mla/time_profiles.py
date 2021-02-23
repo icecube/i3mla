@@ -110,6 +110,15 @@ class GenericProfile:
         """
 
     @abc.abstractmethod
+    def cdf(self, times: np.array) -> np.array:
+        """Docstring"""
+
+    @abc.abstractmethod
+    def inverse_transform_sample(self, start_times: np.array,
+                                 stop_times: np.array) -> np.array:
+        """Docstring"""
+
+    @abc.abstractmethod
     def update_params(self, params: np.ndarray) -> None:
         """Docstring"""
 
@@ -235,6 +244,16 @@ class GaussProfile(GenericProfile):
 
         return [time_profile.range, (0, diff)]
 
+    def cdf(self, times: np.array) -> np.array:
+        return self.scipy_dist.cdf(times)
+
+    def inverse_transform_sample(self, start_times: np.array,
+                                 stop_times: np.array) -> np.array:
+        start_cdfs = self.cdf(start_times)
+        stop_cdfs = self.cdf(stop_times)
+        cdfs = np.random.uniform(start_cdfs, stop_cdfs)
+        return self.scipy_dist.ppf(cdfs)
+
     def update_params(self, params: np.ndarray) -> None:
         """Docstring"""
         self.mean = params['mean']
@@ -349,6 +368,16 @@ class UniformProfile(GenericProfile):
         """
         diff = time_profile.range[1] - time_profile.range[0]
         return [time_profile.range, (0, diff)]
+
+    def cdf(self, times: np.array) -> np.array:
+        return self.scipy_dist.cdf(times)
+
+    def inverse_transform_sample(self, start_times: np.array,
+                                 stop_times: np.array) -> np.array:
+        start_cdfs = self.cdf(start_times)
+        stop_cdfs = self.cdf(stop_times)
+        cdfs = np.random.uniform(start_cdfs, stop_cdfs)
+        return self.scipy_dist.ppf(cdfs)
 
     def update_params(self, params: np.ndarray) -> None:
         """Docstring"""
@@ -505,6 +534,16 @@ class CustomProfile(GenericProfile):
             The fitting bounds for the parameters of this time profile.
         """
         return [time_profile.range, time_profile.range]
+
+    def cdf(self, times: np.array) -> np.array:
+        return self.dist.cdf(times)
+
+    def inverse_transform_sample(self, start_times: np.array,
+                                 stop_times: np.array) -> np.array:
+        start_cdfs = self.cdf(start_times)
+        stop_cdfs = self.cdf(stop_times)
+        cdfs = np.random.uniform(start_cdfs, stop_cdfs)
+        return self.dist.ppf(cdfs)
 
     def update_params(self, params: np.ndarray) -> None:
         """Docstring"""

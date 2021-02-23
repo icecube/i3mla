@@ -160,6 +160,7 @@ class EventModelBase:
     _gamma: float
 
     _grl: np.ndarray = field(init=False)
+    _grl_rates: np.ndarray = field(init=False)
     _reduced_sim: np.ndarray = field(init=False)
     _background_dec_spline: Spline = field(init=False)
 
@@ -456,7 +457,10 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         return signal
 
     def grl_filter(self, events: np.ndarray) -> np.ndarray:
-        """Docstring"""
+        """Docstring
+
+        Deprecated
+        """
         sorting_indices = np.argsort(events['time'])
         events = events[sorting_indices]
 
@@ -471,6 +475,25 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         events = events[during_uptime]
 
         return events
+
+    def scramble_times(self, times: np.ndarray,
+                       profile: time_profiles.GenericProfile) -> np.ndarray:
+        """Docstring"""
+        grl_start_cdf = profile.cdf(self._grl['start'])
+        grl_stop_cdf = profile.cdf(self._grl['stop'])
+
+        grl_weighted_livetime = (
+            self._grl['stop'] - self._grl['start']
+        ) * (grl_stop_cdf - grl_start_cdf)
+
+        runs = np.random.choice(
+            self._grl,
+            size=len(times),
+            replace=True,
+            p=grl_weighted_livetime / grl_weighted_livetime.sum(),
+        )
+
+        return profile.inverse_transform_sample(runs['start'], runs['stop'])
 
     @property
     def gamma(self) -> float:
