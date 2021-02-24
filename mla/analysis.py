@@ -157,6 +157,7 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
         signal['time'] = analysis.model.scramble_times(
             signal['time'],
             analysis.model.signal_time_profile,
+            background=False,
         )
     else:
         signal = np.empty(0, dtype=background.dtype)

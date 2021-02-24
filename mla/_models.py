@@ -253,7 +253,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         self._background_dec_spline = self._init_background_dec_spline(
             background_sin_dec_bins)
 
-        self._grl_rates = self._init_grl_rates(self._grl, self._data)
+        self._grl_rates = self._grl['events'] / self._grl['livetime']
 
     def _init_background_dec_spline(self, sin_dec_bins: np.array, *args,
                                     **kwargs) -> Spline:
@@ -458,19 +458,9 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
 
         return signal
 
-    def _init_grl_rates(self, grl: np.ndarray, data: np.ndarray) -> np.array:
-        """Docstring"""
-        grl_rates = np.empty(len(grl), dtype=np.float64)
-        for i, run in enumerate(grl):
-            in_run = np.logical_and(
-                run['start'] < data['time'],
-                data['time'] < run['stop'],
-            )
-            grl_rates[i] = in_run.sum() / (run['stop'] - run['start'])
-        return grl_rates
-
     def scramble_times(self, times: np.ndarray,
-                       profile: time_profiles.GenericProfile) -> np.ndarray:
+                       profile: time_profiles.GenericProfile,
+                       background: bool = True) -> np.ndarray:
         """Docstring"""
         grl_start_cdf = profile.cdf(
             self._grl['start'])
@@ -478,16 +468,16 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
             self._grl['stop'])
 
         valid = np.logical_and(grl_start_cdf < 1, grl_stop_cdf > 0)
+        grl_weighted_rates = grl_stop_cdf[valid] - grl_start_cdf[valid]
 
-        grl_weighted_livetime = self._grl_rates[valid] * (
-            grl_stop_cdf[valid] - grl_start_cdf[valid]
-        )
+        if background:
+            grl_weighted_rates *= self._grl_rates[valid]
 
         runs = np.random.choice(
             self._grl[valid],
             size=len(times),
             replace=True,
-            p=grl_weighted_livetime / grl_weighted_livetime.sum(),
+            p=grl_weighted_rates / grl_weighted_rates.sum(),
         )
 
         return profile.inverse_transform_sample(runs['start'], runs['stop'])

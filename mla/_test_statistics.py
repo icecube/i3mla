@@ -156,7 +156,7 @@ class TdPreprocessor(Preprocessor):
             super_prepro_dict['drop_index'].sum(),
             dtype=events['time'].dtype,
         )
-        times[:] = [i for i in events[super_prepro_dict['drop_index']]['time']]
+        times = events[super_prepro_dict['drop_index']]['time']
         sob_time = 1 / self.bg_time_profile.pdf(times)
 
         if np.logical_not(np.all(np.isfinite(sob_time))):
