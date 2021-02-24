@@ -14,6 +14,7 @@ __status__ = 'Development'
 
 from typing import Callable, Dict, List, Optional
 
+import functools
 import dataclasses
 import numpy as np
 import numpy.lib.recfunctions as rf
@@ -72,7 +73,8 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
                 events: np.ndarray,
                 bounds: _test_statistics.Bounds = None,
                 minimizer: Minimizer = _default_minimizer,
-                verbose: bool = False) -> Dict[str, float]:
+                verbose: bool = False,
+                ns_newton_iters: int = 20) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.
 
     Accepts guess values for fitting the n_signal and spectral index, and
@@ -108,15 +110,18 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
     if verbose:
         print(f'Minimizing: {prepro.params}...', end='')
 
+    ts = functools.partial(analysis.test_statistic,
+                           ns_newton_iters=ns_newton_iters)
+
     params = rf.structured_to_unstructured(prepro.params, copy=True)[0]
-    result = minimizer(analysis.test_statistic, params, prepro, prepro.bounds)
+    result = minimizer(ts, params, prepro, prepro.bounds)
 
     if verbose:
         print('done')
 
     # Store the results in the output array
     output['ts'] = -1 * result.fun
-    output['ns'] = analysis.test_statistic(result.x, prepro, return_ns=True)
+    output['ns'] = ts(result.x, prepro, return_ns=True)
     result.x = rf.unstructured_to_structured(
         result.x, dtype=prepro.params.dtype, copy=True)
     for param in prepro.params.dtype.names:

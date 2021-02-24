@@ -171,13 +171,14 @@ class TdPreprocessor(Preprocessor):
 
 
 def i3_ts(sob: np.ndarray, prepro: Preprocessing,
-          return_ns: bool, ns_ratio: Optional[float] = None) -> float:
+          return_ns: bool, ns_ratio: Optional[float] = None,
+          ns_newton_iters: int = 20) -> float:
     """Docstring"""
     if prepro.n_events == 0:
         return 0
 
     if ns_ratio is None:
-        ns_ratio = cal_ns_ratio(sob, prepro.n_dropped)
+        ns_ratio = cal_ns_ratio(sob, prepro.n_dropped, ns_newton_iters)
 
     if return_ns:
         return ns_ratio * prepro.n_events
@@ -187,7 +188,7 @@ def i3_ts(sob: np.ndarray, prepro: Preprocessing,
     ) + prepro.n_dropped * np.log(1 - ns_ratio))
 
 
-def cal_ns_ratio(sob: np.array, n_dropped: int, iterations: int = 10) -> float:
+def cal_ns_ratio(sob: np.array, n_dropped: int, iterations: int) -> float:
     """Docstring
 
     Args:

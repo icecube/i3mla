@@ -56,7 +56,8 @@ class I3Preprocessor(_test_statistics.TdPreprocessor):
 
 def i3_test_statistic(params: np.ndarray,
                       prepro: I3Preprocessing,
-                      return_ns: bool = False) -> float:
+                      return_ns: bool = False,
+                      ns_newton_iters: int = 20) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -80,4 +81,5 @@ def i3_test_statistic(params: np.ndarray,
     ns_ratio = None
     if 'ns' in temp_params.dtype.names:
         ns_ratio = temp_params['ns'] / prepro.n_events
-    return _test_statistics.i3_ts(sob, prepro, return_ns, ns_ratio)
+    return _test_statistics.i3_ts(
+        sob, prepro, return_ns, ns_ratio, ns_newton_iters=ns_newton_iters)
