@@ -75,7 +75,12 @@ class Preprocessor:
         n_events = len(events)
 
         if n_events == 0:
-            return 0, 0, [], np.array([]), np.array([])
+            return {
+                'drop_index': np.array([]),
+                'n_events': 0,
+                'n_dropped': 0,
+                'sob_spatial': np.array([]),
+            }
 
         sob_spatial = event_model.signal_spatial_pdf(source, events)
 
@@ -215,7 +220,7 @@ def cal_sob_time(params: np.ndarray, prepro: TdPreprocessing) -> float:
     time_params = prepro.sig_time_profile.param_dtype.names
 
     if set(time_params).issubset(set(params.dtype.names)):
-        prepro.sig_time_profile.update_params(params[time_params])
+        prepro.sig_time_profile.update_params(params[list(time_params)])
 
     sob_time = prepro.sob_time * prepro.sig_time_profile.pdf(prepro.times)
 
