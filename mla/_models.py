@@ -252,7 +252,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
 
         self._background_dec_spline = self._init_background_dec_spline(
             background_sin_dec_bins)
-        
+
         self._grl_rates = self._init_grl_rates(self._grl, self._data)
 
     def _init_background_dec_spline(self, sin_dec_bins: np.array, *args,
@@ -457,7 +457,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
                 signal['trueRa'], signal['trueDec'])
 
         return signal
-    
+
     def _init_grl_rates(self, grl: np.ndarray, data: np.ndarray) -> np.array:
         """Docstring"""
         grl_rates = np.empty(len(grl), dtype=np.float64)
@@ -476,7 +476,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
             self._grl['start'])
         grl_stop_cdf = profile.cdf(
             self._grl['stop'])
-        
+
         valid = np.logical_and(grl_start_cdf < 1, grl_stop_cdf > 0)
 
         grl_weighted_livetime = self._grl_rates[valid] * (
