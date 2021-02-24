@@ -189,7 +189,7 @@ def produce_and_minimize(
     n_signal_observed: Optional[int] = None,
     verbose: bool = False,
     n_trials: int = 1,
-) -> List[List[List[Dict[str, float]]]]:
+) -> List[Dict[str, float]]:
     """Docstring"""
     return [minimize_ts(
         analysis,
