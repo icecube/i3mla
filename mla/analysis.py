@@ -150,7 +150,7 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
         analysis.model.background_time_profile,
     )
 
-    if flux_norm > 0:
+    if flux_norm > 0 or n_signal_observed is not None:
         signal = analysis.model.inject_signal_events(analysis.source,
                                                      flux_norm,
                                                      n_signal_observed)

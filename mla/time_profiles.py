@@ -378,10 +378,9 @@ class UniformProfile(GenericProfile):
 
     def inverse_transform_sample(self, start_times: np.array,
                                  stop_times: np.array) -> np.array:
-        return np.clip(
-            np.random.uniform(start_times, stop_times),
-            self.range[0],
-            self.range[1],
+        return np.random.uniform(
+            np.maximum(start_times, self.range[0]),
+            np.minimum(stop_times, self.range[1]),
         )
 
     def update_params(self, params: np.ndarray) -> None:

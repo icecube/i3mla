@@ -252,6 +252,8 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
 
         self._background_dec_spline = self._init_background_dec_spline(
             background_sin_dec_bins)
+        
+        self._grl_rates = self._init_grl_rates(self._grl, self._data)
 
     def _init_background_dec_spline(self, sin_dec_bins: np.array, *args,
                                     **kwargs) -> Spline:
@@ -455,26 +457,17 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
                 signal['trueRa'], signal['trueDec'])
 
         return signal
-
-    def grl_filter(self, events: np.ndarray) -> np.ndarray:
-        """Docstring
-
-        Deprecated
-        """
-        sorting_indices = np.argsort(events['time'])
-        events = events[sorting_indices]
-
-        # We need to check to ensure that every event is contained within
-        # a good run. If the event happened when we had deadtime (when we
-        # were not taking data), then we need to remove it.
-        grl_start = self._grl['start'].reshape((1, len(self._grl)))
-        grl_stop = self._grl['stop'].reshape((1, len(self._grl)))
-        after_start = np.less(grl_start, events['time'].reshape(len(events), 1))
-        before_stop = np.less(events['time'].reshape(len(events), 1), grl_stop)
-        during_uptime = np.any(after_start & before_stop, axis=1)
-        events = events[during_uptime]
-
-        return events
+    
+    def _init_grl_rates(self, grl: np.ndarray, data: np.ndarray) -> np.array:
+        """Docstring"""
+        grl_rates = np.empty(len(grl), dtype=np.float64)
+        for i, run in enumerate(grl):
+            in_run = np.logical_and(
+                run['start'] < data['time'],
+                data['time'] < run['stop'],
+            )
+            grl_rates[i] = in_run.sum() / (run['stop'] - run['start'])
+        return grl_rates
 
     def scramble_times(self, times: np.ndarray,
                        profile: time_profiles.GenericProfile) -> np.ndarray:
@@ -486,9 +479,9 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         
         valid = np.logical_and(grl_start_cdf < 1, grl_stop_cdf > 0)
 
-        grl_weighted_livetime = (
-            self._grl[valid]['stop'] - self._grl[valid]['start']
-        ) * (grl_stop_cdf[valid] - grl_start_cdf[valid])
+        grl_weighted_livetime = self._grl_rates[valid] * (
+            grl_stop_cdf[valid] - grl_start_cdf[valid]
+        )
 
         runs = np.random.choice(
             self._grl[valid],
@@ -513,19 +506,9 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
 @dataclass
 class TdEventModelBase(EventModelBase):
     """Docstring"""
-    _background_time_profile: time_profiles.GenericProfile
-    _signal_time_profile: time_profiles.GenericProfile
+    background_time_profile: time_profiles.GenericProfile
+    signal_time_profile: time_profiles.GenericProfile
     _n_background: int = field(init=False)
-
-    @property
-    def background_time_profile(self) -> time_profiles.GenericProfile:
-        """Docstring"""
-        return self._background_time_profile
-
-    @property
-    def signal_time_profile(self) -> time_profiles.GenericProfile:
-        """Docstring"""
-        return self._signal_time_profile
 
 
 @dataclass
@@ -557,7 +540,7 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
         super().__post_init__(source, grl, background_sin_dec_bins)
 
         # Find the run contian in the background time window
-        start_time, end_time = self._background_time_profile.range
+        start_time, end_time = self.background_time_profile.range
         if withinwindow:
             fully_contained = (self._grl['start'] >= start_time
             ) & (self._grl['stop'] < end_time)
@@ -586,7 +569,7 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
         # Find the background rate
         n_background = background_grl['events'].sum()
         n_background /= background_grl['livetime'].sum()
-        n_background *= self._background_time_profile.exposure
+        n_background *= self.background_time_profile.exposure
         self._n_background = n_background
 
     def inject_background_events(self) -> np.ndarray:
@@ -598,7 +581,7 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
         n_background_observed = np.random.poisson(self._n_background)
         background = np.random.choice(self._data, n_background_observed).copy()
         background['ra'] = np.random.uniform(0, 2 * np.pi, len(background))
-        background['time'] = self._background_time_profile.random(
+        background['time'] = self.background_time_profile.random(
             size=len(background))
 
         return background
@@ -626,7 +609,7 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
 
         if n_signal_observed is None:
             n_signal_observed = scipy.stats.poisson.rvs(
-                weighttotal * self._signal_time_profile.exposure * flux_norm)
+                weighttotal * self.signal_time_profile.exposure * flux_norm)
 
         signal = np.random.choice(self._reduced_sim, n_signal_observed,
                                   p=normed_weight, replace=False).copy()
@@ -644,6 +627,6 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
                 signal['trueRa'], signal['trueDec'])
 
         # Randomize the signal time
-        signal['time'] = self._signal_time_profile.random(size=len(signal))
+        signal['time'] = self.signal_time_profile.random(size=len(signal))
 
         return signal

@@ -152,7 +152,11 @@ class TdPreprocessor(Preprocessor):
             events:
         """
         super_prepro_dict = super()._preprocess(event_model, source, events)
-        times = np.array(events[super_prepro_dict['drop_index']]['time'])
+        times = np.empty(
+            super_prepro_dict['drop_index'].sum(),
+            dtype=events['time'].dtype,
+        )
+        times[:] = [i for i in events[super_prepro_dict['drop_index']]['time']]
         sob_time = 1 / self.bg_time_profile.pdf(times)
 
         if np.logical_not(np.all(np.isfinite(sob_time))):
@@ -178,7 +182,7 @@ def i3_ts(sob: np.ndarray, prepro: Preprocessing,
     ) + prepro.n_dropped * np.log(1 - ns_ratio))
 
 
-def cal_ns_ratio(sob: np.array, n_dropped: int, iterations: int = 30) -> float:
+def cal_ns_ratio(sob: np.array, n_dropped: int, iterations: int = 10) -> float:
     """Docstring
 
     Args:
