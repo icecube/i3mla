@@ -200,11 +200,5 @@ def get_ns_ratio(sob: np.array, prepro: Preprocessing, params: np.ndarray,
 
 def get_sob_time(params: np.ndarray, prepro: TdPreprocessing) -> np.array:
     """Docstring"""
-    time_params = prepro.sig_time_profile.param_dtype.names
-
-    if set(time_params).issubset(set(params.dtype.names)):
-        prepro.sig_time_profile.update_params(params[list(time_params)])
-
-    sob_time = prepro.sob_time * prepro.sig_time_profile.pdf(prepro.times)
-
-    return sob_time
+    prepro.sig_time_profile.update_params(params)
+    return prepro.sob_time * prepro.sig_time_profile.pdf(prepro.times)

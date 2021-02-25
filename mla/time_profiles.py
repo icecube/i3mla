@@ -256,9 +256,16 @@ class GaussProfile(GenericProfile):
 
     def update_params(self, params: np.ndarray) -> None:
         """Docstring"""
-        self.mean = params['mean']
-        self.sigma = params['sigma']
-        self.scipy_dist = scipy.stats.norm(self.mean, self.sigma)
+        update = False
+        if 'mean' in params.dtype.names:
+            self.mean = params['mean']
+            update = True
+        if 'sigma' in params.dtype.names:
+            self.sigma = params['sigma']
+            update = True
+
+        if update:
+            self.scipy_dist = scipy.stats.norm(self.mean, self.sigma)
 
     @property
     def exposure(self) -> float:
@@ -386,9 +393,16 @@ class UniformProfile(GenericProfile):
 
     def update_params(self, params: np.ndarray) -> None:
         """Docstring"""
-        self.start = params['start']
-        self.length = params['length']
-        self._range = (self.start, self.start + self.length)
+        update = False
+        if 'start' in params.dtype.names:
+            self.start = params['start']
+            update = True
+        if 'length' in params.dtype.names:
+            self.length = params['length']
+            update = True
+
+        if update:
+            self._range = (self.start, self.start + self.length)
 
     @property
     def exposure(self) -> float:
@@ -553,7 +567,8 @@ class CustomProfile(GenericProfile):
 
     def update_params(self, params: np.ndarray) -> None:
         """Docstring"""
-        self.offset = params['offset']
+        if 'offset' in params.dtype.names:
+            self.offset = params['offset']
 
     @property
     def exposure(self) -> float:
