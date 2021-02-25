@@ -72,12 +72,15 @@ def _default_minimizer(ts: test_statistics.TestStatistic,
             ts, x0=params, args=(prepro, sob), bounds=bounds, method='L-BFGS-B')
 
 
-def minimize_ts(analysis: Analysis, test_params: np.ndarray,
-                events: np.ndarray,
-                bounds: _test_statistics.Bounds = None,
-                minimizer: Minimizer = _default_minimizer,
-                verbose: bool = False,
-                ns_newton_iters: int = 20) -> Dict[str, float]:
+def minimize_ts(
+    analysis: Analysis,
+    events: np.ndarray,
+    test_params: np.ndarray = np.empty(0),
+    bounds: _test_statistics.Bounds = None,
+    minimizer: Minimizer = _default_minimizer,
+    verbose: bool = False,
+    ns_newton_iters: int = 20
+) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.
 
     Accepts guess values for fitting the n_signal and spectral index, and
@@ -107,28 +110,33 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
 
     output = {'ts': 0, 'ns': 0}
 
-    if prepro.n_events - prepro.n_dropped <= 0:
+    if prepro.n_events - prepro.n_dropped == 0:
         return output
-
-    if verbose:
-        print(f'Minimizing: {prepro.params}...', end='')
 
     ts = functools.partial(analysis.test_statistic,
                            ns_newton_iters=ns_newton_iters)
 
-    params = rf.structured_to_unstructured(prepro.params, copy=True)[0]
-    result = minimizer(ts, params, prepro, analysis.ts_sob, prepro.bounds)
+    if len(test_params) != 0:
+        params = rf.structured_to_unstructured(prepro.params, copy=True)[0]
 
-    if verbose:
-        print('done')
+        if verbose:
+            print(f'Minimizing: {prepro.params}...', end='')
 
-    # Store the results in the output array
-    output['ts'] = -1 * result.fun
-    output['ns'] = ts(result.x, prepro, analysis.ts_sob, return_ns=True)
-    result.x = rf.unstructured_to_structured(
-        result.x, dtype=prepro.params.dtype, copy=True)
-    for param in prepro.params.dtype.names:
-        output[param] = np.asscalar(result.x[param])
+        result = minimizer(ts, params, prepro, analysis.ts_sob, prepro.bounds)
+        output['ts'] = -result.fun
+        output['ns'] = ts(result.x, prepro, analysis.ts_sob, return_ns=True)
+
+        result.x = rf.unstructured_to_structured(
+            result.x, dtype=prepro.params.dtype, copy=True)
+
+        for param in prepro.params.dtype.names:
+            output[param] = np.asscalar(result.x[param])
+
+        if verbose:
+            print('done')
+    else:
+        output['ts'] = -ts(params, prepro, analysis.ts_sob)
+        output['ns'] = ts(params, prepro, analysis.ts_sob, return_ns=True)
 
     return output
 

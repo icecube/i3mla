@@ -35,11 +35,14 @@ TestStatistic = Callable[[
 class I3Preprocessing(_test_statistics.TdPreprocessing):
     """Docstring"""
     splines: List[scipy.interpolate.UnivariateSpline]
+    gamma: float
 
 
 @dataclasses.dataclass
 class I3Preprocessor(_test_statistics.TdPreprocessor):
     """Docstring"""
+    gamma: float
+
     factory_type: ClassVar = I3Preprocessing
 
     def _preprocess(self, event_model: _models.EventModel,
@@ -58,13 +61,17 @@ class I3Preprocessor(_test_statistics.TdPreprocessor):
         splines = event_model.log_sob_gamma_splines(
             events[super_prepro_dict['drop_index']])
 
-        return {**super_prepro_dict, 'splines': splines}
+        return {**super_prepro_dict, 'splines': splines, 'gamma': self._gamma}
 
 
 def _get_sob_energy(params: np.ndarray, prepro: I3Preprocessing) -> np.array:
     """Docstring"""
-    return np.exp(
-        [spline(params['gamma'], ext=3) for spline in prepro.splines])
+    if 'gamma' in params.dtype.names:
+        gamma = params['gamma']
+    else:
+        gamma = prepro.gamma
+
+    return np.exp([spline(gamma) for spline in prepro.splines])
 
 
 def i3_sob(params: np.ndarray, prepro: I3Preprocessing) -> np.array:
