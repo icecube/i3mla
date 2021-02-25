@@ -161,20 +161,20 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
         np.random.seed(random_seed)
 
     background = analysis.model.inject_background_events()
-    background['time'] = analysis.model.scramble_times(
-        background['time'],
-        analysis.model.background_time_profile,
-    )
+    background['time'] = analysis.model.scramble_times(background['time'])
 
     if flux_norm > 0 or n_signal_observed is not None:
-        signal = analysis.model.inject_signal_events(analysis.source,
-                                                     flux_norm,
-                                                     n_signal_observed)
+        signal = analysis.model.inject_signal_events(
+            analysis.source,
+            flux_norm,
+            n_signal_observed,
+        )
+
         signal['time'] = analysis.model.scramble_times(
             signal['time'],
-            analysis.model.signal_time_profile,
             background=False,
         )
+
     else:
         signal = np.empty(0, dtype=background.dtype)
 

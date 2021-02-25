@@ -159,6 +159,7 @@ class EventModelBase:
 
     _gamma: float
 
+    _n_background: int = field(init=False)
     _grl: np.ndarray = field(init=False)
     _grl_rates: np.ndarray = field(init=False)
     _reduced_sim: np.ndarray = field(init=False)
@@ -253,6 +254,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         self._background_dec_spline = self._init_background_dec_spline(
             background_sin_dec_bins)
 
+        self._n_background = self._grl['events'].sum()
         self._grl_rates = self._grl['events'] / self._grl['livetime']
 
     def _init_background_dec_spline(self, sin_dec_bins: np.array, *args,
@@ -406,8 +408,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
             An array of injected background events.
         """
         # Get the number of events we see from these runs
-        n_background = self._grl['events'].sum()
-        n_background_observed = np.random.poisson(n_background)
+        n_background_observed = np.random.poisson(self._n_background)
 
         # How many events should we add in? This will now be based on the
         # total number of events actually observed during these runs
@@ -471,28 +472,21 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         return signal
 
     def scramble_times(self, times: np.ndarray,
-                       profile: time_profiles.GenericProfile,
                        background: bool = True) -> np.ndarray:
         """Docstring"""
-        grl_start_cdf = profile.cdf(
-            self._grl['start'])
-        grl_stop_cdf = profile.cdf(
-            self._grl['stop'])
-
-        valid = np.logical_and(grl_start_cdf < 1, grl_stop_cdf > 0)
-        grl_weighted_rates = grl_stop_cdf[valid] - grl_start_cdf[valid]
+        p = None
 
         if background:
-            grl_weighted_rates *= self._grl_rates[valid]
+            p = self._grl_rates / self._grl_rates.sum()
 
         runs = np.random.choice(
-            self._grl[valid],
+            self._grl,
             size=len(times),
             replace=True,
-            p=grl_weighted_rates / grl_weighted_rates.sum(),
+            p=p,
         )
 
-        return profile.inverse_transform_sample(runs['start'], runs['stop'])
+        return np.random.uniform(runs['start'], runs['stop'])
 
     @property
     def gamma(self) -> float:
@@ -510,7 +504,6 @@ class TdEventModelBase(EventModelBase):
     """Docstring"""
     background_time_profile: time_profiles.GenericProfile
     signal_time_profile: time_profiles.GenericProfile
-    _n_background: int = field(init=False)
 
 
 @dataclass
@@ -568,8 +561,34 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
                 raise RuntimeError
             background_grl = self._grl[background_runs]
 
-        # Find the background rate
-        n_background = background_grl['events'].sum()
-        n_background /= background_grl['livetime'].sum()
-        n_background *= self.background_time_profile.exposure
-        self._n_background = n_background
+        self._n_background = background_grl['events'].sum()
+        self._n_background /= background_grl['livetime'].sum()
+        self._n_background *= self.background_time_profile.exposure
+
+    def scramble_times(self, times: np.ndarray,
+                       background: bool = True) -> np.ndarray:
+        """Docstring"""
+        if background:
+            profile = self.background_time_profile
+        else:
+            profile = self.signal_time_profile
+
+        grl_start_cdf = profile.cdf(
+            self._grl['start'])
+        grl_stop_cdf = profile.cdf(
+            self._grl['stop'])
+
+        valid = np.logical_and(grl_start_cdf < 1, grl_stop_cdf > 0)
+        grl_weighted_rates = grl_stop_cdf[valid] - grl_start_cdf[valid]
+
+        if background:
+            grl_weighted_rates *= self._grl_rates[valid]
+
+        runs = np.random.choice(
+            self._grl[valid],
+            size=len(times),
+            replace=True,
+            p=grl_weighted_rates / grl_weighted_rates.sum(),
+        )
+
+        return profile.inverse_transform_sample(runs['start'], runs['stop'])
