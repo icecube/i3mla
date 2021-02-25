@@ -29,10 +29,10 @@ class Preprocessing:
     params: np.ndarray
     _bounds: Bounds
     events: np.ndarray
-    n_events: int
-    n_dropped: int
-    sob_spatial: np.array
-    drop_index: np.array
+    n_events: Optional[int] = None
+    n_dropped: Optional[int] = None
+    sob_spatial: Optional[np.array] = None
+    drop_index: Optional[np.array] = None
 
     def _fix_bounds(
         self,
@@ -104,37 +104,22 @@ class Preprocessor:
         basic_keys = {'drop_index', 'n_events', 'n_dropped', 'sob_spatial'}
         keys = [key for key in prepro_dict if key not in basic_keys]
 
-        if keys:
-            return self.factory_type(
-                params,
-                bounds,
-                events,
-                prepro_dict['n_events'],
-                prepro_dict['n_dropped'],
-                prepro_dict['sob_spatial'],
-                prepro_dict['drop_index'],
-                *dataclasses.astuple(self),
-                *[prepro_dict[key] for key in keys],
-            )
-
         # astuple returns a deepcopy of the instance attributes.
         return self.factory_type(
             params,
-            prepro_dict['n_events'],
-            prepro_dict['n_dropped'],
-            prepro_dict['sob_spatial'],
-            prepro_dict['drop_index'],
-            *dataclasses.astuple(self),
+            bounds,
+            events,
+            **prepro_dict,
         )
 
 
 @dataclasses.dataclass
 class TdPreprocessing(Preprocessing):
     """Docstring"""
-    sig_time_profile: time_profiles.GenericProfile
-    bg_time_profile: time_profiles.GenericProfile
-    sob_time: np.array
-    times: np.array
+    sig_time_profile: Optional[time_profiles.GenericProfile] = None
+    bg_time_profile: Optional[time_profiles.GenericProfile] = None
+    sob_time: Optional[np.array] = None
+    times: Optional[np.array] = None
 
 
 @dataclasses.dataclass
@@ -167,7 +152,13 @@ class TdPreprocessor(Preprocessor):
         if np.logical_not(np.all(np.isfinite(sob_time))):
             warnings.warn('Warning, events outside background time profile',
                           RuntimeWarning)
-        return {**super_prepro_dict, 'sob_time': sob_time, 'times': times}
+        return {
+            **super_prepro_dict,
+            'sig_time_profile': self.sig_time_profile,
+            'bg_time_profile': self.bg_time_profile,
+            'sob_time': sob_time,
+            'times': times,
+        }
 
 
 def get_i3_llh(sob: np.ndarray, ns_ratio: float) -> np.array:

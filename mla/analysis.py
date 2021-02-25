@@ -75,7 +75,7 @@ def _default_minimizer(ts: test_statistics.TestStatistic,
 def minimize_ts(
     analysis: Analysis,
     events: np.ndarray,
-    test_params: np.ndarray = np.empty(0),
+    test_params: np.ndarray = np.empty(1, dtype=[('empty', int)]),
     bounds: _test_statistics.Bounds = None,
     minimizer: Minimizer = _default_minimizer,
     verbose: bool = False,
@@ -116,7 +116,11 @@ def minimize_ts(
     ts = functools.partial(analysis.test_statistic,
                            ns_newton_iters=ns_newton_iters)
 
-    if len(test_params) != 0:
+    if 'empty' in test_params.dtype.names:
+        output['ts'] = -ts(test_params, prepro, analysis.ts_sob)
+        output['ns'] = ts(test_params, prepro, analysis.ts_sob, return_ns=True)
+
+    else:
         params = rf.structured_to_unstructured(prepro.params, copy=True)[0]
 
         if verbose:
@@ -134,9 +138,6 @@ def minimize_ts(
 
         if verbose:
             print('done')
-    else:
-        output['ts'] = -ts(params, prepro, analysis.ts_sob)
-        output['ns'] = ts(params, prepro, analysis.ts_sob, return_ns=True)
 
     return output
 
