@@ -188,7 +188,7 @@ def get_ns_ratio(sob: np.array, prepro: Preprocessing, params: np.ndarray,
     """
     if 'ns' in params.dtype.names:
         return params['ns'] / prepro.n_events
-    
+
     eps = 1e-5
     k = 1 / (sob - 1)
     lo = max(-1 + eps, 1 / (1 - np.max(sob)))
