@@ -101,8 +101,6 @@ class Preprocessor:
                  params: np.ndarray, bounds: Bounds) -> Preprocessing:
         """Docstring"""
         prepro_dict = self._preprocess(event_model, source, events)
-        basic_keys = {'drop_index', 'n_events', 'n_dropped', 'sob_spatial'}
-        keys = [key for key in prepro_dict if key not in basic_keys]
 
         # astuple returns a deepcopy of the instance attributes.
         return self.factory_type(
