@@ -159,7 +159,9 @@ class EventModelBase:
 
     _gamma: float
 
+    _n_background: int = field(init=False)
     _grl: np.ndarray = field(init=False)
+    _grl_rates: np.ndarray = field(init=False)
     _reduced_sim: np.ndarray = field(init=False)
     _background_dec_spline: Spline = field(init=False)
 
@@ -251,6 +253,9 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
 
         self._background_dec_spline = self._init_background_dec_spline(
             background_sin_dec_bins)
+
+        self._n_background = self._grl['events'].sum()
+        self._grl_rates = self._grl['events'] / self._grl['livetime']
 
     def _init_background_dec_spline(self, sin_dec_bins: np.array, *args,
                                     **kwargs) -> Spline:
@@ -403,8 +408,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
             An array of injected background events.
         """
         # Get the number of events we see from these runs
-        n_background = self._grl['events'].sum()
-        n_background_observed = np.random.poisson(n_background)
+        n_background_observed = np.random.poisson(self._n_background)
 
         # How many events should we add in? This will now be based on the
         # total number of events actually observed during these runs
@@ -433,44 +437,56 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
 
         # Pick the signal events
         total = self._reduced_sim['weight'].sum()
+
         if n_signal_observed is None:
             n_signal_observed = scipy.stats.poisson.rvs(total * flux_norm)
+
         signal = np.random.choice(
             self._reduced_sim,
             n_signal_observed,
             p=self._reduced_sim['weight'] / total,
-            replace=False).copy()
+            replace=False,
+        ).copy()
 
         if len(signal) > 0:
             ones = np.ones_like(signal['trueRa'])
 
             signal['ra'], signal['dec'] = rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones * source.ra, ones * source.dec,
-                signal['ra'], signal['dec'])
+                signal['trueRa'],
+                signal['trueDec'],
+                ones * source.ra,
+                ones * source.dec,
+                signal['ra'],
+                signal['dec'],
+            )
+
             signal['trueRa'], signal['trueDec'] = rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones * source.ra, ones * source.dec,
-                signal['trueRa'], signal['trueDec'])
+                signal['trueRa'],
+                signal['trueDec'],
+                ones * source.ra,
+                ones * source.dec,
+                signal['trueRa'],
+                signal['trueDec'],
+            )
 
         return signal
 
-    def grl_filter(self, events: np.ndarray) -> np.ndarray:
+    def scramble_times(self, times: np.ndarray,
+                       background: bool = True) -> np.ndarray:
         """Docstring"""
-        sorting_indices = np.argsort(events['time'])
-        events = events[sorting_indices]
+        p = None
 
-        # We need to check to ensure that every event is contained within
-        # a good run. If the event happened when we had deadtime (when we
-        # were not taking data), then we need to remove it.
-        grl_start = self._grl['start'].reshape((1, len(self._grl)))
-        grl_stop = self._grl['stop'].reshape((1, len(self._grl)))
-        after_start = np.less(grl_start, events['time'].reshape(len(events), 1))
-        before_stop = np.less(events['time'].reshape(len(events), 1), grl_stop)
-        during_uptime = np.any(after_start & before_stop, axis=1)
-        events = events[during_uptime]
+        if background:
+            p = self._grl_rates / self._grl_rates.sum()
 
-        return events
+        runs = np.random.choice(
+            self._grl,
+            size=len(times),
+            replace=True,
+            p=p,
+        )
+
+        return np.random.uniform(runs['start'], runs['stop'])
 
     @property
     def gamma(self) -> float:
@@ -486,19 +502,8 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
 @dataclass
 class TdEventModelBase(EventModelBase):
     """Docstring"""
-    _background_time_profile: time_profiles.GenericProfile
-    _signal_time_profile: time_profiles.GenericProfile
-    _n_background: int = field(init=False)
-
-    @property
-    def background_time_profile(self) -> time_profiles.GenericProfile:
-        """Docstring"""
-        return self._background_time_profile
-
-    @property
-    def signal_time_profile(self) -> time_profiles.GenericProfile:
-        """Docstring"""
-        return self._signal_time_profile
+    background_time_profile: time_profiles.GenericProfile
+    signal_time_profile: time_profiles.GenericProfile
 
 
 @dataclass
@@ -530,7 +535,7 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
         super().__post_init__(source, grl, background_sin_dec_bins)
 
         # Find the run contian in the background time window
-        start_time, end_time = self._background_time_profile.range
+        start_time, end_time = self.background_time_profile.range
         if withinwindow:
             fully_contained = (self._grl['start'] >= start_time
             ) & (self._grl['stop'] < end_time)
@@ -556,67 +561,34 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
                 raise RuntimeError
             background_grl = self._grl[background_runs]
 
-        # Find the background rate
-        n_background = background_grl['events'].sum()
-        n_background /= background_grl['livetime'].sum()
-        n_background *= self._background_time_profile.exposure
-        self._n_background = n_background
+        self._n_background = background_grl['events'].sum()
+        self._n_background /= background_grl['livetime'].sum()
+        self._n_background *= self.background_time_profile.exposure
 
-    def inject_background_events(self) -> np.ndarray:
-        """Injects background events with specific time profile for a trial.
+    def scramble_times(self, times: np.ndarray,
+                       background: bool = True) -> np.ndarray:
+        """Docstring"""
+        if background:
+            profile = self.background_time_profile
+        else:
+            profile = self.signal_time_profile
 
-        Returns:
-            An array of injected background events.
-        """
-        n_background_observed = np.random.poisson(self._n_background)
-        background = np.random.choice(self._data, n_background_observed).copy()
-        background['ra'] = np.random.uniform(0, 2 * np.pi, len(background))
-        background['time'] = self._background_time_profile.random(
-            size=len(background))
+        grl_start_cdf = profile.cdf(
+            self._grl['start'])
+        grl_stop_cdf = profile.cdf(
+            self._grl['stop'])
 
-        return background
+        valid = np.logical_and(grl_start_cdf < 1, grl_stop_cdf > 0)
+        grl_weighted_rates = grl_stop_cdf[valid] - grl_start_cdf[valid]
 
-    def inject_signal_events(
-        self, source: sources.Source,
-        flux_norm: float,
-        n_signal_observed: Optional[int] = None,
-    ) -> np.ndarray:
-        """Function info...
+        if background:
+            grl_weighted_rates *= self._grl_rates[valid]
 
-        More function info...
+        runs = np.random.choice(
+            self._grl[valid],
+            size=len(times),
+            replace=True,
+            p=grl_weighted_rates / grl_weighted_rates.sum(),
+        )
 
-        Args:
-            source:
-            flux_norm:
-            n_signal_observed:
-
-        Returns:
-            An array of injected signal events.
-        """
-        # Pick the signal events
-        weighttotal = self._reduced_sim['weight'].sum()
-        normed_weight = self._reduced_sim['weight'] / weighttotal
-
-        if n_signal_observed is None:
-            n_signal_observed = scipy.stats.poisson.rvs(
-                weighttotal * self._signal_time_profile.exposure * flux_norm)
-
-        signal = np.random.choice(self._reduced_sim, n_signal_observed,
-                                  p=normed_weight, replace=False).copy()
-
-        if len(signal) > 0:
-            ones = np.ones_like(signal['trueRa'])
-
-            signal['ra'], signal['dec'] = rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones * source.ra, ones * source.dec,
-                signal['ra'], signal['dec'])
-            signal['trueRa'], signal['trueDec'] = rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones * source.ra, ones * source.dec,
-                signal['trueRa'], signal['trueDec'])
-
-        # Randomize the signal time
-        signal['time'] = self._signal_time_profile.random(size=len(signal))
-
-        return signal
+        return profile.inverse_transform_sample(runs['start'], runs['stop'])

@@ -179,11 +179,11 @@ class I3EventModel(
             print('Fitting log(signal-over-background vs. gamma splines)...',
                   end='')
 
-        def spline(log_ratios):
-            return Spline(gamma_bins, log_ratios, *args, **kwargs)
+        splines = [[
+            Spline(gamma_bins, log_ratios, *args, **kwargs)
+            for log_ratios in dec_bin
+        ] for dec_bin in transposed_log_sob_maps]
 
-        splines = [[spline(log_ratios) for log_ratios in dec_bin]
-                   for dec_bin in transposed_log_sob_maps]
         if verbose:
             print('done')
 

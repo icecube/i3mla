@@ -29,10 +29,10 @@ class Preprocessing:
     params: np.ndarray
     _bounds: Bounds
     events: np.ndarray
-    n_events: int
-    n_dropped: int
-    sob_spatial: np.array
-    drop_index: np.array
+    n_events: Optional[int] = None
+    n_dropped: Optional[int] = None
+    sob_spatial: Optional[np.array] = None
+    drop_index: Optional[np.array] = None
 
     def _fix_bounds(
         self,
@@ -101,39 +101,23 @@ class Preprocessor:
                  params: np.ndarray, bounds: Bounds) -> Preprocessing:
         """Docstring"""
         prepro_dict = self._preprocess(event_model, source, events)
-        basic_keys = {'drop_index', 'n_events', 'n_dropped', 'sob_spatial'}
-        keys = [key for key in prepro_dict if key not in basic_keys]
-
-        if keys:
-            return self.factory_type(
-                params,
-                bounds,
-                events,
-                prepro_dict['n_events'],
-                prepro_dict['n_dropped'],
-                prepro_dict['sob_spatial'],
-                prepro_dict['drop_index'],
-                *dataclasses.astuple(self),
-                *[prepro_dict[key] for key in keys],
-            )
 
         # astuple returns a deepcopy of the instance attributes.
         return self.factory_type(
             params,
-            prepro_dict['n_events'],
-            prepro_dict['n_dropped'],
-            prepro_dict['sob_spatial'],
-            prepro_dict['drop_index'],
-            *dataclasses.astuple(self),
+            bounds,
+            events,
+            **prepro_dict,
         )
 
 
 @dataclasses.dataclass
 class TdPreprocessing(Preprocessing):
     """Docstring"""
-    sig_time_profile: time_profiles.GenericProfile
-    bg_time_profile: time_profiles.GenericProfile
-    sob_time: np.array
+    sig_time_profile: Optional[time_profiles.GenericProfile] = None
+    bg_time_profile: Optional[time_profiles.GenericProfile] = None
+    sob_time: Optional[np.array] = None
+    times: Optional[np.array] = None
 
 
 @dataclasses.dataclass
@@ -156,34 +140,32 @@ class TdPreprocessor(Preprocessor):
             events:
         """
         super_prepro_dict = super()._preprocess(event_model, source, events)
-
-        sob_time = 1 / self.bg_time_profile.pdf(
-            events[super_prepro_dict['drop_index']]['time'])
+        times = np.empty(
+            super_prepro_dict['drop_index'].sum(),
+            dtype=events['time'].dtype,
+        )
+        times = events[super_prepro_dict['drop_index']]['time']
+        sob_time = 1 / self.bg_time_profile.pdf(times)
 
         if np.logical_not(np.all(np.isfinite(sob_time))):
             warnings.warn('Warning, events outside background time profile',
                           RuntimeWarning)
-        return {**super_prepro_dict, 'sob_time': sob_time}
+        return {
+            **super_prepro_dict,
+            'sig_time_profile': self.sig_time_profile,
+            'bg_time_profile': self.bg_time_profile,
+            'sob_time': sob_time,
+            'times': times,
+        }
 
 
-def i3_ts(sob: np.ndarray, prepro: Preprocessing,
-          return_ns: bool, ns_ratio: Optional[float] = None) -> float:
+def get_i3_llh(sob: np.ndarray, ns_ratio: float) -> np.array:
     """Docstring"""
-    if prepro.n_events == 0:
-        return 0
-
-    if ns_ratio is None:
-        ns_ratio = cal_ns_ratio(sob, prepro.n_dropped)
-
-    if return_ns:
-        return ns_ratio * prepro.n_events
-
-    return -2 * (np.sum(
-        np.log(ns_ratio * (sob - 1) + 1)
-    ) + prepro.n_dropped * np.log(1 - ns_ratio))
+    return np.log(ns_ratio * (sob - 1) + 1), np.log(1 - ns_ratio)
 
 
-def cal_ns_ratio(sob: np.array, n_dropped: int, iterations: int = 30) -> float:
+def get_ns_ratio(sob: np.array, prepro: Preprocessing, params: np.ndarray,
+                 iterations: int) -> float:
     """Docstring
 
     Args:
@@ -193,17 +175,22 @@ def cal_ns_ratio(sob: np.array, n_dropped: int, iterations: int = 30) -> float:
     Returns:
 
     """
+    if 'ns' in params.dtype.names:
+        return params['ns'] / prepro.n_events
+
+    eps = 1e-5
     k = 1 / (sob - 1)
-    lo = max(-1, 1 / (1 - np.max(sob)))
+    lo = max(-1 + eps, 1 / (1 - np.max(sob)))
     x = [0] * iterations
 
     for i in range(iterations - 1):
         # get next iteration and clamp
         terms = 1 / (x[i] + k)
         zero_term = 1 / (x[i] - 1)
-        first_derivative = np.sum(terms) + n_dropped * zero_term
-        second_derivative = np.sum(terms**2) + n_dropped * zero_term**2
-        x[i + 1] = min(1, max(
+        first_derivative = np.sum(terms) + prepro.n_dropped * zero_term
+        second_derivative = np.sum(
+            terms**2) + prepro.n_dropped * zero_term**2
+        x[i + 1] = min(1 - eps, max(
             lo,
             x[i] + first_derivative / second_derivative,
         ))
@@ -211,14 +198,13 @@ def cal_ns_ratio(sob: np.array, n_dropped: int, iterations: int = 30) -> float:
     return x[-1]
 
 
-def cal_sob_time(params: np.ndarray, prepro: TdPreprocessing) -> float:
+def get_sob_time(params: np.ndarray, prepro: TdPreprocessing) -> np.array:
     """Docstring"""
     time_params = prepro.sig_time_profile.param_dtype.names
 
     if set(time_params).issubset(set(params.dtype.names)):
         prepro.sig_time_profile.update_params(params[list(time_params)])
 
-    sob_time = prepro.sob_time * prepro.sig_time_profile.pdf(
-        prepro.events[prepro.drop_index]['time'])
+    sob_time = prepro.sob_time * prepro.sig_time_profile.pdf(prepro.times)
 
     return sob_time
