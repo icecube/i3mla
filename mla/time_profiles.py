@@ -239,6 +239,7 @@ class GaussProfile(GenericProfile):
         """Docstring"""
         self.mean = params['mean']
         self.sigma = params['sigma']
+        self.scipy_dist = scipy.stats.norm(self.mean, self.sigma)
 
     @property
     def exposure(self) -> float:
@@ -354,6 +355,7 @@ class UniformProfile(GenericProfile):
         """Docstring"""
         self.start = params['start']
         self.length = params['length']
+        self._range = (self.start, self.start + self.length)
 
     @property
     def exposure(self) -> float:
