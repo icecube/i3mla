@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import ClassVar
+from typing import ClassVar, Optional
 
 import dataclasses
 import numpy as np
@@ -21,7 +21,7 @@ from . import models
 @dataclasses.dataclass
 class ThreeMLPreprocessing(_test_statistics.TdPreprocessing):
     """Docstring"""
-    event_model: models.ThreeMLEventModel
+    event_model: Optional[models.ThreeMLEventModel] = None
 
 
 @dataclasses.dataclass
