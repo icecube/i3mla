@@ -32,7 +32,7 @@ class ThreeMLPreprocessor(_test_statistics.TdPreprocessor):
 
 def get_sob(params: np.ndarray, prepro: ThreeMLPreprocessing) -> np.array:
     """Docstring"""
-    sob = prepro.sob_spatial
+    sob = prepro.sob_spatial.copy()
     sob *= prepro.event_model.get_energy_sob(
         prepro.events[prepro.drop_index])
     sob *= _test_statistics.get_sob_time(params, prepro)

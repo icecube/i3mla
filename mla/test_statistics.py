@@ -75,7 +75,7 @@ def _get_sob_energy(params: np.ndarray, prepro: I3Preprocessing) -> np.array:
 
 def i3_sob(params: np.ndarray, prepro: I3Preprocessing) -> np.array:
     """Docstring"""
-    sob = prepro.sob_spatial
+    sob = prepro.sob_spatia.copy()
     sob *= _test_statistics.get_sob_time(params, prepro)
     sob *= _get_sob_energy(params, prepro)
     return sob
