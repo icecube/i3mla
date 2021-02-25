@@ -70,7 +70,10 @@ def _get_sob_energy(params: np.ndarray, prepro: I3Preprocessing) -> np.array:
         gamma = params['gamma']
     else:
         gamma = prepro.gamma
-    return np.exp([spline(gamma) for spline in prepro.splines])
+    return np.maximum(
+        np.exp([spline(gamma) for spline in prepro.splines]),
+        0,
+    )
 
 
 def i3_sob(params: np.ndarray, prepro: I3Preprocessing) -> np.array:

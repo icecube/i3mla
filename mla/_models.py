@@ -294,8 +294,8 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
 
         if 'bbox' not in kwargs:
             kwargs['bbox'] = [-1.0, 1.0]
-        # if 's' not in kwargs:
-        #    kwargs['s'] = 1.5e-5
+        if 's' not in kwargs:
+            kwargs['s'] = 1.5e-5
         if 'ext' not in kwargs:
             kwargs['ext'] = 3
 
@@ -395,7 +395,10 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         Returns:
             The value for the background space pdf for the given events decs.
         """
-        bg_densities = self._background_dec_spline(events['sindec'])
+        bg_densities = np.maximum(
+            self._background_dec_spline(events['sindec']),
+            0,
+        )
         return (1 / (2 * np.pi)) * bg_densities
 
     def inject_background_events(self) -> np.ndarray:
