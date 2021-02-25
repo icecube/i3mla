@@ -395,10 +395,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         Returns:
             The value for the background space pdf for the given events decs.
         """
-        bg_densities = np.maximum(
-            self._background_dec_spline(events['sindec']),
-            0,
-        )
+        bg_densities = self._background_dec_spline(events['sindec'])
         return (1 / (2 * np.pi)) * bg_densities
 
     def inject_background_events(self) -> np.ndarray:

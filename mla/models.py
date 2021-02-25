@@ -22,6 +22,7 @@ from dataclasses import field
 from dataclasses import InitVar
 
 from . import sources
+from . import test_statistics
 from . import _models
 
 
@@ -220,22 +221,35 @@ class I3EventModel(
 
         spline_idxs = list(zip(set(sin_dec_idx), set(log_energy_idx)))
         spline_evals = np.empty(len(spline_idxs), dtype=np.float64)
-        log_sob = np.empty(len(events), dtype=np.float64)
+        sob_energy = np.empty(len(events), dtype=np.float64)
 
         for i, idxs in enumerate(spline_idxs):
             log_sob_idxs = np.logical_and(
                 sin_dec_idx == idxs[0],
                 log_energy_idx == idxs[1],
             )
-            log_sob[log_sob_idxs] = spline_evals[i]
+            sob_energy[log_sob_idxs] = spline_evals[i]
 
-        return spline_idxs, spline_evals, log_sob
+        return spline_idxs, spline_evals, sob_energy
 
-    def get_sob_energy(self, spline_idxs, spline_evals, log_sob) -> np.array:
+    def get_sob_energy(
+        self,
+        params: np.ndarray,
+        prepro: test_statistics.I3Preprocessing,
+    ) -> np.array:
         """Docstring"""
-        splines = np.nditer([spline_idxs, spline_evals],
-                            op_flags=[['readonly'], ['writeonly']])
+        if 'gamma' in params.dtype.names:
+            gamma = params['gamma']
+        else:
+            gamma = prepro.gamma
+        
+        splines = np.nditer(prepro.spline_evals, op_flags=['writeonly'])
+        spline_evals = np.nditer(prepro.spline_evals, op_flags=['readwrite'])
         with splines:
-            for idx, spline_eval in splines:
-                spline_eval[...] = self._log_sob_gamma_splines[idx[0]][idx[1]]
-        return np.exp(log_sob)
+            for idx, spline_eval in zip(prepro.spline_idxs, splines):
+                spline_eval[...] = self._log_sob_gamma_splines[idx[0]][idx[1]](
+                    gamma,
+                )
+        with spline_evals:
+            spline_evals[:] = np.exp(spline_evals[:])
+        return prepro.sob_energy
