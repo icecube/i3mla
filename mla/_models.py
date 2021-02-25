@@ -436,25 +436,37 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
 
         # Pick the signal events
         total = self._reduced_sim['weight'].sum()
+
         if n_signal_observed is None:
             n_signal_observed = scipy.stats.poisson.rvs(total * flux_norm)
+
         signal = np.random.choice(
             self._reduced_sim,
             n_signal_observed,
             p=self._reduced_sim['weight'] / total,
-            replace=False).copy()
+            replace=False,
+        ).copy()
 
         if len(signal) > 0:
             ones = np.ones_like(signal['trueRa'])
 
             signal['ra'], signal['dec'] = rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones * source.ra, ones * source.dec,
-                signal['ra'], signal['dec'])
+                signal['trueRa'],
+                signal['trueDec'],
+                ones * source.ra,
+                ones * source.dec,
+                signal['ra'],
+                signal['dec'],
+            )
+
             signal['trueRa'], signal['trueDec'] = rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones * source.ra, ones * source.dec,
-                signal['trueRa'], signal['trueDec'])
+                signal['trueRa'],
+                signal['trueDec'],
+                ones * source.ra,
+                ones * source.dec,
+                signal['trueRa'],
+                signal['trueDec'],
+            )
 
         return signal
 
@@ -561,57 +573,3 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
         n_background /= background_grl['livetime'].sum()
         n_background *= self.background_time_profile.exposure
         self._n_background = n_background
-
-    def inject_background_events(self) -> np.ndarray:
-        """Injects background events with specific time profile for a trial.
-
-        Returns:
-            An array of injected background events.
-        """
-        n_background_observed = np.random.poisson(self._n_background)
-        background = np.random.choice(self._data, n_background_observed).copy()
-        background['ra'] = np.random.uniform(0, 2 * np.pi, len(background))
-
-        return background
-
-    def inject_signal_events(
-        self, source: sources.Source,
-        flux_norm: float,
-        n_signal_observed: Optional[int] = None,
-    ) -> np.ndarray:
-        """Function info...
-
-        More function info...
-
-        Args:
-            source:
-            flux_norm:
-            n_signal_observed:
-
-        Returns:
-            An array of injected signal events.
-        """
-        # Pick the signal events
-        weighttotal = self._reduced_sim['weight'].sum()
-        normed_weight = self._reduced_sim['weight'] / weighttotal
-
-        if n_signal_observed is None:
-            n_signal_observed = scipy.stats.poisson.rvs(
-                weighttotal * self.signal_time_profile.exposure * flux_norm)
-
-        signal = np.random.choice(self._reduced_sim, n_signal_observed,
-                                  p=normed_weight, replace=False).copy()
-
-        if len(signal) > 0:
-            ones = np.ones_like(signal['trueRa'])
-
-            signal['ra'], signal['dec'] = rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones * source.ra, ones * source.dec,
-                signal['ra'], signal['dec'])
-            signal['trueRa'], signal['trueDec'] = rotate(
-                signal['trueRa'], signal['trueDec'],
-                ones * source.ra, ones * source.dec,
-                signal['trueRa'], signal['trueDec'])
-
-        return signal
