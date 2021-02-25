@@ -64,12 +64,8 @@ def _default_minimizer(ts: test_statistics.TestStatistic,
                        sob: test_statistics.SobFunc,
                        bounds: _test_statistics.Bounds = None):
     """Docstring"""
-    with np.errstate(divide='ignore', invalid='ignore'):
-        # Set the seed values, which tell the minimizer
-        # where to start, and the bounds. First do the
-        # shape parameters.
-        return scipy.optimize.minimize(
-            ts, x0=params, args=(prepro, sob), bounds=bounds, method='L-BFGS-B')
+    return scipy.optimize.minimize(
+        ts, x0=params, args=(prepro, sob), bounds=bounds, method='L-BFGS-B')
 
 
 def minimize_ts(
@@ -211,7 +207,6 @@ def produce_and_minimize(
     """Docstring"""
     return [minimize_ts(
         analysis,
-        test_params,
         produce_trial(
             analysis,
             flux_norm=flux_norm,
@@ -219,6 +214,7 @@ def produce_and_minimize(
             n_signal_observed=n_signal_observed,
             verbose=verbose,
         ),
+        test_params=test_params,
         bounds=bounds,
         minimizer=minimizer,
         verbose=verbose,
