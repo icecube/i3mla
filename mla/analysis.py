@@ -31,6 +31,7 @@ Minimizer = Callable[
         test_statistics.TestStatistic,
         np.ndarray,
         _test_statistics.Preprocessing,
+        test_statistics.SobFunc,
         _test_statistics.Bounds,
     ],
     scipy.optimize.OptimizeResult,
@@ -42,6 +43,7 @@ class Analysis:
     """Stores the components of an analysis."""
     model: _models.EventModel
     ts_preprocessor: _test_statistics.Preprocessor
+    ts_sob: test_statistics.SobFunc
     test_statistic: test_statistics.TestStatistic
     source: sources.Source
 
@@ -59,6 +61,7 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
 def _default_minimizer(ts: test_statistics.TestStatistic,
                        params: np.ndarray,
                        prepro: _test_statistics.Preprocessing,
+                       sob: test_statistics.SobFunc,
                        bounds: _test_statistics.Bounds = None):
     """Docstring"""
     with np.errstate(divide='ignore', invalid='ignore'):
@@ -66,7 +69,7 @@ def _default_minimizer(ts: test_statistics.TestStatistic,
         # where to start, and the bounds. First do the
         # shape parameters.
         return scipy.optimize.minimize(
-            ts, x0=params, args=(prepro), bounds=bounds, method='L-BFGS-B')
+            ts, x0=params, args=(prepro, sob), bounds=bounds, method='L-BFGS-B')
 
 
 def minimize_ts(analysis: Analysis, test_params: np.ndarray,
@@ -114,14 +117,14 @@ def minimize_ts(analysis: Analysis, test_params: np.ndarray,
                            ns_newton_iters=ns_newton_iters)
 
     params = rf.structured_to_unstructured(prepro.params, copy=True)[0]
-    result = minimizer(ts, params, prepro, prepro.bounds)
+    result = minimizer(ts, params, prepro, analysis.ts_sob, prepro.bounds)
 
     if verbose:
         print('done')
 
     # Store the results in the output array
     output['ts'] = -1 * result.fun
-    output['ns'] = ts(result.x, prepro, return_ns=True)
+    output['ns'] = ts(result.x, prepro, analysis.ts_sob, return_ns=True)
     result.x = rf.unstructured_to_structured(
         result.x, dtype=prepro.params.dtype, copy=True)
     for param in prepro.params.dtype.names:

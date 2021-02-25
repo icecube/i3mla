@@ -170,25 +170,13 @@ class TdPreprocessor(Preprocessor):
         return {**super_prepro_dict, 'sob_time': sob_time, 'times': times}
 
 
-def i3_ts(sob: np.ndarray, prepro: Preprocessing,
-          return_ns: bool, ns_ratio: Optional[float] = None,
-          ns_newton_iters: int = 20) -> float:
+def get_i3_llh(sob: np.ndarray, ns_ratio: float) -> np.array:
     """Docstring"""
-    if prepro.n_events == 0:
-        return 0
-
-    if ns_ratio is None:
-        ns_ratio = cal_ns_ratio(sob, prepro.n_dropped, ns_newton_iters)
-
-    if return_ns:
-        return ns_ratio * prepro.n_events
-
-    return -2 * (np.sum(
-        np.log(ns_ratio * (sob - 1) + 1)
-    ) + prepro.n_dropped * np.log(1 - ns_ratio))
+    return np.log(ns_ratio * (sob - 1) + 1), np.log(1 - ns_ratio)
 
 
-def cal_ns_ratio(sob: np.array, n_dropped: int, iterations: int) -> float:
+def get_ns_ratio(sob: np.array, prepro: Preprocessing, params: np.ndarray,
+                 iterations: int) -> float:
     """Docstring
 
     Args:
@@ -198,6 +186,9 @@ def cal_ns_ratio(sob: np.array, n_dropped: int, iterations: int) -> float:
     Returns:
 
     """
+    if 'ns' in params.dtype.names:
+        return params['ns'] / prepro.n_events
+
     k = 1 / (sob - 1)
     lo = max(-1, 1 / (1 - np.max(sob)))
     x = [0] * iterations
@@ -206,8 +197,9 @@ def cal_ns_ratio(sob: np.array, n_dropped: int, iterations: int) -> float:
         # get next iteration and clamp
         terms = 1 / (x[i] + k)
         zero_term = 1 / (x[i] - 1)
-        first_derivative = np.sum(terms) + n_dropped * zero_term
-        second_derivative = np.sum(terms**2) + n_dropped * zero_term**2
+        first_derivative = np.sum(terms) + prepro.n_dropped * zero_term
+        second_derivative = np.sum(
+            terms**2) + prepro.n_dropped * zero_term**2
         x[i + 1] = min(1, max(
             lo,
             x[i] + first_derivative / second_derivative,
@@ -216,7 +208,7 @@ def cal_ns_ratio(sob: np.array, n_dropped: int, iterations: int) -> float:
     return x[-1]
 
 
-def cal_sob_time(params: np.ndarray, prepro: TdPreprocessing) -> float:
+def get_sob_time(params: np.ndarray, prepro: TdPreprocessing) -> np.array:
     """Docstring"""
     time_params = prepro.sig_time_profile.param_dtype.names
 

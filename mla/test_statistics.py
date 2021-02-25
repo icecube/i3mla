@@ -21,7 +21,14 @@ from . import _models
 from . import _test_statistics
 
 
-TestStatistic = Callable[[np.ndarray, _test_statistics.Preprocessing], float]
+SobFunc = Callable[[np.ndarray, _test_statistics.Preprocessing], np.array]
+TestStatistic = Callable[[
+    np.ndarray,
+    _test_statistics.Preprocessing,
+    SobFunc,
+    bool,
+    int,
+], float]
 
 
 @dataclasses.dataclass
@@ -54,10 +61,25 @@ class I3Preprocessor(_test_statistics.TdPreprocessor):
         return {**super_prepro_dict, 'splines': splines}
 
 
-def i3_test_statistic(params: np.ndarray,
-                      prepro: I3Preprocessing,
-                      return_ns: bool = False,
-                      ns_newton_iters: int = 20) -> float:
+def _get_sob_energy(params: np.ndarray, prepro: I3Preprocessing) -> np.array:
+    """Docstring"""
+    return np.exp(
+        [spline(params['gamma'], ext=3) for spline in prepro.splines])
+
+
+def i3_sob(params: np.ndarray, prepro: I3Preprocessing) -> np.array:
+    """Docstring"""
+    sob = prepro.sob_spatial
+    sob *= _test_statistics.get_sob_time(params, prepro)
+    sob *= _get_sob_energy(params, prepro)
+    return sob
+
+
+def llh_test_statistic(params: np.ndarray,
+                       prepro: _test_statistics.Preprocessing,
+                       sob_func: SobFunc,
+                       return_ns: bool = False,
+                       ns_newton_iters: int = 20) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
     Calculates the test-statistic using a given event model, n_signal, and
@@ -74,12 +96,17 @@ def i3_test_statistic(params: np.ndarray,
     """
     temp_params = rf.unstructured_to_structured(
         params, dtype=prepro.params.dtype, copy=True)
-    sob = prepro.sob_spatial * _test_statistics.cal_sob_time(
-        temp_params, prepro) * np.exp(
-        [spline(temp_params['gamma'], ext=3) for spline in prepro.splines])
 
-    ns_ratio = None
-    if 'ns' in temp_params.dtype.names:
-        ns_ratio = temp_params['ns'] / prepro.n_events
-    return _test_statistics.i3_ts(
-        sob, prepro, return_ns, ns_ratio, ns_newton_iters=ns_newton_iters)
+    sob = sob_func(temp_params, prepro)
+
+    ns_ratio = _test_statistics.get_ns_ratio(
+        sob, prepro, temp_params, ns_newton_iters)
+
+    if return_ns:
+        return ns_ratio
+
+    if prepro.n_events == 0:
+        return 0
+
+    llh, drop_term = _test_statistics.get_i3_llh(sob, ns_ratio)
+    return -2 * (llh.sum() + prepro.n_dropped * drop_term)
