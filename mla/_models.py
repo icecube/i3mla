@@ -571,8 +571,6 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
         n_background_observed = np.random.poisson(self._n_background)
         background = np.random.choice(self._data, n_background_observed).copy()
         background['ra'] = np.random.uniform(0, 2 * np.pi, len(background))
-        background['time'] = self.background_time_profile.random(
-            size=len(background))
 
         return background
 
@@ -615,8 +613,5 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
                 signal['trueRa'], signal['trueDec'],
                 ones * source.ra, ones * source.dec,
                 signal['trueRa'], signal['trueDec'])
-
-        # Randomize the signal time
-        signal['time'] = self.signal_time_profile.random(size=len(signal))
 
         return signal
