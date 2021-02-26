@@ -37,9 +37,8 @@ class I3Preprocessing(_test_statistics.TdPreprocessing):
     event_model: Optional[_models.EventModel] = None
     splines: Optional[List[scipy.interpolate.UnivariateSpline]] = None
     gamma: float = -2
-    spline_idxs: Optional[List] = None
-    spline_evals: Optional[np.ndarray] = None
-    sob_energy: Optional[np.ndarray] = None
+    event_spline_idxs: Optional[np.ndarray] = None
+    splines: Optional[np.ndarray] = None
 
 
 @dataclasses.dataclass
@@ -65,7 +64,7 @@ class I3Preprocessor(_test_statistics.TdPreprocessor):
         splines = event_model.log_sob_gamma_splines(
             events[super_prepro_dict['drop_index']])
         
-        spline_idxs, spline_evals, sob_e = event_model.log_sob_spline_prepro(
+        event_spline_idxs, splines = event_model.log_sob_spline_prepro(
             events[super_prepro_dict['drop_index']],
         )
 
@@ -73,9 +72,8 @@ class I3Preprocessor(_test_statistics.TdPreprocessor):
             **super_prepro_dict,
             'splines': splines,
             'gamma': self.gamma,
-            'spline_idxs': spline_idxs,
-            'spline_evals': spline_evals,
-            'sob_energy': sob_e,
+            'event_spline_idxs': event_spline_idxs,
+            'splines': splines,
             'event_model': event_model,
         }
 
@@ -96,8 +94,8 @@ def i3_sob(params: np.ndarray, prepro: I3Preprocessing) -> np.array:
     """Docstring"""
     sob = prepro.sob_spatial.copy()
     sob *= _test_statistics.get_sob_time(params, prepro)
-    sob *= _get_sob_energy(params, prepro)
-    #sob *= prepro.event_model.get_sob_energy(params, prepro)
+    #sob *= _get_sob_energy(params, prepro)
+    sob *= prepro.event_model.get_sob_energy(params, prepro)
     return sob
 
 
