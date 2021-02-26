@@ -34,7 +34,6 @@ TestStatistic = Callable[[
 @dataclasses.dataclass
 class I3Preprocessing(_test_statistics.TdPreprocessing):
     """Docstring"""
-    event_model: Optional[_models.EventModel] = None
     splines: Optional[List[scipy.interpolate.UnivariateSpline]] = None
     gamma: float = -2
     event_spline_idxs: Optional[np.ndarray] = None
@@ -74,27 +73,13 @@ class I3Preprocessor(_test_statistics.TdPreprocessor):
             'gamma': self.gamma,
             'event_spline_idxs': event_spline_idxs,
             'splines': splines,
-            'event_model': event_model,
         }
-
-
-def _get_sob_energy(params: np.ndarray, prepro: I3Preprocessing) -> np.array:
-    """Docstring"""
-    if 'gamma' in params.dtype.names:
-        gamma = params['gamma']
-    else:
-        gamma = prepro.gamma
-    return np.maximum(
-        np.exp([spline(gamma) for spline in prepro.splines]),
-        0,
-    )
 
 
 def i3_sob(params: np.ndarray, prepro: I3Preprocessing) -> np.array:
     """Docstring"""
     sob = prepro.sob_spatial.copy()
     sob *= _test_statistics.get_sob_time(params, prepro)
-    #sob *= _get_sob_energy(params, prepro)
     sob *= prepro.event_model.get_sob_energy(params, prepro)
     return sob
 

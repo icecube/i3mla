@@ -14,6 +14,7 @@ __status__ = 'Development'
 
 from typing import Optional, Tuple, Union
 
+import abc
 import scipy
 import numpy as np
 import numpy.lib.recfunctions as rf
@@ -25,6 +26,7 @@ from dataclasses import InitVar
 
 from . import sources
 from . import time_profiles
+from . import _test_statistics
 
 
 def angular_distance(src_ra: float, src_dec: float, r_a: float,
@@ -132,6 +134,19 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
     r_a += np.where(r_a < 0., 2. * np.pi, 0.)
 
     return r_a, dec
+
+
+class EnergyEventModel:
+    """Docstring"""
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def get_sob_energy(
+        self,
+        params: np.ndarray,
+        prepro: _test_statistics.Preprocessing,
+    ) -> np.ndarray:
+        """Docstring"""
 
 
 @dataclass

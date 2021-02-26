@@ -55,7 +55,11 @@ class _I3EventModelDefaultsBase(_models.TdEventModelDefaultsBase):
 
 @dataclass
 class I3EventModel(
-        _models.TdEventModel, _I3EventModelDefaultsBase, _I3EventModelBase):
+    _models.TdEventModel,
+    _I3EventModelDefaultsBase,
+    _I3EventModelBase,
+    _models.EnergyEventModel,
+):
     """Docstring"""
     def __post_init__(self, source: sources.Source, grl: np.ndarray,
                       background_sin_dec_bins: Union[np.array, int],
@@ -189,24 +193,6 @@ class I3EventModel(
             print('done')
 
         return splines
-
-    def log_sob_gamma_splines(self, events: np.ndarray) -> List[Spline]:
-        """Gets the splines of sob vs. gamma required for each event.
-
-        Args:
-            events: An array of events including their positional data.
-
-        Returns:
-            A list of splines of sob vs gamma for each event.
-        """
-        # Get the bin that each event belongs to
-        sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1],
-                                      events['sindec'])
-        log_energy_idx = np.searchsorted(self._log_energy_bins[:-1],
-                                         events['logE'])
-
-        return [self._log_sob_gamma_splines[i - 1][j - 1]
-                for i, j in zip(sin_dec_idx, log_energy_idx)]
 
     def log_sob_spline_prepro(
         self,

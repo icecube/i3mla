@@ -29,6 +29,7 @@ class Preprocessing:
     params: np.ndarray
     _bounds: Bounds
     events: np.ndarray
+    event_model: _models.EventModel
     n_events: Optional[int] = None
     n_dropped: Optional[int] = None
     sob_spatial: Optional[np.array] = None
@@ -107,6 +108,7 @@ class Preprocessor:
             params,
             bounds,
             events,
+            event_model,
             **prepro_dict,
         )
 
