@@ -22,6 +22,7 @@ from dataclasses import field
 from dataclasses import InitVar
 
 from . import sources
+from . import test_statistics
 from . import _models
 
 
@@ -54,7 +55,11 @@ class _I3EventModelDefaultsBase(_models.TdEventModelDefaultsBase):
 
 @dataclass
 class I3EventModel(
-        _models.TdEventModel, _I3EventModelDefaultsBase, _I3EventModelBase):
+    _models.TdEventModel,
+    _I3EventModelDefaultsBase,
+    _I3EventModelBase,
+    _models.EnergyEventModel,
+):
     """Docstring"""
     def __post_init__(self, source: sources.Source, grl: np.ndarray,
                       background_sin_dec_bins: Union[np.array, int],
@@ -189,53 +194,49 @@ class I3EventModel(
 
         return splines
 
-    def log_sob_gamma_splines(self, events: np.ndarray) -> List[Spline]:
-        """Gets the splines of sob vs. gamma required for each event.
-
-        Args:
-            events: An array of events including their positional data.
-
-        Returns:
-            A list of splines of sob vs gamma for each event.
-        """
-        # Get the bin that each event belongs to
-        sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1],
-                                      events['sindec'])
-        log_energy_idx = np.searchsorted(self._log_energy_bins[:-1],
-                                         events['logE'])
-
-        return [self._log_sob_gamma_splines[i - 1][j - 1]
-                for i, j in zip(sin_dec_idx, log_energy_idx)]
-
     def log_sob_spline_prepro(
         self,
         events: np.ndarray,
-    ) -> Tuple[List[Tuple[int, int]], np.ndarray, np.ndarray]:
+    ) -> Tuple[List[Tuple[int, int]], np.ndarray, List]:
         """Docstring"""
         # Get the bin that each event belongs to
         sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1],
                                       events['sindec'])
+
         log_energy_idx = np.searchsorted(self._log_energy_bins[:-1],
                                          events['logE'])
 
-        spline_idxs = list(zip(set(sin_dec_idx), set(log_energy_idx)))
-        spline_evals = np.empty(len(spline_idxs), dtype=np.float64)
-        log_sob = np.empty(len(events), dtype=np.float64)
+        spline_idxs = np.unique(
+            [sin_dec_idx - 1, log_energy_idx - 1],
+            return_inverse=True,
+            axis=1
+        )[0]
 
-        for i, idxs in enumerate(spline_idxs):
-            log_sob_idxs = np.logical_and(
-                sin_dec_idx == idxs[0],
-                log_energy_idx == idxs[1],
-            )
-            log_sob[log_sob_idxs] = spline_evals[i]
+        splines = [
+            self._log_sob_gamma_splines[i][j]
+            for i, j in spline_idxs.T
+        ]
 
-        return spline_idxs, spline_evals, log_sob
+        event_spline_idxs = [
+            np.logical_and(  # this works fine pylint: disable=unsubscriptable-object
+                spline_idxs[0] == i,
+                spline_idxs[1] == j,
+            ).nonzero()[0][0]
+            for i, j in zip(sin_dec_idx - 1, log_energy_idx - 1)
+        ]
 
-    def get_sob_energy(self, spline_idxs, spline_evals, log_sob) -> np.array:
+        return event_spline_idxs, splines
+
+    def get_sob_energy(
+        self,
+        params: np.ndarray,
+        prepro: test_statistics.I3Preprocessing,
+    ) -> np.array:
         """Docstring"""
-        splines = np.nditer([spline_idxs, spline_evals],
-                            op_flags=[['readonly'], ['writeonly']])
-        with splines:
-            for idx, spline_eval in splines:
-                spline_eval[...] = self._log_sob_gamma_splines[idx[0]][idx[1]]
-        return np.exp(log_sob)
+        if 'gamma' in params.dtype.names:
+            gamma = params['gamma']
+        else:
+            gamma = prepro.gamma
+
+        spline_evals = np.exp([spline(gamma) for spline in prepro.splines])
+        return np.array([spline_evals[i] for i in prepro.event_spline_idxs])

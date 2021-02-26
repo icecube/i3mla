@@ -14,6 +14,7 @@ __status__ = 'Development'
 
 from typing import Optional, Tuple, Union
 
+import abc
 import scipy
 import numpy as np
 import numpy.lib.recfunctions as rf
@@ -132,6 +133,19 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
     r_a += np.where(r_a < 0., 2. * np.pi, 0.)
 
     return r_a, dec
+
+
+class EnergyEventModel:
+    """Docstring"""
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def get_sob_energy(
+        self,
+        params: np.ndarray,
+        prepro,
+    ) -> np.ndarray:
+        """Docstring"""
 
 
 @dataclass
@@ -294,8 +308,8 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
 
         if 'bbox' not in kwargs:
             kwargs['bbox'] = [-1.0, 1.0]
-        # if 's' not in kwargs:
-        #    kwargs['s'] = 1.5e-5
+        if 's' not in kwargs:
+            kwargs['s'] = 1.5e-5
         if 'ext' not in kwargs:
             kwargs['ext'] = 3
 

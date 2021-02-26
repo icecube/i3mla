@@ -29,6 +29,7 @@ class Preprocessing:
     params: np.ndarray
     _bounds: Bounds
     events: np.ndarray
+    event_model: _models.EventModel
     n_events: Optional[int] = None
     n_dropped: Optional[int] = None
     sob_spatial: Optional[np.array] = None
@@ -107,6 +108,7 @@ class Preprocessor:
             params,
             bounds,
             events,
+            event_model,
             **prepro_dict,
         )
 
@@ -161,7 +163,10 @@ class TdPreprocessor(Preprocessor):
 
 def get_i3_llh(sob: np.ndarray, ns_ratio: float) -> np.array:
     """Docstring"""
-    return np.log(ns_ratio * (sob - 1) + 1), np.log(1 - ns_ratio)
+    return (
+        np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1),
+        np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio)),
+    )
 
 
 def get_ns_ratio(sob: np.array, prepro: Preprocessing, params: np.ndarray,
@@ -185,11 +190,13 @@ def get_ns_ratio(sob: np.array, prepro: Preprocessing, params: np.ndarray,
 
     for i in range(iterations - 1):
         # get next iteration and clamp
-        terms = 1 / (x[i] + k)
-        zero_term = 1 / (x[i] - 1)
-        first_derivative = np.sum(terms) + prepro.n_dropped * zero_term
+        inv_terms = x[i] + k
+        inv_terms[inv_terms == 0] = eps
+        terms = 1 / inv_terms
+        drop_term = 1 / (x[i] - 1)
+        first_derivative = np.sum(terms) + prepro.n_dropped * drop_term
         second_derivative = np.sum(
-            terms**2) + prepro.n_dropped * zero_term**2
+            terms**2) + prepro.n_dropped * drop_term**2
         x[i + 1] = min(1 - eps, max(
             lo,
             x[i] + first_derivative / second_derivative,
