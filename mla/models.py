@@ -216,9 +216,12 @@ class I3EventModel(
             self._log_sob_gamma_splines[i][j]
             for i, j in spline_idxs.T
         ]
-        
+
         event_spline_idxs = [
-            np.logical_and(spline_idxs[0] == i, spline_idxs[1] == j).nonzero()[0][0]
+            np.logical_and(  # this works fine pylint: disable=unsubscriptable-object
+                spline_idxs[0] == i,
+                spline_idxs[1] == j,
+            ).nonzero()[0][0]
             for i, j in zip(sin_dec_idx - 1, log_energy_idx - 1)
         ]
 
@@ -234,6 +237,6 @@ class I3EventModel(
             gamma = params['gamma']
         else:
             gamma = prepro.gamma
-            
+
         spline_evals = np.exp([spline(gamma) for spline in prepro.splines])
         return np.array([spline_evals[i] for i in prepro.event_spline_idxs])

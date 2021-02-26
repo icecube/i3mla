@@ -216,11 +216,13 @@ class ThreeMLEventModel(
         # weight using the nearest non-zero sinDec bin.
         sin_dec_idx[sin_dec_idx > self._edge_point[1]] = self._edge_point[1]
         return self._ratio[sin_dec_idx, log_energy_idx]
-    
+
     def get_sob_energy(
         self,
         params: np.ndarray,
-        prepro: _test_statistics.Preprocessing,
+        prepro,
     ) -> np.ndarray:
         """Docstring"""
-        return _energy_sob(prepro.events[prepro.drop_index])
+        # params no-op
+        len(params)
+        return self._energy_sob(prepro.events[prepro.drop_index])

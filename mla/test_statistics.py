@@ -59,14 +59,13 @@ class I3Preprocessor(_test_statistics.TdPreprocessor):
             events:
         """
         super_prepro_dict = super()._preprocess(event_model, source, events)
-        
+
         event_spline_idxs, splines = event_model.log_sob_spline_prepro(
             events[super_prepro_dict['drop_index']],
         )
 
         return {
             **super_prepro_dict,
-            'splines': splines,
             'gamma': self.gamma,
             'event_spline_idxs': event_spline_idxs,
             'splines': splines,
@@ -115,5 +114,5 @@ def llh_test_statistic(params: np.ndarray,
         return 0
 
     llh, drop_term = _test_statistics.get_i3_llh(sob, ns_ratio)
-    
+
     return -2 * (llh.sum() + prepro.n_dropped * drop_term)
