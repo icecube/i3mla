@@ -118,4 +118,5 @@ def llh_test_statistic(params: np.ndarray,
         return 0
 
     llh, drop_term = _test_statistics.get_i3_llh(sob, ns_ratio)
+    
     return -2 * (llh.sum() + prepro.n_dropped * drop_term)

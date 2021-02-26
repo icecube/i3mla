@@ -163,7 +163,10 @@ class TdPreprocessor(Preprocessor):
 
 def get_i3_llh(sob: np.ndarray, ns_ratio: float) -> np.array:
     """Docstring"""
-    return np.log(ns_ratio * (sob - 1) + 1), np.log(1 - ns_ratio)
+    return (
+        np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1),
+        np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio)),
+    )
 
 
 def get_ns_ratio(sob: np.array, prepro: Preprocessing, params: np.ndarray,
