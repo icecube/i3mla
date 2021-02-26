@@ -191,10 +191,10 @@ def get_ns_ratio(sob: np.array, prepro: Preprocessing, params: np.ndarray,
     for i in range(iterations - 1):
         # get next iteration and clamp
         terms = 1 / (x[i] + k)
-        zero_term = 1 / (x[i] - 1)
-        first_derivative = np.sum(terms) + prepro.n_dropped * zero_term
+        drop_term = 1 / (x[i] - 1)
+        first_derivative = np.sum(terms) + prepro.n_dropped * drop_term
         second_derivative = np.sum(
-            terms**2) + prepro.n_dropped * zero_term**2
+            terms**2) + prepro.n_dropped * drop_term**2
         x[i + 1] = min(1 - eps, max(
             lo,
             x[i] + first_derivative / second_derivative,

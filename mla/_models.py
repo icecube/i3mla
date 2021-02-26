@@ -26,7 +26,6 @@ from dataclasses import InitVar
 
 from . import sources
 from . import time_profiles
-from . import _test_statistics
 
 
 def angular_distance(src_ra: float, src_dec: float, r_a: float,
@@ -144,7 +143,7 @@ class EnergyEventModel:
     def get_sob_energy(
         self,
         params: np.ndarray,
-        prepro: _test_statistics.Preprocessing,
+        prepro,
     ) -> np.ndarray:
         """Docstring"""
 
