@@ -30,7 +30,6 @@ Minimizer = Callable[
         test_statistics.TestStatistic,
         np.ndarray,
         _test_statistics.Preprocessing,
-        _test_statistics.SobFunc,
         _test_statistics.Bounds,
     ],
     scipy.optimize.OptimizeResult,
@@ -56,10 +55,12 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
     )
 
 
-def _default_minimizer(ts: test_statistics.TestStatistic,
-                       params: np.ndarray,
-                       prepro: _test_statistics.Preprocessing,
-                       bounds: _test_statistics.Bounds = None):
+def _default_minimizer(
+        ts: test_statistics.TestStatistic,
+        params: np.ndarray,
+        prepro: _test_statistics.Preprocessing,
+        bounds: _test_statistics.Bounds = None,
+):
     """Docstring"""
     return scipy.optimize.minimize(
         ts, x0=params, args=(prepro), bounds=bounds, method='L-BFGS-B')
@@ -123,7 +124,7 @@ def minimize_ts(
         if verbose:
             print(f'Minimizing: {prepro.params}...', end='')
 
-        result = minimizer(ts, params, prepro, analysis.ts_sob, prepro.bounds)
+        result = minimizer(ts, params, prepro, prepro.bounds)
         output['ts'] = -result.fun
 
         res_params = rf.unstructured_to_structured(
@@ -141,10 +142,14 @@ def minimize_ts(
     return output
 
 
-def produce_trial(analysis: Analysis, flux_norm: float = 0,
-                  random_seed: Optional[int] = None,
-                  n_signal_observed: Optional[int] = None,
-                  verbose: bool = False) -> np.ndarray:
+def produce_trial(
+        analysis: Analysis,
+        flux_norm: float = 0,
+        random_seed: Optional[int] = None,
+        n_signal_observed: Optional[int] = None,
+        verbose: bool = False,
+        **kwargs,
+) -> np.ndarray:
     """Produces a single trial of background+signal events based on inputs.
 
     Args:
@@ -157,6 +162,9 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
     Returns:
         An array of combined signal and background events.
     """
+    # kwargs no-op
+    len(kwargs)
+
     if random_seed is not None:
         np.random.seed(random_seed)
 
@@ -198,10 +206,6 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
 
 def produce_and_minimize(
     analysis: Analysis,
-    flux_norm: float = 0,
-    random_seed: Optional[int] = None,
-    n_signal_observed: Optional[int] = None,
-    verbose: bool = False,
     n_trials: int = 1,
     **kwargs,
 ) -> List[Dict[str, float]]:
@@ -210,10 +214,7 @@ def produce_and_minimize(
         analysis,
         produce_trial(
             analysis,
-            flux_norm=flux_norm,
-            random_seed=random_seed,
-            n_signal_observed=n_signal_observed,
-            verbose=verbose,
+            **kwargs,
         ),
         **kwargs,
     ) for _ in range(n_trials)]

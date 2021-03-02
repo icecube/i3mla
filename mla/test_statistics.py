@@ -95,8 +95,8 @@ def llh_test_statistic(params: np.ndarray,
 
     sob = prepro.sob_func(temp_params, prepro)
 
-    if 'ns' in params.dtype.names:
-        ns_ratio = params['ns'] / prepro.n_events
+    if 'ns' in temp_params.dtype.names:
+        ns_ratio = temp_params['ns'] / prepro.n_events
     else:
         ns_ratio = _test_statistics.newton_ns_ratio(
             sob, prepro, ns_newton_iters)
