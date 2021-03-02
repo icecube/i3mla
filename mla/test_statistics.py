@@ -21,11 +21,9 @@ from . import _models
 from . import _test_statistics
 
 
-SobFunc = Callable[[np.ndarray, _test_statistics.Preprocessing], np.array]
 TestStatistic = Callable[[
     np.ndarray,
     _test_statistics.Preprocessing,
-    SobFunc,
     bool,
     int,
 ], float]
@@ -72,18 +70,8 @@ class I3Preprocessor(_test_statistics.TdPreprocessor):
         }
 
 
-def i3_sob(params: np.ndarray, prepro: I3Preprocessing) -> np.array:
-    """Docstring"""
-    sob = prepro.sob_spatial.copy()
-    sob *= _test_statistics.get_sob_time(params, prepro)
-    sob *= prepro.event_model.get_sob_energy(params, prepro)
-    return sob
-
-
 def llh_test_statistic(params: np.ndarray,
                        prepro: _test_statistics.Preprocessing,
-                       sob_func: SobFunc,
-                       return_ns: bool = False,
                        ns_newton_iters: int = 20) -> float:
     """Evaluates the test-statistic for the given events and parameters
 
@@ -99,20 +87,25 @@ def llh_test_statistic(params: np.ndarray,
         The overall test-statistic value for the given events and
         parameters.
     """
-    temp_params = rf.unstructured_to_structured(
-        params, dtype=prepro.params.dtype, copy=True)
-
-    sob = sob_func(temp_params, prepro)
-
-    ns_ratio = _test_statistics.get_ns_ratio(
-        sob, prepro, temp_params, ns_newton_iters)
-
-    if return_ns:
-        return ns_ratio * prepro.n_events
-
     if prepro.n_events == 0:
         return 0
 
-    llh, drop_term = _test_statistics.get_i3_llh(sob, ns_ratio)
+    temp_params = rf.unstructured_to_structured(
+        params, dtype=prepro.params.dtype, copy=True)
 
-    return -2 * (llh.sum() + prepro.n_dropped * drop_term)
+    sob = prepro.sob_func(temp_params, prepro)
+
+    if 'ns' in params.dtype.names:
+        ns_ratio = params['ns'] / prepro.n_events
+    else:
+        ns_ratio = _test_statistics.newton_ns_ratio(
+            sob, prepro, ns_newton_iters)
+
+    llh, drop_term = _test_statistics.get_i3_llh(sob, ns_ratio)
+    ts = -2 * (llh.sum() + prepro.n_dropped * drop_term)
+
+    if ts < prepro.best_ts:
+        prepro.best_ts = ts
+        prepro.best_ns = ns_ratio * prepro.n_events
+
+    return ts

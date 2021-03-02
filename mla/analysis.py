@@ -20,18 +20,17 @@ import numpy as np
 import numpy.lib.recfunctions as rf
 import scipy.optimize
 
-from . import sources
 from . import test_statistics
 from . import _test_statistics
 from . import _models
-
+from . import sources
 
 Minimizer = Callable[
     [
         test_statistics.TestStatistic,
         np.ndarray,
         _test_statistics.Preprocessing,
-        test_statistics.SobFunc,
+        _test_statistics.SobFunc,
         _test_statistics.Bounds,
     ],
     scipy.optimize.OptimizeResult,
@@ -43,7 +42,6 @@ class Analysis:
     """Stores the components of an analysis."""
     model: _models.EventModel
     ts_preprocessor: _test_statistics.Preprocessor
-    ts_sob: test_statistics.SobFunc
     test_statistic: test_statistics.TestStatistic
     source: sources.Source
 
@@ -61,11 +59,10 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
 def _default_minimizer(ts: test_statistics.TestStatistic,
                        params: np.ndarray,
                        prepro: _test_statistics.Preprocessing,
-                       sob: test_statistics.SobFunc,
                        bounds: _test_statistics.Bounds = None):
     """Docstring"""
     return scipy.optimize.minimize(
-        ts, x0=params, args=(prepro, sob), bounds=bounds, method='L-BFGS-B')
+        ts, x0=params, args=(prepro), bounds=bounds, method='L-BFGS-B')
 
 
 def minimize_ts(
@@ -75,7 +72,8 @@ def minimize_ts(
     bounds: _test_statistics.Bounds = None,
     minimizer: Minimizer = _default_minimizer,
     verbose: bool = False,
-    ns_newton_iters: int = 20
+    ns_newton_iters: int = 20,
+    **kwargs,
 ) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.
 
@@ -95,6 +93,9 @@ def minimize_ts(
         A dictionary containing the minimized overall test-statistic, the
         best-fit n_signal, and the best fit gamma.
     """
+    # kwargs no-op
+    len(kwargs)
+
     if verbose:
         print('Preprocessing...', end='')
 
@@ -113,8 +114,8 @@ def minimize_ts(
                            ns_newton_iters=ns_newton_iters)
 
     if 'empty' in test_params.dtype.names:
-        output['ts'] = -ts(test_params, prepro, analysis.ts_sob)
-        output['ns'] = ts(test_params, prepro, analysis.ts_sob, return_ns=True)
+        output['ts'] = -ts(test_params, prepro)
+        output['ns'] = prepro.best_ns
 
     else:
         params = rf.structured_to_unstructured(prepro.params, copy=True)[0]
@@ -124,13 +125,15 @@ def minimize_ts(
 
         result = minimizer(ts, params, prepro, analysis.ts_sob, prepro.bounds)
         output['ts'] = -result.fun
-        output['ns'] = ts(result.x, prepro, analysis.ts_sob, return_ns=True)
 
-        result.x = rf.unstructured_to_structured(
+        res_params = rf.unstructured_to_structured(
             result.x, dtype=prepro.params.dtype, copy=True)
 
+        if 'ns' not in prepro.params.dtype.names:
+            output['ns'] = prepro.best_ns
+
         for param in prepro.params.dtype.names:
-            output[param] = np.asscalar(result.x[param])
+            output[param] = np.asscalar(res_params[param])
 
         if verbose:
             print('done')
@@ -195,14 +198,12 @@ def produce_trial(analysis: Analysis, flux_norm: float = 0,
 
 def produce_and_minimize(
     analysis: Analysis,
-    test_params: np.ndarray,
     flux_norm: float = 0,
-    bounds: _test_statistics.Bounds = None,
-    minimizer: Minimizer = _default_minimizer,
     random_seed: Optional[int] = None,
     n_signal_observed: Optional[int] = None,
     verbose: bool = False,
     n_trials: int = 1,
+    **kwargs,
 ) -> List[Dict[str, float]]:
     """Docstring"""
     return [minimize_ts(
@@ -214,8 +215,5 @@ def produce_and_minimize(
             n_signal_observed=n_signal_observed,
             verbose=verbose,
         ),
-        test_params=test_params,
-        bounds=bounds,
-        minimizer=minimizer,
-        verbose=verbose,
+        **kwargs,
     ) for _ in range(n_trials)]

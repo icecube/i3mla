@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import ClassVar, List, Optional, Sequence, Tuple
+from typing import Callable, ClassVar, List, Optional, Sequence, Tuple
 
 import warnings
 import dataclasses
@@ -21,6 +21,70 @@ from . import time_profiles
 
 
 Bounds = Optional[Sequence[Tuple[float, float]]]
+SobFunc = Callable[[np.ndarray, 'Preprocessing'], np.array]
+
+
+def get_i3_llh(sob: np.ndarray, ns_ratio: float) -> np.array:
+    """Docstring"""
+    return (
+        np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1),
+        np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio)),
+    )
+
+
+def newton_ns_ratio(sob: np.array, prepro: 'Preprocessing',
+                    iterations: int) -> float:
+    """Docstring
+
+    Args:
+        sob:
+        iterations:
+
+    Returns:
+
+    """
+    eps = 1e-5
+    k = 1 / (sob - 1)
+    lo = max(-1 + eps, 1 / (1 - np.max(sob)))
+    x = [0] * iterations
+
+    for i in range(iterations - 1):
+        # get next iteration and clamp
+        inv_terms = x[i] + k
+        inv_terms[inv_terms == 0] = eps
+        terms = 1 / inv_terms
+        drop_term = 1 / (x[i] - 1)
+        first_derivative = np.sum(terms) + prepro.n_dropped * drop_term
+        second_derivative = np.sum(
+            terms**2) + prepro.n_dropped * drop_term**2
+        x[i + 1] = min(1 - eps, max(
+            lo,
+            x[i] + first_derivative / second_derivative,
+        ))
+
+    return x[-1]
+
+
+def get_sob_time(params: np.ndarray, prepro: 'TdPreprocessing') -> np.array:
+    """Docstring"""
+    prepro.sig_time_profile.update_params(params)
+    return prepro.sob_time * prepro.sig_time_profile.pdf(prepro.times)
+
+
+def spatial_energy_sob(params: np.ndarray, prepro: 'Preprocessing') -> np.array:
+    """Docstring"""
+    sob = prepro.sob_spatial.copy()
+    sob *= prepro.event_model.get_sob_energy(params, prepro)
+    return sob
+
+
+def time_spatial_energy_sob(params: np.ndarray,
+                            prepro: 'TdPreprocessing') -> np.array:
+    """Docstring"""
+    sob = prepro.sob_spatial.copy()
+    sob *= get_sob_time(params, prepro)
+    sob *= prepro.event_model.get_sob_energy(params, prepro)
+    return sob
 
 
 @dataclasses.dataclass
@@ -34,6 +98,9 @@ class Preprocessing:
     n_dropped: Optional[int] = None
     sob_spatial: Optional[np.array] = None
     drop_index: Optional[np.array] = None
+    sob_func: SobFunc = spatial_energy_sob
+    best_ns: float = 0
+    best_ts: float = 0
 
     def _fix_bounds(
         self,
@@ -120,6 +187,7 @@ class TdPreprocessing(Preprocessing):
     bg_time_profile: Optional[time_profiles.GenericProfile] = None
     sob_time: Optional[np.array] = None
     times: Optional[np.array] = None
+    sob_func: SobFunc = time_spatial_energy_sob
 
 
 @dataclasses.dataclass
@@ -159,53 +227,3 @@ class TdPreprocessor(Preprocessor):
             'sob_time': sob_time,
             'times': times,
         }
-
-
-def get_i3_llh(sob: np.ndarray, ns_ratio: float) -> np.array:
-    """Docstring"""
-    return (
-        np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1),
-        np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio)),
-    )
-
-
-def get_ns_ratio(sob: np.array, prepro: Preprocessing, params: np.ndarray,
-                 iterations: int) -> float:
-    """Docstring
-
-    Args:
-        sob:
-        iterations:
-
-    Returns:
-
-    """
-    if 'ns' in params.dtype.names:
-        return params['ns'] / prepro.n_events
-
-    eps = 1e-5
-    k = 1 / (sob - 1)
-    lo = max(-1 + eps, 1 / (1 - np.max(sob)))
-    x = [0] * iterations
-
-    for i in range(iterations - 1):
-        # get next iteration and clamp
-        inv_terms = x[i] + k
-        inv_terms[inv_terms == 0] = eps
-        terms = 1 / inv_terms
-        drop_term = 1 / (x[i] - 1)
-        first_derivative = np.sum(terms) + prepro.n_dropped * drop_term
-        second_derivative = np.sum(
-            terms**2) + prepro.n_dropped * drop_term**2
-        x[i + 1] = min(1 - eps, max(
-            lo,
-            x[i] + first_derivative / second_derivative,
-        ))
-
-    return x[-1]
-
-
-def get_sob_time(params: np.ndarray, prepro: TdPreprocessing) -> np.array:
-    """Docstring"""
-    prepro.sig_time_profile.update_params(params)
-    return prepro.sob_time * prepro.sig_time_profile.pdf(prepro.times)
