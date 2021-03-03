@@ -32,6 +32,7 @@ class LLHTestStatistic:
     _sob_terms: List['SoBTerm']
     _n_events: int = dataclasses.field(init=False)
     _n_dropped: int = dataclasses.field(init=False)
+    _n_kept: int = dataclasses.field(init=False)
     _events: np.ndarray = dataclasses.field(init=False)
     _params: np.ndarray = dataclasses.field(init=False)
     _drop_index: np.ndarray = dataclasses.field(init=False)
@@ -48,8 +49,8 @@ class LLHTestStatistic:
         bounds: Bounds = None,
     ) -> None:
         """Docstring"""
-        drop_index = np.empty(len(events))
-        for term in self.sob_terms:
+        drop_index = np.ones(len(events), dtype=bool)
+        for term in self._sob_terms:
             drop_index, bounds = term.preprocess(
                 params,
                 bounds,
@@ -58,12 +59,13 @@ class LLHTestStatistic:
                 source,
                 drop_index,
             )
-
+        self._events = events
         self._bounds = bounds
         self._params = params
         self._drop_index = drop_index
         self._n_events = len(events)
-        self._n_dropped = drop_index.sum()
+        self._n_kept = drop_index.sum()
+        self._n_dropped = self._n_events - self._n_kept
         self._best_ns = 0
         self._best_ts = 0
 
@@ -111,10 +113,11 @@ class LLHTestStatistic:
 
     def _sob(self, params: np.ndarray) -> np.ndarray:
         """Docstring"""
-        sob = np.ones(self._n_events - self._n_dropped)
+        sob = np.ones(self._n_kept)
 
         for term in self._sob_terms:
-            sob *= term(params, self._events, self._drop_index)
+            arr = term(params, self._events, self._drop_index)
+            sob *= arr
 
         return sob
 
@@ -152,8 +155,8 @@ class LLHTestStatistic:
             inv_terms[inv_terms == 0] = eps
             terms = 1 / inv_terms
             drop_term = 1 / (x[i] - 1)
-            d1 = terms.sum() + self._n_dropped * drop_term
-            d2 = terms.sum()**2 + self._n_dropped * drop_term**2
+            d1 = np.sum(terms) + self._n_dropped * drop_term
+            d2 = np.sum(terms**2) + self._n_dropped * drop_term**2
             x[i + 1] = min(1 - eps, max(lo, x[i] + d1 / d2))
 
         return x[-1]
@@ -177,7 +180,7 @@ class LLHTestStatistic:
     @property
     def n_kept(self) -> float:
         """Docstring"""
-        return self._n_events - self._n_dropped
+        return self._n_kept
 
     def _fix_bounds(
         self,
@@ -243,7 +246,7 @@ class SpatialTerm(SoBTerm):
     ) -> Tuple[np.ndarray, Bounds]:
         """Docstring"""
         self._sob_spatial = event_model.signal_spatial_pdf(source, events)
-        drop_index *= self._sob_spatial != 0
+        drop_index = np.logical_and(drop_index, self._sob_spatial != 0)
 
         self._sob_spatial[drop_index] /= event_model.background_spatial_pdf(
             events[drop_index],
@@ -280,10 +283,11 @@ class TimeTerm(SoBTerm):
         drop_index: np.ndarray,
     ) -> Tuple[np.ndarray, Bounds]:
         """Docstring"""
-        self._times = np.empty(drop_index.sum(), dtype=events['time'].dtype)
+        self._times = np.empty(len(events), dtype=events['time'].dtype)
+        self._times[:] = events['time'][:]
         self._sob_time = np.zeros(len(events))
 
-        self._sob_time[drop_index] = 1 / self.bg_time_profile.pdf(
+        self._sob_time[drop_index] = 1 / self.background_time_profile.pdf(
             self._times[drop_index],
         )
 

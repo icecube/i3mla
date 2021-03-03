@@ -44,9 +44,12 @@ class Analysis:
 
 
 def evaluate_ts(analysis: Analysis, events: np.ndarray,
-                params: np.ndarray, **kwargs) -> float:
+                params: np.ndarray,
+                ts: Optional[test_statistics.LLHTestStatistic] = None,
+                **kwargs) -> float:
     """Docstring"""
-    ts = copy.deepcopy(analysis.test_statistic)
+    if ts is None:
+        ts = copy.deepcopy(analysis.test_statistic)
     ts.preprocess(params, events, analysis.model, analysis.source)
     unstructured_params = rf.structured_to_unstructured(params, copy=True)[0]
     return ts(unstructured_params, **kwargs)
@@ -68,6 +71,7 @@ def minimize_ts(
     test_params: np.ndarray = np.empty(1, dtype=[('empty', int)]),
     bounds: test_statistics.Bounds = None,
     minimizer: Minimizer = _default_minimizer,
+    ts: Optional[test_statistics.LLHTestStatistic] = None,
     verbose: bool = False,
     **kwargs,
 ) -> Dict[str, float]:
@@ -89,7 +93,9 @@ def minimize_ts(
         A dictionary containing the minimized overall test-statistic, the
         best-fit n_signal, and the best fit gamma.
     """
-    ts = copy.deepcopy(analysis.test_statistic)
+    if ts is None:
+        ts = copy.deepcopy(analysis.test_statistic)
+
     ts.preprocess(
         test_params,
         events,
@@ -211,11 +217,13 @@ def produce_and_minimize(
     **kwargs,
 ) -> List[Dict[str, float]]:
     """Docstring"""
+    ts = copy.deepcopy(analysis.test_statistic)
     return [minimize_ts(
         analysis,
         produce_trial(
             analysis,
             **kwargs,
         ),
+        ts=ts,
         **kwargs,
     ) for _ in range(n_trials)]

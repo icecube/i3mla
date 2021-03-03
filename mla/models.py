@@ -223,20 +223,21 @@ class I3EventModel(
             for i, j in zip(sin_dec_idx - 1, log_energy_idx - 1)
         ]
 
-        return event_spline_idxs, splines
+        return np.array(event_spline_idxs, dtype=int), splines
 
     def get_sob_energy(
         self,
         gamma: float,
         drop_index: np.ndarray,
         splines: List[Spline],
-        spline_idxs: np.ndarray,
+        event_spline_idxs: np.ndarray,
     ) -> np.array:
         """Docstring"""
+        to_calculate = np.unique(event_spline_idxs[drop_index])
+
         spline_evals = np.exp([
-            spline(gamma)
-            if i in spline_idxs[drop_index] else 0
+            spline(gamma) if i in to_calculate else 0
             for i, spline in enumerate(splines)
         ])
 
-        return np.array([spline_evals[i] for i in spline_idxs])[drop_index]
+        return np.array([spline_evals[i] for i in event_spline_idxs])[drop_index]
