@@ -240,4 +240,6 @@ class I3EventModel(
             for i, spline in enumerate(splines)
         ])
 
-        return np.array([spline_evals[i] for i in event_spline_idxs])[drop_index]
+        return np.array(
+            [spline_evals[i] for i in event_spline_idxs],
+        )[drop_index]
