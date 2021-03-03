@@ -219,10 +219,7 @@ class ThreeMLEventModel(
 
     def get_sob_energy(
         self,
-        params: np.ndarray,
-        prepro,
+        events: np.ndarray,
     ) -> np.ndarray:
         """Docstring"""
-        # params no-op
-        len(params)
-        return self._energy_sob(prepro.events[prepro.drop_index])
+        return self._energy_sob(events)

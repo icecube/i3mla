@@ -119,7 +119,7 @@ class GenericProfile:
         """Docstring"""
 
     @abc.abstractmethod
-    def update_params(self, params: np.ndarray) -> None:
+    def update_params(self, params: np.ndarray) -> bool:
         """Docstring"""
 
     @property
@@ -254,9 +254,10 @@ class GaussProfile(GenericProfile):
         cdfs = np.random.uniform(start_cdfs, stop_cdfs)
         return self.scipy_dist.ppf(cdfs)
 
-    def update_params(self, params: np.ndarray) -> None:
+    def update_params(self, params: np.ndarray) -> bool:
         """Docstring"""
         update = False
+
         if 'mean' in params.dtype.names:
             self.mean = params['mean']
             update = True
@@ -266,6 +267,8 @@ class GaussProfile(GenericProfile):
 
         if update:
             self.scipy_dist = scipy.stats.norm(self.mean, self.sigma)
+
+        return update
 
     @property
     def exposure(self) -> float:
@@ -391,9 +394,10 @@ class UniformProfile(GenericProfile):
             np.minimum(stop_times, self.range[1]),
         )
 
-    def update_params(self, params: np.ndarray) -> None:
+    def update_params(self, params: np.ndarray) -> bool:
         """Docstring"""
         update = False
+
         if 'start' in params.dtype.names:
             self.start = params['start']
             update = True
@@ -403,6 +407,8 @@ class UniformProfile(GenericProfile):
 
         if update:
             self._range = (self.start, self.start + self.length)
+
+        return update
 
     @property
     def exposure(self) -> float:
@@ -565,10 +571,13 @@ class CustomProfile(GenericProfile):
         cdfs = np.random.uniform(start_cdfs, stop_cdfs)
         return self.dist.ppf(cdfs)
 
-    def update_params(self, params: np.ndarray) -> None:
+    def update_params(self, params: np.ndarray) -> bool:
         """Docstring"""
         if 'offset' in params.dtype.names:
             self.offset = params['offset']
+            return True
+
+        return False
 
     @property
     def exposure(self) -> float:

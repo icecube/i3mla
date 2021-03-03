@@ -22,7 +22,6 @@ from dataclasses import field
 from dataclasses import InitVar
 
 from . import sources
-from . import test_statistics
 from . import _models
 
 
@@ -58,7 +57,6 @@ class I3EventModel(
     _models.TdEventModel,
     _I3EventModelDefaultsBase,
     _I3EventModelBase,
-    _models.EnergyEventModel,
 ):
     """Docstring"""
     def __post_init__(self, source: sources.Source, grl: np.ndarray,
@@ -229,14 +227,16 @@ class I3EventModel(
 
     def get_sob_energy(
         self,
-        params: np.ndarray,
-        prepro: test_statistics.I3Preprocessing,
+        gamma: float,
+        drop_index: np.ndarray,
+        splines: List[Spline],
+        spline_idxs: np.ndarray,
     ) -> np.array:
         """Docstring"""
-        if 'gamma' in params.dtype.names:
-            gamma = params['gamma']
-        else:
-            gamma = prepro.gamma
+        spline_evals = np.exp([
+            spline(gamma)
+            if i in spline_idxs[drop_index] else 0
+            for i, spline in enumerate(splines)
+        ])
 
-        spline_evals = np.exp([spline(gamma) for spline in prepro.splines])
-        return np.array([spline_evals[i] for i in prepro.event_spline_idxs])
+        return np.array([spline_evals[i] for i in spline_idxs])[drop_index]
