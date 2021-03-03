@@ -1,7 +1,7 @@
 """__init__.py"""
 # flake8: noqa
-from . import analysis
-from . import models
-from . import sources
-from . import test_statistics
-from . import time_profiles
+from .analysis import *
+from .models import *
+from .sources import *
+from .test_statistics import *
+from .time_profiles import *
