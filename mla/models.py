@@ -195,7 +195,7 @@ class I3EventModel(
     def log_sob_spline_prepro(
         self,
         events: np.ndarray,
-    ) -> Tuple[List[Tuple[int, int]], np.ndarray, List]:
+    ) -> Tuple[np.ndarray, List]:
         """Docstring"""
         # Get the bin that each event belongs to
         sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1],
@@ -228,18 +228,9 @@ class I3EventModel(
     def get_sob_energy(
         self,
         gamma: float,
-        drop_index: np.ndarray,
         splines: List[Spline],
         event_spline_idxs: np.ndarray,
     ) -> np.array:
         """Docstring"""
-        to_calculate = np.unique(event_spline_idxs[drop_index])
-
-        spline_evals = np.exp([
-            spline(gamma) if i in to_calculate else 0
-            for i, spline in enumerate(splines)
-        ])
-
-        return np.array(
-            [spline_evals[i] for i in event_spline_idxs],
-        )[drop_index]
+        spline_evals = np.exp([spline(gamma) for spline in splines])
+        return spline_evals[event_spline_idxs]

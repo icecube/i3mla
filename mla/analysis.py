@@ -51,7 +51,6 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
     if ts is None:
         ts = copy.deepcopy(analysis.test_statistic)
     ts.preprocess(params, events, analysis.model, analysis.source)
-    unstructured_params = rf.structured_to_unstructured(params, copy=True)[0]
     return ts(unstructured_params, **kwargs)
 
 
@@ -93,9 +92,11 @@ def minimize_ts(
         A dictionary containing the minimized overall test-statistic, the
         best-fit n_signal, and the best fit gamma.
     """
+    if verbose:
+        print('Preprocessing...', end='')
     if ts is None:
         ts = copy.deepcopy(analysis.test_statistic)
-
+        
     ts.preprocess(
         test_params,
         events,
@@ -104,45 +105,38 @@ def minimize_ts(
         bounds=bounds,
     )
 
-    if verbose:
-        print('Preprocessing...', end='')
-
-    if verbose:
-        print('done')
-
     output = {'ts': 0, 'ns': 0}
-
     if ts.n_kept == 0:
         return output
 
     ts_partial = functools.partial(ts, **kwargs)
-
     unstructured_params = rf.structured_to_unstructured(
         test_params,
         copy=True,
     )[0]
-
+    
+    if verbose:
+        print('done')
     if 'empty' in test_params.dtype.names:
         output['ts'] = -ts_partial(unstructured_params)
         output['ns'] = ts.best_ns
 
     else:
-
         if verbose:
             print(f'Minimizing: {test_params}...', end='')
 
         result = minimizer(ts_partial, unstructured_params, ts.bounds)
         output['ts'] = -result.fun
-
         res_params = rf.unstructured_to_structured(
-            result.x, dtype=test_params.dtype, copy=True)
+            result.x,
+            dtype=test_params.dtype,
+            copy=True,
+        )
 
         if 'ns' not in test_params.dtype.names:
             output['ns'] = ts.best_ns
-
         for param in test_params.dtype.names:
             output[param] = np.asscalar(res_params[param])
-
         if verbose:
             print('done')
 

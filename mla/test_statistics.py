@@ -49,7 +49,7 @@ class LLHTestStatistic:
         bounds: Bounds = None,
     ) -> None:
         """Docstring"""
-        drop_index = np.ones(len(events), dtype=bool)
+        self._drop_index = np.ones(len(events), dtype=bool)
         for term in self._sob_terms:
             drop_index, bounds = term.preprocess(
                 params,
@@ -57,30 +57,35 @@ class LLHTestStatistic:
                 events,
                 event_model,
                 source,
-                drop_index,
             )
-        self._events = events
+            self._drop_index = np.logical_and(self._drop_index, drop_index)
+            
+        for term in self._sob_terms:
+            term.drop_events(self._drop_index)
+
         self._bounds = bounds
         self._params = params
-        self._drop_index = drop_index
         self._n_events = len(events)
-        self._n_kept = drop_index.sum()
+        self._n_kept = self._drop_index.sum()
+        self._events = np.empty(self._n_kept, dtype=events.dtype)
+        self._events[:] = events[self._drop_index]
         self._n_dropped = self._n_events - self._n_kept
         self._best_ns = 0
         self._best_ts = 0
 
-    def __call__(self, unstructured_params: np.ndarray, **kwargs) -> float:
+    def __call__(self, params: np.ndarray, **kwargs) -> float:
         """Docstring"""
         if self._n_events == 0:
             return 0
 
-        structured_params = rf.unstructured_to_structured(
-            unstructured_params,
-            dtype=self._params.dtype,
-            copy=True,
-        )
+        if params.dtype.names is None:
+            params = rf.unstructured_to_structured(
+                params,
+                dtype=self._params.dtype,
+                copy=True,
+            )
 
-        return self._evaluate(structured_params, **kwargs)
+        return self._evaluate(params, **kwargs)
 
     def _evaluate(self, params: np.ndarray, **kwargs) -> float:
         """Evaluates the test-statistic for the given events and parameters
@@ -114,11 +119,8 @@ class LLHTestStatistic:
     def _sob(self, params: np.ndarray) -> np.ndarray:
         """Docstring"""
         sob = np.ones(self._n_kept)
-
         for term in self._sob_terms:
-            arr = term(params, self._events, self._drop_index)
-            sob *= arr
-
+            sob *= term(params, self._events)
         return sob
 
     def _newton_ns_ratio(
@@ -216,8 +218,11 @@ class SoBTerm:
         events: np.ndarray,
         event_model: _models.EventModel,
         source: sources.Source,
-        drop_index: np.ndarray,
     ) -> Tuple[np.ndarray, Bounds]:
+        """Docstring"""
+
+    @abc.abstractmethod
+    def drop_events(self, drop_index: np.ndarray) -> None:
         """Docstring"""
 
     @abc.abstractmethod
@@ -225,7 +230,6 @@ class SoBTerm:
         self,
         params: np.ndarray,
         events: np.ndarray,
-        drop_index: np.ndarray,
     ) -> np.ndarray:
         """Docstring"""
 
@@ -242,11 +246,10 @@ class SpatialTerm(SoBTerm):
         events: np.ndarray,
         event_model: _models.EventModel,
         source: sources.Source,
-        drop_index: np.ndarray,
     ) -> Tuple[np.ndarray, Bounds]:
         """Docstring"""
         self._sob_spatial = event_model.signal_spatial_pdf(source, events)
-        drop_index = np.logical_and(drop_index, self._sob_spatial != 0)
+        drop_index = self._sob_spatial != 0
 
         self._sob_spatial[drop_index] /= event_model.background_spatial_pdf(
             events[drop_index],
@@ -254,14 +257,23 @@ class SpatialTerm(SoBTerm):
 
         return drop_index, bounds
 
+    def drop_events(self, drop_index: np.ndarray) -> None:
+        """Docstring"""
+        contiguous_sob_spatial = np.empty(
+            drop_index.sum(),
+            dtype=self._sob_spatial.dtype,
+        )
+
+        contiguous_sob_spatial[:] = self._sob_spatial[drop_index]
+        self._sob_spatial = contiguous_sob_spatial
+
     def __call__(
         self,
         params: np.ndarray,
         events: np.ndarray,
-        drop_index: np.ndarray,
     ) -> np.ndarray:
         """Docstring"""
-        return self._sob_spatial[drop_index]
+        return self._sob_spatial
 
 
 @dataclasses.dataclass
@@ -270,7 +282,6 @@ class TimeTerm(SoBTerm):
     background_time_profile: time_profiles.GenericProfile
     signal_time_profile: time_profiles.GenericProfile
     _sob_time: np.ndarray = dataclasses.field(init=False)
-    _sob_time_complete: np.ndarray = dataclasses.field(init=False)
     _times: np.ndarray = dataclasses.field(init=False)
 
     def preprocess(
@@ -280,16 +291,12 @@ class TimeTerm(SoBTerm):
         events: np.ndarray,
         event_model: _models.EventModel,
         source: sources.Source,
-        drop_index: np.ndarray,
     ) -> Tuple[np.ndarray, Bounds]:
         """Docstring"""
         self._times = np.empty(len(events), dtype=events['time'].dtype)
         self._times[:] = events['time'][:]
-        self._sob_time = np.zeros(len(events))
-
-        self._sob_time[drop_index] = 1 / self.background_time_profile.pdf(
-            self._times[drop_index],
-        )
+        self._sob_time = 1 / self.background_time_profile.pdf(self._times)
+        drop_index = self._sob_time != 0
 
         if np.logical_not(np.all(np.isfinite(self._sob_time))):
             warnings.warn(
@@ -297,34 +304,45 @@ class TimeTerm(SoBTerm):
                 RuntimeWarning
             )
 
-        self._sob_time_complete = self._sob_time.copy()
-
-        self._sob_time_complete[drop_index] *= self.signal_time_profile.pdf(
-            self._times[drop_index]
-        )
+        if not self.signal_time_profile.update_params(params):
+            self._sob_time[drop_index] *= self.signal_time_profile.pdf(
+                self._times[drop_index]
+            )
 
         return drop_index, bounds
+
+    def drop_events(self, drop_index: np.ndarray) -> None:
+        """Docstring"""
+        contiguous_times = np.empty(
+            drop_index.sum(),
+            dtype=self._times.dtype,
+        )
+        contiguous_sob_time = np.empty(
+            drop_index.sum(),
+            dtype=self._sob_time.dtype,
+        )
+
+        contiguous_times[:] = self._times[drop_index]
+        contiguous_sob_time[:] = self._sob_time[drop_index]
+        self._times = contiguous_times
+        self._sob_time = contiguous_sob_time
 
     def __call__(
         self,
         params: np.ndarray,
         events: np.ndarray,
-        drop_index: np.ndarray,
     ) -> np.ndarray:
         """Docstring"""
         if self.signal_time_profile.update_params(params):
-            return self._sob_time[drop_index] * self.signal_time_profile.pdf(
-                self._times[drop_index],
-            )
-        else:
-            return self._sob_time_complete[drop_index]
+            self._sob_time *= self.signal_time_profile.pdf(self._times)
+        return self._sob_time
 
 
 @dataclasses.dataclass
 class I3EnergyTerm(SoBTerm):
     """Docstring"""
     _spline_idxs: np.ndarray = dataclasses.field(init=False)
-    _splines: np.ndarray = dataclasses.field(init=False)
+    _splines: List = dataclasses.field(init=False)
     _energy_sob: Callable = dataclasses.field(init=False)
     gamma: float = -2
 
@@ -335,22 +353,34 @@ class I3EnergyTerm(SoBTerm):
         events: np.ndarray,
         event_model: models.I3EventModel,
         source: sources.Source,
-        drop_index: np.ndarray,
     ) -> Tuple[np.ndarray, Bounds]:
         """Docstring"""
         self._energy_sob = event_model.get_sob_energy
-
         self._spline_idxs, self._splines = event_model.log_sob_spline_prepro(
             events,
         )
 
-        return drop_index, bounds
+        return np.ones(len(events), dtype=bool), bounds
+
+    def drop_events(self, drop_index: np.ndarray) -> None:
+        """Docstring"""
+        contiguous_spline_idxs = np.empty(
+            drop_index.sum(),
+            dtype=self._spline_idxs.dtype,
+        )
+
+        to_calculate = np.sort(np.unique(self._spline_idxs[drop_index]))
+        contiguous_spline_idxs[:] = [
+            np.where(to_calculate == idx)[0][0]
+            for idx in self._spline_idxs[drop_index]
+        ]
+        self._splines = [self._splines[i] for i in to_calculate]
+        self._spline_idxs = contiguous_spline_idxs
 
     def __call__(
         self,
         params: np.ndarray,
         events: np.ndarray,
-        drop_index: np.ndarray,
     ) -> np.ndarray:
         """Docstring"""
         if 'gamma' in params.dtype.names:
@@ -358,9 +388,4 @@ class I3EnergyTerm(SoBTerm):
         else:
             gamma = self.gamma
 
-        return self._energy_sob(
-            gamma,
-            drop_index,
-            self._splines,
-            self._spline_idxs,
-        )
+        return self._energy_sob(gamma, self._splines, self._spline_idxs)
