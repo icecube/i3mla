@@ -334,7 +334,7 @@ class TimeTerm(SoBTerm):
     ) -> np.ndarray:
         """Docstring"""
         if self.signal_time_profile.update_params(params):
-            self._sob_time *= self.signal_time_profile.pdf(self._times)
+            return self._sob_time * self.signal_time_profile.pdf(self._times)
         return self._sob_time
 
 
