@@ -70,6 +70,10 @@ class LLHTestStatistic:
         self._events = np.empty(self._n_kept, dtype=events.dtype)
         self._events[:] = events[self._drop_index]
         self._n_dropped = self._n_events - self._n_kept
+        self.best_reset()
+ 
+    def best_reset(self) -> None:
+        """Docstring"""
         self._best_ns = 0
         self._best_ts = 0
 
