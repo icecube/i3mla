@@ -14,6 +14,7 @@ __status__ = 'Development'
 
 from typing import Callable, Dict, List, Optional
 
+import copy
 import functools
 import dataclasses
 import numpy as np
@@ -21,16 +22,14 @@ import numpy.lib.recfunctions as rf
 import scipy.optimize
 
 from . import test_statistics
-from . import _test_statistics
 from . import _models
 from . import sources
 
 Minimizer = Callable[
     [
-        test_statistics.TestStatistic,
+        test_statistics.LLHTestStatistic,
         np.ndarray,
-        _test_statistics.Preprocessing,
-        _test_statistics.Bounds,
+        test_statistics.Bounds,
     ],
     scipy.optimize.OptimizeResult,
 ]
@@ -40,40 +39,39 @@ Minimizer = Callable[
 class Analysis:
     """Stores the components of an analysis."""
     model: _models.EventModel
-    ts_preprocessor: _test_statistics.Preprocessor
-    test_statistic: test_statistics.TestStatistic
+    test_statistic: test_statistics.LLHTestStatistic
     source: sources.Source
 
 
 def evaluate_ts(analysis: Analysis, events: np.ndarray,
-                params: np.ndarray) -> float:
+                params: np.ndarray,
+                ts: Optional[test_statistics.LLHTestStatistic] = None,
+                **kwargs) -> float:
     """Docstring"""
-    return analysis.test_statistic(
-        params,
-        analysis.ts_preprocessor(
-            analysis.model, analysis.source, events, params, bounds=None),
-    )
+    if ts is None:
+        ts = copy.deepcopy(analysis.test_statistic)
+    ts.preprocess(params, events, analysis.model, analysis.source)
+    return ts(params, **kwargs)
 
 
 def _default_minimizer(
-        ts: test_statistics.TestStatistic,
+        ts: test_statistics.LLHTestStatistic,
         params: np.ndarray,
-        prepro: _test_statistics.Preprocessing,
-        bounds: _test_statistics.Bounds = None,
+        bounds: test_statistics.Bounds = None,
 ):
     """Docstring"""
     return scipy.optimize.minimize(
-        ts, x0=params, args=(prepro), bounds=bounds, method='L-BFGS-B')
+        ts, x0=params, bounds=bounds, method='L-BFGS-B')
 
 
 def minimize_ts(
     analysis: Analysis,
     events: np.ndarray,
     test_params: np.ndarray = np.empty(1, dtype=[('empty', int)]),
-    bounds: _test_statistics.Bounds = None,
+    bounds: test_statistics.Bounds = None,
     minimizer: Minimizer = _default_minimizer,
+    ts: Optional[test_statistics.LLHTestStatistic] = None,
     verbose: bool = False,
-    ns_newton_iters: int = 20,
     **kwargs,
 ) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.
@@ -94,48 +92,51 @@ def minimize_ts(
         A dictionary containing the minimized overall test-statistic, the
         best-fit n_signal, and the best fit gamma.
     """
-    # kwargs no-op
-    len(kwargs)
-
     if verbose:
         print('Preprocessing...', end='')
+    if ts is None:
+        ts = copy.deepcopy(analysis.test_statistic)
 
-    prepro = analysis.ts_preprocessor(
-        analysis.model, analysis.source, events, test_params, bounds)
+    ts.preprocess(
+        test_params,
+        events,
+        analysis.model,
+        analysis.source,
+        bounds=bounds,
+    )
+
+    output = {'ts': 0, 'ns': 0}
+    if ts.n_kept == 0:
+        return output
+
+    ts_partial = functools.partial(ts, **kwargs)
+    unstructured_params = rf.structured_to_unstructured(
+        test_params,
+        copy=True,
+    )[0]
 
     if verbose:
         print('done')
-
-    output = {'ts': 0, 'ns': 0}
-
-    if prepro.n_events - prepro.n_dropped == 0:
-        return output
-
-    ts = functools.partial(analysis.test_statistic,
-                           ns_newton_iters=ns_newton_iters)
-
     if 'empty' in test_params.dtype.names:
-        output['ts'] = -ts(test_params, prepro)
-        output['ns'] = prepro.best_ns
+        output['ts'] = -ts_partial(unstructured_params)
+        output['ns'] = ts.best_ns
 
     else:
-        params = rf.structured_to_unstructured(prepro.params, copy=True)[0]
-
         if verbose:
-            print(f'Minimizing: {prepro.params}...', end='')
+            print(f'Minimizing: {test_params}...', end='')
 
-        result = minimizer(ts, params, prepro, prepro.bounds)
+        result = minimizer(ts_partial, unstructured_params, ts.bounds)
         output['ts'] = -result.fun
-
         res_params = rf.unstructured_to_structured(
-            result.x, dtype=prepro.params.dtype, copy=True)
+            result.x,
+            dtype=test_params.dtype,
+            copy=True,
+        )
 
-        if 'ns' not in prepro.params.dtype.names:
-            output['ns'] = prepro.best_ns
-
-        for param in prepro.params.dtype.names:
+        if 'ns' not in test_params.dtype.names:
+            output['ns'] = ts.best_ns
+        for param in test_params.dtype.names:
             output[param] = np.asscalar(res_params[param])
-
         if verbose:
             print('done')
 
@@ -210,11 +211,13 @@ def produce_and_minimize(
     **kwargs,
 ) -> List[Dict[str, float]]:
     """Docstring"""
+    ts = copy.deepcopy(analysis.test_statistic)
     return [minimize_ts(
         analysis,
         produce_trial(
             analysis,
             **kwargs,
         ),
+        ts=ts,
         **kwargs,
     ) for _ in range(n_trials)]

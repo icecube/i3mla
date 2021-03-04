@@ -22,7 +22,6 @@ from dataclasses import field
 from dataclasses import InitVar
 
 from . import sources
-from . import test_statistics
 from . import _models
 
 
@@ -58,7 +57,6 @@ class I3EventModel(
     _models.TdEventModel,
     _I3EventModelDefaultsBase,
     _I3EventModelBase,
-    _models.EnergyEventModel,
 ):
     """Docstring"""
     def __post_init__(self, source: sources.Source, grl: np.ndarray,
@@ -197,7 +195,7 @@ class I3EventModel(
     def log_sob_spline_prepro(
         self,
         events: np.ndarray,
-    ) -> Tuple[List[Tuple[int, int]], np.ndarray, List]:
+    ) -> Tuple[np.ndarray, List]:
         """Docstring"""
         # Get the bin that each event belongs to
         sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1],
@@ -206,37 +204,25 @@ class I3EventModel(
         log_energy_idx = np.searchsorted(self._log_energy_bins[:-1],
                                          events['logE'])
 
-        spline_idxs = np.unique(
+        spline_idxs, event_spline_idxs = np.unique(
             [sin_dec_idx - 1, log_energy_idx - 1],
             return_inverse=True,
             axis=1
-        )[0]
+        )
 
         splines = [
             self._log_sob_gamma_splines[i][j]
             for i, j in spline_idxs.T
         ]
 
-        event_spline_idxs = [
-            np.logical_and(  # this works fine pylint: disable=unsubscriptable-object
-                spline_idxs[0] == i,
-                spline_idxs[1] == j,
-            ).nonzero()[0][0]
-            for i, j in zip(sin_dec_idx - 1, log_energy_idx - 1)
-        ]
-
-        return event_spline_idxs, splines
+        return np.array(event_spline_idxs, dtype=int), splines
 
     def get_sob_energy(
         self,
-        params: np.ndarray,
-        prepro: test_statistics.I3Preprocessing,
+        gamma: float,
+        splines: List[Spline],
+        event_spline_idxs: np.ndarray,
     ) -> np.array:
         """Docstring"""
-        if 'gamma' in params.dtype.names:
-            gamma = params['gamma']
-        else:
-            gamma = prepro.gamma
-
-        spline_evals = np.exp([spline(gamma) for spline in prepro.splines])
-        return np.array([spline_evals[i] for i in prepro.event_spline_idxs])
+        spline_evals = np.exp([spline(gamma) for spline in splines])
+        return spline_evals[event_spline_idxs]
