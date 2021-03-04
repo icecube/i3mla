@@ -620,9 +620,17 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
         contained_runs: np.ndarray,
     ) -> float:
         """Docstring"""
-        before_start = max(0, start - contained_runs['start'][0])
-        after_stop = max(0, contained_runs['stop'][-1] - stop)
-        return contained_runs['livetime'] - before_start - after_stop
+        runs_before_start = contained_runs[contained_runs['start'] < start]
+        runs_after_stop = contained_runs[contained_runs['stop'] > stop]
+        contained_livetime = contained_runs['livetime'].sum()
+
+        if len(runs_before_start) == 1:
+            contained_livetime -= start - runs_before_start['start'][0]
+
+        if len(runs_after_stop) == 1:
+            contained_livetime -= runs_after_stop['stop'][0] - stop
+
+        return contained_livetime
 
     def scramble_times(self, times: np.ndarray,
                        background: bool = True) -> np.ndarray:
