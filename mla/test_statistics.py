@@ -364,16 +364,11 @@ class I3EnergyTerm(SoBTerm):
 
     def drop_events(self, drop_index: np.ndarray) -> None:
         """Docstring"""
-        contiguous_spline_idxs = np.empty(
-            drop_index.sum(),
-            dtype=self._spline_idxs.dtype,
+        to_calculate, contiguous_spline_idxs = np.unique(
+            self._spline_idxs[drop_index],
+            return_inverse=True,
         )
 
-        to_calculate = np.sort(np.unique(self._spline_idxs[drop_index]))
-        contiguous_spline_idxs[:] = [
-            np.where(to_calculate == idx)[0][0]
-            for idx in self._spline_idxs[drop_index]
-        ]
         self._splines = [self._splines[i] for i in to_calculate]
         self._spline_idxs = contiguous_spline_idxs
 

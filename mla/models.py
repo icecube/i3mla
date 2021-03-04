@@ -204,23 +204,15 @@ class I3EventModel(
         log_energy_idx = np.searchsorted(self._log_energy_bins[:-1],
                                          events['logE'])
 
-        spline_idxs = np.unique(
+        spline_idxs, event_spline_idxs = np.unique(
             [sin_dec_idx - 1, log_energy_idx - 1],
             return_inverse=True,
             axis=1
-        )[0]
+        )
 
         splines = [
             self._log_sob_gamma_splines[i][j]
             for i, j in spline_idxs.T
-        ]
-
-        event_spline_idxs = [
-            np.logical_and(  # this works fine pylint: disable=unsubscriptable-object
-                spline_idxs[0] == i,
-                spline_idxs[1] == j,
-            ).nonzero()[0][0]
-            for i, j in zip(sin_dec_idx - 1, log_energy_idx - 1)
         ]
 
         return np.array(event_spline_idxs, dtype=int), splines
