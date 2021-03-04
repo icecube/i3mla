@@ -178,6 +178,7 @@ class EventModelBase:
     _grl_rates: np.ndarray = field(init=False)
     _reduced_sim: np.ndarray = field(init=False)
     _background_dec_spline: Spline = field(init=False)
+    _livetime: float = field(init=False)
 
     @property
     def data(self) -> np.ndarray:
@@ -193,6 +194,11 @@ class EventModelBase:
     def gamma(self) -> float:
         """Docstring"""
         return self._gamma
+
+    @property
+    def livetime(self) -> float:
+        """Docstring"""
+        return self._livetime
 
 
 @dataclass
@@ -268,6 +274,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         self._background_dec_spline = self._init_background_dec_spline(
             background_sin_dec_bins)
 
+        self._livetime = self._grl['livetime'].sum()
         self._n_background = self._grl['events'].sum()
         self._grl_rates = self._grl['events'] / self._grl['livetime']
 
@@ -549,35 +556,73 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
         super().__post_init__(source, grl, background_sin_dec_bins)
 
         # Find the run contian in the background time window
-        start_time, end_time = self.background_time_profile.range
-        if withinwindow:
-            fully_contained = (self._grl['start'] >= start_time
-            ) & (self._grl['stop'] < end_time)
-            start_contained = (self._grl['start'] < start_time
-            ) & (self._grl['stop'] > start_time)
-            background_runs = (fully_contained | start_contained)
-            if not np.any(background_runs):
-                print('ERROR: No runs found in GRL for calculation of '
-                      'background rates!')
-                raise RuntimeError
-            background_grl = self._grl[background_runs]
-        else:
-            fully_contained = (
-                self._grl['start'] >= start_time - background_window
-            ) & (self._grl['stop'] < start_time)
-            start_contained = (
-                self._grl['start'] < start_time - background_window
-            ) & (self._grl['stop'] > start_time - background_window)
-            background_runs = (fully_contained | start_contained)
-            if not np.any(background_runs):
-                print('ERROR: No runs found in GRL for calculation of '
-                      'background rates!')
-                raise RuntimeError
-            background_grl = self._grl[background_runs]
+        start, stop = self.background_time_profile.range
+        return_stop_contained = True
 
+        if not withinwindow:
+            start -= background_window
+            stop = start
+            return_stop_contained = False
+
+        background_run_mask = self._contained_run_mask(
+            start,
+            stop,
+            return_stop_contained=return_stop_contained,
+        )
+
+        if not np.any(background_run_mask):
+            print('ERROR: No runs found in GRL for calculation of '
+                  'background rates!')
+            raise RuntimeError
+
+        background_grl = self._grl[background_run_mask]
         self._n_background = background_grl['events'].sum()
         self._n_background /= background_grl['livetime'].sum()
-        self._n_background *= self.background_time_profile.exposure
+        self._n_background *= self._contained_livetime(
+            start,
+            stop,
+            background_grl,
+        )
+
+    def _contained_run_mask(
+        self,
+        start: float,
+        stop: float,
+        return_stop_contained: bool = True,
+    ) -> np.ndarray:
+        """Docstring"""
+        fully_contained = (
+            self._grl['start'] >= start
+        ) & (self._grl['stop'] < stop)
+
+        start_contained = (
+            self._grl['start'] < start
+        ) & (self._grl['stop'] > start)
+
+        if not return_stop_contained:
+            return fully_contained | start_contained
+
+        stop_contained = (
+            self._grl['start'] < stop
+        ) & (self._grl['stop'] > stop)
+
+        return fully_contained | start_contained | stop_contained
+
+    def contained_livetime(self, start: float, stop: float) -> float:
+        """Docstring"""
+        contained_runs = self._grl[self._contained_run_mask(start, stop)]
+        return self._contained_livetime(start, stop, contained_runs)
+
+    def _contained_livetime(
+        self,
+        start: float,
+        stop: float,
+        contained_runs: np.ndarray,
+    ) -> float:
+        """Docstring"""
+        before_start = max(0, start - contained_runs['start'][0])
+        after_stop = max(0, contained_runs['stop'][-1] - stop)
+        return contained_runs['livetime'] - before_start - after_stop
 
     def scramble_times(self, times: np.ndarray,
                        background: bool = True) -> np.ndarray:
