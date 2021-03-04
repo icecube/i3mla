@@ -51,7 +51,7 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
     if ts is None:
         ts = copy.deepcopy(analysis.test_statistic)
     ts.preprocess(params, events, analysis.model, analysis.source)
-    return ts(unstructured_params, **kwargs)
+    return ts(params, **kwargs)
 
 
 def _default_minimizer(
@@ -96,7 +96,7 @@ def minimize_ts(
         print('Preprocessing...', end='')
     if ts is None:
         ts = copy.deepcopy(analysis.test_statistic)
-        
+
     ts.preprocess(
         test_params,
         events,
@@ -114,7 +114,7 @@ def minimize_ts(
         test_params,
         copy=True,
     )[0]
-    
+
     if verbose:
         print('done')
     if 'empty' in test_params.dtype.names:

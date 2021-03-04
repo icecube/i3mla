@@ -59,7 +59,7 @@ class LLHTestStatistic:
                 source,
             )
             self._drop_index = np.logical_and(self._drop_index, drop_index)
-            
+
         for term in self._sob_terms:
             term.drop_events(self._drop_index)
 
