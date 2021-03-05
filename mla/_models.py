@@ -579,8 +579,7 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
         self._n_background = background_grl['events'].sum()
         self._n_background /= background_grl['livetime'].sum()
         self._n_background *= self._contained_livetime(
-            start,
-            stop,
+            *self.background_time_profile.range,
             background_grl,
         )
 
