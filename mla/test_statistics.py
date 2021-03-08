@@ -53,10 +53,12 @@ class LLHTestStatistic:
         event_model: _models.EventModel,
         source: sources.Source,
         bounds: Bounds = None,
+        from_scratch: bool = True,
     ) -> None:
         """Docstring"""
         self._drop_index = np.ones(len(events), dtype=bool)
         for term in self._sob_terms:
+            term.preprocessed = not from_scratch
             drop_index, bounds = term.preprocess(
                 params,
                 bounds,
@@ -64,18 +66,21 @@ class LLHTestStatistic:
                 event_model,
                 source,
             )
-            self._drop_index = np.logical_and(self._drop_index, drop_index)
+            if from_scratch:
+                self._drop_index = np.logical_and(self._drop_index, drop_index)
 
-        for term in self._sob_terms:
-            term.drop_events(self._drop_index)
+        if from_scratch:
+            for term in self._sob_terms:
+                term.drop_events(self._drop_index)
+
+            self._n_events = len(events)
+            self._n_kept = self._drop_index.sum()
+            self._events = np.empty(self._n_kept, dtype=events.dtype)
+            self._events[:] = events[self._drop_index]
+            self._n_dropped = self._n_events - self._n_kept
 
         self._bounds = bounds
         self._params = params
-        self._n_events = len(events)
-        self._n_kept = self._drop_index.sum()
-        self._events = np.empty(self._n_kept, dtype=events.dtype)
-        self._events[:] = events[self._drop_index]
-        self._n_dropped = self._n_events - self._n_kept
         self.best_reset()
 
     def best_reset(self) -> None:
@@ -219,6 +224,7 @@ class LLHTestStatistic:
 class SoBTerm:
     """Docstring"""
     __metaclass__ = abc.ABCMeta
+    preprocessed: bool = dataclasses.field(init=False, default=False)
 
     @abc.abstractmethod
     def preprocess(
@@ -258,13 +264,17 @@ class SpatialTerm(SoBTerm):
         source: sources.Source,
     ) -> Tuple[np.ndarray, Bounds]:
         """Docstring"""
-        self._sob_spatial = event_model.signal_spatial_pdf(source, events)
+        if not self.preprocessed:
+            self._sob_spatial = event_model.signal_spatial_pdf(source, events)
+
         drop_index = self._sob_spatial != 0
 
-        self._sob_spatial[drop_index] /= event_model.background_spatial_pdf(
-            events[drop_index],
-        )
+        if not self.preprocessed:
+            self._sob_spatial[drop_index] /= event_model.background_spatial_pdf(
+                events[drop_index],
+            )
 
+        self.preprocessed = True
         return drop_index, bounds
 
     def drop_events(self, drop_index: np.ndarray) -> None:
@@ -303,9 +313,11 @@ class TimeTerm(SoBTerm):
         source: sources.Source,
     ) -> Tuple[np.ndarray, Bounds]:
         """Docstring"""
-        self._times = np.empty(len(events), dtype=events['time'].dtype)
-        self._times[:] = events['time'][:]
-        self._sob_time = 1 / self.background_time_profile.pdf(self._times)
+        if not self.preprocessed:
+            self._times = np.empty(len(events), dtype=events['time'].dtype)
+            self._times[:] = events['time'][:]
+            self._sob_time = 1 / self.background_time_profile.pdf(self._times)
+
         drop_index = self._sob_time != 0
 
         if np.logical_not(np.all(np.isfinite(self._sob_time))):
@@ -319,6 +331,7 @@ class TimeTerm(SoBTerm):
                 self._times[drop_index]
             )
 
+        self.preprocessed = True
         return drop_index, bounds
 
     def drop_events(self, drop_index: np.ndarray) -> None:
@@ -365,11 +378,12 @@ class I3EnergyTerm(SoBTerm):
         source: sources.Source,
     ) -> Tuple[np.ndarray, Bounds]:
         """Docstring"""
-        self._energy_sob = event_model.get_sob_energy
-        self._spline_idxs, self._splines = event_model.log_sob_spline_prepro(
-            events,
-        )
+        if not self.preprocessed:
+            self._energy_sob = event_model.get_sob_energy
+            spline_tuple = event_model.log_sob_spline_prepro(events)
+            self._spline_idxs, self._splines = spline_tuple
 
+        self.preprocessed = True
         return np.ones(len(events), dtype=bool), bounds
 
     def drop_events(self, drop_index: np.ndarray) -> None:
