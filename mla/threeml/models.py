@@ -12,7 +12,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Union, Tuple
+from typing import Optional, Tuple, Union
 
 import numpy as np
 import numpy.lib.recfunctions as rf
@@ -28,7 +28,7 @@ from . import spectral
 
 
 @dataclass
-class _ThreeMLEventModelBase(_models.TdEventModelBase):
+class _ThreeMLEventModelBase(_models.EventModelBase):
     """Docstring"""
     _sin_dec_bins: np.array = field(init=False)
     _log_energy_bins: np.array = field(init=False)
@@ -36,11 +36,6 @@ class _ThreeMLEventModelBase(_models.TdEventModelBase):
     _background_sob_map: np.ndarray = field(init=False)
     _ratio: np.ndarray = field(init=False)
     _reduced_sim_reconstructed: np.ndarray = field(init=False)
-
-    @property
-    def edge_point(self) -> Tuple[float, float]:
-        """Docstring"""
-        return self._edge_point
 
 
 @dataclass
@@ -51,25 +46,28 @@ class _ThreeMLEventModelDefaultsBase(_models.TdEventModelDefaultsBase):
     _spectrum: spectral.BaseSpectrum = field(
         default=spectral.PowerLaw(1e3, 1e-14, -2))
 
-    @property
-    def spectrum(self) -> spectral.BaseSpectrum:
-        """Docstring"""
-        return self._spectrum
-
 
 @dataclass
 class ThreeMLEventModel(
     _models.TdEventModel,
     _ThreeMLEventModelDefaultsBase,
     _ThreeMLEventModelBase,
-    _models.EnergyEventModel,
 ):
     """Docstring"""
-    def __post_init__(self, source: sources.Source, grl: np.ndarray,
-                      background_sin_dec_bins: Union[np.array, int],
-                      background_window: float, withinwindow: bool,
-                      signal_sin_dec_bins: Union[np.array, int],
-                      log_energy_bins: Union[np.array, int]) -> None:
+    def __post_init__(
+        self,
+        source: sources.Source,
+        data: np.ndarray,
+        sim: np.ndarray,
+        grl: np.ndarray,
+        gamma: float,
+        sampling_width: Optional[float],
+        background_sin_dec_bins: Union[np.array, int],
+        background_window: float,
+        withinwindow: bool,
+        signal_sin_dec_bins: Union[np.array, int],
+        log_energy_bins: Union[np.array, int],
+    ) -> None:
         """
         Args:
             source:
@@ -79,8 +77,17 @@ class ThreeMLEventModel(
             background_window:
             withinwindow:
         """
-        super().__post_init__(source, grl, background_sin_dec_bins,
-                              background_window, withinwindow)
+        super().__post_init__(
+            source,
+            data,
+            sim,
+            grl,
+            gamma,
+            sampling_width,
+            background_sin_dec_bins,
+            background_window,
+            withinwindow,
+        )
         if isinstance(signal_sin_dec_bins, int):
             signal_sin_dec_bins = np.linspace(-1, 1, 1 + signal_sin_dec_bins)
         self._sin_dec_bins = signal_sin_dec_bins
@@ -223,3 +230,13 @@ class ThreeMLEventModel(
     ) -> np.ndarray:
         """Docstring"""
         return self._energy_sob(events)
+
+    @property
+    def edge_point(self) -> Tuple[float, float]:
+        """Docstring"""
+        return self._edge_point
+
+    @property
+    def spectrum(self) -> spectral.BaseSpectrum:
+        """Docstring"""
+        return self._spectrum

@@ -12,7 +12,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import List, Tuple, Union
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 from scipy.interpolate import UnivariateSpline as Spline
@@ -26,7 +26,7 @@ from . import _models
 
 
 @dataclass
-class _I3EventModelBase(_models.TdEventModelBase):
+class _I3EventModelBase(_models.EventModelBase):
     """Docstring
 
     Attributes:
@@ -59,16 +59,34 @@ class I3EventModel(
     _I3EventModelBase,
 ):
     """Docstring"""
-    def __post_init__(self, source: sources.Source, grl: np.ndarray,
-                      background_sin_dec_bins: Union[np.array, int],
-                      background_window: float, withinwindow: bool,
-                      signal_sin_dec_bins: Union[np.array, int],
-                      log_energy_bins: Union[np.array, int],
-                      gamma_bins: Union[np.array, int],
-                      verbose: bool) -> None:
+    def __post_init__(
+        self,
+        source: sources.Source,
+        data: np.ndarray,
+        sim: np.ndarray,
+        grl: np.ndarray,
+        gamma: float,
+        sampling_width: Optional[float],
+        background_sin_dec_bins: Union[np.array, int],
+        background_window: float,
+        withinwindow: bool,
+        signal_sin_dec_bins: Union[np.array, int],
+        log_energy_bins: Union[np.array, int],
+        gamma_bins: Union[np.array, int],
+        verbose: bool,
+    ) -> None:
         """Docstring"""
-        super().__post_init__(source, grl, background_sin_dec_bins,
-                              background_window, withinwindow)
+        super().__post_init__(
+            source,
+            data,
+            sim,
+            grl,
+            gamma,
+            sampling_width,
+            background_sin_dec_bins,
+            background_window,
+            withinwindow,
+        )
 
         if isinstance(signal_sin_dec_bins, int):
             signal_sin_dec_bins = np.linspace(-1, 1, 1 + signal_sin_dec_bins)

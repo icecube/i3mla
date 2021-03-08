@@ -29,7 +29,9 @@ Bounds = Optional[Sequence[Tuple[float, float]]]
 @dataclasses.dataclass
 class LLHTestStatistic:
     """Docstring"""
-    _sob_terms: List['SoBTerm']
+    sob_terms: dataclasses.InitVar[List['SoBTerm']]
+
+    _sob_terms: List['SoBTerm'] = dataclasses.field(init=False)
     _n_events: int = dataclasses.field(init=False)
     _n_dropped: int = dataclasses.field(init=False)
     _n_kept: int = dataclasses.field(init=False)
@@ -39,6 +41,10 @@ class LLHTestStatistic:
     _best_ts: float = dataclasses.field(init=False)
     _best_ns: float = dataclasses.field(init=False)
     _bounds: Bounds = dataclasses.field(init=False)
+
+    def __post_init__(self, sob_terms) -> None:
+        """Docstring"""
+        self._sob_terms = sob_terms
 
     def preprocess(
         self,

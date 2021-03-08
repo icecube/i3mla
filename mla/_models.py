@@ -14,7 +14,7 @@ __status__ = 'Development'
 
 from typing import Optional, Tuple, Union
 
-import abc
+import copy
 import scipy
 import numpy as np
 import numpy.lib.recfunctions as rf
@@ -135,19 +135,6 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
     return r_a, dec
 
 
-class EnergyEventModel:
-    """Docstring"""
-    __metaclass__ = abc.ABCMeta
-
-    @abc.abstractmethod
-    def get_sob_energy(
-        self,
-        params: np.ndarray,
-        prepro,
-    ) -> np.ndarray:
-        """Docstring"""
-
-
 @dataclass
 class EventModelBase:
     """Stores the events and pre-processed parameters used in analyses.
@@ -165,40 +152,21 @@ class EventModelBase:
         gamma (float):
     """
     source: InitVar[sources.Source]
-
-    _data: np.ndarray
-    _sim: np.ndarray
-
+    data: InitVar[np.ndarray]
+    sim: InitVar[np.ndarray]
     grl: InitVar[np.ndarray]
+    gamma: InitVar[float]
 
-    _gamma: float
-
+    _data: np.ndarray = field(init=False)
+    _sim: np.ndarray = field(init=False)
+    _gamma: float = field(init=False)
     _n_background: int = field(init=False)
     _grl: np.ndarray = field(init=False)
     _grl_rates: np.ndarray = field(init=False)
     _reduced_sim: np.ndarray = field(init=False)
     _background_dec_spline: Spline = field(init=False)
     _livetime: float = field(init=False)
-
-    @property
-    def data(self) -> np.ndarray:
-        """Docstring"""
-        return self._data
-
-    @property
-    def sim(self) -> np.ndarray:
-        """Docstring"""
-        return self._sim
-
-    @property
-    def gamma(self) -> float:
-        """Docstring"""
-        return self._gamma
-
-    @property
-    def livetime(self) -> float:
-        """Docstring"""
-        return self._livetime
+    _sampling_width: Optional[float] = field(init=False)
 
 
 @dataclass
@@ -213,13 +181,8 @@ class EventModelDefaultsBase:
         sampling_width:
         background_dec_spline: A spline fit of neutrino flux vs. sin(dec).
     """
-    _sampling_width: Optional[float] = field(default=np.deg2rad(3))
+    sampling_width: InitVar[Optional[float]] = field(default=np.deg2rad(3))
     background_sin_dec_bins: InitVar[Union[np.array, int]] = field(default=500)
-
-    @property
-    def sampling_width(self) -> float:
-        """Docstring"""
-        return self._sampling_width
 
 
 @dataclass
@@ -230,8 +193,16 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
     will be updated before the first release to use the upcoming public data
     release.
     """
-    def __post_init__(self, source: sources.Source, grl: np.ndarray,
-                      background_sin_dec_bins: Union[np.array, int]) -> None:
+    def __post_init__(
+        self,
+        source: sources.Source,
+        data: np.ndarray,
+        sim: np.ndarray,
+        grl: np.ndarray,
+        gamma: float,
+        sampling_width: Optional[float],
+        background_sin_dec_bins: Union[np.array, int],
+    ) -> None:
         """Initializes EventModel and calculates energy sob maps.
 
         Args:
@@ -244,18 +215,24 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
             ValueError:
         """
         try:
-            self._data = rf.append_fields(self._data, 'sindec',
-                                          np.sin(self._data['dec']),
-                                          usemask=False)
+            self._data = rf.append_fields(
+                data,
+                'sindec',
+                np.sin(data['dec']),
+                usemask=False,
+            )
             # The full simulation set,this is for the overall normalization of
             # the Energy S/B ratio
         except ValueError:  # sindec already exist
             pass
 
         try:
-            self._sim = rf.append_fields(self._sim, 'sindec',
-                                         np.sin(self._sim['dec']),
-                                         usemask=False)
+            self._sim = rf.append_fields(
+                sim,
+                'sindec',
+                np.sin(sim['dec']),
+                usemask=False,
+            )
             # The full simulation set,this is for the overall normalization of
             # the Energy S/B ratio
         except ValueError:  # sindec already exist
@@ -265,6 +242,8 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         max_mjd = np.max(self._data['time'])
         self._grl = grl[(grl['start'] < max_mjd) & (grl['stop'] > min_mjd)]
 
+        self._gamma = gamma
+        self._sampling_width = sampling_width
         self._init_reduced_sim(source)
 
         if isinstance(background_sin_dec_bins, int):
@@ -511,6 +490,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
 
     @property
     def gamma(self) -> float:
+        """Docstring"""
         return self._gamma
 
     @gamma.setter
@@ -519,27 +499,51 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         self._gamma = new_gamma
         self._reduced_sim = self._weight_reduced_sim(self._reduced_sim)
 
+    @property
+    def data(self) -> np.ndarray:
+        """Docstring"""
+        return self._data
 
-@dataclass
-class TdEventModelBase(EventModelBase):
-    """Docstring"""
-    background_time_profile: time_profiles.GenericProfile
-    signal_time_profile: time_profiles.GenericProfile
+    @property
+    def sim(self) -> np.ndarray:
+        """Docstring"""
+        return self._sim
+
+    @property
+    def livetime(self) -> float:
+        """Docstring"""
+        return self._livetime
+
+    @property
+    def sampling_width(self) -> float:
+        """Docstring"""
+        return self._sampling_width
 
 
 @dataclass
 class TdEventModelDefaultsBase(EventModelDefaultsBase):
     """Docstring"""
+    background_time_profile: Optional[time_profiles.GenericProfile] = None
+    signal_time_profile: Optional[time_profiles.GenericProfile] = None
     background_window: InitVar[float] = field(default=14)
     withinwindow: InitVar[bool] = field(default=False)
 
 
 @dataclass
-class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
+class TdEventModel(EventModel, TdEventModelDefaultsBase, EventModelBase):
     """Docstring"""
-    def __post_init__(self, source: sources.Source, grl: np.ndarray,
-                      background_sin_dec_bins: Union[np.array, int],
-                      background_window: float, withinwindow: bool) -> None:
+    def __post_init__(
+        self,
+        source: sources.Source,
+        data: np.ndarray,
+        sim: np.ndarray,
+        grl: np.ndarray,
+        gamma: np.ndarray,
+        sampling_width: Optional[float],
+        background_sin_dec_bins: Union[np.array, int],
+        background_window: float,
+        withinwindow: bool,
+    ) -> None:
         """Initializes EventModel and calculates energy sob maps.
 
         Args:
@@ -553,7 +557,26 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, TdEventModelBase):
         Raises:
             RuntimeError:
         """
-        super().__post_init__(source, grl, background_sin_dec_bins)
+        super().__post_init__(
+            source,
+            data,
+            sim,
+            grl,
+            gamma,
+            sampling_width,
+            background_sin_dec_bins,
+        )
+
+        if self.background_time_profile is None:
+            self.background_time_profile = time_profiles.UniformProfile(
+                start=np.min(data['time']),
+                length=np.max(data['time']) - np.min(data['time']),
+            )
+
+        if self.signal_time_profile is None:
+            self.signal_time_profile = copy.deepcopy(
+                self.background_time_profile,
+            )
 
         # Find the run contian in the background time window
         start, stop = self.background_time_profile.range
