@@ -15,7 +15,6 @@ __status__ = 'Development'
 from typing import Callable, Dict, List, Optional
 
 import copy
-import functools
 import dataclasses
 import numpy as np
 import numpy.lib.recfunctions as rf
@@ -43,6 +42,26 @@ class Analysis:
     source: sources.Source
 
 
+def generate_params(**kwargs) -> np.ndarray:
+    """Docstring"""
+    dtype = [(key, np.float64) for key in kwargs]
+    max_len = 1
+
+    for key in kwargs:
+        if hasattr(kwargs[key], '__len__'):
+            max_len = max(max_len, len(kwargs[key]))
+
+    for key in kwargs:
+        if not hasattr(kwargs[key], '__len__'):
+            kwargs[key] = [kwargs[key]] * max_len
+
+    params = np.empty(max_len, dtype=dtype)
+    for key in kwargs:
+        params[key][:] = kwargs[key][:]
+
+    return params
+
+
 def evaluate_ts(analysis: Analysis, events: np.ndarray,
                 params: np.ndarray,
                 ts: Optional[test_statistics.LLHTestStatistic] = None,
@@ -55,19 +74,26 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
 
 
 def _default_minimizer(
-        ts: test_statistics.LLHTestStatistic,
-        params: np.ndarray,
-        bounds: test_statistics.Bounds = None,
-):
+    ts: Callable,
+    fit_params: np.ndarray,
+    params: np.ndarray,
+    bounds: test_statistics.Bounds = None,
+) -> scipy.optimize.OptimizeResult:
     """Docstring"""
     return scipy.optimize.minimize(
-        ts, x0=params, bounds=bounds, method='L-BFGS-B')
+        ts,
+        x0=fit_params,
+        args=(params),
+        bounds=bounds,
+        method='L-BFGS-B',
+    )
 
 
 def minimize_ts(
     analysis: Analysis,
     events: np.ndarray,
     test_params: np.ndarray = np.empty(1, dtype=[('empty', int)]),
+    to_fit: Optional[List[str]] = None,
     bounds: test_statistics.Bounds = None,
     minimizer: Minimizer = _default_minimizer,
     ts: Optional[test_statistics.LLHTestStatistic] = None,
@@ -92,13 +118,27 @@ def minimize_ts(
         A dictionary containing the minimized overall test-statistic, the
         best-fit n_signal, and the best fit gamma.
     """
+    if to_fit is None:
+        to_fit = test_params.dtype.names
+    elif to_fit == []:
+        try:
+            test_params = rf.append_fields(
+                test_params,
+                'empty',
+                test_params[test_params.dtype.names[0]],
+                usemask=False,
+            )
+        except ValueError:
+            pass
+        to_fit = ['empty']
+
     if verbose:
         print('Preprocessing...', end='')
     if ts is None:
         ts = copy.deepcopy(analysis.test_statistic)
 
     ts.preprocess(
-        test_params,
+        test_params[0],
         events,
         analysis.model,
         analysis.source,
@@ -107,40 +147,57 @@ def minimize_ts(
 
     output = {'ts': 0, 'ns': 0}
     if ts.n_kept == 0:
-        return output
+        return [output] * len(test_params)
 
-    ts_partial = functools.partial(ts, **kwargs)
     unstructured_params = rf.structured_to_unstructured(
-        test_params,
+        test_params[to_fit],
         copy=True,
-    )[0]
+    )
 
     if verbose:
         print('done')
-    if 'empty' in test_params.dtype.names:
-        output['ts'] = -ts_partial(unstructured_params)
-        output['ns'] = ts.best_ns
 
-    else:
-        if verbose:
-            print(f'Minimizing: {test_params}...', end='')
+    def fit_ts(fit_params: np.ndarray, params: np.ndarray) -> float:
+        """Docstring"""
+        for name, val in zip(to_fit, fit_params):
+            params[name] = val
+        return ts(params, **kwargs)
 
-        result = minimizer(ts_partial, unstructured_params, ts.bounds)
-        output['ts'] = -result.fun
-        res_params = rf.unstructured_to_structured(
-            result.x,
-            dtype=test_params.dtype,
-            copy=True,
+    to_return = []
+    for fit_params, params in zip(unstructured_params, test_params):
+        output = {}
+
+        ts.preprocess(
+            params,
+            events,
+            analysis.model,
+            analysis.source,
+            bounds=bounds,
+            from_scratch=False,
         )
 
-        if 'ns' not in test_params.dtype.names:
+        if 'empty' in to_fit:
+            output['ts'] = -ts(params, **kwargs)
             output['ns'] = ts.best_ns
-        for param in test_params.dtype.names:
-            output[param] = np.asscalar(res_params[param])
-        if verbose:
-            print('done')
+        else:
+            if verbose:
+                print(f'Minimizing: {to_fit}...', end='')
 
-    return output
+            result = minimizer(fit_ts, fit_params, params, ts.bounds)
+            output['ts'] = -result.fun
+
+            if 'ns' not in to_fit:
+                output['ns'] = ts.best_ns
+
+            for param, val in zip(to_fit, result.x):
+                if param != 'empty':
+                    output[param] = np.asscalar(val)
+
+            if verbose:
+                print('done')
+
+        to_return.append(output)
+    return to_return
 
 
 def produce_trial(

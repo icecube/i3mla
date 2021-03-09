@@ -15,7 +15,6 @@ import abc
 import dataclasses
 import warnings
 import numpy as np
-import numpy.lib.recfunctions as rf
 
 from . import sources
 from . import _models
@@ -89,20 +88,6 @@ class LLHTestStatistic:
         self._best_ts = 0
 
     def __call__(self, params: np.ndarray, **kwargs) -> float:
-        """Docstring"""
-        if self._n_events == 0:
-            return 0
-
-        if params.dtype.names is None:
-            params = rf.unstructured_to_structured(
-                params,
-                dtype=self._params.dtype,
-                copy=True,
-            )
-
-        return self._evaluate(params, **kwargs)
-
-    def _evaluate(self, params: np.ndarray, **kwargs) -> float:
         """Evaluates the test-statistic for the given events and parameters
 
         Calculates the test-statistic using a given event model, n_signal, and
@@ -115,6 +100,9 @@ class LLHTestStatistic:
             The overall test-statistic value for the given events and
             parameters.
         """
+        if self._n_events == 0:
+            return 0
+
         sob = self._sob(params)
 
         if 'ns' in params.dtype.names:
