@@ -224,7 +224,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
             # The full simulation set,this is for the overall normalization of
             # the Energy S/B ratio
         except ValueError:  # sindec already exist
-            pass
+            self._data = data
 
         try:
             self._sim = rf.append_fields(
@@ -236,7 +236,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
             # The full simulation set,this is for the overall normalization of
             # the Energy S/B ratio
         except ValueError:  # sindec already exist
-            pass
+            self._sim = sim
 
         min_mjd = np.min(self._data['time'])
         max_mjd = np.max(self._data['time'])
