@@ -93,7 +93,7 @@ def minimize_ts(
     analysis: Analysis,
     events: np.ndarray,
     test_params: np.ndarray = np.empty(1, dtype=[('empty', int)]),
-    to_fit: Optional[List[str]] = None,
+    to_fit: Optional[List[str]] = ['all'],
     bounds: test_statistics.Bounds = None,
     minimizer: Minimizer = _default_minimizer,
     ts: Optional[test_statistics.LLHTestStatistic] = None,
@@ -118,9 +118,9 @@ def minimize_ts(
         A dictionary containing the minimized overall test-statistic, the
         best-fit n_signal, and the best fit gamma.
     """
-    if to_fit is None:
-        to_fit = test_params.dtype.names
-    elif to_fit == []:
+    if to_fit == ['all']:
+        to_fit = list(test_params.dtype.names)
+    elif to_fit is None:
         try:
             test_params = rf.append_fields(
                 test_params,
@@ -145,9 +145,8 @@ def minimize_ts(
         bounds=bounds,
     )
 
-    output = {'ts': 0, 'ns': 0}
     if ts.n_kept == 0:
-        return [output] * len(test_params)
+        return [{'ts': 0, 'ns': 0}] * len(test_params)
 
     unstructured_params = rf.structured_to_unstructured(
         test_params[to_fit],
@@ -166,15 +165,9 @@ def minimize_ts(
     to_return = []
     for fit_params, params in zip(unstructured_params, test_params):
         output = {}
-
-        ts.preprocess(
-            params,
-            events,
-            analysis.model,
-            analysis.source,
-            bounds=bounds,
-            from_scratch=False,
-        )
+        for name in params.dtype.names:
+                output[name] = params[name]
+        ts.update(params)
 
         if 'empty' in to_fit:
             output['ts'] = -ts(params, **kwargs)
