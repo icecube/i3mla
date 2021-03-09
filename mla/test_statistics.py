@@ -305,7 +305,7 @@ class TimeTerm(SoBTerm):
             )
 
         return drop_index, bounds
-    
+
     def update(self, params: np.ndarray) -> None:
         """Docstring"""
         self.signal_time_profile.update_params(params)
@@ -333,7 +333,6 @@ class TimeTerm(SoBTerm):
     ) -> np.ndarray:
         """Docstring"""
         return self._sob_bg * self.signal_time_profile.pdf(self._times)
-
 
 
 @dataclasses.dataclass

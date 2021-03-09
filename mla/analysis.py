@@ -12,7 +12,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, Dict, List, Optional
+from typing import Callable, Dict, List, Optional, Union
 
 import copy
 import dataclasses
@@ -93,7 +93,7 @@ def minimize_ts(
     analysis: Analysis,
     events: np.ndarray,
     test_params: np.ndarray = np.empty(1, dtype=[('empty', int)]),
-    to_fit: Optional[List[str]] = ['all'],
+    to_fit: Union[List[str], str, None] = 'all',
     bounds: test_statistics.Bounds = None,
     minimizer: Minimizer = _default_minimizer,
     ts: Optional[test_statistics.LLHTestStatistic] = None,
@@ -118,7 +118,7 @@ def minimize_ts(
         A dictionary containing the minimized overall test-statistic, the
         best-fit n_signal, and the best fit gamma.
     """
-    if to_fit == ['all']:
+    if to_fit == 'all':
         to_fit = list(test_params.dtype.names)
     elif to_fit is None:
         try:
@@ -131,6 +131,8 @@ def minimize_ts(
         except ValueError:
             pass
         to_fit = ['empty']
+    elif not hasattr(to_fit, '__len__'):
+        to_fit = [to_fit]
 
     if verbose:
         print('Preprocessing...', end='')
@@ -166,7 +168,7 @@ def minimize_ts(
     for fit_params, params in zip(unstructured_params, test_params):
         output = {}
         for name in params.dtype.names:
-                output[name] = params[name]
+            output[name] = params[name]
         ts.update(params)
 
         if 'empty' in to_fit:
