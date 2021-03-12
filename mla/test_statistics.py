@@ -379,3 +379,49 @@ class I3EnergyTerm(SoBTerm):
             gamma = self.gamma
 
         return self._energy_sob(gamma, self._splines, self._spline_idxs)
+
+@dataclasses.dataclass
+class ThreeMLEnergyTerm(SoBTerm):
+    """Docstring"""
+    _sin_dec_idx: np.ndarray = dataclasses.field(init=False)
+    _log_energy_idx: List = dataclasses.field(init=False)
+    _energy_sob: Callable = dataclasses.field(init=False)
+
+    def preprocess(
+        self,
+        params: np.ndarray,
+        bounds: Bounds,
+        events: np.ndarray,
+        event_model: _models.EventModel,
+        source: sources.Source,
+    ) -> Tuple[np.ndarray, Bounds]:
+        """Docstring"""
+        self._energy_sob = event_model.get_sob_energy
+        self._sin_dec_idx, self._log_energy_idx = event_model._prepro_index(events)
+        return np.ones(len(events), dtype=bool), bounds
+
+    def drop_events(self, drop_index: np.ndarray) -> None:
+        """Docstring"""
+        contiguous_sin_dec_idx = np.empty(
+            drop_index.sum(),
+            dtype=self._sin_dec_idx.dtype,
+        )
+        contiguous_log_energy_idx = np.empty(
+            drop_index.sum(),
+            dtype=self._log_energy_idx.dtype,
+        )
+        
+        contiguous_sin_dec_idx[:] = self._sin_dec_idx[drop_index]
+        contiguous_log_energy_idx[:] = self._log_energy_idx[drop_index]
+        self._sin_dec_idx = contiguous_sin_dec_idx
+        self._log_energy_idx = contiguous_log_energy_idx
+
+    def __call__(
+        self,
+        params: np.ndarray,
+        events: np.ndarray,
+    ) -> np.ndarray:
+        """Docstring"""
+
+        return self._energy_sob(self._sin_dec_idx, self._log_energy_idx)
+
