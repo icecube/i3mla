@@ -195,21 +195,19 @@ class ThreeMLEventModel(
         except ValueError:  # weight already exist
             pass
 
-
         # Assign the weights using the newly defined "time profile"
         # classes above. If you want to make this a more complicated
         # shape, talk to me and we can work it out.
         reduced_sim['weight'] = reduced_sim['ow'] * self._spectrum(
             reduced_sim['trueE'])
         return reduced_sim
-    
+
     def reweight_reduced_sim(self, spectrum: spectral.BaseSpectrum):
         """Docstring"""
         self._reduced_sim['weight'] = self._reduced_sim['ow'] * spectrum(
             self._reduced_sim['trueE'])
-        return 
 
-    def _prepro_index(self, events: np.ndarray) -> np.ndarray:
+    def prepro_index(self, events: np.ndarray) -> np.ndarray:
         """Find the sindec index and energy index for events
 
         More function info...
@@ -236,7 +234,7 @@ class ThreeMLEventModel(
         return sin_dec_idx, log_energy_idx
 
     def _energy_sob(
-        self, 
+        self,
         sin_dec_idx: np.ndarray,
         log_energy_idx: np.ndarray
     ) -> np.ndarray:
@@ -270,7 +268,7 @@ class ThreeMLEventModel(
     def spectrum(self) -> spectral.BaseSpectrum:
         """Docstring"""
         return self._spectrum
-    
+
     @spectrum.setter
     def spectrum(self, spectrum: spectral.BaseSpectrum):
         """Docstring"""

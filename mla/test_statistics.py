@@ -380,6 +380,7 @@ class I3EnergyTerm(SoBTerm):
 
         return self._energy_sob(gamma, self._splines, self._spline_idxs)
 
+
 @dataclasses.dataclass
 class ThreeMLEnergyTerm(SoBTerm):
     """Docstring"""
@@ -397,7 +398,8 @@ class ThreeMLEnergyTerm(SoBTerm):
     ) -> Tuple[np.ndarray, Bounds]:
         """Docstring"""
         self._energy_sob = event_model.get_sob_energy
-        self._sin_dec_idx, self._log_energy_idx = event_model._prepro_index(events)
+        self._sin_dec_idx, self._log_energy_idx = event_model.prepro_index(
+            events)
         return np.ones(len(events), dtype=bool), bounds
 
     def drop_events(self, drop_index: np.ndarray) -> None:
@@ -410,7 +412,7 @@ class ThreeMLEnergyTerm(SoBTerm):
             drop_index.sum(),
             dtype=self._log_energy_idx.dtype,
         )
-        
+
         contiguous_sin_dec_idx[:] = self._sin_dec_idx[drop_index]
         contiguous_log_energy_idx[:] = self._log_energy_idx[drop_index]
         self._sin_dec_idx = contiguous_sin_dec_idx
@@ -424,4 +426,3 @@ class ThreeMLEnergyTerm(SoBTerm):
         """Docstring"""
 
         return self._energy_sob(self._sin_dec_idx, self._log_energy_idx)
-
