@@ -12,7 +12,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Union, Tuple
+from typing import Optional, Tuple, Union
 
 import numpy as np
 import numpy.lib.recfunctions as rf
@@ -28,7 +28,7 @@ from . import spectral
 
 
 @dataclass
-class _ThreeMLEventModelBase(_models.TdEventModelBase):
+class _ThreeMLEventModelBase(_models.EventModelBase):
     """Docstring"""
     _sin_dec_bins: np.array = field(init=False)
     _log_energy_bins: np.array = field(init=False)
@@ -36,11 +36,6 @@ class _ThreeMLEventModelBase(_models.TdEventModelBase):
     _background_sob_map: np.ndarray = field(init=False)
     _ratio: np.ndarray = field(init=False)
     _reduced_sim_reconstructed: np.ndarray = field(init=False)
-
-    @property
-    def edge_point(self) -> Tuple[float, float]:
-        """Docstring"""
-        return self._edge_point
 
 
 @dataclass
@@ -51,25 +46,28 @@ class _ThreeMLEventModelDefaultsBase(_models.TdEventModelDefaultsBase):
     _spectrum: spectral.BaseSpectrum = field(
         default=spectral.PowerLaw(1e3, 1e-14, -2))
 
-    @property
-    def spectrum(self) -> spectral.BaseSpectrum:
-        """Docstring"""
-        return self._spectrum
-
 
 @dataclass
 class ThreeMLEventModel(
     _models.TdEventModel,
     _ThreeMLEventModelDefaultsBase,
     _ThreeMLEventModelBase,
-    _models.EnergyEventModel,
 ):
     """Docstring"""
-    def __post_init__(self, source: sources.Source, grl: np.ndarray,
-                      background_sin_dec_bins: Union[np.array, int],
-                      background_window: float, withinwindow: bool,
-                      signal_sin_dec_bins: Union[np.array, int],
-                      log_energy_bins: Union[np.array, int]) -> None:
+    def __post_init__(
+        self,
+        source: sources.Source,
+        data: np.ndarray,
+        sim: np.ndarray,
+        grl: np.ndarray,
+        gamma: float,
+        sampling_width: Optional[float],
+        background_sin_dec_bins: Union[np.array, int],
+        background_window: float,
+        withinwindow: bool,
+        signal_sin_dec_bins: Union[np.array, int],
+        log_energy_bins: Union[np.array, int],
+    ) -> None:
         """
         Args:
             source:
@@ -79,8 +77,17 @@ class ThreeMLEventModel(
             background_window:
             withinwindow:
         """
-        super().__post_init__(source, grl, background_sin_dec_bins,
-                              background_window, withinwindow)
+        super().__post_init__(
+            source,
+            data,
+            sim,
+            grl,
+            gamma,
+            sampling_width,
+            background_sin_dec_bins,
+            background_window,
+            withinwindow,
+        )
         if isinstance(signal_sin_dec_bins, int):
             signal_sin_dec_bins = np.linspace(-1, 1, 1 + signal_sin_dec_bins)
         self._sin_dec_bins = signal_sin_dec_bins
@@ -180,9 +187,13 @@ class ThreeMLEventModel(
 
     def _weight_reduced_sim(self, reduced_sim: np.ndarray) -> np.ndarray:
         """Docstring"""
-        reduced_sim = rf.append_fields(reduced_sim, 'weight',
-                                       np.zeros(len(reduced_sim)),
-                                       dtypes=np.float32)
+        try:
+            reduced_sim = rf.append_fields(reduced_sim, 'weight',
+                                           np.zeros(len(reduced_sim)),
+                                           dtypes=np.float32)
+
+        except ValueError:  # weight already exist
+            pass
 
         # Assign the weights using the newly defined "time profile"
         # classes above. If you want to make this a more complicated
@@ -191,8 +202,13 @@ class ThreeMLEventModel(
             reduced_sim['trueE'])
         return reduced_sim
 
-    def _energy_sob(self, events: np.ndarray) -> np.ndarray:
-        """Gets the sob vs. gamma required for each event and specific .
+    def reweight_reduced_sim(self, spectrum: spectral.BaseSpectrum):
+        """Docstring"""
+        self._reduced_sim['weight'] = self._reduced_sim['ow'] * spectrum(
+            self._reduced_sim['trueE'])
+
+    def prepro_index(self, events: np.ndarray) -> np.ndarray:
+        """Find the sindec index and energy index for events
 
         More function info...
 
@@ -200,7 +216,7 @@ class ThreeMLEventModel(
             events: An array of events including their positional data.
 
         Returns:
-            A list of splines of signal-over-background vs gamma for each event.
+            A list of index
         """
         # Get the bin that each event belongs to
         try:
@@ -215,11 +231,45 @@ class ThreeMLEventModel(
         # If events fall outside the sampling width, just gonna approxiamte the
         # weight using the nearest non-zero sinDec bin.
         sin_dec_idx[sin_dec_idx > self._edge_point[1]] = self._edge_point[1]
+        return sin_dec_idx, log_energy_idx
+
+    def _energy_sob(
+        self,
+        sin_dec_idx: np.ndarray,
+        log_energy_idx: np.ndarray
+    ) -> np.ndarray:
+        """Gets the sob vs. gamma required for each event and specific .
+
+        More function info...
+
+        Args:
+            sin_dec_idx: An array of sin dec index of events
+            log_energy_idx: An array of log energy index of events
+
+        Returns:
+            signal-over-background for each event.
+        """
         return self._ratio[sin_dec_idx, log_energy_idx]
 
     def get_sob_energy(
         self,
-        events: np.ndarray,
+        sin_dec_idx: np.ndarray,
+        log_energy_idx: np.ndarray,
     ) -> np.ndarray:
         """Docstring"""
-        return self._energy_sob(events)
+        return self._energy_sob(sin_dec_idx, log_energy_idx)
+
+    @property
+    def edge_point(self) -> Tuple[float, float]:
+        """Docstring"""
+        return self._edge_point
+
+    @property
+    def spectrum(self) -> spectral.BaseSpectrum:
+        """Docstring"""
+        return self._spectrum
+
+    @spectrum.setter
+    def spectrum(self, spectrum: spectral.BaseSpectrum):
+        """Docstring"""
+        self._spectrum = spectrum

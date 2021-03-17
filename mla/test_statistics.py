@@ -15,7 +15,6 @@ import abc
 import dataclasses
 import warnings
 import numpy as np
-import numpy.lib.recfunctions as rf
 
 from . import sources
 from . import _models
@@ -29,7 +28,9 @@ Bounds = Optional[Sequence[Tuple[float, float]]]
 @dataclasses.dataclass
 class LLHTestStatistic:
     """Docstring"""
-    _sob_terms: List['SoBTerm']
+    sob_terms: dataclasses.InitVar[List['SoBTerm']]
+
+    _sob_terms: List['SoBTerm'] = dataclasses.field(init=False)
     _n_events: int = dataclasses.field(init=False)
     _n_dropped: int = dataclasses.field(init=False)
     _n_kept: int = dataclasses.field(init=False)
@@ -39,6 +40,10 @@ class LLHTestStatistic:
     _best_ts: float = dataclasses.field(init=False)
     _best_ns: float = dataclasses.field(init=False)
     _bounds: Bounds = dataclasses.field(init=False)
+
+    def __post_init__(self, sob_terms) -> None:
+        """Docstring"""
+        self._sob_terms = sob_terms
 
     def preprocess(
         self,
@@ -63,13 +68,20 @@ class LLHTestStatistic:
         for term in self._sob_terms:
             term.drop_events(self._drop_index)
 
-        self._bounds = bounds
-        self._params = params
         self._n_events = len(events)
         self._n_kept = self._drop_index.sum()
         self._events = np.empty(self._n_kept, dtype=events.dtype)
         self._events[:] = events[self._drop_index]
         self._n_dropped = self._n_events - self._n_kept
+        self._bounds = bounds
+        self._params = params
+        self.best_reset()
+
+    def update(self, params: np.ndarray) -> None:
+        """Docstring"""
+        for term in self._sob_terms:
+            term.update(params)
+        self._params = params
         self.best_reset()
 
     def best_reset(self) -> None:
@@ -78,20 +90,6 @@ class LLHTestStatistic:
         self._best_ts = 0
 
     def __call__(self, params: np.ndarray, **kwargs) -> float:
-        """Docstring"""
-        if self._n_events == 0:
-            return 0
-
-        if params.dtype.names is None:
-            params = rf.unstructured_to_structured(
-                params,
-                dtype=self._params.dtype,
-                copy=True,
-            )
-
-        return self._evaluate(params, **kwargs)
-
-    def _evaluate(self, params: np.ndarray, **kwargs) -> float:
         """Evaluates the test-statistic for the given events and parameters
 
         Calculates the test-statistic using a given event model, n_signal, and
@@ -104,6 +102,9 @@ class LLHTestStatistic:
             The overall test-statistic value for the given events and
             parameters.
         """
+        if self._n_events == 0:
+            return 0
+
         sob = self._sob(params)
 
         if 'ns' in params.dtype.names:
@@ -131,7 +132,6 @@ class LLHTestStatistic:
         self,
         sob: np.ndarray,
         newton_iterations: int = 20,
-        ns_lower_bound: Optional[float] = None,
         **kwargs,
     ) -> float:
         """Docstring
@@ -150,11 +150,6 @@ class LLHTestStatistic:
         k = 1 / (sob - 1)
         x = [0] * newton_iterations
 
-        if ns_lower_bound is not None:
-            lo = ns_lower_bound / self._n_events
-        else:
-            lo = max(-1 + eps, 1 / (1 - np.max(sob)))
-
         for i in range(newton_iterations - 1):
             # get next iteration and clamp
             inv_terms = x[i] + k
@@ -163,7 +158,7 @@ class LLHTestStatistic:
             drop_term = 1 / (x[i] - 1)
             d1 = np.sum(terms) + self._n_dropped * drop_term
             d2 = np.sum(terms**2) + self._n_dropped * drop_term**2
-            x[i + 1] = min(1 - eps, max(lo, x[i] + d1 / d2))
+            x[i + 1] = min(1 - eps, max(0, x[i] + d1 / d2))
 
         return x[-1]
 
@@ -195,10 +190,7 @@ class LLHTestStatistic:
         """Docstring"""
         if 'ns' in self._params.dtype.names:
             i = self._params.dtype.names.index('ns')
-            bnds[i] = (
-                max(bnds[i][0], -self._n_events + self._n_dropped),
-                min(bnds[i][1], self._n_events - self._n_dropped),
-            )
+            bnds[i] = (0, min(bnds[i][1], self._n_events - self._n_dropped))
         return bnds
 
     @property
@@ -223,6 +215,9 @@ class SoBTerm:
         event_model: _models.EventModel,
         source: sources.Source,
     ) -> Tuple[np.ndarray, Bounds]:
+        """Docstring"""
+
+    def update(self, params: np.ndarray) -> None:
         """Docstring"""
 
     @abc.abstractmethod
@@ -285,7 +280,7 @@ class TimeTerm(SoBTerm):
     """Docstring"""
     background_time_profile: time_profiles.GenericProfile
     signal_time_profile: time_profiles.GenericProfile
-    _sob_time: np.ndarray = dataclasses.field(init=False)
+    _sob_bg: np.ndarray = dataclasses.field(init=False)
     _times: np.ndarray = dataclasses.field(init=False)
 
     def preprocess(
@@ -299,21 +294,21 @@ class TimeTerm(SoBTerm):
         """Docstring"""
         self._times = np.empty(len(events), dtype=events['time'].dtype)
         self._times[:] = events['time'][:]
-        self._sob_time = 1 / self.background_time_profile.pdf(self._times)
-        drop_index = self._sob_time != 0
+        self._sob_bg = 1 / self.background_time_profile.pdf(self._times)
+        self.signal_time_profile.update_params(params)
+        drop_index = self._sob_bg != 0
 
-        if np.logical_not(np.all(np.isfinite(self._sob_time))):
+        if np.logical_not(np.all(np.isfinite(self._sob_bg))):
             warnings.warn(
                 'Warning, events outside background time profile',
                 RuntimeWarning
             )
 
-        if not self.signal_time_profile.update_params(params):
-            self._sob_time[drop_index] *= self.signal_time_profile.pdf(
-                self._times[drop_index]
-            )
-
         return drop_index, bounds
+
+    def update(self, params: np.ndarray) -> None:
+        """Docstring"""
+        self.signal_time_profile.update_params(params)
 
     def drop_events(self, drop_index: np.ndarray) -> None:
         """Docstring"""
@@ -321,15 +316,15 @@ class TimeTerm(SoBTerm):
             drop_index.sum(),
             dtype=self._times.dtype,
         )
-        contiguous_sob_time = np.empty(
+        contiguous_sob_bg = np.empty(
             drop_index.sum(),
-            dtype=self._sob_time.dtype,
+            dtype=self._sob_bg.dtype,
         )
 
         contiguous_times[:] = self._times[drop_index]
-        contiguous_sob_time[:] = self._sob_time[drop_index]
+        contiguous_sob_bg[:] = self._sob_bg[drop_index]
         self._times = contiguous_times
-        self._sob_time = contiguous_sob_time
+        self._sob_bg = contiguous_sob_bg
 
     def __call__(
         self,
@@ -337,9 +332,7 @@ class TimeTerm(SoBTerm):
         events: np.ndarray,
     ) -> np.ndarray:
         """Docstring"""
-        if self.signal_time_profile.update_params(params):
-            return self._sob_time * self.signal_time_profile.pdf(self._times)
-        return self._sob_time
+        return self._sob_bg * self.signal_time_profile.pdf(self._times)
 
 
 @dataclasses.dataclass
@@ -360,10 +353,8 @@ class I3EnergyTerm(SoBTerm):
     ) -> Tuple[np.ndarray, Bounds]:
         """Docstring"""
         self._energy_sob = event_model.get_sob_energy
-        self._spline_idxs, self._splines = event_model.log_sob_spline_prepro(
-            events,
-        )
-
+        spline_tuple = event_model.log_sob_spline_prepro(events)
+        self._spline_idxs, self._splines = spline_tuple
         return np.ones(len(events), dtype=bool), bounds
 
     def drop_events(self, drop_index: np.ndarray) -> None:
@@ -388,3 +379,50 @@ class I3EnergyTerm(SoBTerm):
             gamma = self.gamma
 
         return self._energy_sob(gamma, self._splines, self._spline_idxs)
+
+
+@dataclasses.dataclass
+class ThreeMLEnergyTerm(SoBTerm):
+    """Docstring"""
+    _sin_dec_idx: np.ndarray = dataclasses.field(init=False)
+    _log_energy_idx: List = dataclasses.field(init=False)
+    _energy_sob: Callable = dataclasses.field(init=False)
+
+    def preprocess(
+        self,
+        params: np.ndarray,
+        bounds: Bounds,
+        events: np.ndarray,
+        event_model: _models.EventModel,
+        source: sources.Source,
+    ) -> Tuple[np.ndarray, Bounds]:
+        """Docstring"""
+        self._energy_sob = event_model.get_sob_energy
+        self._sin_dec_idx, self._log_energy_idx = event_model.prepro_index(
+            events)
+        return np.ones(len(events), dtype=bool), bounds
+
+    def drop_events(self, drop_index: np.ndarray) -> None:
+        """Docstring"""
+        contiguous_sin_dec_idx = np.empty(
+            drop_index.sum(),
+            dtype=self._sin_dec_idx.dtype,
+        )
+        contiguous_log_energy_idx = np.empty(
+            drop_index.sum(),
+            dtype=self._log_energy_idx.dtype,
+        )
+
+        contiguous_sin_dec_idx[:] = self._sin_dec_idx[drop_index]
+        contiguous_log_energy_idx[:] = self._log_energy_idx[drop_index]
+        self._sin_dec_idx = contiguous_sin_dec_idx
+        self._log_energy_idx = contiguous_log_energy_idx
+
+    def __call__(
+        self,
+        params: np.ndarray,
+        events: np.ndarray,
+    ) -> np.ndarray:
+        """Docstring"""
+
+        return self._energy_sob(self._sin_dec_idx, self._log_energy_idx)
