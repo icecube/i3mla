@@ -97,6 +97,7 @@ class ThreeMLEventModel(
 
         self._log_energy_bins = log_energy_bins
         self._background_sob_map = self._init_background_sob_map()
+        self._init_reduced_sim_reconstructed(source)
         self._ratio = self._init_sob_ratio(source)
 
     def _init_background_sob_map(self) -> None:
@@ -112,7 +113,6 @@ class ThreeMLEventModel(
     def _init_sob_ratio(self, source: sources.Source, *args, **kwargs) -> None:
         """Create the SOB map with a spectrum
         """
-        self._init_reduced_sim_reconstructed(source)
         bins = np.array([self._sin_dec_bins, self._log_energy_bins])
         bin_centers = bins[1, :-1] + np.diff(bins[1]) / 2
         sig_w = self._reduced_sim_reconstructed['ow'] * self._spectrum(
@@ -172,13 +172,13 @@ class ThreeMLEventModel(
         Args:
             source:
         """
-        if self.sampling_width is not None:
+        if self._sampling_width is not None:
             self._edge_point = (np.searchsorted(
                                 self._sin_dec_bins,
-                                np.sin(source.dec - self.sampling_width)) - 1,
+                                np.sin(source.dec - self._sampling_width)) - 1,
                                 np.searchsorted(
                                 self._sin_dec_bins,
-                                np.sin(source.dec + self.sampling_width)) - 1)
+                                np.sin(source.dec + self._sampling_width)) - 1)
         else:
             self._edge_point = (self._sin_dec_bins[0], self._sin_dec_bins[-1])
         sindec_dist = np.abs(source.dec - self._sim['dec'])
@@ -220,13 +220,15 @@ class ThreeMLEventModel(
         """
         # Get the bin that each event belongs to
         try:
-            sin_dec_idx = np.searchsorted(self._sin_dec_bins,
+            sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1],
                                           events['sindec']) - 1
         except ValueError:
-            sin_dec_idx = np.searchsorted(self._sin_dec_bins,
-                                          events['sindec']) - 1
+            sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1],
+                                          np.sin(events['dec'])) - 1
+
         log_energy_idx = np.searchsorted(self._log_energy_bins[:-1],
                                          events['logE']) - 1
+
         sin_dec_idx[sin_dec_idx < self._edge_point[0]] = self._edge_point[0]
         # If events fall outside the sampling width, just gonna approxiamte the
         # weight using the nearest non-zero sinDec bin.
@@ -272,4 +274,4 @@ class ThreeMLEventModel(
     @spectrum.setter
     def spectrum(self, spectrum: spectral.BaseSpectrum):
         """Docstring"""
-        self._spectrum = spectrum
+        self._spectrum = spectrum       
