@@ -98,7 +98,7 @@ class ThreeMLEventModel(
         self._log_energy_bins = log_energy_bins
         self._background_sob_map = self._init_background_sob_map()
         self._init_reduced_sim_reconstructed(source)
-        self._ratio = self._init_sob_ratio(source)
+        self._ratio = self._init_sob_ratio()
 
     def _init_background_sob_map(self) -> None:
         """Create the backgroub SOB map
@@ -110,7 +110,7 @@ class ThreeMLEventModel(
         bg_h /= np.sum(bg_h, axis=1)[:, None]
         return bg_h
 
-    def _init_sob_ratio(self, source: sources.Source, *args, **kwargs) -> None:
+    def _init_sob_ratio(self, *args, **kwargs) -> None:
         """Create the SOB map with a spectrum
         """
         bins = np.array([self._sin_dec_bins, self._log_energy_bins])
@@ -274,4 +274,4 @@ class ThreeMLEventModel(
     @spectrum.setter
     def spectrum(self, spectrum: spectral.BaseSpectrum):
         """Docstring"""
-        self._spectrum = spectrum       
+        self._spectrum = spectrum
