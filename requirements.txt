@@ -8,3 +8,4 @@
 -i https://pypi.org/simple
 numpy==1.19.4
 scipy==1.5.4
+matplotlib==3.4.0
