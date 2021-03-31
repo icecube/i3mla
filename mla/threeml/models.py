@@ -123,7 +123,7 @@ class ThreeMLEventModel(
 
         # Normalize histograms by dec band
         with warnings.catch_warnings():  # divide zero warnings
-            warnings.simplefilter("ignore")  # we don't use those bins
+            warnings.simplefilter('ignore')  # we don't use those bins
             sig_h /= np.sum(sig_h, axis=1)[:, None]
 
         if 'k' not in kwargs:
@@ -134,11 +134,11 @@ class ThreeMLEventModel(
             kwargs['ext'] = 3
 
         with warnings.catch_warnings():  # divide zero warnings
-            warnings.simplefilter("ignore")  # we don't use those bins
+            warnings.simplefilter('ignore')  # we don't use those bins
             ratio = sig_h / self._background_sob_map
 
         with warnings.catch_warnings():  # NaN and inf can't compare
-            warnings.simplefilter("ignore")  # we remove those in np.isfinite
+            warnings.simplefilter('ignore')  # we remove those in np.isfinite
             for i in range(ratio.shape[0]):
                 # Pick out the values we want to use.
                 # We explicitly want to avoid NaNs and infinities
