@@ -13,7 +13,7 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 from typing import Optional, Tuple, Union
-
+import warnings
 import numpy as np
 import numpy.lib.recfunctions as rf
 from scipy.interpolate import UnivariateSpline as Spline
@@ -122,30 +122,38 @@ class ThreeMLEventModel(
                                      bins=bins, weights=sig_w, density=True)
 
         # Normalize histograms by dec band
+        with warnings.catch_warnings():  # divide zero warnings
+            warnings.simplefilter("ignore")  # we don't use those bins
+            sig_h /= np.sum(sig_h, axis=1)[:, None]
 
-        sig_h /= np.sum(sig_h, axis=1)[:, None]
         if 'k' not in kwargs:
             kwargs['k'] = 1
         if 's' not in kwargs:
             kwargs['s'] = 0
         if 'ext' not in kwargs:
             kwargs['ext'] = 3
-        ratio = sig_h / self._background_sob_map
-        for i in range(ratio.shape[0]):
-            # Pick out the values we want to use.
-            # We explicitly want to avoid NaNs and infinities
-            values = ratio[i]
-            good = np.isfinite(values) & (values > 0)
-            x_good, y_good = bin_centers[good], values[good]
 
-            # Do a linear interpolation across the energy range
-            if len(x_good) > 1:
-                spline = Spline(x_good, y_good, *args, **kwargs)
-                ratio[i] = spline(bin_centers)
-            elif len(x_good) == 1:
-                ratio[i] = y_good
-            else:
-                ratio[i] = 0
+        with warnings.catch_warnings():  # divide zero warnings
+            warnings.simplefilter("ignore")  # we don't use those bins
+            ratio = sig_h / self._background_sob_map
+
+        with warnings.catch_warnings():  # NaN and inf can't compare
+            warnings.simplefilter("ignore")  # we remove those in np.isfinite
+            for i in range(ratio.shape[0]):
+                # Pick out the values we want to use.
+                # We explicitly want to avoid NaNs and infinities
+                values = ratio[i]
+                good = np.isfinite(values) & (values > 0)
+                x_good, y_good = bin_centers[good], values[good]
+
+                # Do a linear interpolation across the energy range
+                if len(x_good) > 1:
+                    spline = Spline(x_good, y_good, *args, **kwargs)
+                    ratio[i] = spline(bin_centers)
+                elif len(x_good) == 1:
+                    ratio[i] = y_good
+                else:
+                    ratio[i] = 0
         return ratio
 
     def _init_reduced_sim_reconstructed(self, source: sources.Source) -> None:

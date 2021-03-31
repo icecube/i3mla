@@ -469,6 +469,8 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
                 signal['trueDec'],
             )
 
+            signal['sindec'] = np.sin(signal['dec'])
+
         return signal
 
     def scramble_times(self, times: np.ndarray,
