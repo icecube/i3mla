@@ -13,7 +13,6 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 from typing import Optional, Tuple, Union
-import warnings
 import numpy as np
 import numpy.lib.recfunctions as rf
 from scipy.interpolate import UnivariateSpline as Spline
@@ -122,8 +121,7 @@ class ThreeMLEventModel(
                                      bins=bins, weights=sig_w, density=True)
 
         # Normalize histograms by dec band
-        with warnings.catch_warnings():  # divide zero warnings
-            warnings.simplefilter('ignore')  # we don't use those bins
+        with np.errstate(divide='ignore'):  # divide zero warnings
             sig_h /= np.sum(sig_h, axis=1)[:, None]
 
         if 'k' not in kwargs:
@@ -133,12 +131,10 @@ class ThreeMLEventModel(
         if 'ext' not in kwargs:
             kwargs['ext'] = 3
 
-        with warnings.catch_warnings():  # divide zero warnings
-            warnings.simplefilter('ignore')  # we don't use those bins
+        with np.errstate(divide='ignore'):  # divide zero warnings
             ratio = sig_h / self._background_sob_map
 
-        with warnings.catch_warnings():  # NaN and inf can't compare
-            warnings.simplefilter('ignore')  # we remove those in np.isfinite
+        with np.errstate(divide='ignore'):  # divide zero warnings
             for i in range(ratio.shape[0]):
                 # Pick out the values we want to use.
                 # We explicitly want to avoid NaNs and infinities
