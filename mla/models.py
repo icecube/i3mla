@@ -138,7 +138,9 @@ class I3EventModel(
         bg_h /= np.sum(bg_h, axis=1)[:, None]
         sig_h /= np.sum(sig_h, axis=1)[:, None]
 
-        ratio = sig_h / bg_h
+        # div-0 okay here
+        with np.errstate(divide='ignore', invalid='ignore'):
+            ratio = sig_h / bg_h
 
         if 'k' not in kwargs:
             kwargs['k'] = 1
