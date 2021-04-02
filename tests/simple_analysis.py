@@ -35,22 +35,34 @@ def produce_and_minimize(
                 flush=True,
             )
 
-    pm_results_list = mla.produce_and_minimize(
+    arr = mla.produce_and_minimize(
         analysis=pm_analysis,
         n_trials=n_trials,
+        as_array=True,
         **kwargs,
     )
 
     if args['verbose']:
         print('done.')
 
-    # Make a structured numpy array from the list of lists of dicts
-    keys = [*pm_results_list[0][0]]
-    tuples = [
-        tuple([results[0][key] for key in keys]) for results in pm_results_list
-    ]
-    dtype = [(key, np.float64) for key in keys]
-    return np.array(tuples, dtype=dtype)
+    return arr
+
+
+def print_results(to_print: np.ndarray, column_width: int = 8) -> None:
+    """Docstring"""
+    header = ''.join(
+        [name.center(column_width) for name in to_print.dtype.names],
+    )
+
+    lines = [header, *[
+        ''.join([
+            f'{x : .{min(4, column_width - 2)}g}'.ljust(column_width)
+            for x in result
+        ])
+        for result in results
+    ]]
+
+    print('\n'.join(lines))
 
 
 if __name__ == '__main__':
@@ -160,31 +172,33 @@ if __name__ == '__main__':
         events=trial,
         bounds=bounds,
         test_params=test_params,
+        as_array=True,
     )
 
     if args['verbose']:
         print('done.')
 
-    print(f'Single trial minimization results:\n{results[0]}')
+    print('Single trial minimization results:')
+    print_results(results)
 
     # Produce 10 trials and minimize all at once
     if args['verbose']:
         print('Producing and minimizing 10 trials...', end='', flush=True)
 
-    results_list = mla.produce_and_minimize(
+    results = mla.produce_and_minimize(
         analysis=analysis,
         n_trials=10,
         n_signal_observed=100,
         bounds=bounds,
         test_params=test_params,
+        as_array=True,
     )
 
     if args['verbose']:
         print('done.')
 
     print('Multiple trial minimization results:')
-    for results in results_list:
-        print(results[0])
+    print_results(results)
 
     # Produce and minimize 100 trials, then plot the ts distribution
     best_fit_arr = produce_and_minimize(
@@ -213,8 +227,8 @@ if __name__ == '__main__':
     flux_norms = np.empty(6)
     flux_norms[0] = 0
     flux_norms[1:] = np.logspace(-12, -10.5, 5)
-
     hists_file_loc = ''.join([args['outdir'], 'example_ts_dists.png'])
+    bin_edges = np.arange(0, 250, 10)
 
     for flux_norm in flux_norms:
         best_fit_arr = produce_and_minimize(
@@ -228,6 +242,7 @@ if __name__ == '__main__':
         plt.hist(
             best_fit_arr['ts'],
             histtype='step',
+            bins=bin_edges,
             label=f'flux norm = {flux_norm:.2g}'
         )
 
