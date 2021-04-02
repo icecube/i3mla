@@ -284,7 +284,7 @@ def _minimizer_wrapper(
             print('done')
 
     if tuple_names is not None:
-        return tuple([output[name] for name in tuple_names])
+        return tuple(output[name] for name in tuple_names)
 
     return output
 
