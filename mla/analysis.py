@@ -12,10 +12,13 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union
+from typing_extensions import Protocol
 
 import copy
 import dataclasses
+import functools
+import warnings
 import numpy as np
 import numpy.lib.recfunctions as rf
 import scipy.optimize
@@ -24,14 +27,19 @@ from . import test_statistics
 from . import _models
 from . import sources
 
-Minimizer = Callable[
-    [
-        test_statistics.LLHTestStatistic,
-        np.ndarray,
-        test_statistics.Bounds,
-    ],
-    scipy.optimize.OptimizeResult,
-]
+
+class Minimizer(Protocol):
+    """Docstring"""
+    @staticmethod
+    def __call__(
+        ts: test_statistics.LLHTestStatistic,
+        unstructured_params: np.ndarray,
+        unstructured_param_names: List[str],
+        structured_params: np.ndarray,
+        bounds: test_statistics.Bounds = None,
+        **kwargs,
+    ) -> scipy.optimize.OptimizeResult:
+        ...
 
 
 @dataclasses.dataclass(frozen=True)
@@ -74,19 +82,40 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
 
 
 def _default_minimizer(
-    ts: Callable,
-    fit_params: np.ndarray,
-    params: np.ndarray,
+    ts: test_statistics.LLHTestStatistic,
+    unstructured_params: np.ndarray,
+    unstructured_param_names: List[str],
+    structured_params: np.ndarray,
     bounds: test_statistics.Bounds = None,
+    **kwargs,
 ) -> scipy.optimize.OptimizeResult:
     """Docstring"""
     return scipy.optimize.minimize(
-        ts,
-        x0=fit_params,
-        args=(params),
+        functools.partial(
+            _unstructured_ts,
+            ts=ts,
+            structured_params=structured_params,
+            unstructured_param_names=unstructured_param_names,
+            **kwargs,
+        ),
+        x0=unstructured_params,
         bounds=bounds,
         method='L-BFGS-B',
     )
+
+
+def _unstructured_ts(
+    unstructured_params: np.array,
+    ts: test_statistics.LLHTestStatistic,
+    structured_params: np.array,
+    unstructured_param_names: List[str],
+    **kwargs,
+) -> float:
+    """Docstring"""
+    for name, val in zip(unstructured_param_names, unstructured_params):
+        structured_params[name] = val
+
+    return ts(structured_params, **kwargs)
 
 
 def minimize_ts(
@@ -98,6 +127,7 @@ def minimize_ts(
     minimizer: Minimizer = _default_minimizer,
     ts: Optional[test_statistics.LLHTestStatistic] = None,
     verbose: bool = False,
+    as_array: bool = False,
     **kwargs,
 ) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.
@@ -118,6 +148,16 @@ def minimize_ts(
         A dictionary containing the minimized overall test-statistic, the
         best-fit n_signal, and the best fit gamma.
     """
+    if not as_array:
+        warnings.warn(
+            ''.join([
+                'List[dict] return type will soon be deprecated. ',
+                'Set the as_array flag to True to use the np.ndarray ',
+                'return type instead.',
+            ]),
+            FutureWarning,
+        )
+
     if to_fit == 'all':
         to_fit = list(test_params.dtype.names)
     elif to_fit is None:
@@ -135,7 +175,8 @@ def minimize_ts(
         to_fit = [to_fit]
 
     if verbose:
-        print('Preprocessing...', end='')
+        print('Preprocessing...', end='', flush=True)
+
     if ts is None:
         ts = copy.deepcopy(analysis.test_statistic)
 
@@ -148,7 +189,13 @@ def minimize_ts(
     )
 
     if ts.n_kept == 0:
-        return [{'ts': 0, 'ns': 0}] * len(test_params)
+        if as_array:
+            return np.array(
+                [(0, 0)] * len(test_params),
+                dtype=[(name, np.float64) for name in ['ts', 'ns']],
+            )
+        else:
+            return [{'ts': 0, 'ns': 0}] * len(test_params)
 
     unstructured_params = rf.structured_to_unstructured(
         test_params[to_fit],
@@ -158,41 +205,87 @@ def minimize_ts(
     if verbose:
         print('done')
 
-    def fit_ts(fit_params: np.ndarray, params: np.ndarray) -> float:
-        """Docstring"""
-        for name, val in zip(to_fit, fit_params):
-            params[name] = val
-        return ts(params, **kwargs)
+    tuple_names = None
+    if as_array:
+        tuple_names = ['ts']
+        if 'ns' not in to_fit:
+            tuple_names.append('ns')
+        tuple_names.extend(to_fit)
 
-    to_return = []
-    for fit_params, params in zip(unstructured_params, test_params):
-        output = {}
-        for name in params.dtype.names:
-            output[name] = params[name]
-        ts.update(params)
+    minimize = functools.partial(
+        _minimizer_wrapper,
+        unstructured_param_names=to_fit,
+        ts=ts,
+        verbose=verbose,
+        minimizer=minimizer,
+        tuple_names=tuple_names,
+        **kwargs,
+    )
 
-        if 'empty' in to_fit:
-            output['ts'] = -ts(params, **kwargs)
+    return_list = [
+        minimize(unstructured_params=fit_params, structured_params=params)
+        for fit_params, params in zip(unstructured_params, test_params)
+    ]
+
+    if as_array:
+        return np.array(
+            return_list,
+            dtype=[(name, np.float64) for name in tuple_names],
+        )
+    return return_list
+
+
+def _minimizer_wrapper(
+    unstructured_params: np.array,
+    structured_params: np.ndarray,
+    unstructured_param_names: List[str],
+    ts: test_statistics.LLHTestStatistic,
+    verbose: bool,
+    minimizer: Minimizer,
+    tuple_names: Optional[List[str]] = None,
+    **kwargs,
+) -> dict:
+    """Docstring"""
+    output = {}
+    for name in structured_params.dtype.names:
+        output[name] = structured_params[name]
+    ts.update(structured_params)
+
+    if 'empty' in unstructured_param_names:
+        output['ts'] = -ts(structured_params, **kwargs)
+        output['ns'] = ts.best_ns
+    else:
+        if verbose:
+            print(
+                f'Minimizing: {unstructured_param_names}...',
+                end='',
+                flush=True,
+            )
+
+        result = minimizer(
+            ts=ts,
+            unstructured_params=unstructured_params,
+            unstructured_param_names=unstructured_param_names,
+            structured_params=structured_params,
+            bounds=ts.bounds,
+            **kwargs,
+        )
+
+        output['ts'] = -result.fun
+
+        if 'ns' not in unstructured_param_names:
             output['ns'] = ts.best_ns
-        else:
-            if verbose:
-                print(f'Minimizing: {to_fit}...', end='')
 
-            result = minimizer(fit_ts, fit_params, params, ts.bounds)
-            output['ts'] = -result.fun
+        for param, val in zip(unstructured_param_names, result.x):
+            if param != 'empty':
+                output[param] = np.asscalar(val)
 
-            if 'ns' not in to_fit:
-                output['ns'] = ts.best_ns
+        if verbose:
+            print('done')
 
-            for param, val in zip(to_fit, result.x):
-                if param != 'empty':
-                    output[param] = np.asscalar(val)
-
-            if verbose:
-                print('done')
-
-        to_return.append(output)
-    return to_return
+        if tuple_names is not None:
+            return tuple([output[name] for name in tuple_names])
+        return output
 
 
 def produce_trial(
@@ -260,16 +353,25 @@ def produce_trial(
 def produce_and_minimize(
     analysis: Analysis,
     n_trials: int = 1,
+    as_array: bool = False,
     **kwargs,
 ) -> List[Dict[str, float]]:
     """Docstring"""
     ts = copy.deepcopy(analysis.test_statistic)
-    return [minimize_ts(
-        analysis,
-        produce_trial(
+    return_list = [
+        minimize_ts(
             analysis,
+            produce_trial(
+                analysis,
+                **kwargs,
+            ),
+            ts=ts,
+            as_array=as_array,
             **kwargs,
-        ),
-        ts=ts,
-        **kwargs,
-    ) for _ in range(n_trials)]
+        )
+        for _ in range(n_trials)
+    ]
+
+    if as_array:
+        return np.concatenate(return_list)
+    return return_list
