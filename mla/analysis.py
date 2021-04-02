@@ -283,9 +283,10 @@ def _minimizer_wrapper(
         if verbose:
             print('done')
 
-        if tuple_names is not None:
-            return tuple([output[name] for name in tuple_names])
-        return output
+    if tuple_names is not None:
+        return tuple([output[name] for name in tuple_names])
+
+    return output
 
 
 def produce_trial(
