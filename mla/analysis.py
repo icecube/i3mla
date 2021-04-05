@@ -210,7 +210,8 @@ def minimize_ts(
         tuple_names = ['ts']
         if 'ns' not in to_fit:
             tuple_names.append('ns')
-        tuple_names.extend(to_fit)
+        if to_fit != ['empty']:
+            tuple_names.extend(to_fit)
 
     minimize = functools.partial(
         _minimizer_wrapper,
@@ -230,7 +231,10 @@ def minimize_ts(
     if as_array:
         return np.array(
             return_list,
-            dtype=[(name, np.float64) for name in tuple_names],
+            dtype=[
+                ('ts', np.float64),
+                *[(name, np.float64) for name in test_params.dtype.names],
+            ],
         )
     return return_list
 
@@ -284,7 +288,10 @@ def _minimizer_wrapper(
             print('done')
 
     if tuple_names is not None:
-        return tuple(output[name] for name in tuple_names)
+        return tuple(
+            output[name]
+            for name in ['ts', *structured_params.dtype.names]
+        )
 
     return output
 

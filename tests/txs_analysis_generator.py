@@ -9,7 +9,6 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-import unittest
 import sys
 import copy
 import pickle
@@ -52,7 +51,7 @@ if __name__ == '__main__':
             sampling_width=np.radians(3),
             withinwindow=True,
         )
-        model_file_loc = ''.join([args['outdir'], 'example_model.pkl'])
+        model_file_loc = ''.join([args['outdir'], 'txs_model.pkl'])
 
         if args['verbose']:
             print(
@@ -84,4 +83,17 @@ if __name__ == '__main__':
         source=source,
     )
 
-    unittest.main()
+    analysis_file_loc = ''.join([args['outdir'], 'txs_analysis.pkl'])
+
+    if args['verbose']:
+        print(
+            f'done.\nSaving analysis to {analysis_file_loc}...',
+            end='',
+            flush=True,
+        )
+
+    with open(analysis_file_loc, 'wb') as f:
+        pickle.dump(analysis, f)
+
+    if args['verbose']:
+        print('done.')

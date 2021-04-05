@@ -87,7 +87,6 @@ def parse(argv: List[str]) -> dict:
     elif None not in (args.data, args.sim, args.grl):
         if args.verbose:
             print('Loading data...', end='', flush=True)
-
         output['data'] = numpy_multifile(args.data)
 
         if args.verbose:
