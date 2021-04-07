@@ -106,7 +106,8 @@ class ThreeMLEventModel(
         bins = np.array([self._sin_dec_bins, self._log_energy_bins])
         bg_h, _, _ = np.histogram2d(self._data['sindec'], self._data['logE'],
                                     bins=bins, density=True)
-        bg_h /= np.sum(bg_h, axis=1)[:, None]
+        with np.errstate(divide='ignore', invalid='ignore'):
+            bg_h /= np.sum(bg_h, axis=1)[:, None]
         return bg_h
 
     def _init_sob_ratio(self, *args, **kwargs) -> None:
@@ -121,7 +122,7 @@ class ThreeMLEventModel(
                                      bins=bins, weights=sig_w, density=True)
 
         # Normalize histograms by dec band
-        with np.errstate(divide='ignore'):  # divide zero warnings
+        with np.errstate(divide='ignore', invalid='ignore'):  # divide warnings
             sig_h /= np.sum(sig_h, axis=1)[:, None]
 
         if 'k' not in kwargs:
@@ -131,10 +132,10 @@ class ThreeMLEventModel(
         if 'ext' not in kwargs:
             kwargs['ext'] = 3
 
-        with np.errstate(divide='ignore'):  # divide zero warnings
+        with np.errstate(divide='ignore', invalid='ignore'):  # divide warnings
             ratio = sig_h / self._background_sob_map
 
-        with np.errstate(divide='ignore'):  # divide zero warnings
+        with np.errstate(divide='ignore', invalid='ignore'):  # divide warnings
             for i in range(ratio.shape[0]):
                 # Pick out the values we want to use.
                 # We explicitly want to avoid NaNs and infinities
