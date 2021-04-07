@@ -16,7 +16,7 @@ def main() -> None:
 
     trial = mla.analysis.produce_trial(
         analysis,
-        flux_norm=args.flux_norm,
+        n_signal_observed=args.n_signal,
         verbose=args.verbose,
     )
 
@@ -35,8 +35,8 @@ def parse_args() -> argparse.Namespace:
         help='The pickled TXS analysis object file location',
     )
     parser.add_argument(
-        '-f', '--flux-norm',
-        type=float,
+        '-n', '--n-signal',
+        type=int,
         default=0,
         help='',
     )
@@ -202,7 +202,7 @@ def save(
     prefix = ''.join([
         args.outdir,
         args.prefix,
-        f'txs_f{args.flux_norm:.2g}',
+        f'txs_n{args.n_signal}',
     ])
 
     trial_file = ''.join([prefix, '_trial.npy'])

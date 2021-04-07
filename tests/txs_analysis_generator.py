@@ -27,10 +27,16 @@ if __name__ == '__main__':
         dec=np.radians(5.6931),
     )
 
-    # Example time profile object
+    # IC86b time window
     uniform_profile = mla.UniformProfile(
-        start=56224,
-        length=158,
+        start=56063,
+        length=57160 - 56063,
+    )
+
+    # Gauss time profile around 57004 peak
+    gauss_profile = mla.GaussProfile(
+        mean=57004,
+        sigma=55,
     )
 
     # Load or generate model based on command line arguments
@@ -45,9 +51,9 @@ if __name__ == '__main__':
             data=args['data'],
             sim=args['sim'],
             grl=args['grl'],
-            gamma=-2,
+            gamma=-2.1,  # for 57004, 2.1 was the best-fit gauss spectrum
             background_time_profile=copy.deepcopy(uniform_profile),
-            signal_time_profile=copy.deepcopy(uniform_profile),
+            signal_time_profile=copy.deepcopy(gauss_profile),
             sampling_width=np.radians(3),
             withinwindow=True,
         )
