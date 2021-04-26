@@ -353,8 +353,8 @@ def produce_trial(
                                      if n not in background.dtype.names])
 
     # Combine the signal background events and time-sort them.
-    events = np.concatenate([background, signal])
-
+    # Use recfunctions.stack_arrays to prevent numpy from scrambling entry order
+    events = rf.stack_arrays([background, signal], autoconvert=True)
     return events
 
 
