@@ -25,6 +25,32 @@ from . import time_profiles
 Bounds = Optional[Sequence[Tuple[float, float]]]
 
 
+def angular_distance(src_ra: float, src_dec: float, r_a: float,
+                     dec: float) -> float:
+    """Computes angular distance between source and location.
+
+    Args:
+        src_ra: The right ascension of the first point (radians).
+        src_dec: The declination of the first point (radians).
+        r_a: The right ascension of the second point (radians).
+        dec: The declination of the second point (radians).
+
+    Returns:
+        The distance, in radians, between the two points.
+    """
+    sin_dec = np.sin(dec)
+
+    cos_dec = np.sqrt(1. - sin_dec**2)
+
+    cos_dist = (
+        np.cos(src_ra - r_a) * np.cos(src_dec) * cos_dec
+    ) + np.sin(src_dec) * sin_dec
+    # handle possible floating precision errors
+    cos_dist = np.clip(cos_dist, -1, 1)
+
+    return np.arccos(cos_dist)
+
+
 @dataclasses.dataclass
 class LLHTestStatistic:
     """Docstring"""
@@ -247,7 +273,7 @@ class SpatialTerm(SoBTerm):
         source: sources.Source,
     ) -> Tuple[np.ndarray, Bounds]:
         """Docstring"""
-        self._sob_spatial = source.signal_spatial_pdf(events)
+        self._sob_spatial = self.gauassian_spatial_pdf(events, source)
         drop_index = self._sob_spatial != 0
 
         self._sob_spatial[drop_index] /= event_model.background_spatial_pdf(
@@ -255,6 +281,19 @@ class SpatialTerm(SoBTerm):
         )
 
         return drop_index, bounds
+
+    def gauassian_spatial_pdf(
+        self,
+        events: np.ndarray,
+        source: sources.Source,
+    ) -> np.ndarray:
+        """Docstring"""
+        ra, dec = source.get_location()
+        sigma = events['angErr'] + source.get_sigma()
+        dist = angular_distance(events['ra'], events['dec'], ra,
+                                dec)
+        norm = 1 / (2 * np.pi * sigma**2)
+        return norm * np.exp(-dist**2 / (2 * sigma**2))
 
     def drop_events(self, drop_index: np.ndarray) -> None:
         """Docstring"""

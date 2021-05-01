@@ -17,32 +17,6 @@ import dataclasses
 import numpy as np
 
 
-def angular_distance(src_ra: float, src_dec: float, r_a: float,
-                     dec: float) -> float:
-    """Computes angular distance between source and location.
-
-    Args:
-        src_ra: The right ascension of the first point (radians).
-        src_dec: The declination of the first point (radians).
-        r_a: The right ascension of the second point (radians).
-        dec: The declination of the second point (radians).
-
-    Returns:
-        The distance, in radians, between the two points.
-    """
-    sin_dec = np.sin(dec)
-
-    cos_dec = np.sqrt(1. - sin_dec**2)
-
-    cos_dist = (
-        np.cos(src_ra - r_a) * np.cos(src_dec) * cos_dec
-    ) + np.sin(src_dec) * sin_dec
-    # handle possible floating precision errors
-    cos_dist = np.clip(cos_dist, -1, 1)
-
-    return np.arccos(cos_dist)
-
-
 @dataclasses.dataclass
 class Source:
     """Stores a source object name and location"""
@@ -58,25 +32,13 @@ class Source:
         """
         return (np.ones(size) * self.ra, np.ones(size) * self.dec)
 
-    def signal_spatial_pdf(self,
-                           events: np.ndarray) -> np.array:
-        """Calculates the signal probability of events.
+    def get_location(self):
+        """return location of the source"""
+        return (self.ra, self.dec)
 
-        Gives a gaussian probability based on their angular distance from the
-        source object.
-
-        Args:
-            events: An array of events including their positional data.
-
-        Returns:
-            The value for the signal spatial pdf for the given events angular
-            distances.
-        """
-        sigma = events['angErr']
-        dist = angular_distance(events['ra'], events['dec'], self.ra,
-                                self.dec)
-        norm = 1 / (2 * np.pi * sigma**2)
-        return norm * np.exp(-dist**2 / (2 * sigma**2))
+    def get_sigma(self):
+        """return 0 for point source"""
+        return 0
 
 
 @dataclasses.dataclass
@@ -93,25 +55,9 @@ class GaussianExtendedSource(Source):
         return (np.random.normal(self.ra, self.sigma, size),
                 np.random.normal(self.dec, self.sigma, size))
 
-    def signal_spatial_pdf(self,
-                           events: np.ndarray) -> np.array:
-        """signal probability of events for GaussianExtendedSource.
-
-        Gives a gaussian probability based on their angular distance from the
-        source object.
-
-        Args:
-            events: An array of events including their positional data.
-
-        Returns:
-            The value for the signal spatial pdf for the given events angular
-            distances.
-        """
-        sigma = events['angErr'] + self.sigma
-        dist = angular_distance(events['ra'], events['dec'], self.ra,
-                                self.dec)
-        norm = 1 / (2 * np.pi * sigma**2)
-        return norm * np.exp(-dist**2 / (2 * sigma**2))
+    def get_sigma(self):
+        """return sigma for GaussianExtendedSource"""
+        return self.sigma
 
 
 def ra_to_rad(hrs: float, mins: float, secs: float) -> float:
