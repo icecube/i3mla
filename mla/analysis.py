@@ -327,7 +327,6 @@ def produce_trial(
 
     if flux_norm > 0 or n_signal_observed is not None:
         signal = analysis.model.inject_signal_events(
-            analysis.source,
             flux_norm,
             n_signal_observed,
         )

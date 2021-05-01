@@ -28,32 +28,6 @@ from . import sources
 from . import time_profiles
 
 
-def angular_distance(src_ra: float, src_dec: float, r_a: float,
-                     dec: float) -> float:
-    """Computes angular distance between source and location.
-
-    Args:
-        src_ra: The right ascension of the first point (radians).
-        src_dec: The declination of the first point (radians).
-        r_a: The right ascension of the second point (radians).
-        dec: The declination of the second point (radians).
-
-    Returns:
-        The distance, in radians, between the two points.
-    """
-    sin_dec = np.sin(dec)
-
-    cos_dec = np.sqrt(1. - sin_dec**2)
-
-    cos_dist = (
-        np.cos(src_ra - r_a) * np.cos(src_dec) * cos_dec
-    ) + np.sin(src_dec) * sin_dec
-    # handle possible floating precision errors
-    cos_dist = np.clip(cos_dist, -1, 1)
-
-    return np.arccos(cos_dist)
-
-
 def cross_matrix(mat: np.array) -> np.array:
     """Calculate cross product matrix.
     A[ij] = x_i * y_j - y_i * x_j
@@ -157,6 +131,7 @@ class EventModelBase:
     grl: InitVar[np.ndarray]
     gamma: InitVar[float]
 
+    _source: sources.Source = field(init=False)
     _data: np.ndarray = field(init=False)
     _sim: np.ndarray = field(init=False)
     _gamma: float = field(init=False)
@@ -238,6 +213,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         except ValueError:  # sindec already exist
             self._sim = sim
 
+        self._source = source
         min_mjd = np.min(self._data['time'])
         max_mjd = np.max(self._data['time'])
         self._grl = grl[(grl['start'] < max_mjd) & (grl['stop'] > min_mjd)]
@@ -361,27 +337,6 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         reduced_sim['weight'] = reduced_sim['ow'] * rescaled_energy
         return reduced_sim
 
-    def signal_spatial_pdf(self, source: sources.Source,
-                           events: np.ndarray) -> np.array:
-        """Calculates the signal probability of events.
-
-        Gives a gaussian probability based on their angular distance from the
-        source object.
-
-        Args:
-            source:
-            events: An array of events including their positional data.
-
-        Returns:
-            The value for the signal spatial pdf for the given events angular
-            distances.
-        """
-        sigma = events['angErr']
-        dist = angular_distance(events['ra'], events['dec'], source.ra,
-                                source.dec)
-        norm = 1 / (2 * np.pi * sigma**2)
-        return norm * np.exp(-dist**2 / (2 * sigma**2))
-
     def background_spatial_pdf(self, events: np.array) -> np.array:
         """Calculates the background probability of events based on their dec.
 
@@ -420,14 +375,13 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         return background
 
     def inject_signal_events(
-        self, source: sources.Source,
+        self,
         flux_norm: float,
         n_signal_observed: Optional[int] = None,
     ) -> np.ndarray:
         """Injects signal events for a trial.
 
         Args:
-            source:
             flux_norm:
             n_signal_observed:
 
@@ -449,13 +403,13 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         ).copy()
 
         if len(signal) > 0:
-            ones = np.ones_like(signal['trueRa'])
+            ra, dec = self._source.sample_location(len(signal))
 
             signal['ra'], signal['dec'] = rotate(
                 signal['trueRa'],
                 signal['trueDec'],
-                ones * source.ra,
-                ones * source.dec,
+                ra,
+                dec,
                 signal['ra'],
                 signal['dec'],
             )
@@ -463,8 +417,8 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
             signal['trueRa'], signal['trueDec'] = rotate(
                 signal['trueRa'],
                 signal['trueDec'],
-                ones * source.ra,
-                ones * source.dec,
+                ra,
+                dec,
                 signal['trueRa'],
                 signal['trueDec'],
             )
@@ -500,6 +454,17 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         """Docstring"""
         self._gamma = new_gamma
         self._reduced_sim = self._weight_reduced_sim(self._reduced_sim)
+
+    @property
+    def source(self) -> sources.Source:
+        """Docstring"""
+        return self._source
+
+    @source.setter
+    def source(self, new_source: sources.Source) -> None:
+        """Docstring"""
+        self._source = new_source
+        self._reduced_sim = self._init_reduced_sim(new_source)
 
     @property
     def data(self) -> np.ndarray:

@@ -247,7 +247,7 @@ class SpatialTerm(SoBTerm):
         source: sources.Source,
     ) -> Tuple[np.ndarray, Bounds]:
         """Docstring"""
-        self._sob_spatial = event_model.signal_spatial_pdf(source, events)
+        self._sob_spatial = source.signal_spatial_pdf(source, events)
         drop_index = self._sob_spatial != 0
 
         self._sob_spatial[drop_index] /= event_model.background_spatial_pdf(
