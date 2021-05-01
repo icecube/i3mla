@@ -464,7 +464,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
     def source(self, new_source: sources.Source) -> None:
         """Docstring"""
         self._source = new_source
-        self._reduced_sim = self._init_reduced_sim(new_source)
+        self._init_reduced_sim(new_source)
 
     @property
     def data(self) -> np.ndarray:
