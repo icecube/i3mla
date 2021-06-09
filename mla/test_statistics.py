@@ -289,11 +289,11 @@ class SpatialTerm(SoBTerm):
     ) -> np.ndarray:
         """Docstring"""
         ra, dec = source.get_location()
-        sigma = events['angErr'] + source.get_sigma()
+        sigma_sq = events['angErr']**2 + source.get_sigma()**2
         dist = angular_distance(events['ra'], events['dec'], ra,
                                 dec)
-        norm = 1 / (2 * np.pi * sigma**2)
-        return norm * np.exp(-dist**2 / (2 * sigma**2))
+        norm = 1 / (2 * np.pi * sigma_sq)
+        return norm * np.exp(-dist**2 / (2 * sigma_sq))
 
     def drop_events(self, drop_index: np.ndarray) -> None:
         """Docstring"""
