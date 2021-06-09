@@ -151,7 +151,7 @@ class LLHTestStatistic:
         """Docstring"""
         sob = np.ones(self._n_kept)
         for term in self._sob_terms:
-            sob *= term(params, self._events)
+            sob *= term(params, self._events).reshape((-1,))
         return sob
 
     def _newton_ns_ratio(
