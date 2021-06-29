@@ -80,33 +80,34 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
     ts.preprocess(params, events, analysis.model, analysis.source)
     return ts(params, **kwargs)
 
+
 def _default_minimizer(
     ts,
     unstructured_params,
     unstructured_param_names,
     structured_params,
-    bounds = None,
-    gridsearch = True,
-    gridsearch_points = 5,
+    bounds=None,
+    gridsearch=True,
+    gridsearch_points=5,
     **kwargs,
 ) -> scipy.optimize.OptimizeResult:
     """Docstring"""
     f = functools.partial(
-            _unstructured_ts,
-            ts=ts,
-            structured_params=structured_params,
-            unstructured_param_names=unstructured_param_names,
-            **kwargs,
-        )
+        _unstructured_ts,
+        ts=ts,
+        structured_params=structured_params,
+        unstructured_param_names=unstructured_param_names,
+        **kwargs,
+    )
     x0 = unstructured_params
     if gridsearch:
-        grid = (np.linspace(a, b, gridsearch_points) 
+        grid = (np.linspace(a, b, gridsearch_points)
                 for (a, b) in bounds)
         points = np.array(np.meshgrid(*grid)).T
         results = np.zeros(len(points))
         for i, p in enumerate(points):
             results[i] = f(p)
-        x0 = points[results.argmin()]
+        x0 = points[results.argmin()]  # pylint: disable=unsubscriptable-object
     result = scipy.optimize.minimize(
         f,
         x0=x0,
@@ -114,6 +115,7 @@ def _default_minimizer(
         method='L-BFGS-B',
     )
     return result
+
 
 def _unstructured_ts(
     unstructured_params: np.array,
