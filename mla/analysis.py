@@ -82,26 +82,39 @@ def evaluate_ts(analysis: Analysis, events: np.ndarray,
 
 
 def _default_minimizer(
-    ts: test_statistics.LLHTestStatistic,
-    unstructured_params: np.ndarray,
-    unstructured_param_names: List[str],
-    structured_params: np.ndarray,
-    bounds: test_statistics.Bounds = None,
+    ts,
+    unstructured_params,
+    unstructured_param_names,
+    structured_params,
+    bounds=None,
+    gridsearch=True,
+    gridsearch_points=5,
     **kwargs,
 ) -> scipy.optimize.OptimizeResult:
     """Docstring"""
-    return scipy.optimize.minimize(
-        functools.partial(
-            _unstructured_ts,
-            ts=ts,
-            structured_params=structured_params,
-            unstructured_param_names=unstructured_param_names,
-            **kwargs,
-        ),
-        x0=unstructured_params,
+    f = functools.partial(
+        _unstructured_ts,
+        ts=ts,
+        structured_params=structured_params,
+        unstructured_param_names=unstructured_param_names,
+        **kwargs,
+    )
+    x0 = unstructured_params
+    if gridsearch:
+        grid = (np.linspace(a, b, gridsearch_points)
+                for (a, b) in bounds)
+        points = np.array(np.meshgrid(*grid)).T
+        results = np.zeros(len(points))
+        for i, p in enumerate(points):
+            results[i] = f(p)
+        x0 = points[results.argmin()]  # pylint: disable=unsubscriptable-object
+    result = scipy.optimize.minimize(
+        f,
+        x0=x0,
         bounds=bounds,
         method='L-BFGS-B',
     )
+    return result
 
 
 def _unstructured_ts(
@@ -327,7 +340,6 @@ def produce_trial(
 
     if flux_norm > 0 or n_signal_observed is not None:
         signal = analysis.model.inject_signal_events(
-            analysis.source,
             flux_norm,
             n_signal_observed,
         )

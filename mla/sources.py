@@ -24,6 +24,41 @@ class Source:
     ra: float
     dec: float
 
+    def sample_location(self, size: int):
+        """Sample locations.
+
+        Args:
+            size: number of points to sample
+        """
+        return (np.ones(size) * self.ra, np.ones(size) * self.dec)
+
+    def get_location(self):
+        """return location of the source"""
+        return (self.ra, self.dec)
+
+    def get_sigma(self):
+        """return 0 for point source"""
+        return 0
+
+
+@dataclasses.dataclass
+class GaussianExtendedSource(Source):
+    """Gaussian Extended Source"""
+    sigma: float
+
+    def sample_location(self, size: int):
+        """Sample locations.
+
+        Args:
+            size: number of points to sample
+        """
+        return (np.random.normal(self.ra, self.sigma, size),
+                np.random.normal(self.dec, self.sigma, size))
+
+    def get_sigma(self):
+        """return sigma for GaussianExtendedSource"""
+        return self.sigma
+
 
 def ra_to_rad(hrs: float, mins: float, secs: float) -> float:
     """Converts right ascension to radians.
