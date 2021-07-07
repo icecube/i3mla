@@ -33,7 +33,7 @@ class _ThreeMLEventModelBase(_models.EventModelBase):
     _log_energy_bins: np.array = field(init=False)
     _edge_point: Tuple[float, float] = field(init=False)
     _background_sob_map: np.ndarray = field(init=False)
-    _ratio: np.ndarray = field(init=False)
+    ratio: np.ndarray = field(init=False)
     _reduced_sim_reconstructed: np.ndarray = field(init=False)
 
 
@@ -97,7 +97,7 @@ class ThreeMLEventModel(
         self._log_energy_bins = log_energy_bins
         self._background_sob_map = self._init_background_sob_map()
         self._init_reduced_sim_reconstructed(source)
-        self._ratio = self._init_sob_ratio()
+        self.ratio = self.init_sob_ratio()
 
     def _init_background_sob_map(self) -> None:
         """Create the backgroub SOB map
@@ -110,7 +110,7 @@ class ThreeMLEventModel(
             bg_h /= np.sum(bg_h, axis=1)[:, None]
         return bg_h
 
-    def _init_sob_ratio(self, *args, **kwargs) -> None:
+    def init_sob_ratio(self, *args, **kwargs) -> None:
         """Create the SOB map with a spectrum
         """
         bins = np.array([self._sin_dec_bins, self._log_energy_bins])
@@ -256,7 +256,7 @@ class ThreeMLEventModel(
         Returns:
             signal-over-background for each event.
         """
-        return self._ratio[sin_dec_idx, log_energy_idx]
+        return self.ratio[sin_dec_idx, log_energy_idx]
 
     def get_sob_energy(
         self,
@@ -265,6 +265,15 @@ class ThreeMLEventModel(
     ) -> np.ndarray:
         """Docstring"""
         return self._energy_sob(sin_dec_idx, log_energy_idx)
+
+    def cal_ns(self, livetime):
+        """Docstring"""
+        ns = (
+            self.spectrum(self.analysis.model._reduced_sim["trueE"])
+            * self._reduced_sim["ow"]
+            * livetime
+        ).sum()
+        return ns
 
     @property
     def edge_point(self) -> Tuple[float, float]:

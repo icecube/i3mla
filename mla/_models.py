@@ -142,7 +142,7 @@ class EventModelBase:
     _background_dec_spline: Spline = field(init=False)
     _livetime: float = field(init=False)
     _sampling_width: Optional[float] = field(init=False)
-
+    prob:np.ndarray = field(init=False)
 
 @dataclass
 class EventModelDefaultsBase:
@@ -295,6 +295,8 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         else:
             self._reduced_sim = self._sim.copy()
         self._reduced_sim = self._weight_reduced_sim(self._reduced_sim)
+        total = self._reduced_sim['weight'].sum()
+        self.prob = self._reduced_sim['weight'] / total
         self._randomize_sim_times()
 
     def _randomize_sim_times(self) -> None:
@@ -398,7 +400,7 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         signal = np.random.choice(
             self._reduced_sim,
             n_signal_observed,
-            p=self._reduced_sim['weight'] / total,
+            p=self.prob,
             replace=False,
         ).copy()
 
@@ -444,6 +446,16 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
 
         return np.random.uniform(runs['start'], runs['stop'])
 
+    def cal_ns(self, flux_norm):
+        """Docstring"""
+        ns = self._reduced_sim['weight'].sum() * flux_norm
+        return ns
+
+    def cal_flux_norm(self, ns):
+        """Docstring"""
+        flux_norm = ns / self._reduced_sim['weight'].sum()
+        return flux_norm
+
     @property
     def gamma(self) -> float:
         """Docstring"""
@@ -477,6 +489,11 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         return self._sim
 
     @property
+    def reduced_sim(self) -> np.ndarray:
+        """Docstring"""
+        return self._reduced_sim
+
+    @property
     def livetime(self) -> float:
         """Docstring"""
         return self._livetime
@@ -492,6 +509,8 @@ class TdEventModelDefaultsBase(EventModelDefaultsBase):
     """Docstring"""
     background_time_profile: Optional[time_profiles.GenericProfile] = None
     signal_time_profile: Optional[time_profiles.GenericProfile] = None
+    background_contained_livetime: float = None
+    signal_contained_livetime: float = None
     background_window: InitVar[float] = field(default=14)
     withinwindow: InitVar[bool] = field(default=False)
 
@@ -565,14 +584,18 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, EventModelBase):
                   'background rates!')
             raise RuntimeError
 
-        background_grl = self._grl[background_run_mask]
-        self._n_background = background_grl['events'].sum()
-        self._n_background /= background_grl['livetime'].sum()
-        self._n_background *= self._contained_livetime(
+        self.background_grl = self._grl[background_run_mask]
+        self.background_contained_livetime = self._contained_livetime(
             *self.background_time_profile.range,
-            background_grl,
+            self.background_grl,
         )
-
+        self._n_background = self.background_grl['events'].sum()
+        self._n_background /= self.background_grl['livetime'].sum()
+        self._n_background *= self.background_contained_livetime
+        self.signal_contained_livetime = self._contained_livetime(
+            *self.signal_time_profile.range,
+            background_grl,
+            )
     def _contained_run_mask(
         self,
         start: float,

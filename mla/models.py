@@ -15,6 +15,7 @@ __status__ = 'Development'
 from typing import List, Optional, Tuple, Union
 
 import numpy as np
+import numpy.lib.recfunctions as rf
 from scipy.interpolate import UnivariateSpline as Spline
 
 from dataclasses import dataclass
@@ -234,6 +235,172 @@ class I3EventModel(
             self._log_sob_gamma_splines[i][j]
             for i, j in spline_idxs.T
         ]
+
+        return np.array(event_spline_idxs, dtype=int), splines
+
+    def get_sob_energy(
+        self,
+        gamma: float,
+        splines: List[Spline],
+        event_spline_idxs: np.ndarray,
+    ) -> np.array:
+        """Docstring"""
+        spline_evals = np.exp([spline(gamma) for spline in splines])
+        return spline_evals[event_spline_idxs]
+
+
+class MutliEventModel(object):
+    """Construct multi-sample event models.Only works for uniform time profile."""
+    def __init__(
+        self,
+        listofmodels: List[EventModel],
+    ) -> None:
+    """Docstring"""
+        self.listofmodels = listofmodels
+        self.livetime_ratio = [] #livetime ratio between sample
+        self._log_energy_bins = self.listofmodels[0]._log_energy_bins
+        self._sin_dec_bins = self.listofmodels[0]._sin_dec_bins
+        self._p = []
+        self.mc_index = []
+
+        for i,sample in enumerate(self.listofmodels):         
+            self.livetime_ratio.append(sample.signal_contained_livetime)
+
+        self.livetime_ratio = np.array(self.livetime_ratio)
+        self.livetime_ratio /= np.sum(self.livetime_ratio)
+
+        for i,sample in enumerate(self.listofmodels):
+            mc_array = rf.append_fields(
+                            np.empty((sample.prob)),
+                            'p',
+                            sample.prob * self.livetime_ratio[i],
+                            usemask=False,
+            )
+            mc_array = rf.append_fields(
+                            mc_array,
+                            'index',
+                            np.arange(len(mc_array)),
+                            usemask=False,
+            )
+            mc_array = rf.append_fields(
+                            mc_array,
+                            'sample',
+                            i,
+                            usemask=False,
+            )
+            self.mc_index.append(mc_array)
+
+        self.mc_index = np.array(self.mc_index)
+
+        
+    def inject_background_events(self) -> np.ndarray:
+        """Injects background events for a trial.
+
+        Args:
+            event_model: Preprocessed data and simulation.
+
+        Returns:
+            An array of injected background events.
+        """
+        background_list = []
+        for i,sample in enumerate(self.listofmodels):
+            background = sample.inject_background_events()
+            background = rf.append_fields(
+                         background,
+                         'sample_index',
+                         i,
+                         usemask=False,
+            )
+            background_list.append(background)
+        
+        return np.vstack(background_list)
+
+    def inject_signal_events(
+        self,
+        flux_norm: float,
+        n_signal_observed: Optional[int] = None,
+    ) -> np.ndarray:
+        """Injects signal events for a trial.
+
+        Args:
+            flux_norm:
+            n_signal_observed:
+
+        Returns:
+            An array of injected signal events.
+        """
+
+        # Pick the signal events
+        signal_list = []
+        if n_signal_observed is not None:
+            sample_index = np.random.choice(
+                self.mc_index,
+                n_signal_observed,
+                p=self.mc_index['p'],
+                replace=False,
+            ).copy()
+            for i,sample in enumerate(self.listofmodels):
+                mc_sampled = sample_index[sample_index['sample'] == i]
+                signal = sample.reduced_sim[mc_sampled['index']].copy()
+                signal_list.append(signal)
+
+        else:
+            for i,sample in enumerate(self.listofmodels):
+                flux = flux_norm * self.livetime_ratio[i] #scale the flux norm
+                signal = sample.inject_signal_events(flux)
+                signal = rf.append_fields(
+                             signal,
+                             'sample_index',
+                             i,
+                             usemask=False,
+                )            
+                signal_list.append(signal)
+        signal = np.vstack(signal_list)
+        return signal
+    
+    def cal_ns(self, flux_norm):
+        """Docstring"""
+        ns = 0
+        for i,sample in enumerate(self.listofmodels):
+            flux = flux_norm * self.livetime_ratio[i] #scale the flux norm
+            ns += sample.cal_ns(flux)
+        return ns
+    
+    def cal_flux_norm(self, ns):
+        """Docstring"""
+        flux_norm = 0
+        for i,sample in enumerate(self.listofmodels):
+            ns_sample = ns * self.livetime_ratio[i] #scale the flux norm
+            flux_norm += sample.cal_flux_norm(ns_sample)
+            
+        return flux_norm
+
+
+    def log_sob_spline_prepro(
+        self,
+        events: np.ndarray,
+    ) -> Tuple[np.ndarray, List]:
+        """Docstring"""
+        # Get the bin that each event belongs to
+        sin_dec_idx = np.searchsorted(self.listofmodels[0]._sin_dec_bins[:-1],
+                                      events['sindec'])
+
+        log_energy_idx = np.searchsorted(
+            self.listofmodels[0]._log_energy_bins[:-1],
+            events['logE']
+        )
+
+        spline_idxs, event_spline_idxs = np.unique(
+            [sin_dec_idx - 1, log_energy_idx - 1],
+            return_inverse=True,
+            axis=1
+        )
+        splines = []
+        for k,sample in enumerate(self.listofmodels):
+            splines = [
+                self._log_sob_gamma_splines[i][j]
+                for i, j in spline_idxs.T
+            ]
 
         return np.array(event_spline_idxs, dtype=int), splines
 
