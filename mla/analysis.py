@@ -87,7 +87,7 @@ def _default_minimizer(
     unstructured_param_names,
     structured_params,
     bounds=None,
-    gridsearch=True,
+    gridsearch=False,
     gridsearch_points=5,
     **kwargs,
 ) -> scipy.optimize.OptimizeResult:
