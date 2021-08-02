@@ -100,6 +100,7 @@ def _default_minimizer(
         **kwargs,
     )
     x0 = unstructured_params
+
     if gridsearch:
         grid = (np.linspace(a, b, gridsearch_points)
                 for (a, b) in bounds)
@@ -279,12 +280,17 @@ def _minimizer_wrapper(
                 flush=True,
             )
 
+        bounds = [
+            bound for i, bound in enumerate(ts.bounds)
+            if structured_params.dtype.names[i] in unstructured_param_names
+        ]
+
         result = minimizer(
             ts=ts,
             unstructured_params=unstructured_params,
             unstructured_param_names=unstructured_param_names,
             structured_params=structured_params,
-            bounds=ts.bounds,
+            bounds=bounds,
             **kwargs,
         )
 
@@ -366,7 +372,11 @@ def produce_trial(
 
     # Combine the signal background events and time-sort them.
     # Use recfunctions.stack_arrays to prevent numpy from scrambling entry order
-    events = rf.stack_arrays([background, signal], autoconvert=True)
+    events = rf.stack_arrays(
+        [background, signal],
+        autoconvert=True,
+        usemask=False,
+    )
     return events
 
 

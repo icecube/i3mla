@@ -26,6 +26,7 @@ from dataclasses import InitVar
 
 from . import sources
 from . import time_profiles
+from . import test_statistics
 
 
 def cross_matrix(mat: np.array) -> np.array:
@@ -336,6 +337,27 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         rescaled_energy = (reduced_sim['trueE'] / 100.e3)**self._gamma
         reduced_sim['weight'] = reduced_sim['ow'] * rescaled_energy
         return reduced_sim
+
+    def signal_spatial_pdf(self, source: sources.Source,
+                           events: np.ndarray) -> np.array:
+        """Calculates the signal probability of events.
+
+        Gives a gaussian probability based on their angular distance from the
+        source object.
+
+        Args:
+            source:
+            events: An array of events including their positional data.
+
+        Returns:
+            The value for the signal spatial pdf for the given events angular
+            distances.
+        """
+        sigma = events['angErr']
+        dist = test_statistics.angular_distance(events['ra'], events['dec'], source.ra,
+                                source.dec)
+        norm = 1 / (2 * np.pi * sigma**2)
+        return norm * np.exp(-dist**2 / (2 * sigma**2))
 
     def background_spatial_pdf(self, events: np.array) -> np.array:
         """Calculates the background probability of events based on their dec.

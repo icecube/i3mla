@@ -94,13 +94,13 @@ class LLHTestStatistic:
         for term in self._sob_terms:
             term.drop_events(self._drop_index)
 
+        self._params = params
+        self._bounds = bounds
         self._n_events = len(events)
         self._n_kept = self._drop_index.sum()
         self._events = np.empty(self._n_kept, dtype=events.dtype)
         self._events[:] = events[self._drop_index]
         self._n_dropped = self._n_events - self._n_kept
-        self._bounds = bounds
-        self._params = params
         self.best_reset()
 
     def update(self, params: np.ndarray) -> None:

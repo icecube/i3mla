@@ -1,5 +1,7 @@
 """Docstring"""
 
+from typing import Tuple
+
 import itertools
 import argparse
 import pickle
@@ -20,8 +22,8 @@ def main() -> None:
         verbose=args.verbose,
     )
 
-    test_params = generate_params(args, trial, analysis)
-    min_results = minimize_ts(args, trial, analysis, test_params)
+    test_params, bounds = generate_params(args, trial, analysis)
+    min_results = minimize_ts(args, trial, analysis, test_params, bounds)
     save(args, trial, min_results)
 
 
@@ -106,7 +108,7 @@ def generate_params(
     args: argparse.Namespace,
     trial: np.ndarray,
     analysis: mla.Analysis,
-) -> np.ndarray:
+) -> Tuple[np.ndarray, list]:
     """Docstring"""
     if args.verbose:
         print('generating time pairs...', end='', flush=True)
@@ -135,13 +137,16 @@ def generate_params(
 
     params = mla.generate_params(
         start=pairs.T[0],
-        length=np.diff(pairs, axis=1).T[0]
+        length=np.diff(pairs, axis=1).T[0],
+        gamma=-2,
     )
+
+    bounds = [(None, None), (None, None), (-4, -1)]
 
     if args.verbose:
         print(f'done.\nnumber of pairs: {len(pairs)}')
 
-    return params
+    return params, bounds
 
 
 def minimize_ts(
@@ -149,19 +154,27 @@ def minimize_ts(
     trial: np.ndarray,
     analysis: mla.Analysis,
     test_params: np.ndarray,
+    bounds: list,
 ) -> np.ndarray:
     """Docstring"""
+    if args.verbose:
+        print(f'minimizing {args.to_minimize}...', end='', flush=True)
+
     min_results = mla.minimize_ts(
         analysis=analysis,
         events=trial,
         test_params=test_params,
+        bounds=bounds,
         to_fit=args.to_minimize,
-        verbose=args.verbose,
         as_array=True,
     )
 
     if args.verbose:
-        print('adding time-adjusted test statistic...', end='', flush=True)
+        print(
+            'done.\nadding time-adjusted test statistic...',
+            end='',
+            flush=True,
+        )
 
     transposed_results = np.ascontiguousarray(min_results.T)
 
