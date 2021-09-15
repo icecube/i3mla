@@ -354,8 +354,8 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
             distances.
         """
         sigma = events['angErr']
-        dist = test_statistics.angular_distance(events['ra'], events['dec'], source.ra,
-                                source.dec)
+        dist = test_statistics.angular_distance(
+            events['ra'], events['dec'], source.ra, source.dec)
         norm = 1 / (2 * np.pi * sigma**2)
         return norm * np.exp(-dist**2 / (2 * sigma**2))
 
@@ -448,6 +448,11 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
             signal['sindec'] = np.sin(signal['dec'])
 
         return signal
+
+    def get_ns(self, time_integrated_flux: float) -> float:
+        """Docstring"""
+        ns = self._reduced_sim['weight'].sum() * time_integrated_flux
+        return ns
 
     def scramble_times(self, times: np.ndarray,
                        background: bool = True) -> np.ndarray:
