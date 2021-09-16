@@ -270,8 +270,8 @@ class ThreeMLEventModel(
             expected number of neutrino
         """
         ns = (
-            self.model.spectrum(self.model._reduced_sim['trueE'])
-            * self.model._reduced_sim['ow']
+            self.spectrum(self.model._reduced_sim['trueE'])
+            * self._reduced_sim['ow']
             * livetime
         ).sum()
         return ns
