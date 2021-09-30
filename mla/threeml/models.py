@@ -258,6 +258,24 @@ class ThreeMLEventModel(
         """
         return self._ratio[sin_dec_idx, log_energy_idx]
 
+    def get_ns(self, livetime: float) -> float:
+        """Gets expected number of neutrino
+
+        More function info...
+
+        Args:
+            livetime: livetime
+
+        Returns:
+            expected number of neutrino
+        """
+        ns = (
+            self._spectrum(self._reduced_sim['trueE'])
+            * self._reduced_sim['ow']
+            * livetime
+        ).sum()
+        return ns
+
     def get_sob_energy(
         self,
         sin_dec_idx: np.ndarray,
