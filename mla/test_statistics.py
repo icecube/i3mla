@@ -24,6 +24,18 @@ from . import time_profiles
 
 Bounds = Optional[Sequence[Tuple[float, float]]]
 
+    
+def King(r,sigma,gamma):
+    """King function"""
+    return (r/(sigma**2))*(1-1/gamma)*(1+(1/(2*gamma))*(r**2/sigma**2))**(-gamma)
+
+def gauassian_pdf(
+    dist: np.ndarray,
+    sigma: np.ndarray,
+) -> np.ndarray:
+    """Docstring"""
+    norm = 1 / (2 * np.pi * sigma)
+    return norm * np.exp(-dist**2 / (2 * sigma))
 
 def angular_distance(src_ra: float, src_dec: float, r_a: float,
                      dec: float) -> float:
@@ -314,6 +326,80 @@ class SpatialTerm(SoBTerm):
         return self._sob_spatial
 
 
+@dataclasses.dataclass
+class SpatialTerm_King(SoBTerm):
+    """Docstring"""
+    sigma_array: np.ndarray
+    gamma_array: np.ndarray
+    sindec_bin: np.ndarray
+    logE_bin: np.ndarray
+    sigma_bin: np.ndarray
+    _sob_spatial: np.ndarray = dataclasses.field(init=False)
+
+    def preprocess(
+        self,
+        params: np.ndarray,
+        bounds: Bounds,
+        events: np.ndarray,
+        event_model: _models.EventModel,
+        source: sources.Source,
+    ) -> Tuple[np.ndarray, Bounds]:
+        """Docstring"""
+        self._sob_spatial = self.King_pdf(events, source)
+        drop_index = self._sob_spatial != 0
+
+        self._sob_spatial[drop_index] /= event_model.background_spatial_pdf(
+            events[drop_index],
+        )
+
+        return drop_index, bounds
+
+    def King_pdf(
+        self,
+        events: np.ndarray,
+        source: sources.Source,
+    ) -> np.ndarray:
+        """Docstring"""
+        
+        spatial_pdf = np.zeros(len(events))
+        ra, dec = source.get_location()
+        sigma_sq = events['angErr']**2 + source.get_sigma()**2
+        dist = angular_distance(events['ra'], events['dec'], ra,
+                                dec)
+        sin_dec_idx = np.searchsorted(self.sindec_bin[:-1],
+                                      np.sin(dec) - 1)
+        log_energy_idx = np.searchsorted(self.logE_bin[:-1],
+                                         events['logE']) - 1
+        sigma_idx  = np.searchsorted(self.sigma_bin[:-1],
+                                         events['angErr']) - 1  
+
+        event_gamma = self.gamma_array[sin_dec_idx, log_energy_idx, sigma_idx]     
+        event_sigma = self.sigma_array[sin_dec_idx, log_energy_idx, sigma_idx]   
+        good_bin = event_sigma!=0
+        bad_bin = np.logical_not(good_bin)
+        spatial_pdf[good_bin] = King(dist[good_bin],event_sigma[good_bin],event_gamma[good_bin])
+        spatial_pdf[bad_bin] = gauassian_pdf(dist[bad_bin], sigma_sq[bad_bin])
+        
+        return spatial_pdf
+
+    def drop_events(self, drop_index: np.ndarray) -> None:
+        """Docstring"""
+        contiguous_sob_spatial = np.empty(
+            drop_index.sum(),
+            dtype=self._sob_spatial.dtype,
+        )
+
+        contiguous_sob_spatial[:] = self._sob_spatial[drop_index]
+        self._sob_spatial = contiguous_sob_spatial
+
+    def __call__(
+        self,
+        params: np.ndarray,
+        events: np.ndarray,
+    ) -> np.ndarray:
+        """Docstring"""
+        return self._sob_spatial
+        
 @dataclasses.dataclass
 class TimeTerm(SoBTerm):
     """Docstring"""
