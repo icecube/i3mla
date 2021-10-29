@@ -221,7 +221,7 @@ def minimize_ts(
 
     tuple_names = None
     if as_array:
-        tuple_names = ['ts']
+        tuple_names = []
         if 'ns' not in to_fit:
             tuple_names.append('ns')
         if to_fit != ['empty']:
@@ -247,7 +247,7 @@ def minimize_ts(
             return_list,
             dtype=[
                 ('ts', np.float64),
-                *[(name, np.float64) for name in test_params.dtype.names],
+                *[(name, np.float64) for name in tuple_names],
             ],
         )
     return return_list
@@ -309,7 +309,7 @@ def _minimizer_wrapper(
     if tuple_names is not None:
         return tuple(
             output[name]
-            for name in ['ts', *structured_params.dtype.names]
+            for name in ['ts', *tuple_names]
         )
 
     return output
