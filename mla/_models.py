@@ -14,15 +14,15 @@ __status__ = 'Development'
 
 from typing import Optional, Tuple, Union
 
+from dataclasses import dataclass
+from dataclasses import field
+from dataclasses import InitVar
+
 import copy
 import scipy
 import numpy as np
 import numpy.lib.recfunctions as rf
 from scipy.interpolate import UnivariateSpline as Spline
-
-from dataclasses import dataclass
-from dataclasses import field
-from dataclasses import InitVar
 
 from . import sources
 from . import time_profiles
@@ -338,7 +338,8 @@ class EventModel(EventModelDefaultsBase, EventModelBase):
         reduced_sim['weight'] = reduced_sim['ow'] * rescaled_energy
         return reduced_sim
 
-    def signal_spatial_pdf(self, source: sources.Source,
+    @staticmethod
+    def signal_spatial_pdf(source: sources.Source,
                            events: np.ndarray) -> np.array:
         """Calculates the signal probability of events.
 
@@ -629,8 +630,8 @@ class TdEventModel(EventModel, TdEventModelDefaultsBase, EventModelBase):
         contained_runs = self._grl[self._contained_run_mask(start, stop)]
         return self._contained_livetime(start, stop, contained_runs)
 
+    @staticmethod
     def _contained_livetime(
-        self,
         start: float,
         stop: float,
         contained_runs: np.ndarray,

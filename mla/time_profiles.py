@@ -118,8 +118,14 @@ class GenericProfile:
                                  stop_times: np.array) -> np.array:
         """Docstring"""
 
+    @property
     @abc.abstractmethod
-    def update_params(self, params: np.ndarray) -> bool:
+    def params(self) -> dict:
+        """Docstring"""
+
+    @params.setter
+    @abc.abstractmethod
+    def params(self, params: np.ndarray) -> None:
         """Docstring"""
 
     @property
@@ -254,7 +260,13 @@ class GaussProfile(GenericProfile):
         cdfs = np.random.uniform(start_cdfs, stop_cdfs)
         return self.scipy_dist.ppf(cdfs)
 
-    def update_params(self, params: np.ndarray) -> bool:
+    @property
+    def params(self) -> dict:
+        """Docstring"""
+        return {'mean': self.mean, 'sigma': self.sigma}
+
+    @params.setter
+    def params(self, params: np.ndarray) -> None:
         """Docstring"""
         update = False
 
@@ -267,8 +279,6 @@ class GaussProfile(GenericProfile):
 
         if update:
             self.scipy_dist = scipy.stats.norm(self.mean, self.sigma)
-
-        return update
 
     @property
     def exposure(self) -> float:
@@ -394,7 +404,13 @@ class UniformProfile(GenericProfile):
             np.minimum(stop_times, self.range[1]),
         )
 
-    def update_params(self, params: np.ndarray) -> bool:
+    @property
+    def params(self) -> dict:
+        """Docstring"""
+        return {'start': self.start, 'length': self.length}
+
+    @params.setter
+    def params(self, params: np.ndarray) -> None:
         """Docstring"""
         update = False
 
@@ -407,8 +423,6 @@ class UniformProfile(GenericProfile):
 
         if update:
             self._range = (self.start, self.start + self.length)
-
-        return update
 
     @property
     def exposure(self) -> float:
@@ -571,13 +585,16 @@ class CustomProfile(GenericProfile):
         cdfs = np.random.uniform(start_cdfs, stop_cdfs)
         return self.dist.ppf(cdfs)
 
-    def update_params(self, params: np.ndarray) -> bool:
+    @property
+    def params(self) -> dict:
+        """Docstring"""
+        return {'offset': self.offset}
+
+    @params.setter
+    def params(self, params: np.ndarray) -> None:
         """Docstring"""
         if 'offset' in params.dtype.names:
             self.offset = params['offset']
-            return True
-
-        return False
 
     @property
     def exposure(self) -> float:

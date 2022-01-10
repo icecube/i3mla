@@ -14,19 +14,19 @@ __status__ = 'Development'
 
 from typing import List, Optional, Tuple, Union
 
-import numpy as np
-from scipy.interpolate import UnivariateSpline as Spline
-
 from dataclasses import dataclass
 from dataclasses import field
 from dataclasses import InitVar
+
+import numpy as np
+from scipy.interpolate import UnivariateSpline as Spline
 
 from . import sources
 from . import _models
 
 
 @dataclass
-class _I3EventModelBase(_models.EventModelBase):
+class _SplineMapEventModelBase(_models.EventModelBase):
     """Docstring
 
     Attributes:
@@ -44,7 +44,7 @@ class _I3EventModelBase(_models.EventModelBase):
 
 
 @dataclass
-class _I3EventModelDefaultsBase(_models.TdEventModelDefaultsBase):
+class _SplineMapEventModelDefaultsBase(_models.TdEventModelDefaultsBase):
     """Docstring"""
     signal_sin_dec_bins: InitVar[Union[np.array, int]] = field(default=50)
     log_energy_bins: InitVar[Union[np.array, int]] = field(default=50)
@@ -53,10 +53,10 @@ class _I3EventModelDefaultsBase(_models.TdEventModelDefaultsBase):
 
 
 @dataclass
-class I3EventModel(
+class SplineMapEventModel(
     _models.TdEventModel,
-    _I3EventModelDefaultsBase,
-    _I3EventModelBase,
+    _SplineMapEventModelDefaultsBase,
+    _SplineMapEventModelBase,
 ):
     """Docstring"""
     def __post_init__(
@@ -212,7 +212,7 @@ class I3EventModel(
 
         return splines
 
-    def log_sob_spline_prepro(
+    def map_splines_to_events(
         self,
         events: np.ndarray,
     ) -> Tuple[np.ndarray, List]:
@@ -237,8 +237,8 @@ class I3EventModel(
 
         return np.array(event_spline_idxs, dtype=int), splines
 
+    @staticmethod
     def get_sob_energy(
-        self,
         gamma: float,
         splines: List[Spline],
         event_spline_idxs: np.ndarray,

@@ -11,21 +11,28 @@ __version__ = '0.0.1'
 __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
-
-from typing import Dict, List, Optional, Union
-from typing_extensions import Protocol
-
-import copy
 import dataclasses
 import functools
 import warnings
+
+from typing import Dict, List, Optional, Union
+from typing import TYPE_CHECKING
+from typing_extensions import Protocol
+
 import numpy as np
 import numpy.lib.recfunctions as rf
 import scipy.optimize
 
-from . import test_statistics
-from . import _models
-from . import sources
+if TYPE_CHECKING:
+    from . import test_statistics
+    from . import _models
+    from . import sources
+    from . import sob_terms
+else:
+    test_statistics = object  # pylint: disable=invalid-name
+    _models = object  # pylint: disable=invalid-name
+    sources = object  # pylint: disable=invalid-name
+    sob_terms = object  # pylint: disable=invalid-name
 
 
 class Minimizer(Protocol):
@@ -36,7 +43,7 @@ class Minimizer(Protocol):
         unstructured_params: np.ndarray,
         unstructured_param_names: List[str],
         structured_params: np.ndarray,
-        bounds: test_statistics.Bounds = None,
+        bounds: sob_terms.Bounds = None,
         **kwargs,
     ) -> scipy.optimize.OptimizeResult:
         ...
@@ -46,7 +53,7 @@ class Minimizer(Protocol):
 class Analysis:
     """Stores the components of an analysis."""
     model: _models.EventModel
-    test_statistic: test_statistics.LLHTestStatistic
+    test_statistic_factory: test_statistics.LLHTestStatisticFactory
     source: sources.Source
 
 
@@ -55,30 +62,41 @@ def generate_params(**kwargs) -> np.ndarray:
     dtype = [(key, np.float64) for key in kwargs]
     max_len = 1
 
-    for key in kwargs:
-        if hasattr(kwargs[key], '__len__'):
-            max_len = max(max_len, len(kwargs[key]))
+    for _, val in kwargs.items():
+        if hasattr(val, '__len__'):
+            max_len = max(max_len, len(val))
 
-    for key in kwargs:
-        if not hasattr(kwargs[key], '__len__'):
-            kwargs[key] = [kwargs[key]] * max_len
+    for _, val in kwargs.items():
+        if not hasattr(val, '__len__'):
+            val = [val] * max_len
 
     params = np.empty(max_len, dtype=dtype)
-    for key in kwargs:
-        params[key][:] = kwargs[key][:]
+    for key, val in kwargs.items():
+        params[key][:] = val[:]
 
     return params
 
 
-def evaluate_ts(analysis: Analysis, events: np.ndarray,
-                params: np.ndarray,
-                ts: Optional[test_statistics.LLHTestStatistic] = None,
-                **kwargs) -> float:
+def evaluate_ts(
+    analysis: Analysis,
+    events: np.ndarray,
+    params: np.ndarray,
+    **kwargs,
+) -> float:
     """Docstring"""
-    if ts is None:
-        ts = copy.deepcopy(analysis.test_statistic)
-    ts.preprocess(params, events, analysis.model, analysis.source)
-    return ts(params, **kwargs)
+    ts = analysis.test_statistic_factory(
+        params, events, analysis.model, analysis.source)
+    return ts(**kwargs)
+
+
+def reevaluate_ts(
+    params: np.ndarray,
+    ts: test_statistics.LLHTestStatistic,
+    **kwargs,
+) -> float:
+    """Docstring"""
+    ts.params = params
+    return ts(**kwargs)
 
 
 def _default_minimizer(
@@ -137,9 +155,8 @@ def minimize_ts(
     events: np.ndarray,
     test_params: np.ndarray = np.empty(1, dtype=[('empty', int)]),
     to_fit: Union[List[str], str, None] = 'all',
-    bounds: test_statistics.Bounds = None,
+    bounds: sob_terms.Bounds = None,
     minimizer: Minimizer = _default_minimizer,
-    ts: Optional[test_statistics.LLHTestStatistic] = None,
     verbose: bool = False,
     as_array: bool = False,
     **kwargs,
@@ -189,12 +206,9 @@ def minimize_ts(
         to_fit = [to_fit]
 
     if verbose:
-        print('Preprocessing...', end='', flush=True)
+        print('Building LLHTestStatistic...', end='', flush=True)
 
-    if ts is None:
-        ts = copy.deepcopy(analysis.test_statistic)
-
-    ts.preprocess(
+    ts = analysis.test_statistic_factory(
         test_params[0],
         events,
         analysis.model,
@@ -208,8 +222,7 @@ def minimize_ts(
                 [(0, 0)] * len(test_params),
                 dtype=[(name, np.float64) for name in ['ts', 'ns']],
             )
-        else:
-            return [{'ts': 0, 'ns': 0}] * len(test_params)
+        return [{'ts': 0, 'ns': 0}] * len(test_params)
 
     unstructured_params = rf.structured_to_unstructured(
         test_params[to_fit],
@@ -387,7 +400,6 @@ def produce_and_minimize(
     **kwargs,
 ) -> List[Dict[str, float]]:
     """Docstring"""
-    ts = copy.deepcopy(analysis.test_statistic)
     return_list = [
         minimize_ts(
             analysis,
@@ -395,7 +407,6 @@ def produce_and_minimize(
                 analysis,
                 **kwargs,
             ),
-            ts=ts,
             as_array=as_array,
             **kwargs,
         )
