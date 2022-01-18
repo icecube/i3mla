@@ -14,17 +14,18 @@ __status__ = 'Development'
 
 import dataclasses
 
+from . import utility_functions as uf
+
 import numpy as np
 
-
 @dataclasses.dataclass
-class Source:
+class PointSource:
     """Stores a source object name and location"""
     name: str
     ra: float
     dec: float
 
-    def sample_location(self, size: int):
+    def sample(self, size: int = 1) -> tuple:
         """Sample locations.
 
         Args:
@@ -32,59 +33,61 @@ class Source:
         """
         return (np.ones(size) * self.ra, np.ones(size) * self.dec)
 
-    def get_location(self):
+    def spatial_pdf(self, events: np.ndarray) -> np.array:
+        """calculates the signal probability of events.
+
+        gives a gaussian probability based on their angular distance from the
+        source object.
+
+        args:
+            source:
+            events: an array of events including their positional data.
+
+        returns:
+            the value for the signal spatial pdf for the given events angular
+            distances.
+        """
+        sigma2 = events['angErr']**2 + self.sigma**2
+        dist = uf.angular_distance(
+            events['ra'],
+            events['dec'],
+            *self.location,
+        )
+        norm = 1 / (2 * np.pi * sigma**2)
+        return norm * np.exp(-dist**2 / (2 * sigma2))
+
+    @property
+    def location(self) -> tuple:
         """return location of the source"""
         return (self.ra, self.dec)
 
-    def get_sigma(self):
+    @property
+    def sigma(self) -> float:
         """return 0 for point source"""
         return 0
 
 
 @dataclasses.dataclass
-class GaussianExtendedSource(Source):
+class GaussianExtendedSource(PointSource):
     """Gaussian Extended Source"""
-    sigma: float
+    sigma: dataclasses.InitVar[float]
+    _sigma: float = dataclasses.field(init=False, repr=False)
 
-    def sample_location(self, size: int):
+    def __post_init__(self, sigma) -> None:
+        """Docstring"""
+        self._sigma = sigma
+
+    def sample(self, size: int = 1) -> tuple:
         """Sample locations.
 
         Args:
             size: number of points to sample
         """
-        return (np.random.normal(self.ra, self.sigma, size),
-                np.random.normal(self.dec, self.sigma, size))
+        mean = self.location
+        cov = self.sigma * np.identity(2)
+        return np.random.multivariate_normal(mean, cov, size).T
 
-    def get_sigma(self):
+    @property
+    def sigma(self) -> float:
         """return sigma for GaussianExtendedSource"""
-        return self.sigma
-
-
-def ra_to_rad(hrs: float, mins: float, secs: float) -> float:
-    """Converts right ascension to radians.
-
-    Args:
-        hrs: Hours.
-        mins: Minutes.
-        secs: Seconds.
-
-    Returns:
-        Radian representation of right ascension.
-    """
-    return (hrs * 15 + mins / 4 + secs / 240) * np.pi / 180
-
-
-def dec_to_rad(sign: int, deg: float, mins: float, secs: float) -> float:
-    """Converts declination to radians.
-
-    Args:
-        sign: A positive integer for a positive sign, a negative integer for a
-            negative sign.
-        deg: Degrees.
-        mins: Minutes.
-        secs: Seconds.
-
-    Returns:
-        Radian representation of declination.
-    """
-    return sign / np.abs(sign) * (deg + mins / 60 + secs / 3600) * np.pi / 180
+        return self._sigma

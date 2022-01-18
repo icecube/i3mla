@@ -16,24 +16,26 @@ import dataclasses
 import numpy as np
 
 if TYPE_CHECKING:
-    from . import sources
-    from . import _models
-    from . import sob_terms
+    from .sources import Source
+    from ._models import EventModel
+    from .sob_terms import SoBTerm, SoBTermFactory, Bounds
 else:
-    sources = object  # pylint: disable=invalid-name
-    _models = object  # pylint: disable=invalid-name
-    sob_terms = object  # pylint: disable=invalid-name
+    Source = object  # pylint: disable=invalid-name
+    EventModel = object  # pylint: disable=invalid-name
+    SoBTerm = object  # pylint: disable=invalid-name
+    SoBTermFactory = object  # pylint: disable=invalid-name
+    Bounds= object  # pylint: disable=invalid-name
 
 
 @dataclasses.dataclass
 class LLHTestStatistic:
     """Docstring"""
-    _sob_terms: List[sob_terms.SoBTerm]
+    _sob_terms: List[SoBTerm]
     _n_events: int
     _n_kept: int
     _events: np.ndarray
     _params: np.ndarray
-    _bounds: sob_terms.Bounds
+    _bounds: Bounds
     _best_ts: float = dataclasses.field(init=False, default=0)
     _best_ns: float = dataclasses.field(init=False, default=0)
 
@@ -171,7 +173,7 @@ class LLHTestStatistic:
         return bnds
 
     @property
-    def bounds(self) -> sob_terms.Bounds:
+    def bounds(self) -> Bounds:
         """Docstring"""
         if self._bounds is None:
             self._bounds = [(-np.inf, np.inf)] * len(self._params.dtype.names)
@@ -181,15 +183,15 @@ class LLHTestStatistic:
 @dataclasses.dataclass
 class LLHTestStatisticFactory:
     """Docstring"""
-    sob_term_factories: List[sob_terms.SoBTermFactory]
+    sob_term_factories: List[SoBTermFactory]
 
     def __call__(
         self,
         params: np.ndarray,
         events: np.ndarray,
-        event_model: _models.EventModel,
-        source: sources.Source,
-        bounds: sob_terms.Bounds = None,
+        event_model: EventModel,
+        source: Source,
+        bounds: Bounds = None,
     ) -> LLHTestStatistic:
         """Docstring"""
         drop_mask = np.logical_and.reduce(np.array([

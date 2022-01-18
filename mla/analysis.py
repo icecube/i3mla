@@ -24,26 +24,27 @@ import numpy.lib.recfunctions as rf
 import scipy.optimize
 
 if TYPE_CHECKING:
-    from . import test_statistics
-    from . import _models
-    from . import sources
-    from . import sob_terms
+    from .test_statistics import LLHTestStatistic, LLHTestStatisticFactory
+    from ._models import EventModel
+    from .sources import Source
+    from .sob_terms import Bounds
 else:
-    test_statistics = object  # pylint: disable=invalid-name
-    _models = object  # pylint: disable=invalid-name
-    sources = object  # pylint: disable=invalid-name
-    sob_terms = object  # pylint: disable=invalid-name
+    LLHTestStatistic = object  # pylint: disable=invalid-name
+    LLHTestStatisticFactory = object  # pylint: disable=invalid-name
+    EventModel = object  # pylint: disable=invalid-name
+    Source = object  # pylint: disable=invalid-name
+    Bounds = object  # pylint: disable=invalid-name
 
 
 class Minimizer(Protocol):
     """Docstring"""
     @staticmethod
     def __call__(
-        ts: test_statistics.LLHTestStatistic,
+        ts: LLHTestStatistic,
         unstructured_params: np.ndarray,
         unstructured_param_names: List[str],
         structured_params: np.ndarray,
-        bounds: sob_terms.Bounds = None,
+        bounds: Bounds = None,
         **kwargs,
     ) -> scipy.optimize.OptimizeResult:
         ...
@@ -52,9 +53,9 @@ class Minimizer(Protocol):
 @dataclasses.dataclass(frozen=True)
 class Analysis:
     """Stores the components of an analysis."""
-    model: _models.EventModel
-    test_statistic_factory: test_statistics.LLHTestStatisticFactory
-    source: sources.Source
+    model: EventModel
+    test_statistic_factory: LLHTestStatisticFactory
+    source: Source
 
 
 def generate_params(**kwargs) -> np.ndarray:
@@ -91,7 +92,7 @@ def evaluate_ts(
 
 def reevaluate_ts(
     params: np.ndarray,
-    ts: test_statistics.LLHTestStatistic,
+    ts: LLHTestStatistic,
     **kwargs,
 ) -> float:
     """Docstring"""
@@ -138,7 +139,7 @@ def _default_minimizer(
 
 def _unstructured_ts(
     unstructured_params: np.array,
-    ts: test_statistics.LLHTestStatistic,
+    ts: LLHTestStatistic,
     structured_params: np.array,
     unstructured_param_names: List[str],
     **kwargs,
@@ -155,7 +156,7 @@ def minimize_ts(
     events: np.ndarray,
     test_params: np.ndarray = np.empty(1, dtype=[('empty', int)]),
     to_fit: Union[List[str], str, None] = 'all',
-    bounds: sob_terms.Bounds = None,
+    bounds: Bounds = None,
     minimizer: Minimizer = _default_minimizer,
     verbose: bool = False,
     as_array: bool = False,
@@ -270,7 +271,7 @@ def _minimizer_wrapper(
     unstructured_params: np.array,
     structured_params: np.ndarray,
     unstructured_param_names: List[str],
-    ts: test_statistics.LLHTestStatistic,
+    ts: LLHTestStatistic,
     verbose: bool,
     minimizer: Minimizer,
     tuple_names: Optional[List[str]] = None,
