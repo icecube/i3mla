@@ -179,7 +179,7 @@ class GaussProfile(GenericProfile):
     """
     _param_dtype: ClassVar[np.dtype] = np.dtype(
         [('mean', np.float32), ('sigma', np.float32)])
-    scipy_dist: scipy.stats.rv_frozen = dataclasses.field(init=False)
+    scipy_dist: scipy.stats.distributions.rv_frozen = dataclasses.field(init=False)
     _mean: float = dataclasses.field(init=False, repr=False)
     _sigma: float = dataclasses.field(init=False, repr=False)
     _param_dtype: np.dtype = dataclasses.field(init=False, repr=False)
