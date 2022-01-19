@@ -11,7 +11,6 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-
 import dataclasses
 
 from . import utility_functions as uf
@@ -53,7 +52,7 @@ class PointSource:
             events['dec'],
             *self.location,
         )
-        norm = 1 / (2 * np.pi * sigma**2)
+        norm = 1 / (2 * np.pi * sigma2)
         return norm * np.exp(-dist**2 / (2 * sigma2))
 
     @property

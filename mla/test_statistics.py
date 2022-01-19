@@ -9,19 +9,15 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from typing import TYPE_CHECKING
 
 import dataclasses
 import numpy as np
 
 if TYPE_CHECKING:
-    from .sources import Source
-    from ._models import EventModel
     from .sob_terms import SoBTerm, SoBTermFactory, Bounds
 else:
-    Source = object  # pylint: disable=invalid-name
-    EventModel = object  # pylint: disable=invalid-name
     SoBTerm = object  # pylint: disable=invalid-name
     SoBTermFactory = object  # pylint: disable=invalid-name
     Bounds= object  # pylint: disable=invalid-name
@@ -35,11 +31,12 @@ class LLHTestStatistic:
     _n_kept: int
     _events: np.ndarray
     _params: np.ndarray
+    _param_name_idx_map: dict
     _bounds: Bounds
     _best_ts: float = dataclasses.field(init=False, default=0)
     _best_ns: float = dataclasses.field(init=False, default=0)
 
-    def __call__(self, **kwargs) -> float:
+    def __call__(self, params: Optional[np.ndarray] = None) -> float:
         """Evaluates the test-statistic for the given events and parameters
 
         Calculates the test-statistic using a given event model, n_signal, and
@@ -49,15 +46,18 @@ class LLHTestStatistic:
             The overall test-statistic value for the given events and
             parameters.
         """
+        if params is not None:
+            self.params = params
+
         if self._n_events == 0:
             return 0
 
         sob = self._calculate_sob()
 
-        if 'ns' in self.params.dtype.names:
-            ns_ratio = self.params['ns'] / self._n_events
+        if 'ns' in self._param_name_idx_map:
+            ns_ratio = self.params[self._param_name_idx_map['ns']] / self._n_events
         else:
-            ns_ratio = self._newton_ns_ratio(sob, **kwargs)
+            ns_ratio = self._newton_ns_ratio(sob)
 
         llh, drop_term = self._calculate_llh(sob, ns_ratio)
         ts = -2 * (llh.sum() + self.n_dropped * drop_term)
@@ -80,7 +80,6 @@ class LLHTestStatistic:
         sob: np.ndarray,
         precision: float = 0,
         newton_iterations: int = 20,
-        **kwargs,
     ) -> float:
         """Docstring
 
@@ -92,9 +91,6 @@ class LLHTestStatistic:
         Returns:
 
         """
-        # kwargs no-op
-        len(kwargs)
-
         precision += 1
         eps = 1e-5
         k = 1 / (sob - 1)
@@ -189,13 +185,11 @@ class LLHTestStatisticFactory:
         self,
         params: np.ndarray,
         events: np.ndarray,
-        event_model: EventModel,
-        source: Source,
         bounds: Bounds = None,
     ) -> LLHTestStatistic:
         """Docstring"""
         drop_mask = np.logical_and.reduce(np.array([
-            term_factory.calculate_drop_mask(events, source)
+            term_factory.calculate_drop_mask(events)
             for term_factory in self.sob_term_factories
         ]))
 
@@ -207,7 +201,7 @@ class LLHTestStatisticFactory:
         pruned_events[:] = events[drop_mask]
 
         sob_terms = [
-            term_factory(params, bounds, pruned_events, event_model, source)
+            term_factory(params, bounds, pruned_events)
             for term_factory in self.sob_term_factories
         ]
 
@@ -216,6 +210,7 @@ class LLHTestStatisticFactory:
             _n_events=len(events),
             _n_kept=n_kept,
             _events=pruned_events,
-            _params=params,
+            _params=rf.structured_to_unstructured(params, copy=True),
+            _param_name_idx_map={name: i for i, name in enumerate(params.dtype.names)},
             _bounds=bounds,
         )
