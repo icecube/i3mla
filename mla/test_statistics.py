@@ -35,7 +35,7 @@ class LLHTestStatistic:
     _best_ts: float = dataclasses.field(init=False, default=0)
     _best_ns: float = dataclasses.field(init=False, default=0)
 
-    def __call__(self, params: Optional[Params] = None) -> float:
+    def __call__(self, param_values: Optional[np.ndarray] = None) -> float:
         """Evaluates the test-statistic for the given events and parameters
 
         Calculates the test-statistic using a given event model, n_signal, and
@@ -45,8 +45,9 @@ class LLHTestStatistic:
             The overall test-statistic value for the given events and
             parameters.
         """
-        if params is not None:
-            self.params = params
+        if param_values is not None:
+            self.params.values = param_values
+            self._update_term_params()
 
         if self._n_events == 0:
             return 0
@@ -93,7 +94,7 @@ class LLHTestStatistic:
         precision += 1
         eps = 1e-5
         k = 1 / (sob - 1)
-        x = [0] * newton_iterations
+        x = [0.] * newton_iterations
 
         for i in range(newton_iterations - 1):
             # get next iteration and clamp
@@ -134,10 +135,14 @@ class LLHTestStatistic:
             return
         if 'ns' in params:
             params.bounds['ns'] = (0, min(params.bounds['ns'], self.n_kept))
-        for term in self._sob_terms:
-            term.params = params
         self._params = params
+        self._update_term_params()
         self._best_ns = self._best_ts = 0
+
+    def _update_term_params(self) -> None:
+        """Docstring"""
+        for term in self._sob_terms:
+            term.params = self.params
 
     @property
     def best_ns(self) -> float:
