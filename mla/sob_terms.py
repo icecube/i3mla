@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import List, Optional, Sequence, Tuple
+from typing import List
 from typing import TYPE_CHECKING
 
 import abc
@@ -18,19 +18,18 @@ import dataclasses
 import warnings
 
 import numpy as np
-import scipy.interpolate.UnivariateSpline as Spline
+from scipy.interpolate import UnivariateSpline as Spline
 
 if TYPE_CHECKING:
-    from .sources import Source
+    from .params import Params
+    from .sources import PointSource 
     from .data_handlers import DataHandler
     from .time_profiles import GenericProfile
 else:
-    Source = object
+    Params = object
+    PointSource = object
     DataHandler = object
     GenericProfile = object
-
-
-Bounds = Optional[Sequence[Tuple[float, float]]]
 
 
 @dataclasses.dataclass
@@ -41,17 +40,17 @@ class SoBTerm:
     _sob: np.ndarray
 
     @property
-    def params(self) -> np.ndarray:
-        """Docstring"""
-        return self._params
-
     @abc.abstractmethod
+    def params(self) -> Params:
+        """Docstring"""
+
     @params.setter
+    @abc.abstractmethod
     def params(self, params: np.ndarray) -> None:
         """Docstring"""
 
-    @abc.abstractmethod
     @property
+    @abc.abstractmethod
     def sob(self) -> np.ndarray:
         """Docstring"""
 
@@ -63,12 +62,7 @@ class SoBTermFactory:
     config: dict
 
     @abc.abstractmethod
-    def __call__(
-        self, params: np.ndarray, bounds: Bounds, events: np.ndarray) -> SoBTerm:
-        """Docstring"""
-
-    @abc.abstractmethod
-    def update_bounds(self, bounds: Bounds) -> Bounds:
+    def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
         """Docstring"""
 
     @abc.abstractmethod
@@ -85,6 +79,11 @@ class SoBTermFactory:
 class SpatialTerm(SoBTerm):
     """Docstring"""
 
+    @property
+    def params(self) -> Params:
+        """Docstring"""
+        return self._params
+
     @params.setter
     def params(self, params: np.ndarray) -> None:
         """Docstring"""
@@ -100,17 +99,13 @@ class SpatialTerm(SoBTerm):
 class SpatialTermFactory(SoBTermFactory):
     """Docstring"""
     data_handler: DataHandler
-    source: Source
+    source: PointSource
 
-    def __call__(self, params: np.ndarray, bounds: Bounds, events: np.ndarray) -> SoBTerm:
+    def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
         """Docstring"""
         sob_spatial = self.source.pdf(events)
         sob_spatial /= self.data_handler.evaluate_background_sindec_pdf(events)
         return SpatialTerm(_params=params, _sob=sob_spatial)
-
-    def update_bounds(self, bounds: Bounds) -> Bounds:
-        """Docstring"""
-        return bounds
 
     def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
         """Docstring"""
@@ -123,8 +118,13 @@ class TimeTerm(SoBTerm):
     _times: np.ndarray
     _signal_time_profile: GenericProfile
 
+    @property
+    def params(self) -> Params:
+        """Docstring"""
+        return self._params
+
     @params.setter
-    def params(self, params: np.ndarray) -> None:
+    def params(self, params: Params) -> None:
         """Docstring"""
         self._signal_time_profile.params = params
         self._params = params
@@ -141,7 +141,7 @@ class TimeTermFactory(SoBTermFactory):
     background_time_profile: GenericProfile
     signal_time_profile: GenericProfile
 
-    def __call__(self, params: np.ndarray, bounds: Bounds, events: np.ndarray) -> SoBTerm:
+    def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
         """Docstring"""
         times = np.empty(len(events), dtype=events['time'].dtype)
         times[:] = events['time'][:]
@@ -162,10 +162,6 @@ class TimeTermFactory(SoBTermFactory):
             _signal_time_profile=signal_time_profile,
         )
 
-    def update_bounds(self, bounds: Bounds) -> Bounds:
-        """Docstring"""
-        return bounds
-
     def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
         """Docstring"""
         return 1 / self.background_time_profile.pdf(events['time']) != 0
@@ -178,8 +174,13 @@ class SplineMapEnergyTerm(SoBTerm):
     _splines: List[Spline]
     _event_spline_idxs: np.ndarray
 
+    @property
+    def params(self) -> Params:
+        """Docstring"""
+        return self._params
+
     @params.setter
-    def params(self, params: np.ndarray) -> None:
+    def params(self, params: Params) -> None:
         """Docstring"""
         if 'gamma' in params.dtype.names:
             self.gamma = params['gamma']
@@ -188,7 +189,7 @@ class SplineMapEnergyTerm(SoBTerm):
     @property
     def sob(self) -> np.ndarray:
         """Docstring"""
-        spline_evals = np.exp([self.spline(self.gamma) for spline in self._splines])
+        spline_evals = np.exp([spline(self.gamma) for spline in self._splines])
         return spline_evals[self._event_spline_idxs]
 
 
@@ -210,14 +211,10 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
             *self.config['gamma_bounds'], 1 + self.config['gamma_bins'])
         self._spline_map = self._init_spline_map()
 
-    def __call__(
-        self, params: np.ndarray, bounds: Bounds, events: np.ndarray) -> SoBTerm:
+    def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
         """Docstring"""
-        sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1],
-                                      events['sindec'])
-
-        log_energy_idx = np.searchsorted(self._log_energy_bins[:-1],
-                                         events['logE'])
+        sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1], events['sindec'])
+        log_energy_idx = np.searchsorted(self._log_energy_bins[:-1], events['logE'])
 
         spline_idxs, event_spline_idxs = np.unique(
             [sin_dec_idx - 1, log_energy_idx - 1],
@@ -225,22 +222,15 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
             axis=1
         )
 
-        splines = [
-            self._log_sob_gamma_splines[i][j]
-            for i, j in spline_idxs.T
-        ]
+        splines = [self._spline_map[i][j] for i, j in spline_idxs.T]
 
         return SplineMapEnergyTerm(
             _params=params,
             _sob=np.empty(1),
-            gamma=self.initial_gamma,
+            gamma=self.config['initial_gamma'],
             _splines=splines,
             _event_spline_idxs=event_spline_idxs,
         )
-
-    def update_bounds(self, bounds: Bounds) -> Bounds:
-        """Docstring"""
-        return bounds
 
     def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
         """Docstring"""
@@ -270,7 +260,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         bins: np.ndarray,
         bin_centers: np.ndarray,
         bg_h: np.ndarray,
-    ) -> np.array:
+    ) -> np.ndarray:
         """Creates sob histogram for a given spectral index (gamma).
 
         Args:

@@ -9,13 +9,12 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Tuple
 
 import abc
 import copy
 from dataclasses import dataclass
 from dataclasses import field
-from dataclasses import InitVar
 
 import numpy as np
 import numpy.lib.recfunctions as rf
@@ -68,9 +67,8 @@ class DataHandler:
 @dataclass
 class NuSourcesDataHandler(DataHandler):
     """Docstring"""
-    sim: InitVar[np.ndarray]
-    data: InitVar[np.ndarray]
-    grl: InitVar[np.ndarray]
+    sim: np.ndarray
+    data_grl: Tuple[np.ndarray, np.ndarray]
 
     _sim: np.ndarray = field(init=False, repr=False)
     _data: np.ndarray = field(init=False, repr=False)
@@ -80,46 +78,11 @@ class NuSourcesDataHandler(DataHandler):
     _dec_spline: Spline = field(init=False, repr=False)
     _livetime: float = field(init=False, repr=False)
 
-    def __post_init__(self, sim:np.ndarray, data:np.ndarray, grl: np.ndarray) -> None:
+    def __post_init__(self) -> None:
         """Docstring"""
         if isinstance(self.config['sin_dec_bins'], int):
             self.config['sin_dec_bins'] = np.linspace(
                 -1, 1, 1 + self.config['sin_dec_bins'])
-
-        self.sim = sim
-        self.set_data_grl(data, grl)
-
-    def set_data_grl(self, data: np.ndarray, grl: np.ndarray) -> None:
-        """Docstring"""
-        self._data = data.copy()
-        self._grl = grl.copy()
-        if 'sindec' not in self._data.dtype.names:
-            self._data = rf.append_fields(
-                self._data,
-                'sindec',
-                np.sin(self._data['dec']),
-                usemask=False,
-            )
-
-        min_mjd = np.min(self.data['time'])
-        max_mjd = np.max(self.data['time'])
-        self._grl = self.grl[(self.grl['start'] < max_mjd) & (self.grl['stop'] > min_mjd)]
-
-        self._livetime = self.grl['livetime'].sum()
-        self._n_background = self.grl['events'].sum()
-        self._grl_rates = self.grl['events'] / self.grl['livetime']
-
-        hist, bins = np.histogram(
-            self.data['sindec'], bins=self.config['sin_dec_bins'], density=True)
-        bin_centers = bins[:-1] + np.diff(bins) / 2
-
-        self._dec_spline = Spline(
-            bin_centers,
-            hist,
-            bbox=self.config['dec_spline_bbox'],
-            s=self.config['dec_spline_s'],
-            ext=self.config['dec_spline_ext'],
-        )
 
     def sample_background(self, n: int) -> np.ndarray:
         """Docstring"""
@@ -152,8 +115,8 @@ class NuSourcesDataHandler(DataHandler):
     def build_background_sindec_logenergy_histogram(self, bins: np.ndarray) -> np.ndarray:
         """Docstring"""
         return np.histogram2d(
-            self.data['sindec'],
-            self.data['logE'],
+            self._data['sindec'],
+            self._data['logE'],
             bins=bins,
             density=True,
         )[0]
@@ -173,26 +136,6 @@ class NuSourcesDataHandler(DataHandler):
     def sim(self) -> np.ndarray:
         """Docstring"""
         return self._sim
-
-    @property
-    def data(self) -> np.ndarray:
-        """Docstring"""
-        return self._data
-
-    @property
-    def grl(self) -> np.ndarray:
-        """Docstring"""
-        return self._grl
-
-    @property
-    def livetime(self) -> float:
-        """Docstring"""
-        return self._livetime
-
-    @property
-    def n_background(self) -> float:
-        """Docstring"""
-        return self._n_background
 
     @sim.setter
     def sim(self, sim: np.ndarray) -> None:
@@ -218,13 +161,64 @@ class NuSourcesDataHandler(DataHandler):
         )**self.config['gamma']
 
         if self.config['dec_bandwidth'] is not None:
-            sindec_dist = np.abs(self.source.dec - self.sim['truedec'])
+            sindec_dist = np.abs(self.config['dec_position'] - self.sim['truedec'])
             close = sindec_dist < self.config['dec_bandwidth']
             self.sim = self.sim[close]
 
             self._sim['ow'] /= 2 * np.pi * (np.min(
-                [np.sin(self.source.dec + self.config['dec_bandwidth']), 1]
-            ) - np.max([np.sin(self.source.dec - self.config['dec_bandwidth']), -1]))
+                [np.sin(self.config['dec_position'] + self.config['dec_bandwidth']), 1]
+            ) - np.max(
+                [np.sin(self.config['dec_position'] - self.config['dec_bandwidth']), -1]
+            ))
+
+    @property
+    def data_grl(self) -> Tuple[np.ndarray, np.ndarray]:
+        """Docstring"""
+        return self._data, self._grl
+
+    @data_grl.setter
+    def data_grl(self, data_grl: Tuple[np.ndarray, np.ndarray]) -> None:
+        """Docstring"""
+        self._data = data_grl[0].copy()
+        self._grl = data_grl[1].copy()
+        if 'sindec' not in self._data.dtype.names:
+            self._data = rf.append_fields(
+                self._data,
+                'sindec',
+                np.sin(self._data['dec']),
+                usemask=False,
+            )
+
+        min_mjd = np.min(self._data['time'])
+        max_mjd = np.max(self._data['time'])
+        self._grl = self._grl[
+            (self._grl['start'] < max_mjd) & (self._grl['stop'] > min_mjd)]
+
+        self._livetime = self._grl['livetime'].sum()
+        self._n_background = self._grl['events'].sum()
+        self._grl_rates = self._grl['events'] / self._grl['livetime']
+
+        hist, bins = np.histogram(
+            self._data['sindec'], bins=self.config['sin_dec_bins'], density=True)
+        bin_centers = bins[:-1] + np.diff(bins) / 2
+
+        self._dec_spline = Spline(
+            bin_centers,
+            hist,
+            bbox=self.config['dec_spline_bbox'],
+            s=self.config['dec_spline_s'],
+            ext=self.config['dec_spline_ext'],
+        )
+
+    @property
+    def livetime(self) -> float:
+        """Docstring"""
+        return self._livetime
+
+    @property
+    def n_background(self) -> float:
+        """Docstring"""
+        return self._n_background
 
     @classmethod
     def generate_config(cls) -> dict:
@@ -248,7 +242,7 @@ class NuSourcesDataHandler(DataHandler):
 
         # How many events should we add in? This will now be based on the
         # total number of events actually observed during these runs
-        background = np.random.choice(self.data, n_background_observed).copy()
+        background = np.random.choice(self._data, n_background_observed).copy()
 
         # Randomize the background RA
         background['ra'] = np.random.uniform(0, 2 * np.pi, len(background))
@@ -259,28 +253,27 @@ class NuSourcesDataHandler(DataHandler):
 @dataclass
 class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
     """Docstring"""
-    background_time_profile: InitVar[GenericProfile]
-    signal_time_profile: InitVar[GenericProfile]
+    background_time_profile: GenericProfile
+    signal_time_profile: GenericProfile
 
     _background_time_profile: GenericProfile = field(init=False, repr=False)
     _signal_time_profile: GenericProfile = field(init=False, repr=False)
 
-    def __post_init__(
-        self,
-        sim: np.ndarray,
-        data: np.ndarray,
-        grl: np.ndarray,
-        background_time_profile,
-        signal_time_profile,
-    ) -> None:
+    def __post_init__(self) -> None:
         """Docstring"""
-        super().__post_init__(sim, data, grl)
+        super().__post_init__()
 
-        self._background_time_profile = copy.deepcopy(background_time_profile)
-        self._signal_time_profile = copy.deepcopy(signal_time_profile)
 
+    @property
+    def background_time_profile(self) -> GenericProfile:
+        """Docstring"""
+        return self._background_time_profile
+
+    @background_time_profile.setter
+    def background_time_profile(self, profile: GenericProfile) -> None:
+        """Docstring"""
         # Find the runs contianed in the background time window
-        start, stop = self._background_time_profile.range
+        start, stop = profile.range
         return_stop_contained = True
 
         if self.config['outside_time_profile'] is not None:
@@ -299,13 +292,23 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
                   'background rates!')
             raise RuntimeError
 
-        background_grl = self.grl[background_run_mask]
+        background_grl = self._grl[background_run_mask]
         self._n_background = background_grl['events'].sum()
         self._n_background /= background_grl['livetime'].sum()
         self._n_background *= self._contained_livetime(
             *self.config['background_time_profile'].range,
             background_grl,
         )
+
+    @property
+    def signal_time_profile(self) -> GenericProfile:
+        """Docstring"""
+        return self._signal_time_profile
+
+    @signal_time_profile.setter
+    def signal_time_profile(self, profile: GenericProfile) -> None:
+        """Docstring"""
+        self._signal_time_profile = copy.deepcopy(profile)
 
     def _contained_run_mask(
         self,
@@ -315,25 +318,25 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
     ) -> np.ndarray:
         """Docstring"""
         fully_contained = (
-            self.grl['start'] >= start
-        ) & (self.grl['stop'] < stop)
+            self._grl['start'] >= start
+        ) & (self._grl['stop'] < stop)
 
         start_contained = (
-            self.grl['start'] < start
-        ) & (self.grl['stop'] > start)
+            self._grl['start'] < start
+        ) & (self._grl['stop'] > start)
 
         if not return_stop_contained:
             return fully_contained | start_contained
 
         stop_contained = (
-            self.grl['start'] < stop
-        ) & (self.grl['stop'] > stop)
+            self._grl['start'] < stop
+        ) & (self._grl['stop'] > stop)
 
         return fully_contained | start_contained | stop_contained
 
     def contained_livetime(self, start: float, stop: float) -> float:
         """Docstring"""
-        contained_runs = self.grl[self._contained_run_mask(start, stop)]
+        contained_runs = self._grl[self._contained_run_mask(start, stop)]
         return self._contained_livetime(start, stop, contained_runs)
 
     @staticmethod
@@ -362,21 +365,21 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
 
     def sample_signal(self, n: int) -> np.ndarray:
         """Docstring"""
-        events = super().sample_sinal(n)
+        events = super().sample_signal(n)
         return self._randomize_times(events, self._signal_time_profile)
 
-    def _radomize_times(
+    def _randomize_times(
         self,
         events: np.ndarray,
         time_profile: GenericProfile,
     ) -> np.ndarray:
-        grl_start_cdf = time_profile.cdf(self.grl['start'])
-        grl_stop_cdf = time_profile.cdf(self.grl['stop'])
+        grl_start_cdf = time_profile.cdf(self._grl['start'])
+        grl_stop_cdf = time_profile.cdf(self._grl['stop'])
         valid = np.logical_and(grl_start_cdf < 1, grl_stop_cdf > 0)
         rates = grl_stop_cdf[valid] - grl_start_cdf[valid]
 
         runs = np.random.choice(
-            self.grl[valid],
+            self._grl[valid],
             size=len(events),
             replace=True,
             p=rates / rates.sum(),

@@ -32,7 +32,7 @@ class PointSource:
         """
         return (np.ones(size) * self.ra, np.ones(size) * self.dec)
 
-    def spatial_pdf(self, events: np.ndarray) -> np.array:
+    def spatial_pdf(self, events: np.ndarray) -> np.ndarray:
         """calculates the signal probability of events.
 
         gives a gaussian probability based on their angular distance from the
@@ -47,11 +47,7 @@ class PointSource:
             distances.
         """
         sigma2 = events['angErr']**2 + self.sigma**2
-        dist = uf.angular_distance(
-            events['ra'],
-            events['dec'],
-            *self.location,
-        )
+        dist = uf.angular_distance(events['ra'], events['dec'], *self.location)
         norm = 1 / (2 * np.pi * sigma2)
         return norm * np.exp(-dist**2 / (2 * sigma2))
 
@@ -69,12 +65,8 @@ class PointSource:
 @dataclasses.dataclass
 class GaussianExtendedSource(PointSource):
     """Gaussian Extended Source"""
-    sigma: dataclasses.InitVar[float]
+    sigma: float
     _sigma: float = dataclasses.field(init=False, repr=False)
-
-    def __post_init__(self, sigma) -> None:
-        """Docstring"""
-        self._sigma = sigma
 
     def sample(self, size: int = 1) -> tuple:
         """Sample locations.
@@ -90,3 +82,8 @@ class GaussianExtendedSource(PointSource):
     def sigma(self) -> float:
         """return sigma for GaussianExtendedSource"""
         return self._sigma
+
+    @sigma.setter
+    def sigma(self, sigma: float) -> None:
+        """Docstring"""
+        self._sigma = sigma
