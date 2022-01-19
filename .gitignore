@@ -10,4 +10,4 @@
 **/.tox
 .python-version
 Pipfile
-.pyenv
+.venv
