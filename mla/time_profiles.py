@@ -13,18 +13,23 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Callable, ClassVar, Dict, List, Optional, Tuple
 
 import abc
+import dataclasses
+
 import numpy as np
 import scipy.stats
+
+from . import configurable
 
 if TYPE_CHECKING:
     from .params import Params
 else:
     Params = object
 
-class GenericProfile:
+@dataclasses.dataclass
+class GenericProfile(configurable.Configurable):
     """A generic base class to standardize the methods for the time profiles.
 
     While I'm only currently using scipy-based
@@ -43,10 +48,6 @@ class GenericProfile:
     """
 
     __metaclass__ = abc.ABCMeta
-
-    @abc.abstractmethod
-    def __init__(self) -> None:
-        """Initializes the time profile."""
 
     @abc.abstractmethod
     def pdf(self, times: np.ndarray) -> np.ndarray:
@@ -158,6 +159,7 @@ class GenericProfile:
         """
 
 
+@dataclasses.dataclass
 class GaussProfile(GenericProfile):
     """Time profile class for a gaussian distribution.
 
@@ -175,17 +177,18 @@ class GaussProfile(GenericProfile):
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
     """
+    _param_dtype: ClassVar[np.dtype] = np.dtype(
+        [('mean', np.float32), ('sigma', np.float32)])
+    scipy_dist: scipy.stats.rv_frozen = dataclasses.field(init=False)
+    _mean: float = dataclasses.field(init=False, repr=False)
+    _sigma: float = dataclasses.field(init=False, repr=False)
+    _param_dtype: np.dtype = dataclasses.field(init=False, repr=False)
 
-    def __init__(self, mean: float, sigma: float) -> None:
-        """Initializes the time profile.
-        """
-        super().__init__()
-        self.mean = mean
-        self.sigma = sigma
-        self.scipy_dist = scipy.stats.norm(mean, sigma)
-        self._range = np.nan, np.nan
-        self._default_params = {'mean': mean, 'sigma': sigma}
-        self._param_dtype = np.dtype([('mean', np.float32), ('sigma', np.float32)])
+    def __post_init__(self) -> None:
+        """Initializes the time profile."""
+        self._mean = self.config['mean']
+        self._sigma = self.config['sigma']
+        self.scipy_dist = scipy.stats.norm(self._mean, self._sigma)
 
     def pdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the probability for each time.
@@ -268,7 +271,7 @@ class GaussProfile(GenericProfile):
     @property
     def params(self) -> dict:
         """Docstring"""
-        return {'mean': self.mean, 'sigma': self.sigma}
+        return {'mean': self._mean, 'sigma': self._sigma}
 
     @params.setter
     def params(self, params: Params) -> None:
@@ -276,32 +279,37 @@ class GaussProfile(GenericProfile):
         update = False
 
         if 'mean' in params:
-            self.mean = params['mean']
+            self._mean = params['mean']
             update = True
         if 'sigma' in params:
-            self.sigma = params['sigma']
+            self._sigma = params['sigma']
             update = True
 
         if update:
-            self.scipy_dist = scipy.stats.norm(self.mean, self.sigma)
+            self.scipy_dist = scipy.stats.norm(self._mean, self._sigma)
 
     @property
     def exposure(self) -> float:
-        return np.sqrt(2 * np.pi * self.sigma**2)
+        return np.sqrt(2 * np.pi * self._sigma**2)
 
     @property
     def range(self) -> Tuple[float, float]:
-        return self._range
-
-    @property
-    def default_params(self) -> Dict[str, float]:
-        return self._default_params
+        return np.nan, np.nan
 
     @property
     def param_dtype(self) -> np.dtype:
         return self._param_dtype
 
+    @classmethod
+    def generate_config(cls) -> dict:
+        """Docstring"""
+        config = super().generate_config()
+        config['mean'] = np.nan
+        config['sigma'] = np.nan
+        return config
 
+
+@dataclasses.dataclass
 class UniformProfile(GenericProfile):
     """Time profile class for a uniform distribution.
 
@@ -317,19 +325,14 @@ class UniformProfile(GenericProfile):
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
     """
+    _param_dtype: ClassVar[np.dtype] = np.dtype(
+        [('start', np.float32), ('length', np.float32)])
+    _range: Tuple[float, float] = dataclasses.field(init=False, repr=False)
+    _param_dtype: np.dtype = dataclasses.field(init=False, repr=False)
 
-    def __init__(self, start: float, length: float) -> None:
-        """Constructs the time profile.
-
-        Args:
-            start: (days) lower bound for the uniform distribution.
-            length: (days) length of the uniform distribution.
-        """
-        super().__init__()
-        self._range = (start, start + length)
-        self._default_params = {'start': self._range[0], 'length': length}
-        self._param_dtype = np.dtype(
-            [('start', np.float32), ('length', np.float32)])
+    def __post_init__(self) -> None:
+        """Constructs the time profile."""
+        self._range = (self.config['start'], self.config['start'] + self.config['length'])
 
     def pdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the probability for each time.
@@ -342,8 +345,8 @@ class UniformProfile(GenericProfile):
         """
         output = np.zeros_like(times)
         output[
-            (times >= self._range[0]) & (times < self._range[1])
-        ] = 1 / (self._range[1] - self._range[0])
+            (times >= self.range[0]) & (times < self.range[1])
+        ] = 1 / (self.range[1] - self.range[0])
         return output
 
     def logpdf(self, times: np.ndarray) -> np.ndarray:
@@ -366,7 +369,7 @@ class UniformProfile(GenericProfile):
         Returns:
             An array of times.
         """
-        return np.random.uniform(*self._range, size)
+        return np.random.uniform(*self.range, size)
 
     def x0(self, times: np.ndarray) -> Tuple[float, float]:
         """Returns good guesses for start and stop based on given times.
@@ -410,22 +413,16 @@ class UniformProfile(GenericProfile):
     @property
     def params(self) -> dict:
         """Docstring"""
-        return {'start': self.start, 'length': self.length}
+        return {'start': self._range[0], 'length': self._range[1] - self._range[0]}
 
     @params.setter
     def params(self, params: Params) -> None:
         """Docstring"""
-        update = False
-
         if 'start' in params:
-            self.start = params['start']
-            update = True
+            self._range = (
+                params['start'], params['start'] + self._range[1] - self._range[0])
         if 'length' in params:
-            self.length = params['length']
-            update = True
-
-        if update:
-            self._range = (self.start, self.start + self.length)
+            self._range = (self._range[0], self._range[0] + params['length'])
 
     @property
     def exposure(self) -> float:
@@ -436,14 +433,19 @@ class UniformProfile(GenericProfile):
         return self._range
 
     @property
-    def default_params(self) -> Dict[str, float]:
-        return self._default_params
-
-    @property
     def param_dtype(self) -> np.dtype:
         return self._param_dtype
 
+    @classmethod
+    def generate_config(cls) -> dict:
+        """Docstring"""
+        config = super().generate_config()
+        config['start'] = np.nan
+        config['length'] = np.nan
+        return config
 
+
+@dataclasses.dataclass
 class CustomProfile(GenericProfile):
     """Time profile class for a custom binned distribution.
 
@@ -465,62 +467,37 @@ class CustomProfile(GenericProfile):
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
     """
+    _param_dtype: ClassVar[np.dtype] = np.dtype([('offset', np.float32)])
+    pdf_func: dataclasses.InitVar[Callable[[np.ndarray, Tuple[float, float]], np.ndarray]]
+    dist: scipy.stats.rv_histogram = dataclasses.field(init=False, repr=False)
+    _offset: float = dataclasses.field(init=False, repr=False)
+    _exposure: float = dataclasses.field(init=False, repr=False)
 
-    def __init__(
-        self,
-        pdf: Callable[[np.ndarray, Tuple[float, float]], np.ndarray],
-        time_range: Tuple[float],
-        bins: Union[List[float], int] = 100,
-        offset: float = 0,
-    ) -> None:
+    def __post_init__(
+        self, pdf_func: Callable[[np.ndarray, Tuple[float, float]], np.ndarray]) -> None:
         """Constructs the time profile.
 
         Args:
-            time_range: lower and upper bound for the distribution.
-            bins: Either a list of specific bin edges to use (values should be
-                between 0 and 1), or an integer giving the number of linear
-                spaced bins to use.
-            offset: the offset to the time pdf
+            pdf_func:
         """
-        super().__init__()
-        self._range = (time_range[0] + offset, time_range[1] + offset)
-        self._offset = offset
-        self._default_params = {'offset': self._offset}
-        self._param_dtype = np.dtype([('offset', np.float32)])
-        self.dist = self._build_rv(pdf, bins)
+        self._offset = self.config['offset']
 
-    def _build_rv(self,
-                  pdf: Callable[[np.ndarray, Tuple[float, float]], np.ndarray],
-                  bins: Union[List[float], int]) -> scipy.stats.rv_histogram:
-        """Builds a scipy.stats.rv_histogram object for this time profile.
-
-        Args:
-            pdf: The normalized distribution function (takes times and time
-                window).
-            bins: Either a list of specific bin edges to use (values should be
-                between 0 and 1), or an integer giving the number of linear
-                spaced bins to use.
-
-        Returns:
-            The scipy histogram distribution based on the bin edges and the
-            distribution function.
-        """
-        if isinstance(bins, int):
-            bin_edges = np.linspace(*self._range, bins)
+        if isinstance(self.config['bins'], int):
+            bin_edges = np.linspace(*self.config['range'], self.config['bins'])
         else:
-            span = self._range[1] - self._range[0]
-            bin_edges = span * np.array(bins)
+            span = self.config['range'][1] - self.config['range'][0]
+            bin_edges = span * np.array(self.config['bins'])
 
         bin_widths = np.diff(bin_edges)
         bin_centers = bin_edges[:-1] + bin_widths
-        hist = pdf(bin_centers, tuple(self._range))
+        hist = pdf_func(bin_centers, tuple(self.config['range']))
 
         area_under_hist = np.sum(hist * bin_widths)
         hist *= 1 / area_under_hist
         self._exposure = 1 / np.max(hist)
         hist *= bin_widths
 
-        return scipy.stats.rv_histogram((hist, bin_edges))
+        self.dist = scipy.stats.rv_histogram((hist, bin_edges))
 
     def pdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the probability density for each time.
@@ -613,17 +590,23 @@ class CustomProfile(GenericProfile):
         return self._offset
 
     @offset.setter
-    def offset(self, x):
-        self._offset = x
+    def offset(self, offset: float) -> None:
+        self._offset = offset
 
     @property
     def range(self) -> Tuple[Optional[float], Optional[float]]:
-        return self._range
-
-    @property
-    def default_params(self) -> Dict[str, float]:
-        return self._default_params
+        return (
+            self.config['range'][0] + self.offset, self.config['range'][1] + self.offset)
 
     @property
     def param_dtype(self) -> np.dtype:
         return self._param_dtype
+
+    @classmethod
+    def generate_config(cls) -> dict:
+        """Docstring"""
+        config = super().generate_config()
+        config['range'] = (np.nan, np.nan)
+        config['bins'] = 100
+        config['offset'] = 0
+        return config

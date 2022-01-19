@@ -20,6 +20,8 @@ import warnings
 import numpy as np
 from scipy.interpolate import UnivariateSpline as Spline
 
+from . import configurable
+
 if TYPE_CHECKING:
     from .params import Params
     from .sources import PointSource
@@ -56,10 +58,9 @@ class SoBTerm:
 
 
 @dataclasses.dataclass
-class SoBTermFactory:
+class SoBTermFactory(configurable.Configurable):
     """Docstring"""
     __metaclass__ = abc.ABCMeta
-    config: dict
 
     @abc.abstractmethod
     def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
@@ -68,11 +69,6 @@ class SoBTermFactory:
     @abc.abstractmethod
     def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
         """Docstring"""
-
-    @classmethod
-    def generate_config(cls) -> dict:
-        """Docstring"""
-        return {}
 
 
 @dataclasses.dataclass

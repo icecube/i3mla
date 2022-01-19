@@ -20,6 +20,8 @@ import numpy as np
 import numpy.lib.recfunctions as rf
 from scipy.interpolate import UnivariateSpline as Spline
 
+from . import configurable
+
 if TYPE_CHECKING:
     from .time_profiles import GenericProfile
 else:
@@ -27,9 +29,8 @@ else:
 
 
 @dataclass
-class DataHandler:
+class DataHandler(configurable.Configurable):
     """Docstring"""
-    config: dict
     _n_background: float = field(init=False, repr=False)
 
     __metaclass__ = abc.ABCMeta
@@ -63,11 +64,6 @@ class DataHandler:
     @abc.abstractmethod
     def n_background(self) -> float:
         """Docstring"""
-
-    @classmethod
-    def generate_config(cls) -> dict:
-        """Docstring"""
-        return {}
 
 
 @dataclass
@@ -236,24 +232,6 @@ class NuSourcesDataHandler(DataHandler):
         config['dec_spline_s'] = 1.5e-5
         config['dec_spline_ext'] = 3
         return config
-
-    def inject_events(self) -> np.ndarray:
-        """Injects background events for a trial.
-
-        Returns:
-            An array of injected background events.
-        """
-        # Get the number of events we see from these runs
-        n_background_observed = np.random.poisson(self._n_background)
-
-        # How many events should we add in? This will now be based on the
-        # total number of events actually observed during these runs
-        background = np.random.choice(self._data, n_background_observed).copy()
-
-        # Randomize the background RA
-        background['ra'] = np.random.uniform(0, 2 * np.pi, len(background))
-
-        return background
 
 
 @dataclass

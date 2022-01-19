@@ -13,24 +13,21 @@ __status__ = 'Development'
 
 import dataclasses
 
+from . import configurable
 from . import utility_functions as uf
 
 import numpy as np
 
 @dataclasses.dataclass
-class PointSource:
+class PointSource(configurable.Configurable):
     """Stores a source object name and location"""
-    name: str
-    ra: float
-    dec: float
-
     def sample(self, size: int = 1) -> tuple:
         """Sample locations.
 
         Args:
             size: number of points to sample
         """
-        return (np.ones(size) * self.ra, np.ones(size) * self.dec)
+        return (np.ones(size) * self.config['ra'], np.ones(size) * self.config['dec'])
 
     def spatial_pdf(self, events: np.ndarray) -> np.ndarray:
         """calculates the signal probability of events.
@@ -54,20 +51,26 @@ class PointSource:
     @property
     def location(self) -> tuple:
         """return location of the source"""
-        return (self.ra, self.dec)
+        return (self.config['ra'], self.config['dec'])
 
     @property
     def sigma(self) -> float:
         """return 0 for point source"""
         return 0
 
+    @classmethod
+    def generate_config(cls) -> dict:
+        """Docstring"""
+        config = super().generate_config()
+        config['name'] = 'source_name'
+        config['ra'] = np.nan
+        config['dec'] = np.nan
+        return config
+
 
 @dataclasses.dataclass
 class GaussianExtendedSource(PointSource):
     """Gaussian Extended Source"""
-    sigma: float
-    _sigma: float = dataclasses.field(init=False, repr=False)
-
     def sample(self, size: int = 1) -> np.ndarray:
         """Sample locations.
 
@@ -81,9 +84,11 @@ class GaussianExtendedSource(PointSource):
     @property
     def sigma(self) -> float:
         """return sigma for GaussianExtendedSource"""
-        return self._sigma
+        return self.config['sigma']
 
-    @sigma.setter
-    def sigma(self, sigma: float) -> None:
+    @classmethod
+    def generate_config(cls) -> dict:
         """Docstring"""
-        self._sigma = sigma
+        config = super().generate_config()
+        config['sigma'] = np.deg2rad(1)
+        return config

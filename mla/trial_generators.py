@@ -17,6 +17,7 @@ import numpy as np
 import numpy.lib.recfunctions as rf
 
 from . import utility_functions as uf
+from . import configurable
 
 if TYPE_CHECKING:
     from .data_handlers import DataHandler
@@ -26,9 +27,8 @@ else:
     PointSource = object
 
 @dataclasses.dataclass
-class SingleSourceTrialGenerator:
+class SingleSourceTrialGenerator(configurable.Configurable):
     """Docstring"""
-    config: dict
     data_handler: DataHandler
     source: PointSource
 
@@ -97,7 +97,7 @@ class SingleSourceTrialGenerator:
     @classmethod
     def generate_config(cls) -> dict:
         """Docstring"""
-        return {
-            'random_seed': None,
-            'fixed_ns': False,
-        }
+        config = super().generate_config()
+        config['random_seed'] = None
+        config['fixed_ns'] = False
+        return config

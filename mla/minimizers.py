@@ -15,10 +15,13 @@ __status__ = 'Development'
 from typing import List, Optional, Tuple
 from typing import TYPE_CHECKING
 
+import abc
 import dataclasses
 
 import numpy as np
 import scipy.optimize
+
+from . import configurable
 
 if TYPE_CHECKING:
     from .test_statistics import LLHTestStatistic
@@ -27,15 +30,16 @@ else:
 
 
 @dataclasses.dataclass
-class Minimizer:
+class Minimizer(configurable.Configurable):
     """Docstring"""
-    config: dict
     test_statistic: LLHTestStatistic
 
-    @classmethod
-    def generate_config(cls) -> dict:
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
+    def __call__(
+        self, fitting_params: Optional[List[str]] = None) -> Tuple[float, np.ndarray]:
         """Docstring"""
-        return {}
 
 
 @dataclasses.dataclass
