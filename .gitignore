@@ -11,3 +11,5 @@
 .python-version
 Pipfile
 **/.venv
+**/.vim
+pyvenv.cfg
