@@ -13,12 +13,16 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Callable, Dict, List, Optional, Tuple, Union
 
 import abc
 import numpy as np
 import scipy.stats
 
+if TYPE_CHECKING:
+    from .params import Params
+else:
+    Params = object
 
 class GenericProfile:
     """A generic base class to standardize the methods for the time profiles.
@@ -45,7 +49,7 @@ class GenericProfile:
         """Initializes the time profile."""
 
     @abc.abstractmethod
-    def pdf(self, times: np.array) -> np.array:
+    def pdf(self, times: np.ndarray) -> np.ndarray:
         """Get the probability amplitude given a time for this time profile.
 
         Args:
@@ -56,7 +60,7 @@ class GenericProfile:
         """
 
     @abc.abstractmethod
-    def logpdf(self, times: np.array) -> np.array:
+    def logpdf(self, times: np.ndarray) -> np.ndarray:
         """Get the log(probability) given a time for this time profile.
 
         Args:
@@ -67,7 +71,7 @@ class GenericProfile:
         """
 
     @abc.abstractmethod
-    def random(self, size: int) -> np.array:
+    def random(self, size: int) -> np.ndarray:
         """Get random times sampled from the pdf of this time profile.
 
         Args:
@@ -78,7 +82,7 @@ class GenericProfile:
         """
 
     @abc.abstractmethod
-    def x0(self, times: np.array) -> Tuple:
+    def x0(self, times: np.ndarray) -> Tuple:
         """Gets a tuple of initial guess to use when fitting parameters.
 
         The guesses are arrived at by simple approximations using the given
@@ -93,7 +97,9 @@ class GenericProfile:
         """
 
     @abc.abstractmethod
-    def bounds(self, time_profile: 'GenericProfile',
+    def bounds(
+        self,
+        time_profile: 'GenericProfile',
     ) -> List[Tuple[Optional[float], Optional[float]]]:
         """Get a list of tuples of bounds for the parameters of this profile.
 
@@ -110,12 +116,12 @@ class GenericProfile:
         """
 
     @abc.abstractmethod
-    def cdf(self, times: np.array) -> np.array:
+    def cdf(self, times: np.ndarray) -> np.ndarray:
         """Docstring"""
 
     @abc.abstractmethod
-    def inverse_transform_sample(self, start_times: np.array,
-                                 stop_times: np.array) -> np.array:
+    def inverse_transform_sample(
+        self, start_times: np.ndarray, stop_times: np.ndarray) -> np.ndarray:
         """Docstring"""
 
     @property
@@ -125,7 +131,7 @@ class GenericProfile:
 
     @params.setter
     @abc.abstractmethod
-    def params(self, params: np.ndarray) -> None:
+    def params(self, params: Params) -> None:
         """Docstring"""
 
     @property
@@ -135,7 +141,7 @@ class GenericProfile:
 
     @property
     @abc.abstractmethod
-    def range(self) -> Tuple[Optional[float], Optional[float]]:
+    def range(self) -> Tuple[float, float]:
         """Gets the maximum and minimum values for the times in this profile.
         """
 
@@ -177,12 +183,11 @@ class GaussProfile(GenericProfile):
         self.mean = mean
         self.sigma = sigma
         self.scipy_dist = scipy.stats.norm(mean, sigma)
-        self._range = None, None
+        self._range = np.nan, np.nan
         self._default_params = {'mean': mean, 'sigma': sigma}
-        self._param_dtype = np.dtype(
-            [('mean', np.float32), ('sigma', np.float32)])
+        self._param_dtype = np.dtype([('mean', np.float32), ('sigma', np.float32)])
 
-    def pdf(self, times: np.array) -> np.array:
+    def pdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the probability for each time.
 
         Args:
@@ -193,7 +198,7 @@ class GaussProfile(GenericProfile):
         """
         return self.scipy_dist.pdf(times)
 
-    def logpdf(self, times: np.array) -> np.array:
+    def logpdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the log(probability) for each time.
 
         Args:
@@ -204,7 +209,7 @@ class GaussProfile(GenericProfile):
         """
         return self.scipy_dist.logpdf(times)
 
-    def random(self, size: int = 1) -> np.array:
+    def random(self, size: int = 1) -> np.ndarray:
         """Returns random values following the gaussian distribution.
 
         Args:
@@ -215,7 +220,7 @@ class GaussProfile(GenericProfile):
         """
         return self.scipy_dist.rvs(size=size)
 
-    def x0(self, times: np.array) -> Tuple[float, float]:
+    def x0(self, times: np.ndarray) -> tuple:
         """Returns good guesses for mean and sigma based on given times.
 
         Args:
@@ -228,7 +233,7 @@ class GaussProfile(GenericProfile):
         x0_sigma = np.std(times)
         return x0_mean, x0_sigma
 
-    def bounds(self, time_profile: GenericProfile) -> List[List[float]]:
+    def bounds(self, time_profile: GenericProfile) -> List[tuple]:
         """Returns good bounds for this time profile given another time profile.
 
         Limits the mean to be within the range of the other profile and limits
@@ -242,19 +247,19 @@ class GaussProfile(GenericProfile):
             A list of tuples of bounds for fitting the parameters in this time
             profile.
         """
-
-        if None in time_profile.range:
-            return [time_profile.range, (0, None)]
+        if np.nan in time_profile.range:
+            return [time_profile.range, (0, np.nan)]
 
         diff = time_profile.range[1] - time_profile.range[0]
-
         return [time_profile.range, (0, diff)]
 
-    def cdf(self, times: np.array) -> np.array:
+    def cdf(self, times: np.ndarray) -> np.ndarray:
+        """Docstring"""
         return self.scipy_dist.cdf(times)
 
-    def inverse_transform_sample(self, start_times: np.array,
-                                 stop_times: np.array) -> np.array:
+    def inverse_transform_sample(
+        self, start_times: np.ndarray, stop_times: np.ndarray) -> np.ndarray:
+        """Docstring"""
         start_cdfs = self.cdf(start_times)
         stop_cdfs = self.cdf(stop_times)
         cdfs = np.random.uniform(start_cdfs, stop_cdfs)
@@ -266,14 +271,14 @@ class GaussProfile(GenericProfile):
         return {'mean': self.mean, 'sigma': self.sigma}
 
     @params.setter
-    def params(self, params: np.ndarray) -> None:
+    def params(self, params: Params) -> None:
         """Docstring"""
         update = False
 
-        if 'mean' in params.dtype.names:
+        if 'mean' in params:
             self.mean = params['mean']
             update = True
-        if 'sigma' in params.dtype.names:
+        if 'sigma' in params:
             self.sigma = params['sigma']
             update = True
 
@@ -285,7 +290,7 @@ class GaussProfile(GenericProfile):
         return np.sqrt(2 * np.pi * self.sigma**2)
 
     @property
-    def range(self) -> Tuple[Optional[float], Optional[float]]:
+    def range(self) -> Tuple[float, float]:
         return self._range
 
     @property
@@ -326,7 +331,7 @@ class UniformProfile(GenericProfile):
         self._param_dtype = np.dtype(
             [('start', np.float32), ('length', np.float32)])
 
-    def pdf(self, times: np.array) -> np.array:
+    def pdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the probability for each time.
 
         Args:
@@ -341,7 +346,7 @@ class UniformProfile(GenericProfile):
         ] = 1 / (self._range[1] - self._range[0])
         return output
 
-    def logpdf(self, times: np.array) -> np.array:
+    def logpdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the log(probability) for each time.
 
         Args:
@@ -352,7 +357,7 @@ class UniformProfile(GenericProfile):
         """
         return np.log(self.pdf(times))
 
-    def random(self, size: int = 1) -> np.array:
+    def random(self, size: int = 1) -> np.ndarray:
         """Returns random values following the uniform distribution.
 
         Args:
@@ -363,7 +368,7 @@ class UniformProfile(GenericProfile):
         """
         return np.random.uniform(*self._range, size)
 
-    def x0(self, times: np.array) -> Tuple[float, float]:
+    def x0(self, times: np.ndarray) -> Tuple[float, float]:
         """Returns good guesses for start and stop based on given times.
 
         Args:
@@ -390,15 +395,13 @@ class UniformProfile(GenericProfile):
         diff = time_profile.range[1] - time_profile.range[0]
         return [time_profile.range, (0, diff)]
 
-    def cdf(self, times: np.array) -> np.array:
-        return np.clip(
-            (times - self.range[0]) / (self.range[1] - self.range[0]),
-            0,
-            1,
-        )
+    def cdf(self, times: np.ndarray) -> np.ndarray:
+        """Docstring"""
+        return np.clip((times - self.range[0]) / (self.range[1] - self.range[0]), 0, 1)
 
-    def inverse_transform_sample(self, start_times: np.array,
-                                 stop_times: np.array) -> np.array:
+    def inverse_transform_sample(
+            self, start_times: np.ndarray, stop_times: np.ndarray) -> np.ndarray:
+        """Docstring"""
         return np.random.uniform(
             np.maximum(start_times, self.range[0]),
             np.minimum(stop_times, self.range[1]),
@@ -410,14 +413,14 @@ class UniformProfile(GenericProfile):
         return {'start': self.start, 'length': self.length}
 
     @params.setter
-    def params(self, params: np.ndarray) -> None:
+    def params(self, params: Params) -> None:
         """Docstring"""
         update = False
 
-        if 'start' in params.dtype.names:
+        if 'start' in params:
             self.start = params['start']
             update = True
-        if 'length' in params.dtype.names:
+        if 'length' in params:
             self.length = params['length']
             update = True
 
@@ -429,7 +432,7 @@ class UniformProfile(GenericProfile):
         return self._range[1] - self._range[0]
 
     @property
-    def range(self) -> Tuple[Optional[float], Optional[float]]:
+    def range(self) -> Tuple[float, float]:
         return self._range
 
     @property
@@ -463,10 +466,13 @@ class CustomProfile(GenericProfile):
             parameters.
     """
 
-    def __init__(self, pdf: Callable[[np.array, Tuple[float, float]], np.array],
-                 time_range: Tuple[float],
-                 bins: Union[List[float], int] = 100,
-                 offset: Optional[float] = 0) -> None:
+    def __init__(
+        self,
+        pdf: Callable[[np.ndarray, Tuple[float, float]], np.ndarray],
+        time_range: Tuple[float],
+        bins: Union[List[float], int] = 100,
+        offset: float = 0,
+    ) -> None:
         """Constructs the time profile.
 
         Args:
@@ -484,7 +490,7 @@ class CustomProfile(GenericProfile):
         self.dist = self._build_rv(pdf, bins)
 
     def _build_rv(self,
-                  pdf: Callable[[np.array, Tuple[float, float]], np.array],
+                  pdf: Callable[[np.ndarray, Tuple[float, float]], np.ndarray],
                   bins: Union[List[float], int]) -> scipy.stats.rv_histogram:
         """Builds a scipy.stats.rv_histogram object for this time profile.
 
@@ -516,7 +522,7 @@ class CustomProfile(GenericProfile):
 
         return scipy.stats.rv_histogram((hist, bin_edges))
 
-    def pdf(self, times: np.array) -> np.array:
+    def pdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the probability density for each time.
 
         Args:
@@ -527,7 +533,7 @@ class CustomProfile(GenericProfile):
         """
         return self.dist.pdf(times + self.offset)
 
-    def logpdf(self, times: np.array) -> np.array:
+    def logpdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the log(probability) for each time.
 
         Args:
@@ -538,7 +544,7 @@ class CustomProfile(GenericProfile):
         """
         return self.dist.logpdf(times + self.offset)
 
-    def random(self, size: int = 1) -> np.array:
+    def random(self, size: int = 1) -> np.ndarray:
         """Returns random values following the uniform distribution.
 
         Args:
@@ -549,7 +555,7 @@ class CustomProfile(GenericProfile):
         """
         return self.dist.rvs(size=size) + self.offset
 
-    def x0(self, times: np.array) -> Tuple[float, float]:
+    def x0(self, times: np.ndarray) -> Tuple[float, float]:
         """Gives a guess of the parameters of this type of time profile.
 
         Args:
@@ -575,11 +581,13 @@ class CustomProfile(GenericProfile):
         """
         return [time_profile.range, time_profile.range]
 
-    def cdf(self, times: np.array) -> np.array:
+    def cdf(self, times: np.ndarray) -> np.ndarray:
+        """Docstring"""
         return self.dist.cdf(times)
 
-    def inverse_transform_sample(self, start_times: np.array,
-                                 stop_times: np.array) -> np.array:
+    def inverse_transform_sample(
+        self, start_times: np.ndarray, stop_times: np.ndarray) -> np.ndarray:
+        """Docstring"""
         start_cdfs = self.cdf(start_times)
         stop_cdfs = self.cdf(stop_times)
         cdfs = np.random.uniform(start_cdfs, stop_cdfs)
@@ -591,9 +599,9 @@ class CustomProfile(GenericProfile):
         return {'offset': self.offset}
 
     @params.setter
-    def params(self, params: np.ndarray) -> None:
+    def params(self, params: Params) -> None:
         """Docstring"""
-        if 'offset' in params.dtype.names:
+        if 'offset' in params:
             self.offset = params['offset']
 
     @property

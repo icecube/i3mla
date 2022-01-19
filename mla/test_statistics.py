@@ -16,11 +16,12 @@ import dataclasses
 import numpy as np
 
 if TYPE_CHECKING:
-    from .sob_terms import SoBTerm, SoBTermFactory, Bounds
+    from .sob_terms import SoBTerm, SoBTermFactory
+    from .params import Params
 else:
     SoBTerm = object  # pylint: disable=invalid-name
     SoBTermFactory = object  # pylint: disable=invalid-name
-    Bounds= object  # pylint: disable=invalid-name
+    Params = object  # pylint: disable=invalid-name
 
 
 @dataclasses.dataclass
@@ -30,13 +31,11 @@ class LLHTestStatistic:
     _n_events: int
     _n_kept: int
     _events: np.ndarray
-    _params: np.ndarray
-    _param_name_idx_map: dict
-    _bounds: Bounds
+    _params: Params
     _best_ts: float = dataclasses.field(init=False, default=0)
     _best_ns: float = dataclasses.field(init=False, default=0)
 
-    def __call__(self, params: Optional[np.ndarray] = None) -> float:
+    def __call__(self, params: Optional[Params] = None) -> float:
         """Evaluates the test-statistic for the given events and parameters
 
         Calculates the test-statistic using a given event model, n_signal, and
@@ -54,8 +53,8 @@ class LLHTestStatistic:
 
         sob = self._calculate_sob()
 
-        if 'ns' in self._param_name_idx_map:
-            ns_ratio = self.params[self._param_name_idx_map['ns']] / self._n_events
+        if 'ns' in self._params:
+            ns_ratio = self.params[self._params['ns']] / self._n_events
         else:
             ns_ratio = self._newton_ns_ratio(sob)
 
@@ -124,15 +123,17 @@ class LLHTestStatistic:
         )
 
     @property
-    def params(self) -> np.ndarray:
+    def params(self) -> Params:
         """Docstring"""
         return self._params
 
     @params.setter
-    def params(self, params: np.ndarray) -> None:
+    def params(self, params: Params) -> None:
         """Docstring"""
         if params == self._params:
             return
+        if 'ns' in params:
+            params.bounds['ns'] = (0, min(params.bounds['ns'], self.n_kept))
         for term in self._sob_terms:
             term.params = params
         self._params = params
@@ -158,50 +159,25 @@ class LLHTestStatistic:
         """Docstring"""
         return self._n_events - self._n_kept
 
-    def _fix_bounds(
-        self,
-        bnds: List[Tuple[float, float]]
-    ) -> List[Tuple[float, float]]:
-        """Docstring"""
-        if 'ns' in self._params.dtype.names:
-            i = self._params.dtype.names.index('ns')
-            bnds[i] = (0, min(bnds[i][1], self._n_kept))
-        return bnds
-
-    @property
-    def bounds(self) -> Bounds:
-        """Docstring"""
-        if self._bounds is None:
-            self._bounds = [(-np.inf, np.inf)] * len(self._params.dtype.names)
-        return self._fix_bounds(self._bounds)
-
 
 @dataclasses.dataclass
 class LLHTestStatisticFactory:
     """Docstring"""
     sob_term_factories: List[SoBTermFactory]
 
-    def __call__(
-        self,
-        params: np.ndarray,
-        events: np.ndarray,
-        bounds: Bounds = None,
-    ) -> LLHTestStatistic:
+    def __call__(self, params: Params, events: np.ndarray) -> LLHTestStatistic:
         """Docstring"""
         drop_mask = np.logical_and.reduce(np.array([
             term_factory.calculate_drop_mask(events)
             for term_factory in self.sob_term_factories
         ]))
 
-        for term_factory in self.sob_term_factories:
-            bounds = term_factory.update_bounds(bounds)
-
         n_kept = drop_mask.sum()
         pruned_events = np.empty(n_kept, dtype=events.dtype)
         pruned_events[:] = events[drop_mask]
 
         sob_terms = [
-            term_factory(params, bounds, pruned_events)
+            term_factory(params, pruned_events)
             for term_factory in self.sob_term_factories
         ]
 
@@ -210,7 +186,5 @@ class LLHTestStatisticFactory:
             _n_events=len(events),
             _n_kept=n_kept,
             _events=pruned_events,
-            _params=rf.structured_to_unstructured(params, copy=True),
-            _param_name_idx_map={name: i for i, name in enumerate(params.dtype.names)},
-            _bounds=bounds,
+            _params=params,
         )

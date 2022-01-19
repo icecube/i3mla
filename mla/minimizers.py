@@ -24,11 +24,11 @@ import scipy.optimize
 
 if TYPE_CHECKING:
     from .test_statistics import LLHTestStatistic, LLHTestStatisticFactory
-    from .sob_terms import Bounds
+    from .params import Params
 else:
     LLHTestStatistic = object  # pylint: disable=invalid-name
     LLHTestStatisticFactory = object  # pylint: disable=invalid-name
-    Bounds = object  # pylint: disable=invalid-name
+    Params = object  # pylint: disable=invalid-name
 
 @dataclasses.dataclass
 class Minimizer:
@@ -47,20 +47,17 @@ class GridSearchMinimizer(Minimizer):
     """Docstring"""
     def __call__(
         self,
-        params: np.ndarray,
+        params: Params,
         events: np.ndarray,
-        bounds: Bounds = None,
-        fitting_params: Optional[tuple] = None,
-    ) -> :
+        fitting_params: Optional[List[str]] = None,
+    ) -> np.ndarray:
         """Docstring"""
         if fitting_params is None:
-            fitting_params = tuple(params.dtype.names)
+            fitting_params = params.names
 
-        if test_statistic.n_kept == 0:
+        if self.test_statistic.n_kept == 0:
             return np.array([(0, 0)], dtype=[('ts', np.float64), ('ns', np.float64)])
-
-        
-
+            
     @staticmethod
     def _reconstruct_params(params: list, dtype: list) -> np.ndarray:
         """Docstring"""
@@ -107,25 +104,11 @@ def _default_minimizer(
     return result
 
 
-def _unstructured_ts(
-    unstructured_params: np.array,
-    ts: LLHTestStatistic,
-    structured_params: np.array,
-    unstructured_param_names: List[str],
-) -> float:
-    """Docstring"""
-    for name, val in zip(unstructured_param_names, unstructured_params):
-        structured_params[name] = val
-
-    return ts(structured_params)
-
-
 def minimize_ts(
     test_statistic_factory: LLHTestStatisticFactory,
     events: np.ndarray,
     test_params: np.ndarray = np.empty(1, dtype=[('empty', int)]),
     to_fit: Union[List[str], str, None] = 'all',
-    bounds: Bounds = None,
     minimizer: Minimizer = _default_minimizer,
 ) -> Dict[str, float]:
     """Calculates the params that minimize the ts for the given events.

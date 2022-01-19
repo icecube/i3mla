@@ -20,17 +20,17 @@ from . import utility_functions as uf
 
 if TYPE_CHECKING:
     from .data_handlers import DataHandler
-    from .sources import Source
+    from .sources import PointSource
 else:
     DataHandler = object
-    Source = object
+    PointSource = object
 
 @dataclasses.dataclass
 class SingleSourceTrialGenerator:
     """Docstring"""
     config: dict
     data_handler: DataHandler
-    source: Source
+    source: PointSource
 
     def __call__(self, n_signal: float = 0) -> np.ndarray:
         """Produces a single trial of background+signal events based on inputs.
@@ -52,7 +52,7 @@ class SingleSourceTrialGenerator:
         background['ra'] = np.random.uniform(0, 2 * np.pi, len(background))
 
         if n_signal > 0:
-            signal = self.data_handler.sample_signal(n_signal)
+            signal = self.data_handler.sample_signal(int(n_signal))
             signal = self._rotate_signal(signal)
         else:
             signal = np.empty(0, dtype=background.dtype)
@@ -71,7 +71,7 @@ class SingleSourceTrialGenerator:
 
     def _rotate_signal(self, signal: np.ndarray) -> np.ndarray:
         """Docstring"""
-        ra, dec = self.source.sample_location(len(signal))
+        ra, dec = self.source.sample(len(signal))
 
         signal['ra'], signal['dec'] = uf.rotate(
             signal['truera'],

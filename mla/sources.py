@@ -68,7 +68,7 @@ class GaussianExtendedSource(PointSource):
     sigma: float
     _sigma: float = dataclasses.field(init=False, repr=False)
 
-    def sample(self, size: int = 1) -> tuple:
+    def sample(self, size: int = 1) -> np.ndarray:
         """Sample locations.
 
         Args:

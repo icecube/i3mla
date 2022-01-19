@@ -11,8 +11,6 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Tuple
-
 import numpy as np
 
 
@@ -46,7 +44,7 @@ def dec_to_rad(sign: int, deg: float, mins: float, secs: float) -> float:
     return sign / np.abs(sign) * (deg + mins / 60 + secs / 3600) * np.pi / 180
 
 
-def cross_matrix(mat: np.array) -> np.array:
+def cross_matrix(mat: np.ndarray) -> np.ndarray:
     """Calculate cross product matrix.
     A[ij] = x_i * y_j - y_i * x_j
     Args:
@@ -58,8 +56,11 @@ def cross_matrix(mat: np.array) -> np.array:
     return skv - skv.T
 
 
-def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
-           ra3: float, dec3: float) -> Tuple[float, float]:
+def rotate(
+    ra1: float, dec1: float,
+    ra2: float, dec2: float,
+    ra3: float, dec3: float,
+) -> tuple:
     """Rotation matrix for rotation of (ra1, dec1) onto (ra2, dec2).
 
     The rotation is performed on (ra3, dec3).
@@ -85,9 +86,7 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
     ra3 = np.atleast_1d(ra3)
     dec3 = np.atleast_1d(dec3)
 
-    if not (
-        len(ra1) == len(dec1) == len(ra2) == len(dec2) == len(ra3) == len(dec3)
-    ):
+    if not len(ra1) == len(dec1) == len(ra2) == len(dec2) == len(ra3) == len(dec3):
         raise IndexError('Arguments must all have the same dimension.')
 
     cos_alpha = np.cos(ra2 - ra1) * np.cos(dec1) * np.cos(dec2) \
@@ -127,8 +126,7 @@ def rotate(ra1: float, dec1: float, ra2: float, dec2: float,
     return r_a, dec
 
 
-def angular_distance(src_ra: float, src_dec: float, r_a: float,
-                     dec: float) -> float:
+def angular_distance(src_ra: float, src_dec: float, r_a: float, dec: float) -> float:
     """Computes angular distance between source and location.
 
     Args:

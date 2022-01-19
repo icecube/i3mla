@@ -22,7 +22,7 @@ from scipy.interpolate import UnivariateSpline as Spline
 
 if TYPE_CHECKING:
     from .params import Params
-    from .sources import PointSource 
+    from .sources import PointSource
     from .data_handlers import DataHandler
     from .time_profiles import GenericProfile
 else:
@@ -36,7 +36,7 @@ else:
 class SoBTerm:
     """Docstring"""
     __metaclass__ = abc.ABCMeta
-    _params: np.ndarray
+    _params: Params
     _sob: np.ndarray
 
     @property
@@ -46,7 +46,7 @@ class SoBTerm:
 
     @params.setter
     @abc.abstractmethod
-    def params(self, params: np.ndarray) -> None:
+    def params(self, params: Params) -> None:
         """Docstring"""
 
     @property
@@ -85,7 +85,7 @@ class SpatialTerm(SoBTerm):
         return self._params
 
     @params.setter
-    def params(self, params: np.ndarray) -> None:
+    def params(self, params: Params) -> None:
         """Docstring"""
         self._params = params
 
@@ -103,13 +103,13 @@ class SpatialTermFactory(SoBTermFactory):
 
     def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
         """Docstring"""
-        sob_spatial = self.source.pdf(events)
+        sob_spatial = self.source.spatial_pdf(events)
         sob_spatial /= self.data_handler.evaluate_background_sindec_pdf(events)
         return SpatialTerm(_params=params, _sob=sob_spatial)
 
     def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
         """Docstring"""
-        return self.source.pdf(events) != 0
+        return self.source.spatial_pdf(events) != 0
 
 
 @dataclasses.dataclass
@@ -182,7 +182,7 @@ class SplineMapEnergyTerm(SoBTerm):
     @params.setter
     def params(self, params: Params) -> None:
         """Docstring"""
-        if 'gamma' in params.dtype.names:
+        if 'gamma' in params:
             self.gamma = params['gamma']
         self._params = params
 

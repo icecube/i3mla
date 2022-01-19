@@ -30,6 +30,7 @@ else:
 class DataHandler:
     """Docstring"""
     config: dict
+    _n_background: float = field(init=False, repr=False)
 
     __metaclass__ = abc.ABCMeta
 
@@ -42,7 +43,7 @@ class DataHandler:
         """Docstring"""
 
     @abc.abstractmethod
-    def calculate_ns(self, time_integrated_flux: float) -> float:
+    def calculate_n_signal(self, time_integrated_flux: float) -> float:
         """Docstring"""
 
     @abc.abstractmethod
@@ -56,6 +57,11 @@ class DataHandler:
     @abc.abstractmethod
     def build_signal_sindec_logenergy_histogram(
             self, gamma: float, bins: np.ndarray) -> np.ndarray:
+        """Docstring"""
+
+    @property
+    @abc.abstractmethod
+    def n_background(self) -> float:
         """Docstring"""
 
     @classmethod
@@ -73,7 +79,7 @@ class NuSourcesDataHandler(DataHandler):
     _sim: np.ndarray = field(init=False, repr=False)
     _data: np.ndarray = field(init=False, repr=False)
     _grl: np.ndarray = field(init=False, repr=False)
-    _n_background: int = field(init=False, repr=False)
+    _n_background: float = field(init=False, repr=False)
     _grl_rates: np.ndarray = field(init=False, repr=False)
     _dec_spline: Spline = field(init=False, repr=False)
     _livetime: float = field(init=False, repr=False)
@@ -88,7 +94,7 @@ class NuSourcesDataHandler(DataHandler):
         """Docstring"""
         return np.random.choice(self._data, n).copy()
 
-    def sample_signal(self, n: int):
+    def sample_signal(self, n: int) -> np.ndarray:
         """Docstring"""
         return np.random.choice(
             self.sim,
@@ -97,7 +103,7 @@ class NuSourcesDataHandler(DataHandler):
             replace=False,
         ).copy()
 
-    def calculate_ns(self, time_integrated_flux: float) -> float:
+    def calculate_n_signal(self, time_integrated_flux: float) -> float:
         """Docstring"""
         return self.sim['weight'].sum() * time_integrated_flux
 
@@ -259,11 +265,6 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
     _background_time_profile: GenericProfile = field(init=False, repr=False)
     _signal_time_profile: GenericProfile = field(init=False, repr=False)
 
-    def __post_init__(self) -> None:
-        """Docstring"""
-        super().__post_init__()
-
-
     @property
     def background_time_profile(self) -> GenericProfile:
         """Docstring"""
@@ -295,10 +296,7 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
         background_grl = self._grl[background_run_mask]
         self._n_background = background_grl['events'].sum()
         self._n_background /= background_grl['livetime'].sum()
-        self._n_background *= self._contained_livetime(
-            *self.config['background_time_profile'].range,
-            background_grl,
-        )
+        self._n_background *= self._contained_livetime(*profile.range, background_grl)
 
     @property
     def signal_time_profile(self) -> GenericProfile:
