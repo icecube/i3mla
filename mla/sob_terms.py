@@ -10,7 +10,6 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 from typing import List
-from typing import TYPE_CHECKING
 
 import abc
 import copy
@@ -21,17 +20,10 @@ import numpy as np
 from scipy.interpolate import UnivariateSpline as Spline
 
 from . import configurable
-
-if TYPE_CHECKING:
-    from .params import Params
-    from .sources import PointSource
-    from .data_handlers import DataHandler
-    from .time_profiles import GenericProfile
-else:
-    Params = object
-    PointSource = object
-    DataHandler = object
-    GenericProfile = object
+from .params import Params
+from .sources import PointSource
+from .data_handlers import DataHandler
+from .time_profiles import GenericProfile
 
 
 @dataclasses.dataclass

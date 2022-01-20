@@ -13,7 +13,6 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 from typing import List, Optional, Tuple
-from typing import TYPE_CHECKING
 
 import abc
 import dataclasses
@@ -22,11 +21,7 @@ import numpy as np
 import scipy.optimize
 
 from . import configurable
-
-if TYPE_CHECKING:
-    from .test_statistics import LLHTestStatistic
-else:
-    LLHTestStatistic = object  # pylint: disable=invalid-name
+from .test_statistics import LLHTestStatistic
 
 
 @dataclasses.dataclass

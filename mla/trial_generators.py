@@ -9,8 +9,6 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import TYPE_CHECKING
-
 import dataclasses
 
 import numpy as np
@@ -19,12 +17,8 @@ import numpy.lib.recfunctions as rf
 from . import utility_functions as uf
 from . import configurable
 
-if TYPE_CHECKING:
-    from .data_handlers import DataHandler
-    from .sources import PointSource
-else:
-    DataHandler = object
-    PointSource = object
+from .data_handlers import DataHandler
+from .sources import PointSource
 
 @dataclasses.dataclass
 class SingleSourceTrialGenerator(configurable.Configurable):

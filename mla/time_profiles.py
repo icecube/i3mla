@@ -13,7 +13,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import TYPE_CHECKING, Callable, ClassVar, Dict, List, Optional, Tuple
+from typing import Callable, ClassVar, Dict, List, Optional, Tuple
 
 import abc
 import dataclasses
@@ -22,11 +22,7 @@ import numpy as np
 import scipy.stats
 
 from . import configurable
-
-if TYPE_CHECKING:
-    from .params import Params
-else:
-    Params = object
+from .params import Params
 
 @dataclasses.dataclass
 class GenericProfile(configurable.Configurable):

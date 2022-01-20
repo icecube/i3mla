@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import TYPE_CHECKING, Tuple
+from typing import Tuple
 
 import abc
 import copy
@@ -21,11 +21,7 @@ import numpy.lib.recfunctions as rf
 from scipy.interpolate import UnivariateSpline as Spline
 
 from . import configurable
-
-if TYPE_CHECKING:
-    from .time_profiles import GenericProfile
-else:
-    GenericProfile = object
+from .time_profiles import GenericProfile
 
 
 @dataclass

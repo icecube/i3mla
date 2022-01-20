@@ -18,6 +18,7 @@ from . import utility_functions as uf
 
 import numpy as np
 
+
 @dataclasses.dataclass
 class PointSource(configurable.Configurable):
     """Stores a source object name and location"""

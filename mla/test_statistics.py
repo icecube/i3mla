@@ -10,18 +10,12 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 from typing import List, Tuple, Optional
-from typing import TYPE_CHECKING
 
 import dataclasses
 import numpy as np
 
-if TYPE_CHECKING:
-    from .sob_terms import SoBTerm, SoBTermFactory
-    from .params import Params
-else:
-    SoBTerm = object  # pylint: disable=invalid-name
-    SoBTermFactory = object  # pylint: disable=invalid-name
-    Params = object  # pylint: disable=invalid-name
+from .sob_terms import SoBTerm, SoBTermFactory
+from .params import Params
 
 
 @dataclasses.dataclass
