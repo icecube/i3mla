@@ -62,6 +62,10 @@ class SoBTermFactory(configurable.Configurable):
     def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
         """Docstring"""
 
+    @abc.abstractmethod
+    def generate_params(self) -> tuple:
+        """Docstring"""
+
 
 @dataclasses.dataclass
 class SpatialTerm(SoBTerm):
@@ -98,6 +102,9 @@ class SpatialTermFactory(SoBTermFactory):
     def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
         """Docstring"""
         return self.source.spatial_pdf(events) != 0
+
+    def generate_params(self) -> tuple:
+        return {}, {}
 
 
 @dataclasses.dataclass
@@ -153,6 +160,9 @@ class TimeTermFactory(SoBTermFactory):
     def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
         """Docstring"""
         return 1 / self.background_time_profile.pdf(events['time']) != 0
+
+    def generate_params(self) -> tuple:
+        return self.signal_time_profile.params, self.signal_time_profile.param_bounds
 
 
 @dataclasses.dataclass
@@ -224,23 +234,8 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         """Docstring"""
         return np.ones(len(events), dtype=bool)
 
-    @classmethod
-    def generate_config(cls):
-        """Docstring"""
-        config = super().generate_config()
-        config['initial_gamma'] = -2
-        config['sin_dec_bins'] = 50
-        config['log_energy_bins'] = 50
-        config['log_energy_bounds'] = (1, 8)
-        config['gamma_bins'] = 50
-        config['gamma_bounds'] = (-4.25, -0.5)
-        config['sob_spline_k'] = 3
-        config['sob_spline_s'] = 0
-        config['sob_spline_ext'] = 'raise'
-        config['energy_spline_k'] = 1
-        config['energy_spline_s'] = 0
-        config['energy_spline_ext'] = 3
-        return config
+    def generate_params(self) -> tuple:
+        return {'gamma': -2}, {'gamma': (-4, -1)}
 
     def _init_sob_map(
         self,
@@ -318,3 +313,21 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         ] for dec_bin in transposed_log_sob_maps]
 
         return splines
+
+    @classmethod
+    def generate_config(cls):
+        """Docstring"""
+        config = super().generate_config()
+        config['initial_gamma'] = -2
+        config['sin_dec_bins'] = 50
+        config['log_energy_bins'] = 50
+        config['log_energy_bounds'] = (1, 8)
+        config['gamma_bins'] = 50
+        config['gamma_bounds'] = (-4.25, -0.5)
+        config['sob_spline_k'] = 3
+        config['sob_spline_s'] = 0
+        config['sob_spline_ext'] = 'raise'
+        config['energy_spline_k'] = 1
+        config['energy_spline_s'] = 0
+        config['energy_spline_ext'] = 3
+        return config

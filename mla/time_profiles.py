@@ -133,6 +133,11 @@ class GenericProfile(configurable.Configurable):
 
     @property
     @abc.abstractmethod
+    def param_bounds(self) -> dict:
+        """Docstring"""
+
+    @property
+    @abc.abstractmethod
     def exposure(self) -> float:
         """Docstring"""
 
@@ -285,12 +290,16 @@ class GaussProfile(GenericProfile):
             self.scipy_dist = scipy.stats.norm(self._mean, self._sigma)
 
     @property
+    def param_bounds(self) -> dict:
+        return {'mean': self.range, 'sigma': (0, np.inf)}
+
+    @property
     def exposure(self) -> float:
         return np.sqrt(2 * np.pi * self._sigma**2)
 
     @property
     def range(self) -> Tuple[float, float]:
-        return np.nan, np.nan
+        return -np.inf, np.inf
 
     @property
     def param_dtype(self) -> np.dtype:
@@ -419,6 +428,10 @@ class UniformProfile(GenericProfile):
                 params['start'], params['start'] + self._range[1] - self._range[0])
         if 'length' in params:
             self._range = (self._range[0], self._range[0] + params['length'])
+
+    @property
+    def param_bounds(self) -> dict:
+        return {'start': (-np.inf, np.inf), 'length': (0, np.inf)}
 
     @property
     def exposure(self) -> float:
@@ -576,6 +589,10 @@ class CustomProfile(GenericProfile):
         """Docstring"""
         if 'offset' in params:
             self.offset = params['offset']
+
+    @property
+    def param_bounds(self) -> dict:
+        return {'offset': (-np.inf, np.inf)}
 
     @property
     def exposure(self) -> float:
