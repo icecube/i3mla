@@ -68,21 +68,21 @@ class SingleSourceTrialGenerator(configurable.Configurable):
         ra, dec = self.source.sample(len(signal))
 
         signal['ra'], signal['dec'] = uf.rotate(
-            signal['truera'],
-            signal['truedec'],
+            signal['trueRa'],
+            signal['trueDec'],
             ra,
             dec,
             signal['ra'],
             signal['dec'],
         )
 
-        signal['truera'], signal['truedec'] = uf.rotate(
-            signal['truera'],
-            signal['truedec'],
+        signal['trueRa'], signal['trueDec'] = uf.rotate(
+            signal['trueRa'],
+            signal['trueDec'],
             ra,
             dec,
-            signal['truera'],
-            signal['truedec'],
+            signal['trueRa'],
+            signal['trueDec'],
         )
 
         signal['sindec'] = np.sin(signal['dec'])

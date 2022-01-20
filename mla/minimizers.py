@@ -44,51 +44,68 @@ class GridSearchMinimizer(Minimizer):
         self, fitting_params: Optional[List[str]] = None) -> Tuple[float, np.ndarray]:
         """Docstring"""
         if fitting_params is None:
-            fitting_params = self.test_statistic.params.names
+            fitting_key_idx_map = self.test_statistic.params.key_idx_map
+            fitting_bounds = self.test_statistic.params.bounds
+        else:
+            fitting_key_idx_map = {
+                key: val for key, val in self.test_statistic.params.key_idx_map.items()
+                if key in fitting_params
+            }
+            fitting_bounds = {
+                key: val for key, val in self.test_statistic.params.bounds.items()
+                if key in fitting_params
+            }
 
         if self.test_statistic.n_kept == 0:
             return 0, np.array([(0,)], dtype=[('ns', np.float64)])
 
         grid = [
             np.linspace(lo, hi, self.config['gridsearch_points'])
-            for lo, hi in self.test_statistic.params.bounds[fitting_params]
+            for lo, hi in fitting_bounds.values()
         ]
 
         points = np.array(np.meshgrid(*grid)).T
 
         grid_ts_values = np.array([
-            self._eval_test_statistic(point, fitting_params) for point in points
+            self._eval_test_statistic(point, fitting_key_idx_map)
+            for point in points
         ])
 
-        return self._minimize(points[grid_ts_values.argmin()], fitting_params)
+        return self._minimize(
+            points[grid_ts_values.argmin()], fitting_key_idx_map, fitting_bounds)
 
-    def _eval_test_statistic(self, point: np.ndarray, fitting_params: List[str]) -> float:
+    def _eval_test_statistic(self, point: np.ndarray, fitting_key_idx_map: dict) -> float:
         """Docstring"""
-        return self.test_statistic(self._param_values(point, fitting_params))
+        return self.test_statistic(self._param_values(point, fitting_key_idx_map))
 
-    def _param_values(self, point: np.ndarray, fitting_params: List[str]) -> np.ndarray:
+    def _param_values(self, point: np.ndarray, fitting_key_idx_map: dict) -> np.ndarray:
         """Docstring"""
-        param_values = self.test_statistic.params.values.copy()
+        param_values = self.test_statistic.params.value_array.copy()
 
-        for i, j in enumerate(self.test_statistic.params.key_idx_map[fitting_params]):
+        for i, j in enumerate(fitting_key_idx_map.values()):
             param_values[j] = point[i]
 
         return param_values
 
     def _minimize(
-        self, point: np.ndarray, fitting_params: List[str]) -> Tuple[float, np.ndarray]:
+        self,
+        point: np.ndarray,
+        fitting_key_idx_map: dict,
+        fitting_bounds: dict,
+    ) -> Tuple[float, np.ndarray]:
         """Docstring"""
         result = scipy.optimize.minimize(
             self._eval_test_statistic,
             x0=point,
-            bounds=self.test_statistic.params.bounds[fitting_params],
+            args=(fitting_key_idx_map,),
+            bounds=fitting_bounds.values(),
             method=self.config['scipy_minimize_method'],
         )
 
         best_ts_value = -result.fun
-        best_param_values = self._param_values(result.x, fitting_params)
+        best_param_values = self._param_values(result.x, fitting_key_idx_map)
 
-        if 'ns' not in fitting_params:
+        if 'ns' not in fitting_key_idx_map:
             idx = self.test_statistic.params.key_idx_map['ns']
             best_param_values[idx] = self.test_statistic.best_ns
 

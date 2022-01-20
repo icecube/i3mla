@@ -75,12 +75,7 @@ class NuSourcesDataHandler(DataHandler):
     _grl_rates: np.ndarray = field(init=False, repr=False)
     _dec_spline: Spline = field(init=False, repr=False)
     _livetime: float = field(init=False, repr=False)
-
-    def __post_init__(self) -> None:
-        """Docstring"""
-        if isinstance(self.config['sin_dec_bins'], int):
-            self.config['sin_dec_bins'] = np.linspace(
-                -1, 1, 1 + self.config['sin_dec_bins'])
+    _sin_dec_bins: np.ndarray = field(init=False, repr=False)
 
     def sample_background(self, n: int) -> np.ndarray:
         """Docstring"""
@@ -138,7 +133,19 @@ class NuSourcesDataHandler(DataHandler):
     @sim.setter
     def sim(self, sim: np.ndarray) -> None:
         """Docstring"""
-        self._sim = sim.copy()
+        if self.config['dec_bandwidth (rad)'] is not None:
+            sindec_dist = np.abs(self.config['dec_position (rad)'] - sim['trueDec'])
+            close = sindec_dist < self.config['dec_bandwidth (rad)']
+            self._sim = sim[close].copy()
+
+            self._sim['ow'] /= 2 * np.pi * (np.min(
+                [np.sin(self.config['dec_position (rad)'] + self.config['dec_bandwidth (rad)']), 1]
+            ) - np.max(
+                [np.sin(self.config['dec_position (rad)'] - self.config['dec_bandwidth (rad)']), -1]
+            ))
+        else:
+            self._sim = sim.copy()
+
         if 'sindec' not in self._sim.dtype.names:
             self._sim = rf.append_fields(
                 self._sim,
@@ -155,19 +162,8 @@ class NuSourcesDataHandler(DataHandler):
             )
 
         self._sim['weight'] = self._sim['ow'] * (
-            self.sim['trueE'] / self.config['normalization_energy (GeV)']
-        )**self.config['gamma']
-
-        if self.config['dec_bandwidth'] is not None:
-            sindec_dist = np.abs(self.config['dec_position'] - self.sim['truedec'])
-            close = sindec_dist < self.config['dec_bandwidth']
-            self.sim = self.sim[close]
-
-            self._sim['ow'] /= 2 * np.pi * (np.min(
-                [np.sin(self.config['dec_position'] + self.config['dec_bandwidth']), 1]
-            ) - np.max(
-                [np.sin(self.config['dec_position'] - self.config['dec_bandwidth']), -1]
-            ))
+            self._sim['trueE'] / self.config['normalization_energy (GeV)']
+        )**self.config['assumed_gamma']
 
     @property
     def data_grl(self) -> Tuple[np.ndarray, np.ndarray]:
@@ -177,6 +173,7 @@ class NuSourcesDataHandler(DataHandler):
     @data_grl.setter
     def data_grl(self, data_grl: Tuple[np.ndarray, np.ndarray]) -> None:
         """Docstring"""
+        self._sin_dec_bins = np.linspace(-1, 1, 1 + self.config['sin_dec_bins'])
         self._data = data_grl[0].copy()
         self._grl = data_grl[1].copy()
         if 'sindec' not in self._data.dtype.names:
@@ -197,7 +194,7 @@ class NuSourcesDataHandler(DataHandler):
         self._grl_rates = self._grl['events'] / self._grl['livetime']
 
         hist, bins = np.histogram(
-            self._data['sindec'], bins=self.config['sin_dec_bins'], density=True)
+            self._data['sindec'], bins=self._sin_dec_bins, density=True)
         bin_centers = bins[:-1] + np.diff(bins) / 2
 
         self._dec_spline = Spline(
@@ -222,7 +219,10 @@ class NuSourcesDataHandler(DataHandler):
     def generate_config(cls) -> dict:
         """Docstring"""
         config = super().generate_config()
-        config['dec_bandwidth'] = np.deg2rad(3)
+        config['normalization_energy (GeV)'] = 100e3
+        config['assumed_gamma'] = -2
+        config['dec_bandwidth (rad)'] = None
+        config['dec_position (rad)'] = np.nan
         config['sin_dec_bins'] = 500
         config['dec_spline_bbox'] = [-1, 1]
         config['dec_spline_s'] = 1.5e-5

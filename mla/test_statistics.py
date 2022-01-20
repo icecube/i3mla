@@ -43,7 +43,7 @@ class LLHTestStatistic():
             parameters.
         """
         if param_values is not None:
-            self.params.values = param_values
+            self.params.value_array = param_values
             self._update_term_params()
 
         if self._n_events == 0:
@@ -52,7 +52,7 @@ class LLHTestStatistic():
         sob = self._calculate_sob()
 
         if 'ns' in self._params:
-            ns_ratio = self.params[self._params['ns']] / self._n_events
+            ns_ratio = self._params.value_array[self._params['ns']] / self._n_events
         else:
             ns_ratio = self._newton_ns_ratio(sob)
 
