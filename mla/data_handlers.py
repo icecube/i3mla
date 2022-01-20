@@ -161,15 +161,16 @@ class NuSourcesDataHandler(DataHandler):
         )**self.config['assumed_gamma']
 
         if self.config['dec_bandwidth (rad)'] is not None:
-            sindec_dist = np.abs(self.config['dec_position (rad)'] - self._full_sim['trueDec'])
+            sindec_dist = np.abs(
+                self.config['dec_position (rad)'] - self._full_sim['trueDec'])
             close = sindec_dist < self.config['dec_bandwidth (rad)']
             self._sim = self._full_sim[close].copy()
 
-            self._sim['ow'] /= 2 * np.pi * (np.min(
-                [np.sin(self.config['dec_position (rad)'] + self.config['dec_bandwidth (rad)']), 1]
-            ) - np.max(
-                [np.sin(self.config['dec_position (rad)'] - self.config['dec_bandwidth (rad)']), -1]
-            ))
+            self._sim['ow'] /= 2 * np.pi * (np.min([np.sin(
+                self.config['dec_position (rad)'] + self.config['dec_bandwidth (rad)']
+            ), 1]) - np.max([np.sin(
+                self.config['dec_position (rad)'] - self.config['dec_bandwidth (rad)']
+            ), -1]))
         else:
             self._sim = self._full_sim
 

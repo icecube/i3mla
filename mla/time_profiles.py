@@ -484,7 +484,9 @@ class CustomProfile(GenericProfile):
     _exposure: float = dataclasses.field(init=False, repr=False)
 
     def __post_init__(
-            self, pdf_func: Callable[[np.ndarray, Tuple[float, float]], np.ndarray]) -> None:
+        self,
+        pdf_func: Callable[[np.ndarray, Tuple[float, float]], np.ndarray],
+    ) -> None:
         """Constructs the time profile.
 
         Args:
