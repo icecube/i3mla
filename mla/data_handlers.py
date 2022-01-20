@@ -69,6 +69,7 @@ class NuSourcesDataHandler(DataHandler):
     data_grl: Tuple[np.ndarray, np.ndarray]
 
     _sim: np.ndarray = field(init=False, repr=False)
+    _full_sim: np.ndarray = field(init=False, repr=False)
     _data: np.ndarray = field(init=False, repr=False)
     _grl: np.ndarray = field(init=False, repr=False)
     _n_background: float = field(init=False, repr=False)
@@ -118,10 +119,10 @@ class NuSourcesDataHandler(DataHandler):
         self, gamma: float, bins: np.ndarray) -> np.ndarray:
         """Docstring"""
         return np.histogram2d(
-            self.sim['sindec'],
-            self.sim['logE'],
+            self.full_sim['sindec'],
+            self.full_sim['logE'],
             bins=bins,
-            weights=self.sim['ow'] * self.sim['trueE']**gamma,
+            weights=self.full_sim['ow'] * self.full_sim['trueE']**gamma,
             density=True,
         )[0]
 
@@ -130,13 +131,39 @@ class NuSourcesDataHandler(DataHandler):
         """Docstring"""
         return self._sim
 
+    @property
+    def full_sim(self) -> np.ndarray:
+        """Docstring"""
+        return self._full_sim
+
     @sim.setter
     def sim(self, sim: np.ndarray) -> None:
         """Docstring"""
+        self._full_sim = sim.copy()
+
+        if 'sindec' not in self._full_sim.dtype.names:
+            self._full_sim = rf.append_fields(
+                self._full_sim,
+                'sindec',
+                np.sin(self._full_sim['dec']),
+                usemask=False,
+            )
+
+        if 'weight' not in self._full_sim.dtype.names:
+            self._full_sim = rf.append_fields(
+                self._full_sim, 'weight',
+                np.zeros(len(self._full_sim)),
+                dtypes=np.float32
+            )
+
+        self._full_sim['weight'] = self._full_sim['ow'] * (
+            self._full_sim['trueE'] / self.config['normalization_energy (GeV)']
+        )**self.config['assumed_gamma']
+        
         if self.config['dec_bandwidth (rad)'] is not None:
-            sindec_dist = np.abs(self.config['dec_position (rad)'] - sim['trueDec'])
+            sindec_dist = np.abs(self.config['dec_position (rad)'] - self._full_sim['trueDec'])
             close = sindec_dist < self.config['dec_bandwidth (rad)']
-            self._sim = sim[close].copy()
+            self._sim = self._full_sim[close].copy()
 
             self._sim['ow'] /= 2 * np.pi * (np.min(
                 [np.sin(self.config['dec_position (rad)'] + self.config['dec_bandwidth (rad)']), 1]
@@ -144,26 +171,7 @@ class NuSourcesDataHandler(DataHandler):
                 [np.sin(self.config['dec_position (rad)'] - self.config['dec_bandwidth (rad)']), -1]
             ))
         else:
-            self._sim = sim.copy()
-
-        if 'sindec' not in self._sim.dtype.names:
-            self._sim = rf.append_fields(
-                self._sim,
-                'sindec',
-                np.sin(self._sim['dec']),
-                usemask=False,
-            )
-
-        if 'weight' not in self._sim.dtype.names:
-            self._sim = rf.append_fields(
-                self._sim, 'weight',
-                np.zeros(len(self._sim)),
-                dtypes=np.float32
-            )
-
-        self._sim['weight'] = self._sim['ow'] * (
-            self._sim['trueE'] / self.config['normalization_energy (GeV)']
-        )**self.config['assumed_gamma']
+            self._sim = self._full_sim
 
     @property
     def data_grl(self) -> Tuple[np.ndarray, np.ndarray]:

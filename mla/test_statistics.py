@@ -32,7 +32,11 @@ class LLHTestStatistic():
     _best_ts: float = dataclasses.field(init=False, default=0)
     _best_ns: float = dataclasses.field(init=False, default=0)
 
-    def __call__(self, param_values: Optional[np.ndarray] = None) -> float:
+    def __call__(
+        self,
+        param_values: Optional[np.ndarray] = None,
+        fitting_ns: bool = False,
+    ) -> float:
         """Evaluates the test-statistic for the given events and parameters
 
         Calculates the test-statistic using a given event model, n_signal, and
@@ -51,12 +55,13 @@ class LLHTestStatistic():
 
         sob = self._calculate_sob()
 
-        if 'ns' in self._params:
-            ns_ratio = self._params.value_array[self._params['ns']] / self._n_events
+        if fitting_ns:
+            ns_ratio = self._params['ns'] / self._n_events
         else:
             ns_ratio = self._newton_ns_ratio(sob)
 
-        llh, drop_term = self._calculate_llh(sob, ns_ratio)
+        llh = np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1)
+        drop_term = np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio))
         ts = -2 * (llh.sum() + self.n_dropped * drop_term)
 
         if ts < self._best_ts:
@@ -101,17 +106,6 @@ class LLHTestStatistic():
             ) or (x[i + 1] < x[i] and x[i] <= x[i + 1] * precision):
                 break
         return x[-1]
-
-    @staticmethod
-    def _calculate_llh(
-        sob: np.ndarray,
-        ns_ratio: float,
-    ) -> Tuple[np.ndarray, float]:
-        """Docstring"""
-        return (
-            np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1),
-            np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio)),
-        )
 
     @property
     def params(self) -> Params:
