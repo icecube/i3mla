@@ -45,7 +45,10 @@ class Params:
 
     @classmethod
     def from_array(
-        cls, named_value_array: np.ndarray, bounds: Optional[dict] = None) -> 'Params':
+        cls,
+        named_value_array: np.ndarray,
+        bounds: Optional[dict] = None,
+    ) -> 'Params':
         """Docstring"""
         value_array = rf.structured_to_unstructured(named_value_array, copy=True)[0]
         key_idx_map = {name: i for i, name in enumerate(named_value_array.dtype.names)}
@@ -53,7 +56,11 @@ class Params:
 
     @classmethod
     def _build_params(
-        cls, value_array: np.ndarray, key_idx_map: dict, bounds: Optional[dict]) -> 'Params':
+        cls,
+        value_array: np.ndarray,
+        key_idx_map: dict,
+        bounds: Optional[dict],
+    ) -> 'Params':
         """Docstring"""
         if bounds is None:
             bounds = {key: (-np.inf, np.inf) for key in key_idx_map}

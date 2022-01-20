@@ -116,7 +116,7 @@ class NuSourcesDataHandler(DataHandler):
         )[0]
 
     def build_signal_sindec_logenergy_histogram(
-        self, gamma: float, bins: np.ndarray) -> np.ndarray:
+            self, gamma: float, bins: np.ndarray) -> np.ndarray:
         """Docstring"""
         return np.histogram2d(
             self.full_sim['sindec'],
@@ -159,7 +159,7 @@ class NuSourcesDataHandler(DataHandler):
         self._full_sim['weight'] = self._full_sim['ow'] * (
             self._full_sim['trueE'] / self.config['normalization_energy (GeV)']
         )**self.config['assumed_gamma']
-        
+
         if self.config['dec_bandwidth (rad)'] is not None:
             sindec_dist = np.abs(self.config['dec_position (rad)'] - self._full_sim['trueDec'])
             close = sindec_dist < self.config['dec_bandwidth (rad)']

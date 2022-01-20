@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import List, Tuple, Optional
+from typing import List, Optional
 
 import dataclasses
 import numpy as np

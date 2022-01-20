@@ -33,7 +33,7 @@ class Minimizer(configurable.Configurable):
 
     @abc.abstractmethod
     def __call__(
-        self, fitting_params: Optional[List[str]] = None) -> Tuple[float, np.ndarray]:
+            self, fitting_params: Optional[List[str]] = None) -> Tuple[float, np.ndarray]:
         """Docstring"""
 
 
@@ -41,7 +41,7 @@ class Minimizer(configurable.Configurable):
 class GridSearchMinimizer(Minimizer):
     """Docstring"""
     def __call__(
-        self, fitting_params: Optional[List[str]] = None) -> Tuple[float, np.ndarray]:
+            self, fitting_params: Optional[List[str]] = None) -> Tuple[float, np.ndarray]:
         """Docstring"""
         if fitting_params is None:
             fitting_key_idx_map = self.test_statistic.params.key_idx_map

@@ -20,6 +20,7 @@ from . import configurable
 from .data_handlers import DataHandler
 from .sources import PointSource
 
+
 @dataclasses.dataclass
 class SingleSourceTrialGenerator(configurable.Configurable):
     """Docstring"""

@@ -24,6 +24,7 @@ import scipy.stats
 from . import configurable
 from .params import Params
 
+
 @dataclasses.dataclass
 class GenericProfile(configurable.Configurable):
     """A generic base class to standardize the methods for the time profiles.
@@ -118,7 +119,7 @@ class GenericProfile(configurable.Configurable):
 
     @abc.abstractmethod
     def inverse_transform_sample(
-        self, start_times: np.ndarray, stop_times: np.ndarray) -> np.ndarray:
+            self, start_times: np.ndarray, stop_times: np.ndarray) -> np.ndarray:
         """Docstring"""
 
     @property
@@ -262,7 +263,7 @@ class GaussProfile(GenericProfile):
         return self.scipy_dist.cdf(times)
 
     def inverse_transform_sample(
-        self, start_times: np.ndarray, stop_times: np.ndarray) -> np.ndarray:
+            self, start_times: np.ndarray, stop_times: np.ndarray) -> np.ndarray:
         """Docstring"""
         start_cdfs = self.cdf(start_times)
         stop_cdfs = self.cdf(stop_times)
@@ -483,7 +484,7 @@ class CustomProfile(GenericProfile):
     _exposure: float = dataclasses.field(init=False, repr=False)
 
     def __post_init__(
-        self, pdf_func: Callable[[np.ndarray, Tuple[float, float]], np.ndarray]) -> None:
+            self, pdf_func: Callable[[np.ndarray, Tuple[float, float]], np.ndarray]) -> None:
         """Constructs the time profile.
 
         Args:
@@ -572,7 +573,7 @@ class CustomProfile(GenericProfile):
         return self.dist.cdf(times)
 
     def inverse_transform_sample(
-        self, start_times: np.ndarray, stop_times: np.ndarray) -> np.ndarray:
+            self, start_times: np.ndarray, stop_times: np.ndarray) -> np.ndarray:
         """Docstring"""
         start_cdfs = self.cdf(start_times)
         stop_cdfs = self.cdf(stop_times)
