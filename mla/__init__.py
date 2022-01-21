@@ -1,5 +1,6 @@
 """__init__.py"""
 # flake8: noqa
+from .analysis import *
 from .configurable import *
 from .data_handlers import *
 from .minimizers import *

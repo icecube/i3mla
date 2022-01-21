@@ -26,6 +26,7 @@ class SingleSourceTrialGenerator(configurable.Configurable):
     """Docstring"""
     data_handler: DataHandler
     source: PointSource
+    _source: PointSource = dataclasses.field(init=False, repr=False)
 
     def __call__(self, n_signal: float = 0) -> np.ndarray:
         """Produces a single trial of background+signal events based on inputs.
@@ -88,6 +89,17 @@ class SingleSourceTrialGenerator(configurable.Configurable):
 
         signal['sindec'] = np.sin(signal['dec'])
         return signal
+
+    @property
+    def source(self) -> PointSource:
+        """Docstring"""
+        return self._source
+
+    @source.setter
+    def source(self, source: PointSource) -> None:
+        """Docstring"""
+        self.data_handler.dec_cut_location = source.config['dec']
+        self._source = source
 
     @classmethod
     def generate_config(cls) -> dict:
