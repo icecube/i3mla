@@ -88,10 +88,6 @@ class NuSourcesDataHandler(DataHandler):
     _sin_dec_bins: np.ndarray = field(init=False, repr=False)
     _dec_cut_location: Optional[float] = field(init=False, repr=False)
 
-    def __post_init__(self) -> None:
-        """Docstring"""
-        self._dec_cut_location = None
-
     def sample_background(self, n: int) -> np.ndarray:
         """Docstring"""
         return np.random.choice(self._data, n).copy()
@@ -178,6 +174,8 @@ class NuSourcesDataHandler(DataHandler):
 
     def _cut_sim_dec(self) -> None:
         """Docstring"""
+        if not hasattr(self, '_dec_cut_location'):
+            self._dec_cut_location = None
         if (
             self.config['dec_bandwidth (rad)'] is not None
         ) and (
