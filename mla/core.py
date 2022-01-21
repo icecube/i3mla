@@ -2,6 +2,7 @@
 
 from .configurable import Configurable
 
+
 def generate_default_config(classes: list) -> dict:
     """Docstring"""
     return {

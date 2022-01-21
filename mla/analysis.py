@@ -63,7 +63,7 @@ class SingleSourceLLHAnalysis:
     def sob_term_factories(self, sob_term_factories: List[SoBTermFactory]) -> None:
         """Docstring"""
         self._sob_term_factories = sob_term_factories
-        self._test_statistic_factory = LLHTestStatisticFactory(
+        self._test_statistic_factory = LLHTestStatisticFactory(  # pylint: disable=too-many-function-args
             self.config['LLHTestStatisticFactory'],
             self._sob_term_factories,
         )
