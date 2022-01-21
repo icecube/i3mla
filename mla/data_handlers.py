@@ -173,7 +173,7 @@ class NuSourcesDataHandler(DataHandler):
         self._full_sim['weight'] = self._full_sim['ow'] * (
             self._full_sim['trueE'] / self.config['normalization_energy (GeV)']
         )**self.config['assumed_gamma']
-    
+
         self._cut_sim_dec()
 
     def _cut_sim_dec(self) -> None:

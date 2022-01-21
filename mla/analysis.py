@@ -11,7 +11,7 @@ __status__ = 'Development'
 from typing import List, Tuple, Type
 from dataclasses import dataclass, field
 
-from . import generate_default_config
+from .core import generate_default_config
 from .data_handlers import DataHandler
 from .minimizers import Minimizer
 from .params import Params
@@ -43,7 +43,7 @@ class SingleSourceLLHAnalysis:
         trial = self._trial_generator(n_signal=n_signal)
         test_statistic = self._test_statistic_factory(params, trial)
         minimizer = self.minimizer_class(
-                self.config[self.minimizer_class.__name__], test_statistic)
+            self.config[self.minimizer_class.__name__], test_statistic)
         return minimizer(fitting_params)
 
     def generate_default_config(self) -> dict:
@@ -82,4 +82,3 @@ class SingleSourceLLHAnalysis:
             self.config['SingleSourceTrialGenerator'],
             *self._data_handler_source,
         )
-
