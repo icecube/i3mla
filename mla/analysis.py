@@ -25,9 +25,9 @@ from .trial_generators import SingleSourceTrialGenerator
 class SingleSourceLLHAnalysis:
     """Docstring"""
     config: dict
+    minimizer_class: Type[Minimizer]
     sob_term_factories: List[SoBTermFactory]
     data_handler_source: Tuple[DataHandler, PointSource]
-    minimizer_class: Type[Minimizer]
     _sob_term_factories: List[SoBTermFactory] = field(init=False, repr=False)
     _data_handler_source: Tuple[DataHandler, PointSource] = field(init=False, repr=False)
     _trial_generator: SingleSourceTrialGenerator = field(init=False, repr=False)
