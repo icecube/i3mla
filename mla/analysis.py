@@ -46,14 +46,6 @@ class SingleSourceLLHAnalysis:
             self.config[self.minimizer_class.__name__], test_statistic)
         return minimizer(fitting_params)
 
-    def generate_default_config(self) -> dict:
-        """Docstring"""
-        return generate_default_config([
-            self.minimizer_class,
-            SingleSourceTrialGenerator,
-            LLHTestStatisticFactory,
-        ])
-
     @property
     def sob_term_factories(self) -> List[SoBTermFactory]:
         """Docstring"""
@@ -82,3 +74,12 @@ class SingleSourceLLHAnalysis:
             self.config['SingleSourceTrialGenerator'],
             *self._data_handler_source,
         )
+
+    @classmethod
+    def generate_default_config(cls, minimizer_class: Type[Minimizer]) -> dict:
+        """Docstring"""
+        return generate_default_config([
+            minimizer_class,
+            SingleSourceTrialGenerator,
+            LLHTestStatisticFactory,
+        ])
