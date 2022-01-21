@@ -46,6 +46,10 @@ class SingleSourceLLHAnalysis:
             self.config[self.minimizer_class.__name__], test_statistic)
         return minimizer(fitting_params)
 
+    def generate_params(self) -> Params:
+        """Docstring"""
+        return self._test_statistic_factory.generate_params()
+
     @property
     def sob_term_factories(self) -> List[SoBTermFactory]:
         """Docstring"""
