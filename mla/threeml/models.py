@@ -212,7 +212,7 @@ class ThreeMLEventModel(
         self._reduced_sim['weight'] = self._reduced_sim['ow'] * spectrum(
             self._reduced_sim['trueE'])
 
-    def prepro_index(self, events: np.ndarray) -> np.ndarray:
+    def map_dec_energy_to_events(self, events: np.ndarray) -> np.ndarray:
         """Find the sindec index and energy index for events
 
         More function info...
