@@ -9,47 +9,52 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Tuple
-
-import abc
-import copy
-from dataclasses import dataclass
-from dataclasses import field
+import dataclasses
 
 import numpy as np
-import numpy.lib.recfunctions as rf
-from scipy.interpolate import UnivariateSpline as Spline
 
 from .. import configurable
 from .. import data_handlers
 from . import spectral
 
 
-@dataclass
-class ThreeMLDataHandler(NuSourcesDataHandler):
+@dataclasses.dataclass
+class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
     """Docstring"""
     spectrum:spectral.BaseSpectrum
 
-    _spectrum: np.spectral.BaseSpectrum = field(
+    _spectrum: np.spectral.BaseSpectrum = dataclasses.field(
         init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2))
 
     def build_signal_energy_histogram(
-        self, reduce_sim:np.ndarray , bins: np.ndarray) -> np.ndarray:
+        self, reduce_sim: np.ndarray, bins: np.ndarray) -> np.ndarray:
         """Docstring"""
         return np.histogram2d(
             reduce_sim['sindec'],
             reduce_sim['logE'],
-            bins=bins,
+            bins = bins,
             weights = reduce_sim['ow'] * self._spectrum(reduce_sim['trueE']),
             density=True,
         )[0]
 
+    def cut_reconstructed_sim(
+        self, dec: float, sampling_width: float) -> np.ndarray:
+        """Docstring"""
+        dec_dist = np.abs(
+            dec - self._full_sim['dec'])
+        close = dec_dist < sampling_width
+        return self._full_sim[close].copy()
+
+    def reweight_injection(self, spectrum:spectral.BaseSpectrum):
+        """Docstring"""
+        
+        
     @property
     def spectrum(self) -> spectral.BaseSpectrum:
         """Docstring"""
         return self._spectrum
-    
+
     @spectrum.setter
-    def spectrum(self, spectrum:spectral.BaseSpectrum) -> None:
+    def spectrum(self, spectrum: spectral.BaseSpectrum) -> None:
         """Docstring"""
         self._spectrum = spectrum
