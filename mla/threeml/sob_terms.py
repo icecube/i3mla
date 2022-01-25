@@ -15,6 +15,7 @@ import numpy as np
 from scipy.interpolate import UnivariateSpline as Spline
 
 from .. import sob_terms
+from .. import sources
 from .. import params as par
 from . import spectral
 from . import data_handlers
@@ -55,13 +56,13 @@ class ThreeMLPSEnergyTerm(sob_terms.SoBTerm):
 class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
     """Docstring"""
     data_handler: data_handlers.ThreeMLDataHandler
+    source: sources.PointSource
     _spectrum: spectral.BaseSpectrum = dataclasses.field(init=False, repr=False)
     _bg_sob: np.ndarray = dataclasses.field(init=False, repr=False)
     _reduced_reco_sim: np.ndarray = dataclasses.field(init=False, repr=False)
     _sin_dec_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _bins: np.ndarray = dataclasses.field(init=False, repr=False)
-    _energysobhist: np.ndarray = dataclasses.field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         """Docstring"""
@@ -71,7 +72,7 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
         self._log_energy_bins = np.linspace(
             *self.config['log_energy_bounds'], 1 + self.config['log_energy_bins'])
         self._reduced_reco_sim = self.data_handler.cut_reconstructed_sim(
-            self.config['PointSource']['dec'], *self.config['reco_sampling_width'])
+            self.source.location[1], *self.config['reco_sampling_width'])
         self._bins = np.array([self._sin_dec_bins, self._log_energy_bins])
 
     def __call__(
@@ -110,6 +111,15 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
         # Normalize histogram by dec band
         bg_h /= np.sum(bg_h, axis=1)[:, None]
         self._bg_sob = bg_h
+
+    def update_source(
+        self,
+        source: sources.PointSource
+    ) -> None:
+        """Docstring"""
+        self.source = source
+        self._reduced_reco_sim = self.data_handler.cut_reconstructed_sim(
+            self.source.location[1], *self.config['reco_sampling_width'])
 
     def update_spectrum(
         self,
