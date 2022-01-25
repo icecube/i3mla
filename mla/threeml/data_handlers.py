@@ -12,8 +12,8 @@ __status__ = 'Development'
 import dataclasses
 
 import numpy as np
+import numpy.lib.recfunctions as rf
 
-from .. import configurable
 from .. import data_handlers
 from . import spectral
 
@@ -21,40 +21,78 @@ from . import spectral
 @dataclasses.dataclass
 class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
     """Docstring"""
-    spectrum:spectral.BaseSpectrum
-
-    _spectrum: np.spectral.BaseSpectrum = dataclasses.field(
+    _injection_spectrum: spectral.BaseSpectrum = dataclasses.field(
         init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2))
 
     def build_signal_energy_histogram(
-        self, reduce_sim: np.ndarray, bins: np.ndarray) -> np.ndarray:
+        self,
+        reduce_sim: np.ndarray,
+        spectrum: spectral.BaseSpectrum,
+        bins: np.ndarray
+    ) -> np.ndarray:
         """Docstring"""
         return np.histogram2d(
             reduce_sim['sindec'],
             reduce_sim['logE'],
-            bins = bins,
-            weights = reduce_sim['ow'] * self._spectrum(reduce_sim['trueE']),
+            bins=bins,
+            weights=reduce_sim['ow'] * spectrum(reduce_sim['trueE']),
             density=True,
         )[0]
 
     def cut_reconstructed_sim(
-        self, dec: float, sampling_width: float) -> np.ndarray:
+        self,
+        dec: float,
+        sampling_width: float
+    ) -> np.ndarray:
         """Docstring"""
         dec_dist = np.abs(
             dec - self._full_sim['dec'])
         close = dec_dist < sampling_width
         return self._full_sim[close].copy()
 
-    def reweight_injection(self, spectrum:spectral.BaseSpectrum):
+    def reweight_injection(self, spectrum: spectral.BaseSpectrum):
         """Docstring"""
-        
-        
-    @property
-    def spectrum(self) -> spectral.BaseSpectrum:
-        """Docstring"""
-        return self._spectrum
+        self.config['inject_spectrum'] = spectrum
+        self._full_sim['weight'] = self._full_sim['ow'] * (
+            self.config['inject_spectrum'](self._full_sim['trueE'])
+        )
 
-    @spectrum.setter
-    def spectrum(self, spectrum: spectral.BaseSpectrum) -> None:
+        self._cut_sim_dec()
+
+    @property
+    def sim(self) -> np.ndarray:
         """Docstring"""
-        self._spectrum = spectrum
+        return self._sim
+
+    @sim.setter
+    def sim(self, sim: np.ndarray) -> None:
+        """Docstring"""
+        self._full_sim = sim.copy()
+
+        if 'sindec' not in self._full_sim.dtype.names:
+            self._full_sim = rf.append_fields(
+                self._full_sim,
+                'sindec',
+                np.sin(self._full_sim['dec']),
+                usemask=False,
+            )
+
+        if 'weight' not in self._full_sim.dtype.names:
+            self._full_sim = rf.append_fields(
+                self._full_sim, 'weight',
+                np.zeros(len(self._full_sim)),
+                dtypes=np.float32
+            )
+
+        self._full_sim['weight'] = self._full_sim['ow'] * (
+            self.config['inject_spectrum'](self._full_sim['trueE'])
+        )
+
+        self._cut_sim_dec()
+
+    @classmethod
+    def generate_config(cls) -> dict:
+        """Docstring"""
+        config = super().generate_config()
+        config['inject_spectrum'] = spectral.PowerLaw(1e3, 1e-14, -2)
+        return config
