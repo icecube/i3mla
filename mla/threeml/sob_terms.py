@@ -179,13 +179,5 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
         """Docstring"""
         config = super().generate_config()
         config['assumed_spectrum'] = spectral.PowerLaw(1e3, 1e-14, -2)
-        config['sin_dec_bins'] = 50
-        config['log_energy_bins'] = 50
-        config['log_energy_bounds'] = (1, 8)
-        config['sob_spline_k'] = 3
-        config['sob_spline_s'] = 0
-        config['sob_spline_ext'] = 'raise'
-        config['energy_spline_k'] = 1
-        config['energy_spline_s'] = 0
-        config['energy_spline_ext'] = 3
+        config['reco_sampling_width'] = np.deg2rad(3)
         return config
