@@ -31,11 +31,11 @@ class DataHandler(configurable.Configurable):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def sample_background(self, n: int) -> np.ndarray:
+    def sample_background(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """Docstring"""
 
     @abc.abstractmethod
-    def sample_signal(self, n: int) -> np.ndarray:
+    def sample_signal(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """Docstring"""
 
     @abc.abstractmethod
@@ -88,18 +88,18 @@ class NuSourcesDataHandler(DataHandler):
     _sin_dec_bins: np.ndarray = field(init=False, repr=False)
     _dec_cut_location: Optional[float] = field(init=False, repr=False)
 
-    def sample_background(self, n: int) -> np.ndarray:
+    def sample_background(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """Docstring"""
-        return np.random.choice(self._data, n).copy()
+        return rng.choice(self._data, n)
 
-    def sample_signal(self, n: int) -> np.ndarray:
+    def sample_signal(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """Docstring"""
-        return np.random.choice(
+        return rng.choice(
             self.sim,
             n,
             p=self.sim['weight'] / self.sim['weight'].sum(),
             replace=False,
-        ).copy()
+        )
 
     def calculate_n_signal(self, time_integrated_flux: float) -> float:
         """Docstring"""
@@ -367,14 +367,14 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
 
         return contained_livetime
 
-    def sample_background(self, n: int) -> np.ndarray:
+    def sample_background(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """Docstring"""
-        events = super().sample_background(n)
+        events = super().sample_background(n, rng)
         return self._randomize_times(events, self._background_time_profile)
 
-    def sample_signal(self, n: int) -> np.ndarray:
+    def sample_signal(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """Docstring"""
-        events = super().sample_signal(n)
+        events = super().sample_signal(n, rng)
         return self._randomize_times(events, self._signal_time_profile)
 
     def _randomize_times(
