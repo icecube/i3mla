@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import dataclasses
 import numpy as np
@@ -22,7 +22,7 @@ from .params import Params
 @dataclasses.dataclass
 class LLHTestStatistic():
     """Docstring"""
-    _sob_terms: List[SoBTerm]
+    sob_terms: Dict[str, SoBTerm]
     _n_events: int
     _n_kept: int
     _events: np.ndarray
@@ -73,7 +73,7 @@ class LLHTestStatistic():
     def _calculate_sob(self) -> np.ndarray:
         """Docstring"""
         sob = np.ones(self.n_kept)
-        for term in self._sob_terms:
+        for _, term in self.sob_terms.items():
             sob *= term.sob.reshape((-1,))
         return sob
 
@@ -125,7 +125,7 @@ class LLHTestStatistic():
 
     def _update_term_params(self) -> None:
         """Docstring"""
-        for term in self._sob_terms:
+        for _, term in self.sob_terms.items():
             term.params = self.params
 
     @property
@@ -165,13 +165,13 @@ class LLHTestStatisticFactory(configurable.Configurable):
         pruned_events = np.empty(n_kept, dtype=events.dtype)
         pruned_events[:] = events[drop_mask]
 
-        sob_terms = [
-            term_factory(params, pruned_events)
+        sob_terms = {
+            term_factory.config['name']: term_factory(params, pruned_events)
             for term_factory in self.sob_term_factories
-        ]
+        }
 
         return LLHTestStatistic(
-            _sob_terms=sob_terms,
+            sob_terms=sob_terms,
             _n_events=len(events),
             _n_kept=n_kept,
             _events=pruned_events,
