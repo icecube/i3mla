@@ -30,6 +30,7 @@ from .time_profiles import GenericProfile
 class SoBTerm:
     """Docstring"""
     __metaclass__ = abc.ABCMeta
+    name: str
     _params: Params
     _sob: np.ndarray
 
@@ -66,6 +67,11 @@ class SoBTermFactory(configurable.Configurable):
     def generate_params(self) -> tuple:
         """Docstring"""
 
+    @classmethod
+    def generate_config(cls) -> dict:
+        """Docstring"""
+        return {'name': cls.__name__.replace('Factory', '')}
+
 
 @dataclasses.dataclass
 class SpatialTerm(SoBTerm):
@@ -97,7 +103,11 @@ class SpatialTermFactory(SoBTermFactory):
         """Docstring"""
         sob_spatial = self.source.spatial_pdf(events)
         sob_spatial /= self.data_handler.evaluate_background_sindec_pdf(events)
-        return SpatialTerm(_params=params, _sob=sob_spatial)
+        return SpatialTerm(
+            name=self.config['name'],
+            _params=params,
+            _sob=sob_spatial,
+        )
 
     def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
         """Docstring"""
@@ -151,6 +161,7 @@ class TimeTermFactory(SoBTermFactory):
             )
 
         return TimeTerm(
+            name=self.config['name'],
             _params=params,
             _sob=sob_bg,
             _times=times,
@@ -223,6 +234,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         splines = [self._spline_map[i][j] for i, j in spline_idxs.T]
 
         return SplineMapEnergyTerm(
+            name=self.config['name'],
             _params=params,
             _sob=np.empty(1),
             gamma=self.config['initial_gamma'],

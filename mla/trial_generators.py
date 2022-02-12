@@ -37,18 +37,16 @@ class SingleSourceTrialGenerator(configurable.Configurable):
         Returns:
             An array of combined signal and background events.
         """
-        n_background = np.random.poisson(self.data_handler.n_background)
+        rng = np.random.default_rng(self.config['random_seed'])
+        n_background = rng.poisson(self.data_handler.n_background)
         if not self.config['fixed_ns']:
-            n_signal = np.random.poisson(self.data_handler.calculate_n_signal(n_signal))
+            n_signal = rng.poisson(self.data_handler.calculate_n_signal(n_signal))
 
-        if self.config['random_seed'] is not None:
-            np.random.seed(self.config['random_seed'])
-
-        background = self.data_handler.sample_background(n_background)
-        background['ra'] = np.random.uniform(0, 2 * np.pi, len(background))
+        background = self.data_handler.sample_background(n_background, rng)
+        background['ra'] = rng.uniform(0, 2 * np.pi, len(background))
 
         if n_signal > 0:
-            signal = self.data_handler.sample_signal(int(n_signal))
+            signal = self.data_handler.sample_signal(int(n_signal), rng)
             signal = self._rotate_signal(signal)
         else:
             signal = np.empty(0, dtype=background.dtype)
