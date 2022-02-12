@@ -111,7 +111,7 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
         )
 
         return ThreeMLPSEnergyTerm(
-            name=self.config['name'],
+            name=self.config["name"],
             _params=params,
             _sob=np.empty(1),
             _sin_dec_idx=sin_dec_idx,
