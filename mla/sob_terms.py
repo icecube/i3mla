@@ -281,13 +281,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
             good_bins, good_vals = bin_centers[good], ratio[i][good]
 
             # Do a linear interpolation across the energy range
-            spline = Spline(
-                good_bins,
-                good_vals,
-                k=self.config['energy_spline_k'],
-                s=self.config['energy_spline_s'],
-                ext=self.config['energy_spline_ext'],
-            )
+            spline = Spline(good_bins, good_vals, **self.config['energy_spline_kwargs'])
 
             # And store the interpolated values
             ratio[i] = spline(bin_centers)
@@ -314,13 +308,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         transposed_log_sob_maps = np.log(sob_maps.transpose(1, 2, 0))
 
         splines = [[
-            Spline(
-                self._gamma_bins,
-                log_ratios,
-                k=self.config['sob_spline_k'],
-                s=self.config['sob_spline_s'],
-                ext=self.config['sob_spline_ext'],
-            )
+            Spline(self._gamma_bins, log_ratios, **self.config['sob_spline_kwargs'])
             for log_ratios in dec_bin
         ] for dec_bin in transposed_log_sob_maps]
 
@@ -336,10 +324,14 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         config['log_energy_bounds'] = (1, 8)
         config['gamma_bins'] = 50
         config['gamma_bounds'] = (-4.25, -0.5)
-        config['sob_spline_k'] = 3
-        config['sob_spline_s'] = 0
-        config['sob_spline_ext'] = 'raise'
-        config['energy_spline_k'] = 1
-        config['energy_spline_s'] = 0
-        config['energy_spline_ext'] = 3
+        config['sob_spline_kwargs'] = {
+            'k': 3,
+            's': 0,
+            'ext': 'raise',
+        }
+        config['energy_spline_kwargs'] = {
+            'k': 1,
+            's': 0,
+            'ext': 3,
+        }
         return config
