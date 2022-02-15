@@ -206,11 +206,11 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
     def generate_config(cls):
         """Docstring"""
         config = super().generate_config()
-        config['sin_dec_bins'] = 50
-        config['log_energy_bins'] = 50
-        config['log_energy_bounds'] = (1, 8)
-        config['energy_spline_k'] = 1
-        config['energy_spline_s'] = 0
-        config['energy_spline_ext'] = 3
+        config["sin_dec_bins"] = 50
+        config["log_energy_bins"] = 50
+        config["log_energy_bounds"] = (1, 8)
+        config["energy_spline_k"] = 1
+        config["energy_spline_s"] = 0
+        config["energy_spline_ext"] = 3
         return config
 
