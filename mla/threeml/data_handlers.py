@@ -70,8 +70,16 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
         """Docstring"""
         self._reduced_reco_sim = reduced_reco_sim.copy()
 
+    @property
+    def injection_spectrum(self) -> spectral.BaseSpectrum:
+        """Docstring"""
+        return self.injection_spectrum
+
     @injection_spectrum.setter
-    def injection_spectrum(self, injection_spectrum: spectral.BaseSpectrum):
+    def injection_spectrum(
+        self,
+        injection_spectrum: spectral.BaseSpectrum
+    ) -> None:
         """Docstring"""
         self.injection_spectrum = injection_spectrum
         if 'weight' not in self._full_sim.dtype.names:
