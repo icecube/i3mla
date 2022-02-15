@@ -60,8 +60,11 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
 
     data_handler: data_handlers.ThreeMLDataHandler
     source: sources.PointSource
-    spectrum: spectral.BaseSpectrum = spectral.PowerLaw(1e3, 1e-14, -2)
-    _spectrum: spectral.BaseSpectrum = dataclasses.field(init=False, repr=False)
+    spectrum: spectral.BaseSpectrum
+    _source: sources.PointSource = dataclasses.field(
+        init=False, repr=False)
+    _spectrum: spectral.BaseSpectrum = dataclasses.field(
+        init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2))
     _bg_sob: np.ndarray = dataclasses.field(init=False, repr=False)
     _sin_dec_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)
@@ -69,7 +72,6 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
 
     def __post_init__(self) -> None:
         """Docstring"""
-        self._init_bg_sob_map()
         self._sin_dec_bins = np.linspace(
             -1, 1, 1 + self.config["sin_dec_bins"]
         )
@@ -84,6 +86,7 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
             )
         )
         self._bins = np.array([self._sin_dec_bins, self._log_energy_bins])
+        self._init_bg_sob_map()
 
     def __call__(
         self, params: par.Params, events: np.ndarray
@@ -132,12 +135,12 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
     @property
     def source(self) -> sources.PointSource:
         """Docstring"""
-        return self.source
+        return self._source
 
     @source.setter
     def source(self, source: sources.PointSource) -> None:
         """Docstring"""
-        self.source = source
+        self._source = source
         self.data_handler.reduced_reco_sim = (
             self.data_handler.cut_reconstructed_sim(
                 self.source.location[1],
@@ -194,4 +197,20 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
     @spectrum.setter
     def spectrum(self, spectrum: spectral.BaseSpectrum) -> None:
         """Docstring"""
+        if isinstance(spectrum, property):
+            # initial value not specified, use default
+            spectrum = ThreeMLPSEnergyTermFactory._spectrum
         self._spectrum = spectrum
+
+    @classmethod
+    def generate_config(cls):
+        """Docstring"""
+        config = super().generate_config()
+        config['sin_dec_bins'] = 50
+        config['log_energy_bins'] = 50
+        config['log_energy_bounds'] = (1, 8)
+        config['energy_spline_k'] = 1
+        config['energy_spline_s'] = 0
+        config['energy_spline_ext'] = 3
+        return config
+

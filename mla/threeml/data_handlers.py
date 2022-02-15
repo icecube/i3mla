@@ -82,7 +82,7 @@ class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
         inject_spectrum: spectral.BaseSpectrum
     ) -> None:
         """Docstring"""
-        if isinstance(inject_spectrum,property):
+        if isinstance(inject_spectrum, property):
             # initial value not specified, use default
             inject_spectrum = ThreeMLDataHandler._injection_spectrum
         self._injection_spectrum = inject_spectrum
