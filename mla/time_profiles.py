@@ -179,12 +179,11 @@ class GaussProfile(GenericProfile):
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
     """
-    _param_dtype: ClassVar[np.dtype] = np.dtype(
-        [('mean', np.float32), ('sigma', np.float32)])
     scipy_dist: scipy.stats.distributions.rv_frozen = dataclasses.field(init=False)
     _mean: float = dataclasses.field(init=False, repr=False)
     _sigma: float = dataclasses.field(init=False, repr=False)
-    _param_dtype: np.dtype = dataclasses.field(init=False, repr=False)
+    _param_dtype: ClassVar[np.dtype] = np.dtype(
+        [('mean', np.float32), ('sigma', np.float32)])
 
     def __post_init__(self) -> None:
         """Initializes the time profile."""
@@ -331,10 +330,9 @@ class UniformProfile(GenericProfile):
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
     """
+    _range: Tuple[float, float] = dataclasses.field(init=False, repr=False)
     _param_dtype: ClassVar[np.dtype] = np.dtype(
         [('start', np.float32), ('length', np.float32)])
-    _range: Tuple[float, float] = dataclasses.field(init=False, repr=False)
-    _param_dtype: np.dtype = dataclasses.field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         """Constructs the time profile."""
@@ -477,20 +475,26 @@ class CustomProfile(GenericProfile):
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
     """
-    _param_dtype: ClassVar[np.dtype] = np.dtype([('offset', np.float32)])
-    pdf_func: dataclasses.InitVar[Callable[[np.ndarray, Tuple[float, float]], np.ndarray]]
-    dist: scipy.stats.rv_histogram = dataclasses.field(init=False, repr=False)
+    dist: Callable[[np.ndarray, Tuple[float, float]], np.ndarray]
+    _dist: scipy.stats.rv_histogram = dataclasses.field(init=False, repr=False)
     _offset: float = dataclasses.field(init=False, repr=False)
     _exposure: float = dataclasses.field(init=False, repr=False)
+    _param_dtype: ClassVar[np.dtype] = np.dtype([('offset', np.float32)])
 
-    def __post_init__(
+    @property
+    def dist(self) -> scipy.stats.rv_histogram:
+        """Docstring"""
+        return self._dist
+
+    @dist.setter
+    def dist(
         self,
-        pdf_func: Callable[[np.ndarray, Tuple[float, float]], np.ndarray],
+        dist: Callable[[np.ndarray, Tuple[float, float]], np.ndarray],
     ) -> None:
         """Constructs the time profile.
 
         Args:
-            pdf_func:
+            dist:
         """
         self._offset = self.config['offset']
 
@@ -502,14 +506,14 @@ class CustomProfile(GenericProfile):
 
         bin_widths = np.diff(bin_edges)
         bin_centers = bin_edges[:-1] + bin_widths
-        hist = pdf_func(bin_centers, tuple(self.config['range']))
+        hist = dist(bin_centers, tuple(self.config['range']))
 
         area_under_hist = np.sum(hist * bin_widths)
         hist *= 1 / area_under_hist
         self._exposure = 1 / np.max(hist)
         hist *= bin_widths
 
-        self.dist = scipy.stats.rv_histogram((hist, bin_edges))
+        self._dist = scipy.stats.rv_histogram((hist, bin_edges))
 
     def pdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the probability density for each time.
