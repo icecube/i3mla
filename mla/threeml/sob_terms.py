@@ -208,9 +208,9 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
         config["log_energy_bins"] = 50
         config["log_energy_bounds"] = (1, 8)
         config['energy_spline_kwargs'] = {
-            'k': 1,
-            's': 0,
-            'ext': 3,
+            "k": 1,
+            "s": 0,
+            "ext": 3,
         }
         return config
 
