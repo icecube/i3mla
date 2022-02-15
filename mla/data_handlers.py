@@ -288,9 +288,9 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
         start, stop = profile.range
         return_stop_contained = True
 
-        if self.config['outside_time_profile'] is not None:
+        if self.config['outside_time_profile (days)'] is not None:
             stop = start
-            start -= self.config['outside_time_profile']
+            start -= self.config['outside_time_profile (days)']
             return_stop_contained = False
 
         background_run_mask = self._contained_run_mask(
