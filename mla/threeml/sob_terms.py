@@ -176,7 +176,7 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
             spline = Spline(
                 good_bins,
                 good_vals,
-                **self.config['energy_spline_kwargs']
+                **self.config["energy_spline_kwargs"]
             )
 
             # And store the interpolated values
@@ -207,10 +207,9 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
         config["sin_dec_bins"] = 50
         config["log_energy_bins"] = 50
         config["log_energy_bounds"] = (1, 8)
-        config['energy_spline_kwargs'] = {
+        config["energy_spline_kwargs"] = {
             "k": 1,
             "s": 0,
             "ext": 3,
         }
         return config
-
