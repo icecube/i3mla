@@ -283,6 +283,7 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
         self._n_background = background_grl['events'].sum()
         self._n_background /= background_grl['livetime'].sum()
         self._n_background *= self._contained_livetime(*profile.range, background_grl)
+        self._background_time_profile = copy.deepcopy(profile)
 
     @property
     def signal_time_profile(self) -> GenericProfile:
