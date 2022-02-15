@@ -23,13 +23,13 @@ class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
     """Docstring"""
     injection_spectrum: spectral.BaseSpectrum
     _injection_spectrum: spectral.BaseSpectrum = dataclasses.field(
-        init=False, repr=False,default=spectral.PowerLaw(1e3, 1e-14, -2))
+        init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2))
     _reduced_reco_sim: np.ndarray = dataclasses.field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         """Docstring"""
         self._reduced_reco_sim = self.cut_reconstructed_sim(
-            self.dec_cut_location, self.config['reco_sampling_width'])
+            self.config['dec_cut_location'], self.config['reco_sampling_width'])
 
     def build_signal_energy_histogram(
         self,
@@ -82,7 +82,7 @@ class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
         inject_spectrum: spectral.BaseSpectrum
     ) -> None:
         """Docstring"""
-        if type(inject_spectrum) is property:
+        if isinstance(inject_spectrum,property):
             # initial value not specified, use default
             inject_spectrum = ThreeMLDataHandler._injection_spectrum
         self._injection_spectrum = inject_spectrum
