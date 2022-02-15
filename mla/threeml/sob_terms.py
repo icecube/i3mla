@@ -61,6 +61,7 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
     data_handler: data_handlers.ThreeMLDataHandler
     source: sources.PointSource
     spectrum: spectral.BaseSpectrum = spectral.PowerLaw(1e3, 1e-14, -2)
+    _spectrum: spectral.BaseSpectrum = dataclasses.field(init=False, repr=False)
     _bg_sob: np.ndarray = dataclasses.field(init=False, repr=False)
     _sin_dec_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)

@@ -19,10 +19,11 @@ from . import spectral
 
 
 @dataclasses.dataclass
-class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
+class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
     """Docstring"""
-    injection_spectrum: spectral.BaseSpectrum = spectral.PowerLaw(
-        1e3, 1e-14, -2)
+    injection_spectrum: spectral.BaseSpectrum
+    _injection_spectrum: spectral.BaseSpectrum = dataclasses.field(
+        init=False, repr=False,default=spectral.PowerLaw(1e3, 1e-14, -2))
     _reduced_reco_sim: np.ndarray = dataclasses.field(init=False, repr=False)
 
     def __post_init__(self) -> None:
@@ -73,15 +74,18 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
     @property
     def injection_spectrum(self) -> spectral.BaseSpectrum:
         """Docstring"""
-        return self.injection_spectrum
+        return self._injection_spectrum
 
     @injection_spectrum.setter
     def injection_spectrum(
         self,
-        injection_spectrum: spectral.BaseSpectrum
+        inject_spectrum: spectral.BaseSpectrum
     ) -> None:
         """Docstring"""
-        self.injection_spectrum = injection_spectrum
+        if type(inject_spectrum) is property:
+            # initial value not specified, use default
+            inject_spectrum = ThreeMLDataHandler._injection_spectrum
+        self._injection_spectrum = inject_spectrum
         if 'weight' not in self._full_sim.dtype.names:
             self._full_sim = rf.append_fields(
                 self._full_sim, 'weight',
@@ -90,7 +94,7 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
             )
 
         self._full_sim['weight'] = self._full_sim['ow'] * (
-            self.injection_spectrum(self._full_sim['trueE'])
+            inject_spectrum(self._full_sim['trueE'])
         )
 
         self._cut_sim_dec()
