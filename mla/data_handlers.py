@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Optional, Tuple
+from typing import Tuple
 
 import abc
 import copy
@@ -60,16 +60,6 @@ class DataHandler(configurable.Configurable):
     def n_background(self) -> float:
         """Docstring"""
 
-    @property
-    @abc.abstractmethod
-    def dec_cut_location(self) -> float:
-        """Docstring"""
-
-    @dec_cut_location.setter
-    @abc.abstractmethod
-    def dec_cut_location(self, dec: float) -> None:
-        """Docstring"""
-
 
 @dataclass
 class NuSourcesDataHandler(DataHandler):
@@ -86,7 +76,6 @@ class NuSourcesDataHandler(DataHandler):
     _dec_spline: Spline = field(init=False, repr=False)
     _livetime: float = field(init=False, repr=False)
     _sin_dec_bins: np.ndarray = field(init=False, repr=False)
-    _dec_cut_location: Optional[float] = field(init=False, repr=False)
 
     def sample_background(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """Docstring"""
@@ -174,22 +163,20 @@ class NuSourcesDataHandler(DataHandler):
 
     def _cut_sim_dec(self) -> None:
         """Docstring"""
-        if not hasattr(self, '_dec_cut_location'):
-            self._dec_cut_location = None
         if (
             self.config['dec_bandwidth (rad)'] is not None
         ) and (
-            self._dec_cut_location is not None
+            self.config['dec_cut_location'] is not None
         ):
             sindec_dist = np.abs(
-                self._dec_cut_location - self._full_sim['trueDec'])
+                self.config['dec_cut_location'] - self._full_sim['trueDec'])
             close = sindec_dist < self.config['dec_bandwidth (rad)']
             self._sim = self._full_sim[close].copy()
 
             self._sim['ow'] /= 2 * np.pi * (np.min([np.sin(
-                self._dec_cut_location + self.config['dec_bandwidth (rad)']
+                self.config['dec_cut_location'] + self.config['dec_bandwidth (rad)']
             ), 1]) - np.max([np.sin(
-                self._dec_cut_location - self.config['dec_bandwidth (rad)']
+                self.config['dec_cut_location'] - self.config['dec_bandwidth (rad)']
             ), -1]))
         else:
             self._sim = self._full_sim
@@ -244,21 +231,13 @@ class NuSourcesDataHandler(DataHandler):
         """Docstring"""
         return self._n_background
 
-    @property
-    def dec_cut_location(self) -> Optional[float]:
-        return self._dec_cut_location
-
-    @dec_cut_location.setter
-    def dec_cut_location(self, dec: Optional[float]) -> None:
-        self._dec_cut_location = dec
-        self._cut_sim_dec()
-
     @classmethod
     def generate_config(cls) -> dict:
         """Docstring"""
         config = super().generate_config()
         config['normalization_energy (GeV)'] = 100e3
         config['assumed_gamma'] = -2
+        config['dec_cut_location'] = None
         config['dec_bandwidth (rad)'] = None
         config['sin_dec_bins'] = 500
         config['dec_spline_bbox'] = [-1, 1]
