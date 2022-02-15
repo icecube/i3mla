@@ -213,13 +213,7 @@ class NuSourcesDataHandler(DataHandler):
             self._data['sindec'], bins=self._sin_dec_bins, density=True)
         bin_centers = bins[:-1] + np.diff(bins) / 2
 
-        self._dec_spline = Spline(
-            bin_centers,
-            hist,
-            bbox=self.config['dec_spline_bbox'],
-            s=self.config['dec_spline_s'],
-            ext=self.config['dec_spline_ext'],
-        )
+        self._dec_spline = Spline(bin_centers, hist, **self.config['dec_spline_kwargs'])
 
     @property
     def livetime(self) -> float:
@@ -240,9 +234,11 @@ class NuSourcesDataHandler(DataHandler):
         config['dec_cut_location'] = None
         config['dec_bandwidth (rad)'] = None
         config['sin_dec_bins'] = 500
-        config['dec_spline_bbox'] = [-1, 1]
-        config['dec_spline_s'] = 1.5e-5
-        config['dec_spline_ext'] = 3
+        config['dec_spline_kwargs'] = {
+            'bbox': [-1, 1],
+            's': 1.5e-5,
+            'ext': 3,
+        }
         return config
 
 
@@ -287,6 +283,7 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
         self._n_background = background_grl['events'].sum()
         self._n_background /= background_grl['livetime'].sum()
         self._n_background *= self._contained_livetime(*profile.range, background_grl)
+        self._background_time_profile = copy.deepcopy(profile)
 
     @property
     def signal_time_profile(self) -> GenericProfile:
