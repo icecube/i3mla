@@ -116,10 +116,11 @@ class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
                 np.sin(self._full_sim['dec']),
                 usemask=False,
             )
+        self._cut_sim_dec()
 
     @classmethod
     def generate_config(cls):
         """Docstring"""
         config = super().generate_config()
-        config['reco_sampling_width'] = np.deg2rad(3)
+        config['reco_sampling_width'] = np.deg2rad(5)
         return config

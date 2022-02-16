@@ -158,7 +158,7 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
         sig_h = self.data_handler.build_signal_energy_histogram(
             self.spectrum, self._bins
         )
-        bin_centers = self._bins[:-1] + np.diff(self._bins) / 2
+        bin_centers = self._log_energy_bins[:-1] + np.diff(self._log_energy_bins) / 2
         # Normalize histogram by dec band
         sig_h /= np.sum(sig_h, axis=1)[:, None]
 
@@ -171,16 +171,20 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
             # We explicitly want to avoid NaNs and infinities
             good = np.isfinite(ratio[i]) & (ratio[i] > 0)
             good_bins, good_vals = bin_centers[good], ratio[i][good]
+            if len(good_bins) > 1:
+                # Do a linear interpolation across the energy range
+                spline = Spline(
+                    good_bins,
+                    good_vals,
+                    **self.config["energy_spline_kwargs"]
+                )
 
-            # Do a linear interpolation across the energy range
-            spline = Spline(
-                good_bins,
-                good_vals,
-                **self.config["energy_spline_kwargs"]
-            )
-
-            # And store the interpolated values
-            ratio[i] = spline(bin_centers)
+                # And store the interpolated values
+                ratio[i] = spline(bin_centers)
+            elif len(good_bins) == 1:
+                ratio[i] = good_vals
+            else:
+                ratio[i] = 0
         return ratio
 
     def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
