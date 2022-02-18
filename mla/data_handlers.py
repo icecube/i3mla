@@ -113,6 +113,20 @@ class NuSourcesDataHandler(DataHandler):
             bins=bins,
             density=True,
         )[0]
+        
+    def build_mcbackground_sindec_logenergy_histogram(
+        self,
+        bins: np.ndarray,
+        mcbkgname: str,
+    ) -> np.ndarray:
+        """Docstring"""
+        return np.histogram2d(
+            self._full_sim['sindec'],
+            self._full_sim['logE'],
+            bins=bins,
+            weights=self._full_sim[mcbkgname],
+            density=True,
+        )[0]
 
     def build_signal_sindec_logenergy_histogram(
             self, gamma: float, bins: np.ndarray) -> np.ndarray:

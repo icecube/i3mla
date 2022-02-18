@@ -35,7 +35,6 @@ class ThreeMLPSEnergyTerm(sob_terms.SoBTerm):
         spectrum: spectral.BaseSpectrum,
     ) -> None:
         """Docstring"""
-        factory.spectrum = spectrum
         self._energysobhist = factory.cal_sob_map()
 
     @property
@@ -125,9 +124,16 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
 
     def _init_bg_sob_map(self) -> np.ndarray:
         """Docstring"""
-        bg_h = self.data_handler.build_background_sindec_logenergy_histogram(
-            self._bins
-        )
+        if self.config["mc_bkgweight"] is None:
+            bg_h = self.data_handler.build_background_sindec_logenergy_histogram(
+                self._bins
+            )
+        else:
+            bg_h = self.data_handler.build_mcbackground_sindec_logenergy_histogram(
+                self._bins,
+                self.config["mc_bkgweight"]
+            )
+            print("using mc background")
         # Normalize histogram by dec band
         bg_h /= np.sum(bg_h, axis=1)[:, None]
         self._bg_sob = bg_h
@@ -216,4 +222,5 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
             "s": 0,
             "ext": 3,
         }
+        config["mc_bkgweight"] = None
         return config
