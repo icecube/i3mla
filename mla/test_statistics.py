@@ -105,7 +105,7 @@ class LLHTestStatistic():
                 x[i] < x[i + 1] and x[i + 1] <= x[i] * precision
             ) or (x[i + 1] < x[i] and x[i] <= x[i + 1] * precision):
                 break
-        return x[-1]
+        return x[i+1]
 
     @property
     def params(self) -> Params:
