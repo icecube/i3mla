@@ -113,7 +113,7 @@ class NuSourcesDataHandler(DataHandler):
             bins=bins,
             density=True,
         )[0]
-        
+
     def build_mcbackground_sindec_logenergy_histogram(
         self,
         bins: np.ndarray,

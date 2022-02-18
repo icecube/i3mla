@@ -31,8 +31,7 @@ class ThreeMLPSEnergyTerm(sob_terms.SoBTerm):
 
     def update_sob_hist(
         self,
-        factory: sob_terms.SoBTermFactory,
-        spectrum: spectral.BaseSpectrum,
+        factory: sob_terms.SoBTermFactory
     ) -> None:
         """Docstring"""
         self._energysobhist = factory.cal_sob_map()
