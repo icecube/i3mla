@@ -98,15 +98,9 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
         )
 
         # Get the bin that each event belongs to
-        try:
-            sin_dec_idx = (
-                np.searchsorted(self._sin_dec_bins[:-1], events["sindec"]) - 1
-            )
-        except ValueError:
-            sin_dec_idx = (
-                np.searchsorted(self._sin_dec_bins[:-1], np.sin(events["dec"]))
-                - 1
-            )
+        sin_dec_idx = (
+            np.searchsorted(self._sin_dec_bins[:-1], events["sindec"]) - 1
+        )
 
         log_energy_idx = (
             np.searchsorted(self._log_energy_bins[:-1], events["logE"]) - 1
