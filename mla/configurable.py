@@ -11,6 +11,7 @@ __status__ = 'Development'
 
 import dataclasses
 
+
 @dataclasses.dataclass
 class Configurable:
     """Docstring"""
