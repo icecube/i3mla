@@ -116,6 +116,13 @@ class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
                 np.sin(self._full_sim['dec']),
                 usemask=False,
             )
+        if 'weight' not in self._full_sim.dtype.names:
+            self._full_sim = rf.append_fields(
+                self._full_sim, 'weight',
+                np.zeros(len(self._full_sim)),
+                dtypes=np.float32
+            )
+        
         self._cut_sim_dec()
 
     @classmethod
