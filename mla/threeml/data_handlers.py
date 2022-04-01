@@ -122,7 +122,7 @@ class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
                 np.zeros(len(self._full_sim)),
                 dtypes=np.float32
             )
-        
+
         self._cut_sim_dec()
 
     @classmethod
