@@ -81,7 +81,7 @@ class GaussianExtendedSource(PointSource):
         mean = self.location
         x = np.random.normal(mean[0], self.sigma, size=size)
         y = np.random.normal(mean[1], self.sigma, size=size)
-        return np.array([x,y])
+        return np.array([x, y])
 
     @property
     def sigma(self) -> float:
