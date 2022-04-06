@@ -54,11 +54,11 @@ class SingleSourceLLHAnalysis:
     def test_statistic_factory(self) -> LLHTestStatisticFactory:
         """Docstring"""
         return self._test_statistic_factory
-    
+
     @property
     def trial_generator(self) -> SingleSourceTrialGenerator:
         """Docstring"""
-        return self._trial_generator    
+        return self._trial_generator
 
     @property
     def sob_term_factories(self) -> List[SoBTermFactory]:

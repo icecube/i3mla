@@ -523,7 +523,7 @@ class Spectrum(object):
 
     def __call__(self, energy, **kwargs):
         r"""Evaluate spectrum at E"""
-        if self.point == True:
+        if self.point:
             return self.model.point_sources[self.neutrinosource].call(energy) * self.norm
         else:
             return (
