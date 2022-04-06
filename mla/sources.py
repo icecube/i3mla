@@ -79,8 +79,9 @@ class GaussianExtendedSource(PointSource):
             size: number of points to sample
         """
         mean = self.location
-        cov = self.sigma * np.identity(2)
-        return np.random.multivariate_normal(mean, cov, size).T
+        x = np.random.normal(mean[0], self.sigma, size = size)
+        y = np.random.normal(mean[1], self.sigma, size = size)
+        return np.array([x,y])
 
     @property
     def sigma(self) -> float:

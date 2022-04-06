@@ -139,6 +139,11 @@ class LLHTestStatistic():
         return self._best_ts
 
     @property
+    def n_events(self) -> int:
+        """Docstring"""
+        return self._n_events
+
+    @property
     def n_kept(self) -> int:
         """Docstring"""
         return self._n_kept
