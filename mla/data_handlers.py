@@ -192,6 +192,11 @@ class NuSourcesDataHandler(DataHandler):
             ), 1]) - np.max([np.sin(
                 self.config['dec_cut_location'] - self.config['dec_bandwidth (rad)']
             ), -1]))
+            self._sim['weight'] /= 2 * np.pi * (np.min([np.sin(
+                self.config['dec_cut_location'] + self.config['dec_bandwidth (rad)']
+            ), 1]) - np.max([np.sin(
+                self.config['dec_cut_location'] - self.config['dec_bandwidth (rad)']
+            ), -1]))
         else:
             self._sim = self._full_sim
 

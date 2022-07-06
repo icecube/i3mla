@@ -37,6 +37,7 @@ exclude_patterns:
 - "examples/"
 - "tests/"
 - "docs/"
+- "mla/threeml/IceCubeLike.py"
 
 plugins:
   sonar-python:
