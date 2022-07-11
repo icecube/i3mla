@@ -328,7 +328,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         config['log_energy_bounds'] = (1, 8)
         config['gamma_bins'] = 50
         config['gamma_bounds'] = (-4.25, -0.5)
-        config["backgroundSOBoption"] = 0
+        config['backgroundSOBoption'] = 0
         config['sob_spline_kwargs'] = {
             'k': 3,
             's': 0,
