@@ -300,7 +300,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         # Normalize histogram by dec band
         bg_h /= np.sum(bg_h, axis=1)[:, None]
         if self.config['backgroundSOBoption'] == 1:
-            bg_h[bg_h <= 0] = np.min(bg_h[bg_h>0])
+            bg_h[bg_h <= 0] = np.min(bg_h[bg_h > 0])
         elif self.config['backgroundSOBoption'] == 0:
             pass
 
