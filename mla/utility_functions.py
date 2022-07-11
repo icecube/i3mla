@@ -150,7 +150,7 @@ def angular_distance(src_ra: float, src_dec: float, r_a: float, dec: float) -> f
 
     return np.arccos(cos_dist)
 
-def angular_distance(
+def trimsim(
     sim: np.ndarray,
     fraction: float,
     scaleow: bool = True
@@ -169,3 +169,4 @@ def angular_distance(
     n_keep = int(fraction * simsize)
     sim = np.random.choice(sim, n_keep)
     sim['ow'] = sim['ow'] * (float(n_keep) / simsize)
+    return sim
