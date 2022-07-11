@@ -129,6 +129,10 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
             print("using mc background")
         # Normalize histogram by dec band
         bg_h /= np.sum(bg_h, axis=1)[:, None]
+        if self.config["backgroundSOBoption"] == 1:
+            bg_h[bg_h <= 0] = np.min(bg_h[bg_h > 0])
+        elif self.config["backgroundSOBoption"] == 0:
+            pass
         self._bg_sob = bg_h
 
     @property
@@ -215,5 +219,6 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
             "s": 0,
             "ext": 3,
         }
+        config["backgroundSOBoption"] = 0
         config["mc_bkgweight"] = None
         return config

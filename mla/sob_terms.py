@@ -299,6 +299,10 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
 
         # Normalize histogram by dec band
         bg_h /= np.sum(bg_h, axis=1)[:, None]
+        if self.config['backgroundSOBoption'] == 1:
+            bg_h[bg_h <= 0] = np.min(bg_h[bg_h > 0])
+        elif self.config['backgroundSOBoption'] == 0:
+            pass
 
         sob_maps = np.array([
             self._init_sob_map(gamma, bins, bin_centers, bg_h)
@@ -324,6 +328,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         config['log_energy_bounds'] = (1, 8)
         config['gamma_bins'] = 50
         config['gamma_bounds'] = (-4.25, -0.5)
+        config['backgroundSOBoption'] = 0
         config['sob_spline_kwargs'] = {
             'k': 3,
             's': 0,
