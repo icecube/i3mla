@@ -170,6 +170,6 @@ def trimsim(
     n_keep = int(fraction * simsize)
     sim = np.random.choice(sim, n_keep)
     if scaleow:
-        sim['ow'] = sim['ow'] * (float(n_keep) / simsize)
+        sim['ow'] = sim['ow'] * (simsize / float(n_keep))
 
     return sim
