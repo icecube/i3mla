@@ -577,7 +577,7 @@ class IceCubeLike(PluginPrototype):
         self.fit_likelihood = 0
         if livetime is None:
             for term in llh.sob_term_factories:
-                if type(term) == sob_terms_base.TimeTermFactory:
+                if isinstance(term, sob_terms_base.TimeTermFactory):
                     self.livetime = (
                         data_handlers.contained_livetime(
                             term.signal_time_profile.range[0],
@@ -610,9 +610,9 @@ class IceCubeLike(PluginPrototype):
 
         self.sob_term_factories = llh.sob_term_factories
         for term in llh.sob_term_factories:
-            if type(term) == sob_terms_base.SpatialTermFactory:
+            if isinstance(term, sob_terms_base.SpatialTermFactory):
                 self.spatial_sob_factory = term
-            if type(term) == sob_terms.ThreeMLPSEnergyTermFactory:
+            if isinstance(term, sob_terms.ThreeMLPSEnergyTermFactory0:
                 self.energy_sob_factory = term
         self.verbose = verbose
         self._data = data
@@ -623,7 +623,7 @@ class IceCubeLike(PluginPrototype):
             Params.from_dict({"ns": 0}), data
         )
         for key in self.test_statistic.sob_terms.keys():
-            if type(self.test_statistic.sob_terms[key]) == sob_terms.ThreeMLPSEnergyTerm:
+            if isinstance(self.test_statistic.sob_terms[key], sob_terms.ThreeMLPSEnergyTerm):
                 self.energyname = key
         return
 
