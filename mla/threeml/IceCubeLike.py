@@ -612,7 +612,7 @@ class IceCubeLike(PluginPrototype):
         for term in llh.sob_term_factories:
             if isinstance(term, sob_terms_base.SpatialTermFactory):
                 self.spatial_sob_factory = term
-            if isinstance(term, sob_terms.ThreeMLPSEnergyTermFactory0:
+            if isinstance(term, sob_terms.ThreeMLPSEnergyTermFactory:
                 self.energy_sob_factory = term
         self.verbose = verbose
         self._data = data
