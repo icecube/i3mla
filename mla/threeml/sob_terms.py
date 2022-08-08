@@ -13,7 +13,6 @@ import dataclasses
 
 import numpy as np
 from scipy.interpolate import UnivariateSpline as Spline
-from scipy.signal import convolve2d
 
 from .. import sob_terms
 from .. import sources
@@ -21,11 +20,16 @@ from .. import params as par
 from . import spectral
 from . import data_handlers
 
-PSTrackv4_sin_dec_bin = np.unique(np.concatenate([
-                         np.linspace(-1, -0.93, 4 + 1),
-                         np.linspace(-0.93, -0.3, 10 + 1),
-                         np.linspace(-0.3, 0.05, 9 + 1),
-                         np.linspace(0.05, 1, 18 + 1) ]) )
+PSTrackv4_sin_dec_bin = np.unique(
+    np.concatenate(
+        [
+            np.linspace(-1, -0.93, 4 + 1),
+            np.linspace(-0.93, -0.3, 10 + 1),
+            np.linspace(-0.3, 0.05, 9 + 1),
+            np.linspace(0.05, 1, 18 + 1),
+        ]
+    )
+)
 
 PSTrackv4_log_energy_bins = np.arange(1, 9.5 + 0.01, 0.125)
 
@@ -38,10 +42,7 @@ class ThreeMLPSEnergyTerm(sob_terms.SoBTerm):
     _sin_dec_idx: np.ndarray
     _log_energy_idx: np.ndarray
 
-    def update_sob_hist(
-        self,
-        factory: sob_terms.SoBTermFactory
-    ) -> None:
+    def update_sob_hist(self, factory: sob_terms.SoBTermFactory) -> None:
         """Docstring"""
         self._energysobhist = factory.cal_sob_map()
 
@@ -68,10 +69,10 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
     data_handler: data_handlers.ThreeMLDataHandler
     source: sources.PointSource
     spectrum: spectral.BaseSpectrum
-    _source: sources.PointSource = dataclasses.field(
-        init=False, repr=False)
+    _source: sources.PointSource = dataclasses.field(init=False, repr=False)
     _spectrum: spectral.BaseSpectrum = dataclasses.field(
-        init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2))
+        init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2)
+    )
     _bg_sob: np.ndarray = dataclasses.field(init=False, repr=False)
     _sin_dec_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)
@@ -80,39 +81,28 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
     def __post_init__(self) -> None:
         """Docstring"""
         if self.config["list_sin_dec_bins"] is None:
-            self._sin_dec_bins = np.linspace(
-                -1, 1, 1 + self.config["sin_dec_bins"]
-            )
+            self._sin_dec_bins = np.linspace(-1, 1, 1 + self.config["sin_dec_bins"])
         else:
             self._sin_dec_bins = self.config["list_sin_dec_bins"]
         if self.config["list_log_energy_bins"] is None:
             self._log_energy_bins = np.linspace(
-                *self.config["log_energy_bounds"],
-                1 + self.config["log_energy_bins"]
+                *self.config["log_energy_bounds"], 1 + self.config["log_energy_bins"]
             )
         else:
             self._log_energy_bins = self.config["list_log_energy_bins"]
-        self.data_handler.reduced_reco_sim = (
-            self.data_handler.cut_reconstructed_sim(
-                self.source.location[1],
-                self.data_handler.config["reco_sampling_width"],
-            )
+        self.data_handler.reduced_reco_sim = self.data_handler.cut_reconstructed_sim(
+            self.source.location[1],
+            self.data_handler.config["reco_sampling_width"],
         )
         self._bins = np.array([self._sin_dec_bins, self._log_energy_bins])
         self._init_bg_sob_map()
 
-    def __call__(
-        self, params: par.Params, events: np.ndarray
-    ) -> sob_terms.SoBTerm:
+    def __call__(self, params: par.Params, events: np.ndarray) -> sob_terms.SoBTerm:
         """Docstring"""
         # Get the bin that each event belongs to
-        sin_dec_idx = (
-            np.searchsorted(self._sin_dec_bins[:-1], events["sindec"]) - 1
-        )
+        sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1], events["sindec"]) - 1
 
-        log_energy_idx = (
-            np.searchsorted(self._log_energy_bins[:-1], events["logE"]) - 1
-        )
+        log_energy_idx = np.searchsorted(self._log_energy_bins[:-1], events["logE"]) - 1
 
         return ThreeMLPSEnergyTerm(
             name=self.config["name"],
@@ -131,8 +121,7 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
             )
         else:
             bg_h = self.data_handler.build_mcbackground_sindec_logenergy_histogram(
-                self._bins,
-                self.config["mc_bkgweight"]
+                self._bins, self.config["mc_bkgweight"]
             )
             print("using mc background")
         # Normalize histogram by dec band
@@ -152,11 +141,9 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
     def source(self, source: sources.PointSource) -> None:
         """Docstring"""
         self._source = source
-        self.data_handler.reduced_reco_sim = (
-            self.data_handler.cut_reconstructed_sim(
-                self.source.location[1],
-                self.data_handler.config["reco_sampling_width"],
-            )
+        self.data_handler.reduced_reco_sim = self.data_handler.cut_reconstructed_sim(
+            self.source.location[1],
+            self.data_handler.config["reco_sampling_width"],
         )
 
     def cal_sob_map(self) -> np.ndarray:
@@ -185,9 +172,7 @@ class ThreeMLPSEnergyTermFactory(sob_terms.SoBTermFactory):
             if len(good_bins) > 1:
                 # Do a linear interpolation across the energy range
                 spline = Spline(
-                    good_bins,
-                    good_vals,
-                    **self.config["energy_spline_kwargs"]
+                    good_bins, good_vals, **self.config["energy_spline_kwargs"]
                 )
 
                 # And store the interpolated values
