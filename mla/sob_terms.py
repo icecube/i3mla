@@ -213,9 +213,25 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
 
     def __post_init__(self) -> None:
         """Docstring"""
-        self._sin_dec_bins = np.linspace(-1, 1, 1 + self.config['sin_dec_bins'])
-        self._log_energy_bins = np.linspace(
-            *self.config['log_energy_bounds'], 1 + self.config['log_energy_bins'])
+        if self.config['list_sin_dec_bins'] is None:
+            self._sin_dec_bins = np.linspace(
+                -1, 1, 1 + self.config['sin_dec_bins']
+            )
+        else:
+            self._sin_dec_bins = self.config['list_sin_dec_bins']
+        if self.config['list_log_energy_bins'] is None:
+            self._log_energy_bins = np.linspace(
+                *self.config['log_energy_bounds'],
+                1 + self.config['log_energy_bins']
+            )
+        else:
+            self._log_energy_bins = self.config['list_log_energy_bins']
+        self.data_handler.reduced_reco_sim = (
+            self.data_handler.cut_reconstructed_sim(
+                self.source.location[1],
+                self.data_handler.config['reco_sampling_width'],
+            )
+        )
         self._gamma_bins = np.linspace(
             *self.config['gamma_bounds'], 1 + self.config['gamma_bins'])
         self._spline_map = self._init_spline_map()
@@ -326,6 +342,8 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         config['sin_dec_bins'] = 50
         config['log_energy_bins'] = 50
         config['log_energy_bounds'] = (1, 8)
+        config['list_sin_dec_bins'] = None
+        config['list_log_energy_bins'] = None
         config['gamma_bins'] = 50
         config['gamma_bounds'] = (-4.25, -0.5)
         config['backgroundSOBoption'] = 0
