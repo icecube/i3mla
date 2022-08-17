@@ -12,23 +12,36 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 import dataclasses
+from typing import ClassVar, Tuple
 
-from . import configurable
+from .core import configurable
 from . import utility_functions as uf
 
 import numpy as np
 
 
 @dataclasses.dataclass
-class PointSource(configurable.Configurable):
+@configurable
+class PointSource:
     """Stores a source object name and location"""
+
+    _config: ClassVar[dict] = {
+        'name': ('Source Name', 'source_name'),
+        '_ra': ('Right Ascension (rad)', np.nan),
+        '_dec': ('Declination (rad)', np.nan),
+    }
+
+    name: str = dataclasses.field(init=False, repr=False)
+    _ra: float = dataclasses.field(init=False, repr=False)
+    _dec: float = dataclasses.field(init=False, repr=False)
+
     def sample(self, size: int = 1) -> tuple:
         """Sample locations.
 
         Args:
             size: number of points to sample
         """
-        return (np.ones(size) * self.config['ra'], np.ones(size) * self.config['dec'])
+        return (np.ones(size) * self._ra, np.ones(size) * self._dec)
 
     def spatial_pdf(self, events: np.ndarray) -> np.ndarray:
         """calculates the signal probability of events.
@@ -50,28 +63,28 @@ class PointSource(configurable.Configurable):
         return norm * np.exp(-dist**2 / (2 * sigma2))
 
     @property
-    def location(self) -> tuple:
+    def location(self) -> Tuple[float, float]:
         """return location of the source"""
-        return (self.config['ra'], self.config['dec'])
+        return (self._ra, self._dec)
 
     @property
     def sigma(self) -> float:
         """return 0 for point source"""
         return 0
 
-    @classmethod
-    def generate_config(cls) -> dict:
-        """Docstring"""
-        config = super().generate_config()
-        config['name'] = 'source_name'
-        config['ra'] = np.nan
-        config['dec'] = np.nan
-        return config
-
 
 @dataclasses.dataclass
+@configurable
 class GaussianExtendedSource(PointSource):
     """Gaussian Extended Source"""
+
+    _config: ClassVar[dict] = {
+        **PointSource._config,
+        '_sigma': ('Sigma (rad)', np.deg2rad(1)),
+    }
+
+    _sigma: float = dataclasses.field(init=False, repr=False)
+
     def sample(self, size: int = 1) -> np.ndarray:
         """Sample locations.
 
@@ -86,11 +99,4 @@ class GaussianExtendedSource(PointSource):
     @property
     def sigma(self) -> float:
         """return sigma for GaussianExtendedSource"""
-        return self.config['sigma']
-
-    @classmethod
-    def generate_config(cls) -> dict:
-        """Docstring"""
-        config = super().generate_config()
-        config['sigma'] = np.deg2rad(1)
-        return config
+        return self._sigma

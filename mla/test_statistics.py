@@ -9,12 +9,12 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Dict, List, Optional
+from typing import ClassVar, Dict, List, Optional
 
 import dataclasses
 import numpy as np
 
-from . import configurable
+from .core import configurable
 from .sob_terms import SoBTerm, SoBTermFactory
 from .params import Params
 
@@ -155,9 +155,18 @@ class LLHTestStatistic():
 
 
 @dataclasses.dataclass
-class LLHTestStatisticFactory(configurable.Configurable):
+@configurable
+class LLHTestStatisticFactory:
     """Docstring"""
     sob_term_factories: List[SoBTermFactory]
+
+    _config: ClassVar[dict] = {
+        '_newton_precision': ('Newton Method n_s Precision', 0),
+        '_newton_iterations': ('Newton Method n_s Iterations', 20),
+    }
+
+    _newton_precision: float = dataclasses.field(init=False, repr=False)
+    _newton_iterations: int = dataclasses.field(init=False, repr=False)
 
     def __call__(self, params: Params, events: np.ndarray) -> LLHTestStatistic:
         """Docstring"""
@@ -171,7 +180,7 @@ class LLHTestStatisticFactory(configurable.Configurable):
         pruned_events[:] = events[drop_mask]
 
         sob_terms = {
-            term_factory.config['name']: term_factory(params, pruned_events)
+            term_factory.name: term_factory(params, pruned_events)
             for term_factory in self.sob_term_factories
         }
 
@@ -181,8 +190,8 @@ class LLHTestStatisticFactory(configurable.Configurable):
             _n_kept=n_kept,
             _events=pruned_events,
             _params=params,
-            _newton_precision=self.config['newton_precision'],
-            _newton_iterations=self.config['newton_iterations'],
+            _newton_precision=self._newton_precision,
+            _newton_iterations=self._newton_iterations,
         )
 
     def generate_params(self) -> Params:
@@ -196,11 +205,3 @@ class LLHTestStatisticFactory(configurable.Configurable):
             param_bounds = dict(param_bounds, **bounds)
 
         return Params.from_dict(param_values, param_bounds)
-
-    @classmethod
-    def generate_config(cls) -> dict:
-        """Docstring"""
-        config = super().generate_config()
-        config['newton_precision'] = 0
-        config['newton_iterations'] = 20
-        return config

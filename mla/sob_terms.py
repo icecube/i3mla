@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import List
+from typing import ClassVar, List, Tuple
 
 import abc
 import copy
@@ -19,7 +19,7 @@ import warnings
 import numpy as np
 from scipy.interpolate import UnivariateSpline as Spline
 
-from . import configurable
+from .core import configurable
 from .params import Params
 from .sources import PointSource
 from .data_handlers import DataHandler
@@ -51,9 +51,13 @@ class SoBTerm:
 
 
 @dataclasses.dataclass
-class SoBTermFactory(configurable.Configurable):
+@configurable
+class SoBTermFactory:
     """Docstring"""
     __metaclass__ = abc.ABCMeta
+
+    _config: ClassVar[dict] = {'name': ('Name', 'SoBTerm')}
+    name: str = dataclasses.field(init=False, repr=False)
 
     @abc.abstractmethod
     def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
@@ -66,11 +70,6 @@ class SoBTermFactory(configurable.Configurable):
     @abc.abstractmethod
     def generate_params(self) -> tuple:
         """Docstring"""
-
-    @classmethod
-    def generate_config(cls) -> dict:
-        """Docstring"""
-        return {'name': cls.__name__.replace('Factory', '')}
 
 
 @dataclasses.dataclass
@@ -94,17 +93,20 @@ class SpatialTerm(SoBTerm):
 
 
 @dataclasses.dataclass
+@configurable
 class SpatialTermFactory(SoBTermFactory):
     """Docstring"""
     data_handler: DataHandler
     source: PointSource
+
+    _config: ClassVar[dict] = {'name': ('Name', 'SpatialTerm')}
 
     def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
         """Docstring"""
         sob_spatial = self.source.spatial_pdf(events)
         sob_spatial /= self.data_handler.evaluate_background_sindec_pdf(events)
         return SpatialTerm(
-            name=self.config['name'],
+            name=self.name,
             _params=params,
             _sob=sob_spatial,
         )
@@ -141,10 +143,13 @@ class TimeTerm(SoBTerm):
 
 
 @dataclasses.dataclass
+@configurable
 class TimeTermFactory(SoBTermFactory):
     """Docstring"""
     background_time_profile: GenericProfile
     signal_time_profile: GenericProfile
+
+    _config: ClassVar[dict] = {'name': ('Name', 'TimeTerm')}
 
     def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
         """Docstring"""
@@ -161,7 +166,7 @@ class TimeTermFactory(SoBTermFactory):
             )
 
         return TimeTerm(
-            name=self.config['name'],
+            name=self.name,
             _params=params,
             _sob=sob_bg,
             _times=times,
@@ -203,9 +208,43 @@ class SplineMapEnergyTerm(SoBTerm):
 
 
 @dataclasses.dataclass
+@configurable
 class SplineMapEnergyTermFactory(SoBTermFactory):
     """Docstring"""
     data_handler: DataHandler
+
+    _config: ClassVar[dict] = {
+        'name': ('Name', 'SplineMapEnergyTerm'),
+        '_init_gamma': ('Initial Gamma', -2),
+        '_sin_dec_bins_config': ('sin(Declination) Bins', 50),
+        '_log_energy_bins_config': ('log_10(Energy) Bins', 50),
+        '_log_energy_bounds': ('log_10(Energy) Bounds (log_10(GeV))', (1, 8)),
+        '_gamma_bins_config': ('Gamma Bins', 50),
+        '_gamma_bounds': ('Gamma Bounds', (-4.25, -0.5)),
+        '_norm_bghist_by_dec_band': (
+            'Normalize Background Histogram By Declination Band', False),
+        '_sob_spline_kwargs': ('Signal-over-background Spline Keyword Arguments', {
+            'k': 3,
+            's': 0,
+            'ext': 'raise',
+        }),
+        '_energy_spline_kwargs': ('Energy Spline Keyword Arguments', {
+            'k': 1,
+            's': 0,
+            'ext': 3,
+        }),
+    }
+
+    _init_gamma: float = dataclasses.field(init=False, repr=False)
+    _sin_dec_bins_config: int = dataclasses.field(init=False, repr=False)
+    _log_energy_bins_config: int = dataclasses.field(init=False, repr=False)
+    _log_energy_bounds: Tuple[float, float] = dataclasses.field(init=False, repr=False)
+    _gamma_bins_config: int = dataclasses.field(init=False, repr=False)
+    _gamma_bounds: Tuple[float, float] = dataclasses.field(init=False, repr=False)
+    _norm_bghist_by_dec_band: bool = dataclasses.field(init=False, repr=False)
+    _sob_spline_kwargs: dict = dataclasses.field(init=False, repr=False)
+    _energy_spline_kwargs:dict = dataclasses.field(init=False, repr=False)
+
     _sin_dec_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _gamma_bins: np.ndarray = dataclasses.field(init=False, repr=False)
@@ -213,11 +252,11 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
 
     def __post_init__(self) -> None:
         """Docstring"""
-        self._sin_dec_bins = np.linspace(-1, 1, 1 + self.config['sin_dec_bins'])
+        self._sin_dec_bins = np.linspace(-1, 1, 1 + self._sin_dec_bins_config)
         self._log_energy_bins = np.linspace(
-            *self.config['log_energy_bounds'], 1 + self.config['log_energy_bins'])
+            *self._log_energy_bounds, 1 + self._log_energy_bins_config)
         self._gamma_bins = np.linspace(
-            *self.config['gamma_bounds'], 1 + self.config['gamma_bins'])
+            *self._gamma_bounds, 1 + self._gamma_bins_config)
         self._spline_map = self._init_spline_map()
 
     def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
@@ -234,10 +273,10 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         splines = [self._spline_map[i][j] for i, j in spline_idxs.T]
 
         return SplineMapEnergyTerm(
-            name=self.config['name'],
+            name=self.name,
             _params=params,
             _sob=np.empty(1),
-            gamma=self.config['initial_gamma'],
+            gamma=self._init_gamma,
             _splines=splines,
             _event_spline_idxs=event_spline_idxs,
         )
@@ -281,7 +320,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
             good_bins, good_vals = bin_centers[good], ratio[i][good]
 
             # Do a linear interpolation across the energy range
-            spline = Spline(good_bins, good_vals, **self.config['energy_spline_kwargs'])
+            spline = Spline(good_bins, good_vals, **self._energy_spline_kwargs)
 
             # And store the interpolated values
             ratio[i] = spline(bin_centers)
@@ -299,10 +338,8 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
 
         # Normalize histogram by dec band
         bg_h /= np.sum(bg_h, axis=1)[:, None]
-        if self.config['backgroundSOBoption'] == 1:
+        if self._norm_bghist_by_dec_band:
             bg_h[bg_h <= 0] = np.min(bg_h[bg_h > 0])
-        elif self.config['backgroundSOBoption'] == 0:
-            pass
 
         sob_maps = np.array([
             self._init_sob_map(gamma, bins, bin_centers, bg_h)
@@ -312,31 +349,8 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         transposed_log_sob_maps = np.log(sob_maps.transpose(1, 2, 0))
 
         splines = [[
-            Spline(self._gamma_bins, log_ratios, **self.config['sob_spline_kwargs'])
+            Spline(self._gamma_bins, log_ratios, **self._sob_spline_kwargs)
             for log_ratios in dec_bin
         ] for dec_bin in transposed_log_sob_maps]
 
         return splines
-
-    @classmethod
-    def generate_config(cls):
-        """Docstring"""
-        config = super().generate_config()
-        config['initial_gamma'] = -2
-        config['sin_dec_bins'] = 50
-        config['log_energy_bins'] = 50
-        config['log_energy_bounds'] = (1, 8)
-        config['gamma_bins'] = 50
-        config['gamma_bounds'] = (-4.25, -0.5)
-        config['backgroundSOBoption'] = 0
-        config['sob_spline_kwargs'] = {
-            'k': 3,
-            's': 0,
-            'ext': 'raise',
-        }
-        config['energy_spline_kwargs'] = {
-            'k': 1,
-            's': 0,
-            'ext': 3,
-        }
-        return config

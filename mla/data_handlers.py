@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Tuple
+from typing import ClassVar, Optional, Tuple
 
 import abc
 import copy
@@ -20,12 +20,12 @@ import numpy as np
 import numpy.lib.recfunctions as rf
 from scipy.interpolate import UnivariateSpline as Spline
 
-from . import configurable
+from .core import configurable
 from .time_profiles import GenericProfile
 
 
 @dataclass
-class DataHandler(configurable.Configurable):
+class DataHandler:
     """Docstring"""
     _n_background: float = field(init=False, repr=False)
     __metaclass__ = abc.ABCMeta
@@ -60,12 +60,43 @@ class DataHandler(configurable.Configurable):
     def n_background(self) -> float:
         """Docstring"""
 
+    @property
+    @abc.abstractmethod
+    def dec_cut_loc(self) -> float:
+        """Docstring"""
+
+    @dec_cut_loc.setter
+    @abc.abstractmethod
+    def dec_cut_loc(self, new_dec_cut_loc: Optional[float]) -> None:
+        """Docstring"""
+
 
 @dataclass
+@configurable
 class NuSourcesDataHandler(DataHandler):
     """Docstring"""
     sim: np.ndarray
     data_grl: Tuple[np.ndarray, np.ndarray]
+
+    _config: ClassVar[dict] = {
+        '_norm_energy': ('Normalization Energy (GeV)', 100e3),
+        '_assumed_gamma': ('Assumed Gamma', -2),
+        '_dec_cut_loc': ('Declination Cut Location, (rad)', None),
+        '_dec_band': ('Declination Bandwidth (rad)', None),
+        '_sin_dec_bins_config': ('sin(Declination) Bins', 30),
+        '_dec_spline_kwargs': ('Declination Spline Keyword Arguments', {
+            'bbox': [-1, 1],
+            's': 1.5e-5,
+            'ext': 3,
+        })
+    }
+
+    _norm_energy: float = field(init=False, repr=False)
+    _assumed_gamma: float = field(init=False, repr=False)
+    _dec_cut_loc: Optional[float] = field(init=False, repr=False)
+    _dec_band: Optional[float] = field(init=False, repr=False)
+    _sin_dec_bins_config: int = field(init=False, repr=False)
+    _dec_spline_kwargs: dict = field(init=False, repr=False)
 
     _sim: np.ndarray = field(init=False, repr=False)
     _full_sim: np.ndarray = field(init=False, repr=False)
@@ -170,35 +201,30 @@ class NuSourcesDataHandler(DataHandler):
             )
 
         self._full_sim['weight'] = self._full_sim['ow'] * (
-            self._full_sim['trueE'] / self.config['normalization_energy (GeV)']
-        )**self.config['assumed_gamma']
+            self._full_sim['trueE'] / self._norm_energy)**self._assumed_gamma
 
         self._cut_sim_dec()
 
     def _cut_sim_dec(self) -> None:
         """Docstring"""
-        if (
-            self.config['dec_bandwidth (rad)'] is not None
-        ) and (
-            self.config['dec_cut_location'] is not None
-        ):
-            sindec_dist = np.abs(
-                self.config['dec_cut_location'] - self._full_sim['trueDec'])
-            close = sindec_dist < self.config['dec_bandwidth (rad)']
-            self._sim = self._full_sim[close].copy()
-
-            self._sim['ow'] /= 2 * np.pi * (np.min([np.sin(
-                self.config['dec_cut_location'] + self.config['dec_bandwidth (rad)']
-            ), 1]) - np.max([np.sin(
-                self.config['dec_cut_location'] - self.config['dec_bandwidth (rad)']
-            ), -1]))
-            self._sim['weight'] /= 2 * np.pi * (np.min([np.sin(
-                self.config['dec_cut_location'] + self.config['dec_bandwidth (rad)']
-            ), 1]) - np.max([np.sin(
-                self.config['dec_cut_location'] - self.config['dec_bandwidth (rad)']
-            ), -1]))
-        else:
+        if self._dec_band is None or self._dec_cut_loc is None:
             self._sim = self._full_sim
+            return
+
+        sindec_dist = np.abs(self._dec_cut_loc - self._full_sim['trueDec'])
+        close = sindec_dist < self._dec_band
+        self._sim = self._full_sim[close].copy()
+
+        self._sim['ow'] /= 2 * np.pi * (np.min([np.sin(
+            self._dec_cut_loc + self._dec_band
+        ), 1]) - np.max([np.sin(
+            self._dec_cut_loc - self._dec_band
+        ), -1]))
+        self._sim['weight'] /= 2 * np.pi * (np.min([np.sin(
+            self._dec_cut_loc + self._dec_band
+        ), 1]) - np.max([np.sin(
+            self._dec_cut_loc - self._dec_band
+        ), -1]))
 
     @property
     def data_grl(self) -> Tuple[np.ndarray, np.ndarray]:
@@ -208,7 +234,7 @@ class NuSourcesDataHandler(DataHandler):
     @data_grl.setter
     def data_grl(self, data_grl: Tuple[np.ndarray, np.ndarray]) -> None:
         """Docstring"""
-        self._sin_dec_bins = np.linspace(-1, 1, 1 + self.config['sin_dec_bins'])
+        self._sin_dec_bins = np.linspace(-1, 1, 1 + self._sin_dec_bins_config)
         self._data = data_grl[0].copy()
         self._grl = data_grl[1].copy()
         if 'sindec' not in self._data.dtype.names:
@@ -232,7 +258,7 @@ class NuSourcesDataHandler(DataHandler):
             self._data['sindec'], bins=self._sin_dec_bins, density=True)
         bin_centers = bins[:-1] + np.diff(bins) / 2
 
-        self._dec_spline = Spline(bin_centers, hist, **self.config['dec_spline_kwargs'])
+        self._dec_spline = Spline(bin_centers, hist, **self._dec_spline_kwargs)
 
     @property
     def livetime(self) -> float:
@@ -244,28 +270,29 @@ class NuSourcesDataHandler(DataHandler):
         """Docstring"""
         return self._n_background
 
-    @classmethod
-    def generate_config(cls) -> dict:
-        """Docstring"""
-        config = super().generate_config()
-        config['normalization_energy (GeV)'] = 100e3
-        config['assumed_gamma'] = -2
-        config['dec_cut_location'] = None
-        config['dec_bandwidth (rad)'] = None
-        config['sin_dec_bins'] = 30
-        config['dec_spline_kwargs'] = {
-            'bbox': [-1, 1],
-            's': 1.5e-5,
-            'ext': 3,
-        }
-        return config
+    @property
+    def dec_cut_loc(self) -> Optional[float]:
+        return self._dec_cut_loc
 
+    @dec_cut_loc.setter
+    def dec_cut_loc(self, new_dec_cut_loc: Optional[float]) -> None:
+        self._dec_cut_loc = new_dec_cut_loc
+        self._cut_sim_dec()
+        
 
 @dataclass
+@configurable
 class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
     """Docstring"""
     background_time_profile: GenericProfile
     signal_time_profile: GenericProfile
+
+    _config: ClassVar[dict] = {
+        **NuSourcesDataHandler._config,
+        '_outside_time_prof': ('Outside Time Profile (days)', None),
+    }
+
+    _outside_time_prof: Optional[float] = field(init=False, repr=False)
 
     _background_time_profile: GenericProfile = field(init=False, repr=False)
     _signal_time_profile: GenericProfile = field(init=False, repr=False)
@@ -282,9 +309,9 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
         start, stop = profile.range
         return_stop_contained = True
 
-        if self.config['outside_time_profile (days)'] is not None:
+        if self._outside_time_prof is not None:
             stop = start
-            start -= self.config['outside_time_profile (days)']
+            start -= self._outside_time_prof
             return_stop_contained = False
 
         background_run_mask = self._contained_run_mask(
@@ -393,10 +420,3 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
             runs['start'], runs['stop'])
 
         return events
-
-    @classmethod
-    def generate_config(cls) -> dict:
-        """Docstring"""
-        config = super().generate_config()
-        config['outside_time_profile (days)'] = None
-        return config

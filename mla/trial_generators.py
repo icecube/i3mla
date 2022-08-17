@@ -10,22 +10,32 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 import dataclasses
+from typing import ClassVar, Optional
 
 import numpy as np
 import numpy.lib.recfunctions as rf
 
 from . import utility_functions as uf
-from . import configurable
-
+from .core import configurable
 from .data_handlers import DataHandler
 from .sources import PointSource
 
 
 @dataclasses.dataclass
-class SingleSourceTrialGenerator(configurable.Configurable):
+@configurable
+class SingleSourceTrialGenerator:
     """Docstring"""
     data_handler: DataHandler
     source: PointSource
+
+    _config: ClassVar[dict] = {
+        '_random_seed': ('Random Seed', None),
+        '_fixed_ns': ('Fixed n_s', False),
+    }
+
+    _random_seed: Optional[int] = dataclasses.field(init=False, repr=False)
+    _fixed_ns: bool = dataclasses.field(init=False, repr=False)
+
     _source: PointSource = dataclasses.field(init=False, repr=False)
 
     def __call__(self, n_signal: float = 0) -> np.ndarray:
@@ -37,9 +47,9 @@ class SingleSourceTrialGenerator(configurable.Configurable):
         Returns:
             An array of combined signal and background events.
         """
-        rng = np.random.default_rng(self.config['random_seed'])
+        rng = np.random.default_rng(self._random_seed)
         n_background = rng.poisson(self.data_handler.n_background)
-        if not self.config['fixed_ns']:
+        if not self._fixed_ns:
             n_signal = rng.poisson(self.data_handler.calculate_n_signal(n_signal))
 
         background = self.data_handler.sample_background(n_background, rng)
@@ -96,13 +106,5 @@ class SingleSourceTrialGenerator(configurable.Configurable):
     @source.setter
     def source(self, source: PointSource) -> None:
         """Docstring"""
-        self.data_handler.dec_cut_location = source.config['dec']
+        self.data_handler.dec_cut_loc = source.location[1]
         self._source = source
-
-    @classmethod
-    def generate_config(cls) -> dict:
-        """Docstring"""
-        config = super().generate_config()
-        config['random_seed'] = None
-        config['fixed_ns'] = False
-        return config

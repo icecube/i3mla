@@ -12,7 +12,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import List, Optional, Tuple
+from typing import ClassVar, List, Optional, Tuple
 
 import abc
 import dataclasses
@@ -20,12 +20,12 @@ import dataclasses
 import numpy as np
 import scipy.optimize
 
-from . import configurable
+from .core import configurable
 from .test_statistics import LLHTestStatistic
 
 
 @dataclasses.dataclass
-class Minimizer(configurable.Configurable):
+class Minimizer:
     """Docstring"""
     test_statistic: LLHTestStatistic
 
@@ -38,8 +38,18 @@ class Minimizer(configurable.Configurable):
 
 
 @dataclasses.dataclass
+@configurable
 class GridSearchMinimizer(Minimizer):
     """Docstring"""
+
+    _config: ClassVar[dict] = {
+        '_gs_pts': ('GridSearch Points', 5),
+        '_min_method': ('Scipy Minimize Method', 'L-BFGS-B'),
+    }
+
+    _gs_pts: int = dataclasses.field(init=False, repr=False)
+    _min_method: str = dataclasses.field(init=False, repr=False)
+
     def __call__(
             self, fitting_params: Optional[List[str]] = None) -> Tuple[float, np.ndarray]:
         """Docstring"""
@@ -60,7 +70,7 @@ class GridSearchMinimizer(Minimizer):
             return 0, np.array([(0,)], dtype=[('ns', np.float64)])
 
         grid = [
-            np.linspace(lo, hi, self.config['gridsearch_points'])
+            np.linspace(lo, hi, self._gs_pts)
             for lo, hi in fitting_bounds.values()
         ]
 
@@ -99,7 +109,7 @@ class GridSearchMinimizer(Minimizer):
             x0=point,
             args=(fitting_key_idx_map,),
             bounds=fitting_bounds.values(),
-            method=self.config['scipy_minimize_method'],
+            method=self._min_method,
         )
 
         best_ts_value = -result.fun
@@ -110,11 +120,3 @@ class GridSearchMinimizer(Minimizer):
             best_param_values[idx] = self.test_statistic.best_ns
 
         return best_ts_value, best_param_values
-
-    @classmethod
-    def generate_config(cls) -> dict:
-        """Docstring"""
-        config = super().generate_config()
-        config['gridsearch_points'] = 5
-        config['scipy_minimize_method'] = 'L-BFGS-B'
-        return config
