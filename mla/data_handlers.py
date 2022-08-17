@@ -81,7 +81,7 @@ class NuSourcesDataHandler(DataHandler):
     _config: ClassVar[dict] = {
         '_norm_energy': ('Normalization Energy (GeV)', 100e3),
         '_assumed_gamma': ('Assumed Gamma', -2),
-        '_dec_cut_loc': ('Declination Cut Location, (rad)', None),
+        '_dec_cut_loc': ('Declination Cut Location (rad)', None),
         '_dec_band': ('Declination Bandwidth (rad)', None),
         '_sin_dec_bins_config': ('sin(Declination) Bins', 30),
         '_dec_spline_kwargs': ('Declination Spline Keyword Arguments', {

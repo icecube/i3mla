@@ -8,10 +8,10 @@ __version__ = '0.0.1'
 __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
-from typing import List, Tuple, Type
+from typing import ClassVar, List, Tuple, Type
 from dataclasses import dataclass, field
 
-from .core import generate_default_config
+from .core import configurable, generate_default_config
 from .data_handlers import DataHandler
 from .minimizers import Minimizer
 from .params import Params
@@ -97,3 +97,15 @@ class SingleSourceLLHAnalysis:
             SingleSourceTrialGenerator,
             LLHTestStatisticFactory,
         ])
+
+@dataclass
+@configurable
+class SingleSourceFlareStackLLHAnalysis(SingleSourceLLHAnalysis):
+    """Docstring"""
+    _config: ClassVar[dict] = {
+        '_min_sob': ('Minimum Signal-over-background Ratio For Flare', 1),
+        '_min_length': ('Minimum Flare Duration (days)', 1),
+    }
+
+    _min_sob: float = field(init=False, repr=False)
+    _min_length: float = field(init=False, repr=False)
