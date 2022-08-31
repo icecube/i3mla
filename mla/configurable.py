@@ -9,15 +9,38 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-import dataclasses
+from abc import ABCMeta, abstractmethod
+import inspect
 
-
-@dataclasses.dataclass
-class Configurable:
+class Configurable(metaclass=ABCMeta):
     """Docstring"""
-    config: dict
+    _config_map = {}
 
     @classmethod
-    def generate_config(cls) -> dict:
+    def default_config(cls) -> dict:
         """Docstring"""
-        return {}
+        sig = inspect.signature(cls.__init__)
+        defaults = {
+            param: param.default
+            for param in sig.parameters.values()
+            if param.default is not param.empty
+        }
+        return {key: defaults[var] for var, key in cls._config_map.items()}
+
+    @property
+    def config(self) -> dict:
+        """Docstring"""
+        return {
+            key: getattr(self, var)
+            for var, key in self.__class__._config_map.items()
+        }
+
+    @classmethod
+    @abstractmethod
+    def from_config(cls, config: dict, *args) -> 'Configurable':
+        """Docstring"""
+
+    @classmethod
+    def _map_kwargs(cls, config: dict) -> dict:
+        """Docstring"""
+        return {var: config[key] for var, (key, _) in cls._config_map.items()}

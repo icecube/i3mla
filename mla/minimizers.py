@@ -20,16 +20,21 @@ import dataclasses
 import numpy as np
 import scipy.optimize
 
-from .core import configurable
+from . import Configurable
 from .test_statistics import LLHTestStatistic
 
 
 @dataclasses.dataclass
-class Minimizer:
+class MinimizerFactory:
+    """Docstring"""
+
+
+
+
+@dataclasses.dataclass
+class Minimizer(metaclass=abc.ABCMeta):
     """Docstring"""
     test_statistic: LLHTestStatistic
-
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def __call__(
@@ -38,9 +43,9 @@ class Minimizer:
 
 
 @dataclasses.dataclass
-@configurable
 class GridSearchMinimizer(Minimizer):
     """Docstring"""
+    config: dict
 
     _config: ClassVar[dict] = {
         '_gs_pts': ('GridSearch Points', 5),

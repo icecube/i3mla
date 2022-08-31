@@ -158,6 +158,7 @@ class LLHTestStatistic():
 @configurable
 class LLHTestStatisticFactory:
     """Docstring"""
+    config: dict
     sob_term_factories: List[SoBTermFactory]
 
     _config: ClassVar[dict] = {

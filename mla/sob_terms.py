@@ -56,6 +56,8 @@ class SoBTermFactory:
     """Docstring"""
     __metaclass__ = abc.ABCMeta
 
+    config: dict
+
     _config: ClassVar[dict] = {'name': ('Name', 'SoBTerm')}
     name: str = dataclasses.field(init=False, repr=False)
 
@@ -96,6 +98,7 @@ class SpatialTerm(SoBTerm):
 @configurable
 class SpatialTermFactory(SoBTermFactory):
     """Docstring"""
+    config: dict
     data_handler: DataHandler
     source: PointSource
 
@@ -146,6 +149,7 @@ class TimeTerm(SoBTerm):
 @configurable
 class TimeTermFactory(SoBTermFactory):
     """Docstring"""
+    config: dict
     background_time_profile: GenericProfile
     signal_time_profile: GenericProfile
 
@@ -211,6 +215,7 @@ class SplineMapEnergyTerm(SoBTerm):
 @configurable
 class SplineMapEnergyTermFactory(SoBTermFactory):
     """Docstring"""
+    config: dict
     data_handler: DataHandler
 
     _config: ClassVar[dict] = {

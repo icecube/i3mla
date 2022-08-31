@@ -20,11 +20,11 @@ import numpy as np
 import numpy.lib.recfunctions as rf
 from scipy.interpolate import UnivariateSpline as Spline
 
-from .core import configurable
+from . import Configurable
 from .time_profiles import GenericProfile
 
 
-@dataclass
+@dataclass(kw_only=True)
 class DataHandler:
     """Docstring"""
     _n_background: float = field(init=False, repr=False)
@@ -71,14 +71,13 @@ class DataHandler:
         """Docstring"""
 
 
-@dataclass
-@configurable
-class NuSourcesDataHandler(DataHandler):
+@dataclass(kw_only=True)
+class NuSourcesDataHandler(DataHandler, Configurable):
     """Docstring"""
     sim: np.ndarray
     data_grl: Tuple[np.ndarray, np.ndarray]
 
-    _config: ClassVar[dict] = {
+    _config_map: ClassVar[dict] = {
         '_norm_energy': ('Normalization Energy (GeV)', 100e3),
         '_assumed_gamma': ('Assumed Gamma', -2),
         '_dec_cut_loc': ('Declination Cut Location (rad)', None),
@@ -91,12 +90,12 @@ class NuSourcesDataHandler(DataHandler):
         })
     }
 
-    _norm_energy: float = field(init=False, repr=False)
-    _assumed_gamma: float = field(init=False, repr=False)
-    _dec_cut_loc: Optional[float] = field(init=False, repr=False)
-    _dec_band: Optional[float] = field(init=False, repr=False)
-    _sin_dec_bins_config: int = field(init=False, repr=False)
-    _dec_spline_kwargs: dict = field(init=False, repr=False)
+    _norm_energy: float = 100e3
+    _assumed_gamma: float = -2
+    _dec_cut_loc: Optional[float] = None
+    _dec_band: Optional[float] = None
+    _sin_dec_bins_config: int = 30
+    _dec_spline_kwargs: dict = {'bbox': [-1, 1], 's': 1.5e-5, 'ext': 3}
 
     _sim: np.ndarray = field(init=False, repr=False)
     _full_sim: np.ndarray = field(init=False, repr=False)
@@ -107,6 +106,15 @@ class NuSourcesDataHandler(DataHandler):
     _dec_spline: Spline = field(init=False, repr=False)
     _livetime: float = field(init=False, repr=False)
     _sin_dec_bins: np.ndarray = field(init=False, repr=False)
+
+    @classmethod
+    def from_config(
+            cls,
+            config: dict,
+            sim: np.ndarray,
+            data_grl: Tuple[np.ndarray, np.ndarray],
+    ) -> 'NuSourcesDataHandler':
+        return cls(sim=sim, data_grl=data_grl, **cls._map_kwargs(config))
 
     def sample_background(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """Docstring"""
@@ -280,15 +288,14 @@ class NuSourcesDataHandler(DataHandler):
         self._cut_sim_dec()
         
 
-@dataclass
-@configurable
+@dataclass(kw_only=True)
 class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
     """Docstring"""
     background_time_profile: GenericProfile
     signal_time_profile: GenericProfile
 
-    _config: ClassVar[dict] = {
-        **NuSourcesDataHandler._config,
+    _config_map: ClassVar[dict] = {
+        **NuSourcesDataHandler._config_map,
         '_outside_time_prof': ('Outside Time Profile (days)', None),
     }
 
@@ -296,6 +303,23 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
 
     _background_time_profile: GenericProfile = field(init=False, repr=False)
     _signal_time_profile: GenericProfile = field(init=False, repr=False)
+
+    @classmethod
+    def from_config(
+        cls,
+        config: dict,
+        sim: np.ndarray,
+        data_grl: Tuple[np.ndarray, np.ndarray],
+        background_time_profile: GenericProfile,
+        signal_time_profile: GenericProfile,
+    ) -> 'TimeDependentNuSourcesDataHandler':
+        return cls(
+            sim=sim,
+            data_grl=data_grl,
+            background_time_profile=background_time_profile,
+            signal_time_profile=signal_time_profile,
+            **cls._map_kwargs(config),
+        )
 
     @property
     def background_time_profile(self) -> GenericProfile:

@@ -25,6 +25,7 @@ from .sources import PointSource
 @configurable
 class SingleSourceTrialGenerator:
     """Docstring"""
+    config: dict
     data_handler: DataHandler
     source: PointSource
 

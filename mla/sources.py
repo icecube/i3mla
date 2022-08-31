@@ -24,7 +24,7 @@ import numpy as np
 @configurable
 class PointSource:
     """Stores a source object name and location"""
-
+    config: dict
     _config: ClassVar[dict] = {
         'name': ('Source Name', 'source_name'),
         '_ra': ('Right Ascension (rad)', np.nan),
@@ -77,7 +77,7 @@ class PointSource:
 @configurable
 class GaussianExtendedSource(PointSource):
     """Gaussian Extended Source"""
-
+    config: dict
     _config: ClassVar[dict] = {
         **PointSource._config,
         '_sigma': ('Sigma (rad)', np.deg2rad(1)),

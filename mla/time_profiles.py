@@ -180,6 +180,7 @@ class GaussProfile(GenericProfile):
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
     """
+    config: dict
     _config: ClassVar[dict] = {
         '_mean': ('Mean (MJD)', np.nan),
         '_sigma': ('Sigma (days)', np.nan),
@@ -328,6 +329,7 @@ class UniformProfile(GenericProfile):
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
     """
+    config: dict
     _config: ClassVar[dict] = {
         '_start': ('Start (MJD)', np.nan),
         '_length': ('Length (days)', np.nan),
@@ -474,6 +476,7 @@ class CustomProfile(GenericProfile):
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
     """
+    config: dict
     dist: Callable[[np.ndarray, Tuple[float, float]], np.ndarray]
 
     _config = {

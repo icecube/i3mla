@@ -8,30 +8,26 @@ __version__ = '0.0.1'
 __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
-from typing import ClassVar, List, Tuple, Type
+from typing import ClassVar, List, Tuple
 from dataclasses import dataclass, field
 
-from .core import configurable, generate_default_config
+from .configurable import Configurable
 from .data_handlers import DataHandler
-from .minimizers import Minimizer
+from .minimizers import MinimizerFactory
 from .params import Params
-from .sob_terms import SoBTermFactory
 from .sources import PointSource
 from .test_statistics import LLHTestStatisticFactory
 from .trial_generators import SingleSourceTrialGenerator
 
 
-@dataclass
+@dataclass(kw_only=True)
 class SingleSourceLLHAnalysis:
     """Docstring"""
-    config: dict
-    minimizer_class: Type[Minimizer]
-    sob_term_factories: List[SoBTermFactory]
+    minimizer_factory: MinimizerFactory
+    test_statistic_factory: LLHTestStatisticFactory
     data_handler_source: Tuple[DataHandler, PointSource]
-    _sob_term_factories: List[SoBTermFactory] = field(init=False, repr=False)
+    trial_generator: SingleSourceTrialGenerator
     _data_handler_source: Tuple[DataHandler, PointSource] = field(init=False, repr=False)
-    _trial_generator: SingleSourceTrialGenerator = field(init=False, repr=False)
-    _test_statistic_factory: LLHTestStatisticFactory = field(init=False, repr=False)
 
     def produce_and_minimize(
         self,
@@ -40,39 +36,14 @@ class SingleSourceLLHAnalysis:
         n_signal: float = 0,
     ) -> tuple:
         """Docstring"""
-        trial = self._trial_generator(n_signal=n_signal)
-        test_statistic = self._test_statistic_factory(params, trial)
-        minimizer = self.minimizer_class(
-            self.config[self.minimizer_class.__name__], test_statistic)
+        trial = self.trial_generator(n_signal=n_signal)
+        test_statistic = self.test_statistic_factory(params, trial)
+        minimizer = self.minimizer_factory(test_statistic)
         return minimizer(fitting_params)
 
     def generate_params(self) -> Params:
         """Docstring"""
-        return self._test_statistic_factory.generate_params()
-
-    @property
-    def test_statistic_factory(self) -> LLHTestStatisticFactory:
-        """Docstring"""
-        return self._test_statistic_factory
-
-    @property
-    def trial_generator(self) -> SingleSourceTrialGenerator:
-        """Docstring"""
-        return self._trial_generator
-
-    @property
-    def sob_term_factories(self) -> List[SoBTermFactory]:
-        """Docstring"""
-        return self._sob_term_factories
-
-    @sob_term_factories.setter
-    def sob_term_factories(self, sob_term_factories: List[SoBTermFactory]) -> None:
-        """Docstring"""
-        self._sob_term_factories = sob_term_factories
-        self._test_statistic_factory = LLHTestStatisticFactory(  # pylint: disable=too-many-function-args
-            self.config['LLHTestStatisticFactory'],
-            self._sob_term_factories,
-        )
+        return self.test_statistic_factory.generate_params()
 
     @property
     def data_handler_source(self) -> Tuple[DataHandler, PointSource]:
@@ -84,28 +55,34 @@ class SingleSourceLLHAnalysis:
             self, data_handler_source: Tuple[DataHandler, PointSource]) -> None:
         """Docstring"""
         self._data_handler_source = data_handler_source
-        self._trial_generator = SingleSourceTrialGenerator(
-            self.config['SingleSourceTrialGenerator'],
-            *self._data_handler_source,
-        )
+        self.trial_generator.data_handler_source = data_handler_source
 
-    @classmethod
-    def generate_default_config(cls, minimizer_class: Type[Minimizer]) -> dict:
-        """Docstring"""
-        return generate_default_config([
-            minimizer_class,
-            SingleSourceTrialGenerator,
-            LLHTestStatisticFactory,
-        ])
 
-@dataclass
-@configurable
-class SingleSourceFlareStackLLHAnalysis(SingleSourceLLHAnalysis):
+@dataclass(kw_only=True)
+class SingleSourceFlareStackLLHAnalysis(SingleSourceLLHAnalysis, Configurable):
     """Docstring"""
-    _config: ClassVar[dict] = {
+    _config_map: ClassVar[dict] = {
         '_min_sob': ('Minimum Signal-over-background Ratio For Flare', 1),
         '_min_length': ('Minimum Flare Duration (days)', 1),
     }
 
-    _min_sob: float = field(init=False, repr=False)
-    _min_length: float = field(init=False, repr=False)
+    _min_sob: float = 1
+    _min_length: float = 1
+
+    @classmethod
+    def from_config(
+        cls,
+        config: dict,
+        minimizer_factory: MinimizerFactory,
+        test_statistic_factory: LLHTestStatisticFactory,
+        data_handler_source: Tuple[DataHandler, PointSource],
+        trial_generator: SingleSourceTrialGenerator,
+    ) -> 'SingleSourceFlareStackLLHAnalysis':
+        kwargs = {var: config[key] for var, (key, _) in cls._config_map.items()}
+        return cls(
+            minimizer_factory=minimizer_factory,
+            test_statistic_factory=test_statistic_factory,
+            data_handler_source=data_handler_source,
+            trial_generator=trial_generator,
+            **cls._map_kwargs(config),
+        )
