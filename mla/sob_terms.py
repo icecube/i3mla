@@ -19,17 +19,16 @@ import warnings
 import numpy as np
 from scipy.interpolate import UnivariateSpline as Spline
 
-from .core import configurable
+from .configurable import Configurable
 from .params import Params
 from .sources import PointSource
 from .data_handlers import DataHandler
 from .time_profiles import GenericProfile
 
 
-@dataclasses.dataclass
-class SoBTerm:
+@dataclasses.dataclass(kw_only=True)
+class SoBTerm(metaclass=abc.ABCMeta):
     """Docstring"""
-    __metaclass__ = abc.ABCMeta
     name: str
     _params: Params
     _sob: np.ndarray
@@ -50,16 +49,15 @@ class SoBTerm:
         """Docstring"""
 
 
-@dataclasses.dataclass
-@configurable
-class SoBTermFactory:
+@dataclasses.dataclass(kw_only=True)
+class SoBTermFactory(Configurable, metaclass=abc.ABCMeta):
     """Docstring"""
-    __metaclass__ = abc.ABCMeta
+    _config_map: ClassVar[dict] = {'name': ('Name', 'SoBTerm')}
+    name: str = 'SoBTerm'
 
-    config: dict
-
-    _config: ClassVar[dict] = {'name': ('Name', 'SoBTerm')}
-    name: str = dataclasses.field(init=False, repr=False)
+    @classmethod
+    def from_config(cls, config: dict) -> 'SoBTermFactory':
+        return cls(**cls._map_kwargs(config))
 
     @abc.abstractmethod
     def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
@@ -74,7 +72,7 @@ class SoBTermFactory:
         """Docstring"""
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(kw_only=True)
 class SpatialTerm(SoBTerm):
     """Docstring"""
 
@@ -94,15 +92,27 @@ class SpatialTerm(SoBTerm):
         return self._sob
 
 
-@dataclasses.dataclass
-@configurable
-class SpatialTermFactory(SoBTermFactory):
+@dataclasses.dataclass(kw_only=True)
+class SpatialTermFactory(SoBTermFactory, Configurable):
     """Docstring"""
-    config: dict
     data_handler: DataHandler
     source: PointSource
 
-    _config: ClassVar[dict] = {'name': ('Name', 'SpatialTerm')}
+    _config_map: ClassVar[dict] = {'name': ('Name', 'SpatialTerm')}
+
+    @classmethod
+    def from_config(
+        cls,
+        config: dict,
+        data_handler: DataHandler,
+        source: PointSource,
+    ) -> 'SpatialTermFactory':
+        """Docstring"""
+        return cls(
+            data_handler=data_handler,
+            source=source,
+            **cls._map_kwargs(config),
+        )
 
     def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
         """Docstring"""
@@ -122,7 +132,7 @@ class SpatialTermFactory(SoBTermFactory):
         return {}, {}
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(kw_only=True)
 class TimeTerm(SoBTerm):
     """Docstring"""
     _times: np.ndarray
@@ -145,15 +155,27 @@ class TimeTerm(SoBTerm):
         return self._sob * self._signal_time_profile.pdf(self._times)
 
 
-@dataclasses.dataclass
-@configurable
-class TimeTermFactory(SoBTermFactory):
+@dataclasses.dataclass(kw_only=True)
+class TimeTermFactory(SoBTermFactory, Configurable):
     """Docstring"""
-    config: dict
     background_time_profile: GenericProfile
     signal_time_profile: GenericProfile
 
-    _config: ClassVar[dict] = {'name': ('Name', 'TimeTerm')}
+    _config_map: ClassVar[dict] = {'name': ('Name', 'TimeTerm')}
+
+    @classmethod
+    def from_config(
+        cls,
+        config: dict,
+        background_time_profile: GenericProfile,
+        signal_time_profile: GenericProfile,
+    ) -> 'TimeTermFactory':
+        """Docstring"""
+        return cls(
+            background_time_profile=background_time_profile,
+            signal_time_profile=signal_time_profile,
+            **cls._map_kwargs(config),
+        )
 
     def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
         """Docstring"""
@@ -185,7 +207,7 @@ class TimeTermFactory(SoBTermFactory):
         return self.signal_time_profile.params, self.signal_time_profile.param_bounds
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(kw_only=True)
 class SplineMapEnergyTerm(SoBTerm):
     """Docstring"""
     gamma: float
@@ -211,14 +233,12 @@ class SplineMapEnergyTerm(SoBTerm):
         return spline_evals[self._event_spline_idxs]
 
 
-@dataclasses.dataclass
-@configurable
-class SplineMapEnergyTermFactory(SoBTermFactory):
+@dataclasses.dataclass(kw_only=True)
+class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
     """Docstring"""
-    config: dict
     data_handler: DataHandler
 
-    _config: ClassVar[dict] = {
+    _config_map: ClassVar[dict] = {
         'name': ('Name', 'SplineMapEnergyTerm'),
         '_init_gamma': ('Initial Gamma', -2),
         '_sin_dec_bins_config': ('sin(Declination) Bins', 50),
@@ -240,20 +260,28 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         }),
     }
 
-    _init_gamma: float = dataclasses.field(init=False, repr=False)
-    _sin_dec_bins_config: int = dataclasses.field(init=False, repr=False)
-    _log_energy_bins_config: int = dataclasses.field(init=False, repr=False)
-    _log_energy_bounds: Tuple[float, float] = dataclasses.field(init=False, repr=False)
-    _gamma_bins_config: int = dataclasses.field(init=False, repr=False)
-    _gamma_bounds: Tuple[float, float] = dataclasses.field(init=False, repr=False)
-    _norm_bghist_by_dec_band: bool = dataclasses.field(init=False, repr=False)
-    _sob_spline_kwargs: dict = dataclasses.field(init=False, repr=False)
-    _energy_spline_kwargs:dict = dataclasses.field(init=False, repr=False)
+    _init_gamma: float = -2
+    _sin_dec_bins_config: int = 50
+    _log_energy_bins_config: int = 50
+    _log_energy_bounds: Tuple[float, float] = (1, 8)
+    _gamma_bins_config: int = 50
+    _gamma_bounds: Tuple[float, float] = (-4.25, -0.5)
+    _norm_bghist_by_dec_band: bool = False
+    _sob_spline_kwargs: dict = dataclasses.field(
+        default_factory=lambda: {'k': 3, 's': 0, 'ext': 'raise'})
+    _energy_spline_kwargs: dict = dataclasses.field(
+        default_factory=lambda: {'k': 1, 's': 0, 'ext': 3})
 
     _sin_dec_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _gamma_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _spline_map: List[List[Spline]] = dataclasses.field(init=False, repr=False)
+
+    @classmethod
+    def from_config(
+            cls, config: dict, data_handler: DataHandler) -> 'SplineMapEnergyTermFactory':
+        """Docstring"""
+        return cls(data_handler=data_handler, **cls._map_kwargs(config))
 
     def __post_init__(self) -> None:
         """Docstring"""

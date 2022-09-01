@@ -14,12 +14,12 @@ from typing import ClassVar, Dict, List, Optional
 import dataclasses
 import numpy as np
 
-from .core import configurable
+from .configurable import Configurable
 from .sob_terms import SoBTerm, SoBTermFactory
 from .params import Params
 
 
-@dataclasses.dataclass
+@dataclasses.dataclass(kw_only=True)
 class LLHTestStatistic():
     """Docstring"""
     sob_terms: Dict[str, SoBTerm]
@@ -154,20 +154,27 @@ class LLHTestStatistic():
         return self._n_events - self._n_kept
 
 
-@dataclasses.dataclass
-@configurable
-class LLHTestStatisticFactory:
+@dataclasses.dataclass(kw_only=True)
+class LLHTestStatisticFactory(Configurable):
     """Docstring"""
-    config: dict
     sob_term_factories: List[SoBTermFactory]
 
-    _config: ClassVar[dict] = {
+    _config_map: ClassVar[dict] = {
         '_newton_precision': ('Newton Method n_s Precision', 0),
         '_newton_iterations': ('Newton Method n_s Iterations', 20),
     }
 
-    _newton_precision: float = dataclasses.field(init=False, repr=False)
-    _newton_iterations: int = dataclasses.field(init=False, repr=False)
+    _newton_precision: float = 0
+    _newton_iterations: int = 20
+
+    @classmethod
+    def from_config(
+        cls,
+        config: dict,
+        sob_term_factories: List[SoBTermFactory],
+    ) -> 'LLHTestStatisticFactory':
+        """Docstring"""
+        return cls(sob_term_factories=sob_term_factories, **cls._map_kwargs(config))
 
     def __call__(self, params: Params, events: np.ndarray) -> LLHTestStatistic:
         """Docstring"""

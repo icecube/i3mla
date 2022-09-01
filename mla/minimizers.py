@@ -20,18 +20,20 @@ import dataclasses
 import numpy as np
 import scipy.optimize
 
-from . import Configurable
+from .configurable import Configurable
 from .test_statistics import LLHTestStatistic
 
 
 @dataclasses.dataclass
-class MinimizerFactory:
+class MinimizerFactory(metaclass=abc.ABCMeta):
     """Docstring"""
+    
+    @abc.abstractmethod
+    def __call__(self, test_statistic: LLHTestStatistic) -> 'Minimizer':
+        """Docstring"""
 
 
-
-
-@dataclasses.dataclass
+@dataclasses.dataclass(kw_only=True)
 class Minimizer(metaclass=abc.ABCMeta):
     """Docstring"""
     test_statistic: LLHTestStatistic
@@ -42,18 +44,37 @@ class Minimizer(metaclass=abc.ABCMeta):
         """Docstring"""
 
 
-@dataclasses.dataclass
-class GridSearchMinimizer(Minimizer):
+@dataclasses.dataclass(kw_only=True)
+class GridSearchMinimizerFactory(MinimizerFactory, Configurable):
     """Docstring"""
-    config: dict
-
-    _config: ClassVar[dict] = {
+    _config_map: ClassVar[dict] = {
         '_gs_pts': ('GridSearch Points', 5),
         '_min_method': ('Scipy Minimize Method', 'L-BFGS-B'),
     }
 
-    _gs_pts: int = dataclasses.field(init=False, repr=False)
-    _min_method: str = dataclasses.field(init=False, repr=False)
+    _gs_pts: int = 5
+    _min_method: str = 'L-BFGS-B'
+
+    @classmethod
+    def from_config(cls, config: dict) -> 'GridSearchMinimizerFactory':
+        """Docstring"""
+        return cls(**cls._map_kwargs(config))
+
+    def __call__(self, test_statistic: LLHTestStatistic) -> 'GridSearchMinimizer':
+        """Docstring"""
+        return GridSearchMinimizer(
+            _gs_pts=self._gs_pts,
+            _min_method=self._min_method,
+            test_statistic=test_statistic,
+        )
+
+    
+
+@dataclasses.dataclass(kw_only=True)
+class GridSearchMinimizer(Minimizer):
+    """Docstring"""
+    _gs_pts: int
+    _min_method: str
 
     def __call__(
             self, fitting_params: Optional[List[str]] = None) -> Tuple[float, np.ndarray]:

@@ -14,26 +14,29 @@ __status__ = 'Development'
 import dataclasses
 from typing import ClassVar, Tuple
 
-from .core import configurable
+from .configurable import Configurable
 from . import utility_functions as uf
 
 import numpy as np
 
 
-@dataclasses.dataclass
-@configurable
-class PointSource:
+@dataclasses.dataclass(kw_only=True)
+class PointSource(Configurable):
     """Stores a source object name and location"""
-    config: dict
-    _config: ClassVar[dict] = {
+    _config_map: ClassVar[dict] = {
         'name': ('Source Name', 'source_name'),
         '_ra': ('Right Ascension (rad)', np.nan),
         '_dec': ('Declination (rad)', np.nan),
     }
 
-    name: str = dataclasses.field(init=False, repr=False)
-    _ra: float = dataclasses.field(init=False, repr=False)
-    _dec: float = dataclasses.field(init=False, repr=False)
+    name: str = 'source_name'
+    _ra: float
+    _dec: float
+
+    @classmethod
+    def from_config(cls, config: dict) -> 'PointSource':
+        """Docstring"""
+        return cls(**cls._map_kwargs(config))
 
     def sample(self, size: int = 1) -> tuple:
         """Sample locations.
@@ -73,17 +76,20 @@ class PointSource:
         return 0
 
 
-@dataclasses.dataclass
-@configurable
-class GaussianExtendedSource(PointSource):
+@dataclasses.dataclass(kw_only=True)
+class GaussianExtendedSource(PointSource, Configurable):
     """Gaussian Extended Source"""
-    config: dict
-    _config: ClassVar[dict] = {
-        **PointSource._config,
+    _config_map: ClassVar[dict] = {
+        **PointSource._config_map,
         '_sigma': ('Sigma (rad)', np.deg2rad(1)),
     }
 
-    _sigma: float = dataclasses.field(init=False, repr=False)
+    sigma: float = np.deg2rad(1)
+
+    @classmethod
+    def from_config(cls, config: dict) -> 'GaussianExtendedSource':
+        """Docstring"""
+        return cls(**cls._map_kwargs(config))
 
     def sample(self, size: int = 1) -> np.ndarray:
         """Sample locations.
@@ -95,8 +101,3 @@ class GaussianExtendedSource(PointSource):
         x = np.random.normal(mean[0], self.sigma, size=size)
         y = np.random.normal(mean[1], self.sigma, size=size)
         return np.array([x, y])
-
-    @property
-    def sigma(self) -> float:
-        """return sigma for GaussianExtendedSource"""
-        return self._sigma

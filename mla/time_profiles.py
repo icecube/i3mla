@@ -21,12 +21,12 @@ import dataclasses
 import numpy as np
 import scipy.stats
 
-from .core import configurable
+from .configurable import Configurable
 from .params import Params
 
 
-@dataclasses.dataclass
-class GenericProfile:
+@dataclasses.dataclass(kw_only=True)
+class GenericProfile(metaclass=abc.ABCMeta):
     """A generic base class to standardize the methods for the time profiles.
 
     While I'm only currently using scipy-based
@@ -43,9 +43,6 @@ class GenericProfile:
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
     """
-
-    __metaclass__ = abc.ABCMeta
-
     @abc.abstractmethod
     def pdf(self, times: np.ndarray) -> np.ndarray:
         """Get the probability amplitude given a time for this time profile.
@@ -161,9 +158,8 @@ class GenericProfile:
         """
 
 
-@dataclasses.dataclass
-@configurable
-class GaussProfile(GenericProfile):
+@dataclasses.dataclass(kw_only=True)
+class GaussProfile(GenericProfile, Configurable):
     """Time profile class for a gaussian distribution.
 
     Use this to produce gaussian-distributed times for your source.
@@ -180,18 +176,22 @@ class GaussProfile(GenericProfile):
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
     """
-    config: dict
-    _config: ClassVar[dict] = {
+    _config_map: ClassVar[dict] = {
         '_mean': ('Mean (MJD)', np.nan),
         '_sigma': ('Sigma (days)', np.nan),
     }
 
-    _mean: float = dataclasses.field(init=False, repr=False)
-    _sigma: float = dataclasses.field(init=False, repr=False)
+    _mean: float
+    _sigma: float
 
     scipy_dist: scipy.stats.distributions.rv_frozen = dataclasses.field(init=False)
     _param_dtype: ClassVar[np.dtype] = np.dtype(
         [('mean', np.float32), ('sigma', np.float32)])
+
+    @classmethod
+    def from_config(cls, config: dict) -> 'GaussProfile':
+        """Docstring"""
+        return cls(**cls._map_kwargs(config))
 
     def __post_init__(self) -> None:
         """Initializes the time profile."""
@@ -312,9 +312,8 @@ class GaussProfile(GenericProfile):
         return self._param_dtype
 
 
-@dataclasses.dataclass
-@configurable
-class UniformProfile(GenericProfile):
+@dataclasses.dataclass(kw_only=True)
+class UniformProfile(GenericProfile, Configurable):
     """Time profile class for a uniform distribution.
 
     Use this for background or if you want to assume a steady signal from
@@ -329,18 +328,22 @@ class UniformProfile(GenericProfile):
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
     """
-    config: dict
-    _config: ClassVar[dict] = {
+    _config_map: ClassVar[dict] = {
         '_start': ('Start (MJD)', np.nan),
         '_length': ('Length (days)', np.nan),
     }
 
-    _start: float = dataclasses.field(init=False, repr=False)
-    _length: float = dataclasses.field(init=False, repr=False)
+    _start: float
+    _length: float
 
     _range: Tuple[float, float] = dataclasses.field(init=False, repr=False)
     _param_dtype: ClassVar[np.dtype] = np.dtype(
         [('start', np.float32), ('length', np.float32)])
+
+    @classmethod
+    def from_config(cls, config: dict) -> 'UniformProfile':
+        """Docstring"""
+        return cls(**cls._map_kwargs(config))
 
     def __post_init__(self) -> None:
         """Constructs the time profile."""
@@ -453,9 +456,8 @@ class UniformProfile(GenericProfile):
         return self._param_dtype
 
 
-@dataclasses.dataclass
-@configurable
-class CustomProfile(GenericProfile):
+@dataclasses.dataclass(kw_only=True)
+class CustomProfile(GenericProfile, Configurable):
     """Time profile class for a custom binned distribution.
 
     This time profile uses a binned pdf defined between 0 and 1. Normalization
@@ -476,22 +478,30 @@ class CustomProfile(GenericProfile):
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
     """
-    config: dict
     dist: Callable[[np.ndarray, Tuple[float, float]], np.ndarray]
 
-    _config = {
+    _config_map = {
         '_range': ('Range (MJD, MJD)', (np.nan, np.nan)),
         '_bins': ('Bins', 100),
         '_offset': ('Offset (days)', 0),
     }
 
-    _range: Tuple[float, float] = dataclasses.field(init=False, repr=False)
-    _bins: int = dataclasses.field(init=False, repr=False)
-    _offset: float = dataclasses.field(init=False, repr=False)
+    _range: Tuple[float, float]
+    _bins: int = 100
+    _offset: float = 0 
     
     _dist: scipy.stats.rv_histogram = dataclasses.field(init=False, repr=False)
     _exposure: float = dataclasses.field(init=False, repr=False)
     _param_dtype: ClassVar[np.dtype] = np.dtype([('offset', np.float32)])
+
+    @classmethod
+    def from_config(
+        cls,
+        config: dict,
+        dist: Callable[[np.ndarray, Tuple[float, float]], np.ndarray],
+    ) -> 'CustomProfile':
+        """Docstring"""
+        return cls(dist=dist, **cls._map_kwargs(config))
 
     @property
     def dist(self) -> scipy.stats.rv_histogram:

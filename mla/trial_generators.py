@@ -10,34 +10,47 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 import dataclasses
-from typing import ClassVar, Optional
+from typing import ClassVar, Optional, Tuple
 
 import numpy as np
 import numpy.lib.recfunctions as rf
 
 from . import utility_functions as uf
-from .core import configurable
+from .configurable import Configurable
 from .data_handlers import DataHandler
 from .sources import PointSource
 
 
-@dataclasses.dataclass
-@configurable
-class SingleSourceTrialGenerator:
+@dataclasses.dataclass(kw_only=True)
+class SingleSourceTrialGenerator(Configurable):
     """Docstring"""
-    config: dict
     data_handler: DataHandler
     source: PointSource
 
-    _config: ClassVar[dict] = {
+    _config_map: ClassVar[dict] = {
         '_random_seed': ('Random Seed', None),
         '_fixed_ns': ('Fixed n_s', False),
     }
 
-    _random_seed: Optional[int] = dataclasses.field(init=False, repr=False)
-    _fixed_ns: bool = dataclasses.field(init=False, repr=False)
+    _random_seed: Optional[int] = None 
+    _fixed_ns: bool = False 
 
+    _data_handler: DataHandler = dataclasses.field(init=False, repr=False)
     _source: PointSource = dataclasses.field(init=False, repr=False)
+
+    @classmethod
+    def from_config(
+        cls,
+        config: dict,
+        data_handler: DataHandler,
+        source: PointSource,
+    ) -> 'SingleSourceTrialGenerator':
+        """Docstring"""
+        return cls(
+            data_handler=data_handler,
+            source=source,
+            **cls._map_kwargs(config),
+        )
 
     def __call__(self, n_signal: float = 0) -> np.ndarray:
         """Produces a single trial of background+signal events based on inputs.
@@ -107,5 +120,29 @@ class SingleSourceTrialGenerator:
     @source.setter
     def source(self, source: PointSource) -> None:
         """Docstring"""
-        self.data_handler.dec_cut_loc = source.location[1]
+        self._data_handler.dec_cut_loc = source.location[1]
         self._source = source
+
+    @property
+    def data_handler(self) -> DataHandler:
+        """Docstring"""
+        return self._data_handler
+
+    @data_handler.setter
+    def data_handler(self, data_handler: DataHandler) -> None:
+        """Docstring"""
+        self._data_handler = data_handler
+        self._data_handler.dec_cut_loc = self._source.location[1]
+
+    @property
+    def data_handler_source(self) -> Tuple[DataHandler, PointSource]:
+        """Docstring"""
+        return (self._data_handler, self._source)
+
+    @data_handler_source.setter
+    def data_handler_source(
+            self, data_handler_source: Tuple[DataHandler, PointSource]) -> None:
+        """Docstring"""
+        self._data_handler = data_handler_source[0]
+        self._source = data_handler_source[1]
+        self._data_handler.dec_cut_loc = self._source.location[1]

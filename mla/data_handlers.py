@@ -20,7 +20,7 @@ import numpy as np
 import numpy.lib.recfunctions as rf
 from scipy.interpolate import UnivariateSpline as Spline
 
-from . import Configurable
+from .configurable import Configurable
 from .time_profiles import GenericProfile
 
 
@@ -95,7 +95,8 @@ class NuSourcesDataHandler(DataHandler, Configurable):
     _dec_cut_loc: Optional[float] = None
     _dec_band: Optional[float] = None
     _sin_dec_bins_config: int = 30
-    _dec_spline_kwargs: dict = {'bbox': [-1, 1], 's': 1.5e-5, 'ext': 3}
+    _dec_spline_kwargs: dict = field(
+        default_factory=lambda: {'bbox': [-1, 1], 's': 1.5e-5, 'ext': 3})
 
     _sim: np.ndarray = field(init=False, repr=False)
     _full_sim: np.ndarray = field(init=False, repr=False)
