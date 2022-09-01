@@ -789,11 +789,19 @@ class IceCubeLike(PluginPrototype):
         return self._dec
 
 
-class icecube_analysis(object):
-    """Docstring"""
 
-    def __init__(self, listoficecubelike):
+
+class icecube_analysis(PluginPrototype):
+    """Docstring"""
+      
+    def __init__(self,
+        listoficecubelike,
+        newton_flux_norm = False,
+        name = "combine",
+        verbose = False):
         """Docstring"""
+        nuisance_parameters = {}
+        super(icecube_analysis, self).__init__(name, nuisance_parameters)
         self.listoficecubelike = listoficecubelike
         self.livetime_ratio = []  # livetime ratio between sample
         self.effA_ratio = []
@@ -801,6 +809,82 @@ class icecube_analysis(object):
         self._p = []
         self.mc_index = []
         self.init_mc_array()
+        self.newton_flux_norm = newton_flux_norm
+        self.verbose = verbose
+        self.current_fit_ns = 0
+
+    
+    def get_log_like(self, verbose=None):
+        if self.newton_flux_norm:
+            sob = []
+            n_drop = 0
+            for icecubeobject in self.listoficecubelike:
+                icecubeobject.update_model()
+                sob = np.append(sob,icecubeobject.test_statistic._calculate_sob())
+                n_drop += icecubeobject.test_statistic.n_dropped
+            ns_ratio = self.newton_method(sob, n_drop)
+            llh = np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1)
+            drop_term = np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio))
+            llh = 2 * (llh.sum() + n_drop * drop_term)
+            self.current_fit_ns = ns_ratio*(len(sob)+n_drop)
+            if self.verbose:
+                print(self.current_fit_ns, llh)
+                
+        else:
+            llh = 0
+            ns = 0
+            for icecubeobject in self.listoficecubelike:
+                icecubeobject.update_model()
+                llh += icecubeobject.get_log_like()
+                ns += icecubeobject.get_current_fit_ns()
+            self.current_fit_ns = ns
+            if self.verbose:
+                print(self.current_fit_ns, llh)
+        return llh
+    
+    def get_current_fit_ns(self):
+        return self.current_fit_ns
+        
+    
+    def newton_method(self, sob: np.ndarray , n_drop: float) -> float:
+        """Docstring
+
+        Args:
+            sob:
+            n_drop:
+        Returns:
+
+        """
+        newton_precision = 0
+        newton_iterations = 20
+        precision = newton_precision + 1
+        eps = 1e-5
+        k = 1 / (sob - 1)
+        x = [0.] * newton_iterations
+
+        for i in range(newton_iterations - 1):
+            # get next iteration and clamp
+            inv_terms = x[i] + k
+            inv_terms[inv_terms == 0] = eps
+            terms = 1 / inv_terms
+            drop_term = 1 / (x[i] - 1)
+            d1 = np.sum(terms) + n_drop * drop_term
+            d2 = np.sum(terms**2) + n_drop * drop_term**2
+            x[i + 1] = min(1 - eps, max(0, x[i] + d1 / d2))
+
+            if x[i] == x[i + 1] or (
+                x[i] < x[i + 1] and x[i + 1] <= x[i] * precision
+            ) or (x[i + 1] < x[i] and x[i] <= x[i + 1] * precision):
+                break
+        return x[i + 1]
+    
+    def set_model(self, likelihood_model_instance):
+        for icecubeobject in self.listoficecubelike:
+            icecubeobject.set_model(likelihood_model_instance)
+        return
+    
+    def inner_fit(self):
+        return self.get_log_like()
 
     def init_mc_array(self):
         """Docstring"""

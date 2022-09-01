@@ -226,12 +226,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
             )
         else:
             self._log_energy_bins = self.config['list_log_energy_bins']
-        self.data_handler.reduced_reco_sim = (
-            self.data_handler.cut_reconstructed_sim(
-                self.source.location[1],
-                self.data_handler.config['reco_sampling_width'],
-            )
-        )
+
         self._gamma_bins = np.linspace(
             *self.config['gamma_bounds'], 1 + self.config['gamma_bins'])
         self._spline_map = self._init_spline_map()
