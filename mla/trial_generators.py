@@ -13,30 +13,34 @@ import dataclasses
 from typing import ClassVar, Optional, Tuple
 
 import numpy as np
-import numpy.lib.recfunctions as rf
 
 from . import utility_functions as uf
 from .configurable import Configurable
 from .data_handlers import DataHandler
 from .sources import PointSource
+from .events import Events, SimEvents
 
 
 @dataclasses.dataclass(kw_only=True)
 class SingleSourceTrialGenerator(Configurable):
     """Docstring"""
-    data_handler: DataHandler
-    source: PointSource
+    data_handler: dataclasses.InitVar[DataHandler]
+    source: dataclasses.InitVar[PointSource]
 
     _config_map: ClassVar[dict] = {
         '_random_seed': ('Random Seed', None),
         '_fixed_ns': ('Fixed n_s', False),
     }
 
-    _random_seed: Optional[int] = None 
-    _fixed_ns: bool = False 
+    _random_seed: Optional[int] = None
+    _fixed_ns: bool = False
 
     _data_handler: DataHandler = dataclasses.field(init=False, repr=False)
     _source: PointSource = dataclasses.field(init=False, repr=False)
+
+    def __post_init__(self, data_handler: DataHandler, source: PointSource) -> None:
+        self._source = source
+        self.data_handler = data_handler
 
     @classmethod
     def from_config(
@@ -52,7 +56,7 @@ class SingleSourceTrialGenerator(Configurable):
             **cls._map_kwargs(config),
         )
 
-    def __call__(self, n_signal: float = 0) -> np.ndarray:
+    def __call__(self, n_signal: float = 0) -> Events:
         """Produces a single trial of background+signal events based on inputs.
 
         Args:
@@ -67,49 +71,47 @@ class SingleSourceTrialGenerator(Configurable):
             n_signal = rng.poisson(self.data_handler.calculate_n_signal(n_signal))
 
         background = self.data_handler.sample_background(n_background, rng)
-        background['ra'] = rng.uniform(0, 2 * np.pi, len(background))
+        background.ra = rng.uniform(0, 2 * np.pi, len(background))
 
         if n_signal > 0:
             signal = self.data_handler.sample_signal(int(n_signal), rng)
             signal = self._rotate_signal(signal)
         else:
-            signal = np.empty(0, dtype=background.dtype)
+            signal = SimEvents.empty()
 
         # Because we want to return the entire event and not just the
         # number of events, we need to do some numpy magic. Specifically,
         # we need to remove the fields in the simulated events that are
         # not present in the data events. These include the true direction,
         # energy, and 'oneweight'.
-        signal = rf.drop_fields(
-            signal, [n for n in signal.dtype.names if n not in background.dtype.names])
+        signal = signal.to_events()
 
         # Combine the signal background events and time-sort them.
         # Use recfunctions.stack_arrays to prevent numpy from scrambling entry order
-        return rf.stack_arrays([background, signal], autoconvert=True, usemask=False)
+        return Events.concatenate([signal, background])
 
-    def _rotate_signal(self, signal: np.ndarray) -> np.ndarray:
+    def _rotate_signal(self, signal: SimEvents) -> SimEvents:
         """Docstring"""
         ra, dec = self.source.sample(len(signal))
 
-        signal['ra'], signal['dec'] = uf.rotate(
-            signal['trueRa'],
-            signal['trueDec'],
+        signal.ra, signal.dec = uf.rotate(
+            signal.trueRa,
+            signal.trueDec,
             ra,
             dec,
-            signal['ra'],
-            signal['dec'],
+            signal.ra,
+            signal.dec,
         )
 
-        signal['trueRa'], signal['trueDec'] = uf.rotate(
-            signal['trueRa'],
-            signal['trueDec'],
+        signal.trueRa, signal.trueDec = uf.rotate(
+            signal.trueRa,
+            signal.trueDec,
             ra,
             dec,
-            signal['trueRa'],
-            signal['trueDec'],
+            signal.trueRa,
+            signal.trueDec,
         )
 
-        signal['sindec'] = np.sin(signal['dec'])
         return signal
 
     @property

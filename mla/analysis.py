@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 from typing import ClassVar, List, Tuple
-from dataclasses import dataclass, field
+from dataclasses import InitVar, dataclass, field
 
 from .configurable import Configurable
 from .data_handlers import DataHandler
@@ -25,9 +25,12 @@ class SingleSourceLLHAnalysis:
     """Docstring"""
     minimizer_factory: MinimizerFactory
     test_statistic_factory: LLHTestStatisticFactory
-    data_handler_source: Tuple[DataHandler, PointSource]
+    data_handler_source: InitVar[Tuple[DataHandler, PointSource]]
     trial_generator: SingleSourceTrialGenerator
     _data_handler_source: Tuple[DataHandler, PointSource] = field(init=False, repr=False)
+
+    def __post_init__(self, data_handler_source: Tuple[DataHandler, PointSource]) -> None:
+        self.data_handler_source = data_handler_source
 
     def produce_and_minimize(
         self,
@@ -78,7 +81,6 @@ class SingleSourceFlareStackLLHAnalysis(SingleSourceLLHAnalysis, Configurable):
         data_handler_source: Tuple[DataHandler, PointSource],
         trial_generator: SingleSourceTrialGenerator,
     ) -> 'SingleSourceFlareStackLLHAnalysis':
-        kwargs = {var: config[key] for var, (key, _) in cls._config_map.items()}
         return cls(
             minimizer_factory=minimizer_factory,
             test_statistic_factory=test_statistic_factory,

@@ -24,6 +24,7 @@ from .params import Params
 from .sources import PointSource
 from .data_handlers import DataHandler
 from .time_profiles import GenericProfile
+from .events import Events
 
 
 @dataclasses.dataclass(kw_only=True)
@@ -60,11 +61,11 @@ class SoBTermFactory(Configurable, metaclass=abc.ABCMeta):
         return cls(**cls._map_kwargs(config))
 
     @abc.abstractmethod
-    def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
+    def __call__(self, params: Params, events: Events) -> SoBTerm:
         """Docstring"""
 
     @abc.abstractmethod
-    def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
+    def calculate_drop_mask(self, events: Events) -> np.ndarray:
         """Docstring"""
 
     @abc.abstractmethod
@@ -114,7 +115,7 @@ class SpatialTermFactory(SoBTermFactory, Configurable):
             **cls._map_kwargs(config),
         )
 
-    def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
+    def __call__(self, params: Params, events: Events) -> SoBTerm:
         """Docstring"""
         sob_spatial = self.source.spatial_pdf(events)
         sob_spatial /= self.data_handler.evaluate_background_sindec_pdf(events)
@@ -124,7 +125,7 @@ class SpatialTermFactory(SoBTermFactory, Configurable):
             _sob=sob_spatial,
         )
 
-    def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
+    def calculate_drop_mask(self, events: Events) -> np.ndarray:
         """Docstring"""
         return self.source.spatial_pdf(events) != 0
 
@@ -177,10 +178,10 @@ class TimeTermFactory(SoBTermFactory, Configurable):
             **cls._map_kwargs(config),
         )
 
-    def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
+    def __call__(self, params: Params, events: Events) -> SoBTerm:
         """Docstring"""
-        times = np.empty(len(events), dtype=events['time'].dtype)
-        times[:] = events['time'][:]
+        times = np.empty(len(events), dtype=events.time.dtype)
+        times[:] = events.time[:]
         signal_time_profile = copy.deepcopy(self.signal_time_profile)
         signal_time_profile.params = params
         sob_bg = 1 / self.background_time_profile.pdf(times)
@@ -199,9 +200,9 @@ class TimeTermFactory(SoBTermFactory, Configurable):
             _signal_time_profile=signal_time_profile,
         )
 
-    def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
+    def calculate_drop_mask(self, events: Events) -> np.ndarray:
         """Docstring"""
-        return 1 / self.background_time_profile.pdf(events['time']) != 0
+        return 1 / self.background_time_profile.pdf(events.time) != 0
 
     def generate_params(self) -> tuple:
         return self.signal_time_profile.params, self.signal_time_profile.param_bounds
@@ -292,10 +293,10 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
             *self._gamma_bounds, 1 + self._gamma_bins_config)
         self._spline_map = self._init_spline_map()
 
-    def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
+    def __call__(self, params: Params, events: Events) -> SoBTerm:
         """Docstring"""
-        sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1], events['sindec'])
-        log_energy_idx = np.searchsorted(self._log_energy_bins[:-1], events['logE'])
+        sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1], events.sinDec)
+        log_energy_idx = np.searchsorted(self._log_energy_bins[:-1], events.logE)
 
         spline_idxs, event_spline_idxs = np.unique(
             [sin_dec_idx - 1, log_energy_idx - 1],
@@ -314,7 +315,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
             _event_spline_idxs=event_spline_idxs,
         )
 
-    def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
+    def calculate_drop_mask(self, events: Events) -> np.ndarray:
         """Docstring"""
         return np.ones(len(events), dtype=bool)
 

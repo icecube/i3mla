@@ -15,6 +15,7 @@ import dataclasses
 from typing import ClassVar, Tuple
 
 from .configurable import Configurable
+from .events import Events
 from . import utility_functions as uf
 
 import numpy as np
@@ -46,7 +47,7 @@ class PointSource(Configurable):
         """
         return (np.ones(size) * self._ra, np.ones(size) * self._dec)
 
-    def spatial_pdf(self, events: np.ndarray) -> np.ndarray:
+    def spatial_pdf(self, events: Events) -> np.ndarray:
         """calculates the signal probability of events.
 
         gives a gaussian probability based on their angular distance from the
@@ -60,8 +61,8 @@ class PointSource(Configurable):
             the value for the signal spatial pdf for the given events angular
             distances.
         """
-        sigma2 = events['angErr']**2 + self.sigma**2
-        dist = uf.angular_distance(events['ra'], events['dec'], *self.location)
+        sigma2 = events.angErr**2 + self.sigma**2
+        dist = uf.angular_distance(events.ra, events.dec, *self.location)
         norm = 1 / (2 * np.pi * sigma2)
         return norm * np.exp(-dist**2 / (2 * sigma2))
 

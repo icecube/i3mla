@@ -147,12 +147,6 @@ class GenericProfile(metaclass=abc.ABCMeta):
 
     @property
     @abc.abstractmethod
-    def default_params(self) -> Dict[str, float]:
-        """Returns the initial parameters formatted for ts calculation output.
-        """
-
-    @property
-    @abc.abstractmethod
     def param_dtype(self) -> np.dtype:
         """Returns the parameter names and datatypes formatted for numpy dtypes.
         """
@@ -488,8 +482,8 @@ class CustomProfile(GenericProfile, Configurable):
 
     _range: Tuple[float, float]
     _bins: int = 100
-    _offset: float = 0 
-    
+    _offset: float = 0
+
     _dist: scipy.stats.rv_histogram = dataclasses.field(init=False, repr=False)
     _exposure: float = dataclasses.field(init=False, repr=False)
     _param_dtype: ClassVar[np.dtype] = np.dtype([('offset', np.float32)])

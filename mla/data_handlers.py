@@ -13,15 +13,15 @@ from typing import ClassVar, Optional, Tuple
 
 import abc
 import copy
-from dataclasses import dataclass
+from dataclasses import InitVar, dataclass
 from dataclasses import field
 
 import numpy as np
-import numpy.lib.recfunctions as rf
 from scipy.interpolate import UnivariateSpline as Spline
 
 from .configurable import Configurable
 from .time_profiles import GenericProfile
+from .events import Events, SimEvents
 
 
 @dataclass(kw_only=True)
@@ -31,11 +31,11 @@ class DataHandler:
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def sample_background(self, n: int, rng: np.random.Generator) -> np.ndarray:
+    def sample_background(self, n: int, rng: np.random.Generator) -> Events:
         """Docstring"""
 
     @abc.abstractmethod
-    def sample_signal(self, n: int, rng: np.random.Generator) -> np.ndarray:
+    def sample_signal(self, n: int, rng: np.random.Generator) -> SimEvents:
         """Docstring"""
 
     @abc.abstractmethod
@@ -43,7 +43,7 @@ class DataHandler:
         """Docstring"""
 
     @abc.abstractmethod
-    def evaluate_background_sindec_pdf(self, events: np.ndarray) -> np.ndarray:
+    def evaluate_background_sindec_pdf(self, events: Events) -> np.ndarray:
         """Docstring"""
 
     @abc.abstractmethod
@@ -74,8 +74,8 @@ class DataHandler:
 @dataclass(kw_only=True)
 class NuSourcesDataHandler(DataHandler, Configurable):
     """Docstring"""
-    sim: np.ndarray
-    data_grl: Tuple[np.ndarray, np.ndarray]
+    sim: InitVar[SimEvents]
+    data_grl: InitVar[Tuple[Events, np.ndarray]]
 
     _config_map: ClassVar[dict] = {
         '_norm_energy': ('Normalization Energy (GeV)', 100e3),
@@ -98,43 +98,41 @@ class NuSourcesDataHandler(DataHandler, Configurable):
     _dec_spline_kwargs: dict = field(
         default_factory=lambda: {'bbox': [-1, 1], 's': 1.5e-5, 'ext': 3})
 
-    _sim: np.ndarray = field(init=False, repr=False)
-    _full_sim: np.ndarray = field(init=False, repr=False)
-    _data: np.ndarray = field(init=False, repr=False)
-    _grl: np.ndarray = field(init=False, repr=False)
+    _sim: SimEvents = field(init=False, repr=False)
+    _full_sim: SimEvents = field(init=False, repr=False)
+    _data: Events = field(init=False, repr=False)
     _n_background: float = field(init=False, repr=False)
     _grl_rates: np.ndarray = field(init=False, repr=False)
     _dec_spline: Spline = field(init=False, repr=False)
     _livetime: float = field(init=False, repr=False)
     _sin_dec_bins: np.ndarray = field(init=False, repr=False)
 
+    def __post_init__(self, sim: SimEvents, data_grl: Tuple[Events, np.ndarray]) -> None:
+        self.sim = sim
+        self.data_grl = data_grl
+
     @classmethod
     def from_config(
             cls,
             config: dict,
-            sim: np.ndarray,
-            data_grl: Tuple[np.ndarray, np.ndarray],
+            sim: SimEvents,
+            data_grl: Tuple[Events, np.ndarray],
     ) -> 'NuSourcesDataHandler':
         return cls(sim=sim, data_grl=data_grl, **cls._map_kwargs(config))
 
-    def sample_background(self, n: int, rng: np.random.Generator) -> np.ndarray:
+    def sample_background(self, n: int, rng: np.random.Generator) -> Events:
         """Docstring"""
-        return rng.choice(self._data, n)
+        return self.data_grl[0].sample(n, rng)
 
-    def sample_signal(self, n: int, rng: np.random.Generator) -> np.ndarray:
+    def sample_signal(self, n: int, rng: np.random.Generator) -> SimEvents:
         """Docstring"""
-        return rng.choice(
-            self.sim,
-            n,
-            p=self.sim['weight'] / self.sim['weight'].sum(),
-            replace=False,
-        )
+        return self.sim.sample(n, rng)
 
     def calculate_n_signal(self, time_integrated_flux: float) -> float:
         """Docstring"""
-        return self.sim['weight'].sum() * time_integrated_flux
+        return self.sim.weight.sum() * time_integrated_flux
 
-    def evaluate_background_sindec_pdf(self, events: np.ndarray) -> np.ndarray:
+    def evaluate_background_sindec_pdf(self, events: Events) -> np.ndarray:
         """Calculates the background probability of events based on their dec.
 
         Args:
@@ -143,13 +141,13 @@ class NuSourcesDataHandler(DataHandler, Configurable):
         Returns:
             The value for the background space pdf for the given events decs.
         """
-        return (1 / (2 * np.pi)) * self._dec_spline(events['sindec'])
+        return (1 / (2 * np.pi)) * self._dec_spline(events.sinDec)
 
     def build_background_sindec_logenergy_histogram(self, bins: np.ndarray) -> np.ndarray:
         """Docstring"""
         return np.histogram2d(
-            self._data['sindec'],
-            self._data['logE'],
+            self._data.sinDec,
+            self._data.logE,
             bins=bins,
             density=True,
         )[0]
@@ -161,8 +159,8 @@ class NuSourcesDataHandler(DataHandler, Configurable):
     ) -> np.ndarray:
         """Docstring"""
         return np.histogram2d(
-            self._full_sim['sindec'],
-            self._full_sim['logE'],
+            self._full_sim.sinDec,
+            self._full_sim.logE,
             bins=bins,
             weights=self._full_sim[mcbkgname],
             density=True,
@@ -172,45 +170,30 @@ class NuSourcesDataHandler(DataHandler, Configurable):
             self, gamma: float, bins: np.ndarray) -> np.ndarray:
         """Docstring"""
         return np.histogram2d(
-            self.full_sim['sindec'],
-            self.full_sim['logE'],
+            self.full_sim.sinDec,
+            self.full_sim.logE,
             bins=bins,
-            weights=self.full_sim['ow'] * self.full_sim['trueE']**gamma,
+            weights=self.full_sim.ow * self.full_sim.trueE**gamma,
             density=True,
         )[0]
 
     @property
-    def sim(self) -> np.ndarray:
+    def sim(self) -> SimEvents:
         """Docstring"""
         return self._sim
 
     @property
-    def full_sim(self) -> np.ndarray:
+    def full_sim(self) -> SimEvents:
         """Docstring"""
         return self._full_sim
 
     @sim.setter
-    def sim(self, sim: np.ndarray) -> None:
+    def sim(self, sim: SimEvents) -> None:
         """Docstring"""
         self._full_sim = sim.copy()
 
-        if 'sindec' not in self._full_sim.dtype.names:
-            self._full_sim = rf.append_fields(
-                self._full_sim,
-                'sindec',
-                np.sin(self._full_sim['dec']),
-                usemask=False,
-            )
-
-        if 'weight' not in self._full_sim.dtype.names:
-            self._full_sim = rf.append_fields(
-                self._full_sim, 'weight',
-                np.zeros(len(self._full_sim)),
-                dtypes=np.float32
-            )
-
-        self._full_sim['weight'] = self._full_sim['ow'] * (
-            self._full_sim['trueE'] / self._norm_energy)**self._assumed_gamma
+        self._full_sim.weight = self._full_sim.ow * (
+            self._full_sim.trueE / self._norm_energy)**self._assumed_gamma
 
         self._cut_sim_dec()
 
@@ -220,42 +203,35 @@ class NuSourcesDataHandler(DataHandler, Configurable):
             self._sim = self._full_sim
             return
 
-        sindec_dist = np.abs(self._dec_cut_loc - self._full_sim['trueDec'])
+        sindec_dist = np.abs(self._dec_cut_loc - self._full_sim.trueDec)
         close = sindec_dist < self._dec_band
-        self._sim = self._full_sim[close].copy()
+        self._sim = self._full_sim.from_idx(close)
 
-        self._sim['ow'] /= 2 * np.pi * (np.min([np.sin(
+        self._sim.ow /= 2 * np.pi * (np.min([np.sin(
             self._dec_cut_loc + self._dec_band
         ), 1]) - np.max([np.sin(
             self._dec_cut_loc - self._dec_band
         ), -1]))
-        self._sim['weight'] /= 2 * np.pi * (np.min([np.sin(
+        self._sim.weight /= 2 * np.pi * (np.min([np.sin(
             self._dec_cut_loc + self._dec_band
         ), 1]) - np.max([np.sin(
             self._dec_cut_loc - self._dec_band
         ), -1]))
 
     @property
-    def data_grl(self) -> Tuple[np.ndarray, np.ndarray]:
+    def data_grl(self) -> Tuple[Events, np.ndarray]:
         """Docstring"""
         return self._data, self._grl
 
     @data_grl.setter
-    def data_grl(self, data_grl: Tuple[np.ndarray, np.ndarray]) -> None:
+    def data_grl(self, data_grl: Tuple[Events, np.ndarray]) -> None:
         """Docstring"""
         self._sin_dec_bins = np.linspace(-1, 1, 1 + self._sin_dec_bins_config)
         self._data = data_grl[0].copy()
         self._grl = data_grl[1].copy()
-        if 'sindec' not in self._data.dtype.names:
-            self._data = rf.append_fields(
-                self._data,
-                'sindec',
-                np.sin(self._data['dec']),
-                usemask=False,
-            )
 
-        min_mjd = np.min(self._data['time'])
-        max_mjd = np.max(self._data['time'])
+        min_mjd = np.min(self._data.time)
+        max_mjd = np.max(self._data.time)
         self._grl = self._grl[
             (self._grl['start'] < max_mjd) & (self._grl['stop'] > min_mjd)]
 
@@ -264,7 +240,7 @@ class NuSourcesDataHandler(DataHandler, Configurable):
         self._grl_rates = self._grl['events'] / self._grl['livetime']
 
         hist, bins = np.histogram(
-            self._data['sindec'], bins=self._sin_dec_bins, density=True)
+            self._data.sinDec, bins=self._sin_dec_bins, density=True)
         bin_centers = bins[:-1] + np.diff(bins) / 2
 
         self._dec_spline = Spline(bin_centers, hist, **self._dec_spline_kwargs)
@@ -287,30 +263,41 @@ class NuSourcesDataHandler(DataHandler, Configurable):
     def dec_cut_loc(self, new_dec_cut_loc: Optional[float]) -> None:
         self._dec_cut_loc = new_dec_cut_loc
         self._cut_sim_dec()
-        
+
 
 @dataclass(kw_only=True)
 class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
     """Docstring"""
-    background_time_profile: GenericProfile
-    signal_time_profile: GenericProfile
+    background_time_profile: InitVar[GenericProfile]
+    signal_time_profile: InitVar[GenericProfile]
 
     _config_map: ClassVar[dict] = {
         **NuSourcesDataHandler._config_map,
         '_outside_time_prof': ('Outside Time Profile (days)', None),
     }
 
-    _outside_time_prof: Optional[float] = field(init=False, repr=False)
+    _outside_time_prof: Optional[float] = None
 
     _background_time_profile: GenericProfile = field(init=False, repr=False)
     _signal_time_profile: GenericProfile = field(init=False, repr=False)
+
+    def __post_init__(
+        self,
+        sim: SimEvents,
+        data_grl: Tuple[Events, np.ndarray],
+        background_time_profile: GenericProfile,
+        signal_time_profile: GenericProfile,
+    ) -> None:
+        super().__post_init__(sim, data_grl)
+        self.background_time_profile = background_time_profile
+        self.signal_time_profile = signal_time_profile
 
     @classmethod
     def from_config(
         cls,
         config: dict,
-        sim: np.ndarray,
-        data_grl: Tuple[np.ndarray, np.ndarray],
+        sim: SimEvents,
+        data_grl: Tuple[Events, np.ndarray],
         background_time_profile: GenericProfile,
         signal_time_profile: GenericProfile,
     ) -> 'TimeDependentNuSourcesDataHandler':
@@ -373,6 +360,7 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
         return_stop_contained: bool = True,
     ) -> np.ndarray:
         """Docstring"""
+
         fully_contained = (
             self._grl['start'] >= start
         ) & (self._grl['stop'] < stop)
@@ -414,21 +402,21 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
 
         return contained_livetime
 
-    def sample_background(self, n: int, rng: np.random.Generator) -> np.ndarray:
+    def sample_background(self, n: int, rng: np.random.Generator) -> Events:
         """Docstring"""
         events = super().sample_background(n, rng)
         return self._randomize_times(events, self._background_time_profile)
 
-    def sample_signal(self, n: int, rng: np.random.Generator) -> np.ndarray:
+    def sample_signal(self, n: int, rng: np.random.Generator) -> SimEvents:
         """Docstring"""
         events = super().sample_signal(n, rng)
         return self._randomize_times(events, self._signal_time_profile)
 
     def _randomize_times(
         self,
-        events: np.ndarray,
+        events: Events,
         time_profile: GenericProfile,
-    ) -> np.ndarray:
+    ) -> Events:
         grl_start_cdf = time_profile.cdf(self._grl['start'])
         grl_stop_cdf = time_profile.cdf(self._grl['stop'])
         valid = np.logical_and(grl_start_cdf < 1, grl_stop_cdf > 0)
@@ -441,7 +429,7 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
             p=rates / rates.sum(),
         )
 
-        events['time'] = time_profile.inverse_transform_sample(
+        events.time = time_profile.inverse_transform_sample(
             runs['start'], runs['stop'])
 
         return events

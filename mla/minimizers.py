@@ -27,7 +27,7 @@ from .test_statistics import LLHTestStatistic
 @dataclasses.dataclass
 class MinimizerFactory(metaclass=abc.ABCMeta):
     """Docstring"""
-    
+
     @abc.abstractmethod
     def __call__(self, test_statistic: LLHTestStatistic) -> 'Minimizer':
         """Docstring"""
@@ -67,8 +67,7 @@ class GridSearchMinimizerFactory(MinimizerFactory, Configurable):
             _min_method=self._min_method,
             test_statistic=test_statistic,
         )
-
-    
+ 
 
 @dataclasses.dataclass(kw_only=True)
 class GridSearchMinimizer(Minimizer):

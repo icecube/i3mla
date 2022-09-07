@@ -16,6 +16,7 @@ import numpy as np
 
 from .configurable import Configurable
 from .sob_terms import SoBTerm, SoBTermFactory
+from .events import Events
 from .params import Params
 
 
@@ -25,7 +26,7 @@ class LLHTestStatistic():
     sob_terms: Dict[str, SoBTerm]
     _n_events: int
     _n_kept: int
-    _events: np.ndarray
+    _events: Events
     _params: Params
     _newton_precision: float
     _newton_iterations: int
@@ -176,7 +177,7 @@ class LLHTestStatisticFactory(Configurable):
         """Docstring"""
         return cls(sob_term_factories=sob_term_factories, **cls._map_kwargs(config))
 
-    def __call__(self, params: Params, events: np.ndarray) -> LLHTestStatistic:
+    def __call__(self, params: Params, events: Events) -> LLHTestStatistic:
         """Docstring"""
         drop_mask = np.logical_and.reduce(np.array([
             term_factory.calculate_drop_mask(events)
@@ -184,8 +185,7 @@ class LLHTestStatisticFactory(Configurable):
         ]))
 
         n_kept = drop_mask.sum()
-        pruned_events = np.empty(n_kept, dtype=events.dtype)
-        pruned_events[:] = events[drop_mask]
+        pruned_events = events.from_idx(drop_mask)
 
         sob_terms = {
             term_factory.name: term_factory(params, pruned_events)

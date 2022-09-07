@@ -11,7 +11,10 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
+from typing import Tuple
+
 import numpy as np
+import numpy.typing as npt
 
 
 def ra_to_rad(hrs: float, mins: float, secs: float) -> float:
@@ -57,10 +60,10 @@ def cross_matrix(mat: np.ndarray) -> np.ndarray:
 
 
 def rotate(
-    ra1: float, dec1: float,
-    ra2: float, dec2: float,
-    ra3: float, dec3: float,
-) -> tuple:
+    ra1: npt.NDArray[np.float64], dec1: npt.NDArray[np.float64],
+    ra2: npt.NDArray[np.float64], dec2: npt.NDArray[np.float64],
+    ra3: npt.NDArray[np.float64], dec3: npt.NDArray[np.float64],
+) -> Tuple[npt.NDArray[np.float64], npt.NDArray[np.float64]]:
     """Rotation matrix for rotation of (ra1, dec1) onto (ra2, dec2).
 
     The rotation is performed on (ra3, dec3).
