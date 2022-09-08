@@ -134,6 +134,10 @@ class SingleSourceTrialGenerator(Configurable):
     def data_handler(self, data_handler: DataHandler) -> None:
         """Docstring"""
         self._data_handler = data_handler
+
+        llh = np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1)
+        drop_term = np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio))
+        ts = -2 * (llh.sum() + self.n_dropped * drop_term)
         self._data_handler.dec_cut_loc = self._source.location[1]
 
     @property

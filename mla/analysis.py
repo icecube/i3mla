@@ -8,6 +8,7 @@ __version__ = '0.0.1'
 __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
+
 from typing import ClassVar, List, Tuple
 from dataclasses import InitVar, dataclass, field
 
@@ -88,3 +89,13 @@ class SingleSourceFlareStackLLHAnalysis(SingleSourceLLHAnalysis, Configurable):
             trial_generator=trial_generator,
             **cls._map_kwargs(config),
         )
+
+    def produce_and_minimize(
+        self,
+        params: Params,
+        fitting_params: List[str],
+        n_signal: float = 0,
+    ) -> tuple:
+        """Docstring"""
+        trial = self.trial_generator(n_signal=n_signal)
+        # test_statistic = test_statistic_factory()
