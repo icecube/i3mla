@@ -61,7 +61,10 @@ class SingleSourceTrialGenerator(configurable.Configurable):
 
         # Combine the signal background events and time-sort them.
         # Use recfunctions.stack_arrays to prevent numpy from scrambling entry order
-        return rf.stack_arrays([background, signal], autoconvert=True, usemask=False)
+        if background.dtype == signal.dtype:
+            return np.concatenate([background, signal])
+        else:
+            return rf.stack_arrays([background, signal], autoconvert=True, usemask=False)
 
     def _rotate_signal(self, signal: np.ndarray) -> np.ndarray:
         """Docstring"""

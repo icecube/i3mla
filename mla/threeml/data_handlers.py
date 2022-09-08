@@ -19,7 +19,7 @@ from . import spectral
 
 
 @dataclasses.dataclass
-class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
+class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
     """Docstring"""
     injection_spectrum: spectral.BaseSpectrum
     _injection_spectrum: spectral.BaseSpectrum = dataclasses.field(
@@ -130,4 +130,16 @@ class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
         """Docstring"""
         config = super().generate_config()
         config['reco_sampling_width'] = np.deg2rad(5)
+        return config
+
+@dataclasses.dataclass
+class ThreeMLTimeDepDataHandler(data_handlers.TimeDependentNuSourcesDataHandler, ThreeMLDataHandler):
+    """Docstring"""
+    def __post_init__(self):
+        super().__post_init__()
+    
+    @classmethod
+    def generate_config(cls):
+        """Docstring"""
+        config = super().generate_config()
         return config

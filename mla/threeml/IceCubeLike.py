@@ -612,7 +612,7 @@ class IceCubeLike(PluginPrototype):
         for term in llh.sob_term_factories:
             if isinstance(term, sob_terms_base.SpatialTermFactory):
                 self.spatial_sob_factory = term
-            if isinstance(term, sob_terms.ThreeMLPSEnergyTermFactory):
+            if isinstance(term, sob_terms.ThreeMLBaseEnergyTermFactory):
                 self.energy_sob_factory = term
         self.verbose = verbose
         self._data = data
@@ -700,17 +700,11 @@ class IceCubeLike(PluginPrototype):
     def inject_background_and_signal(self, **kwargs) -> None:
         """docstring"""
         self._data = self.trial_generator(**kwargs)
-        self.test_statistic = self.analysis.test_statistic_factory(
-            Params.from_dict({"ns": 0}), self._data
-        )
         return
 
     def update_data(self, data) -> None:
         """docstring"""
         self._data = data
-        self.test_statistic = self.analysis.test_statistic_factory(
-            Params.from_dict({"ns": 0}), data
-        )
         return
 
     def update_injection(self, source: sources.PointSource):
@@ -729,13 +723,7 @@ class IceCubeLike(PluginPrototype):
 
     def get_ns(self):
         """docstring"""
-        ns = (
-            self.energy_sob_factory.spectrum(
-                self.analysis.data_handler_source[0].sim["trueE"]
-            )
-            * self.analysis.data_handler_source[0].sim["ow"]
-            * self.livetime
-        ).sum()
+        ns = self.energy_sob_factory.get_ns() * self.livetime
         return ns
 
     def get_log_like(self, verbose=None):
@@ -860,7 +848,7 @@ class icecube_analysis(PluginPrototype):
         precision = newton_precision + 1
         eps = 1e-5
         k = 1 / (sob - 1)
-        x = [0.] * newton_iterations
+        x = [1./n_drop] * newton_iterations
 
         for i in range(newton_iterations - 1):
             # get next iteration and clamp
