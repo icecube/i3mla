@@ -256,7 +256,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     _sin_dec_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _bins: np.ndarray = dataclasses.field(init=False, repr=False)
-    _trueEbin: np.ndarray = dataclasses.field(init=False, repr=False)
+    _trueebin: np.ndarray = dataclasses.field(init=False, repr=False)
     _irf: np.ndarray = dataclasses.field(init=False, repr=False)
     _sindec_bounds: np.ndarray = dataclasses.field(init=False, repr=False)
     _ntrueebin: int = dataclasses.field(init=False, repr=False)
@@ -340,7 +340,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
                 len(self._truelogebin) - 1,
             )
         )
-        self._trueEbin = 10 ** (
+        self._trueebin = 10 ** (
             self._truelogebin[:-1] + self._truelogebin[1] - self._truelogebin[0]
         )
         sindec_idx = (
@@ -370,15 +370,15 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
                 # you'd (in principle) want the flux-weighted average energy, but we don't
                 # have a flux function here. Instead, try just using the minimum energy of
                 # the bin? Should be fine for small enough bins.
-                # self._trueEbin[i,j] = np.exp(bins[:-1] + (bins[1] - bins[0]))
+                # self._trueebin[i,j] = np.exp(bins[:-1] + (bins[1] - bins[0]))
                 # emean[i,j] = np.average(events['trueE'], weights=events['ow'])
 
     def build_sig_h(self, spectrum: spectral.BaseSpectrum) -> np.ndarray:
         """Docstring"""
         sig = np.zeros(self._bg_sob.shape)
-        flux = spectrum(self._trueEbin)
-        sig[self._sindec_bounds[0]:self._sindec_bounds[1],:] = np.dot(
-            self._irf[self._sindec_bounds[0] : self._sindec_bounds[1],:,:], flux
+        flux = spectrum(self._trueebin)
+        sig[self._sindec_bounds[0]:self._sindec_bounds[1], :] = np.dot(
+            self._irf[self._sindec_bounds[0]:self._sindec_bounds[1], :, :], flux
         )
         sig /= np.sum(sig, axis=1)[:, None]
         return sig

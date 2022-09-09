@@ -129,7 +129,7 @@ class ThreeMLTimeDepDataHandler(
     data_handlers.TimeDependentNuSourcesDataHandler, ThreeMLDataHandler
 ):
     """Docstring"""
-    
+
     @classmethod
     def generate_config(cls):
         """Docstring"""
