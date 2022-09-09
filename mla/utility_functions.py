@@ -12,7 +12,6 @@ __email__ = "john.evans@icecube.wisc.edu"
 __status__ = "Development"
 
 import numpy as np
-from numba import njit
 
 
 def ra_to_rad(hrs: float, mins: float, secs: float) -> float:
