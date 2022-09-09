@@ -26,6 +26,7 @@ from mla import analysis
 from mla import sources
 from mla import minimizers
 from mla import trial_generators
+from mla.utility_functions import newton_method
 
 __all__ = ["NeutrinoPointSource"]
 r"""This IceCube plugin is currently under develop by Kwok Lung Fan"""
@@ -244,15 +245,17 @@ class NeutrinoPointSource(PointSource):
                             return reentrant_call(e, tag=None)
 
                         # Now integrate
-                        integrals[i] = scipy.integrate.quad(integral, a, b, epsrel=1e-5)[
-                            0
-                        ]
+                        integrals[i] = scipy.integrate.quad(
+                            integral, a, b, epsrel=1e-5
+                        )[0]
 
                 return old_div(integrals, (b - a))
 
 
 class NeutrinoExtendedSource(ExtendedSource):
-    def __init__(self, source_name, spatial_shape, spectral_shape=None, components=None):
+    def __init__(
+        self, source_name, spatial_shape, spectral_shape=None, components=None
+    ):
 
         # Check that we have all the required information
         # and set the units
@@ -278,7 +281,9 @@ class NeutrinoExtendedSource(ExtendedSource):
 
             # Components in this case have energy as x and differential flux as y
 
-            diff_flux_units = (current_u.energy * current_u.area * current_u.time) ** (-1)
+            diff_flux_units = (current_u.energy * current_u.area * current_u.time) ** (
+                -1
+            )
 
             # Now set the units of the components
             for component in components:
@@ -524,10 +529,13 @@ class Spectrum(object):
     def __call__(self, energy, **kwargs):
         r"""Evaluate spectrum at E"""
         if self.point:
-            return self.model.point_sources[self.neutrinosource].call(energy) * self.norm
+            return (
+                self.model.point_sources[self.neutrinosource].call(energy) * self.norm
+            )
         else:
             return (
-                self.model.extended_sources[self.neutrinosource].call(energy) * self.norm
+                self.model.extended_sources[self.neutrinosource].call(energy)
+                * self.norm
             )
 
     def validate(self):
@@ -623,7 +631,9 @@ class IceCubeLike(PluginPrototype):
             Params.from_dict({"ns": 0}), data
         )
         for key in self.test_statistic.sob_terms.keys():
-            if isinstance(self.test_statistic.sob_terms[key], sob_terms.ThreeMLPSEnergyTerm):
+            if isinstance(
+                self.test_statistic.sob_terms[key], sob_terms.ThreeMLPSEnergyTerm
+            ):
                 self.energyname = key
         return
 
@@ -640,7 +650,9 @@ class IceCubeLike(PluginPrototype):
                 dec = source.position.get_dec()
                 if self._ra == ra and self._dec == dec:
                     self.llh_model = likelihood_model_instance
-                    self.energy_sob_factory.spectrum = Spectrum(likelihood_model_instance)
+                    self.energy_sob_factory.spectrum = Spectrum(
+                        likelihood_model_instance
+                    )
                     self.test_statistic = self.analysis.test_statistic_factory(
                         Params.from_dict({"ns": 0}), self._data
                     )
@@ -657,7 +669,9 @@ class IceCubeLike(PluginPrototype):
                     )
                     self.llh_model = likelihood_model_instance
                     self.energy_sob_factory.source = mlasource
-                    self.energy_sob_factory.spectrum = Spectrum(likelihood_model_instance)
+                    self.energy_sob_factory.spectrum = Spectrum(
+                        likelihood_model_instance
+                    )
                     self.test_statistic = self.analysis.test_statistic_factory(
                         Params.from_dict({"ns": 0}), self._data
                     )
@@ -669,7 +683,9 @@ class IceCubeLike(PluginPrototype):
                 sigma = source.spatial_shape.sigma.value
                 if self._ra == ra and self._dec == dec and self._sigma == sigma:
                     self.llh_model = likelihood_model_instance
-                    self.energy_sob_factory.spectrum = Spectrum(likelihood_model_instance)
+                    self.energy_sob_factory.spectrum = Spectrum(
+                        likelihood_model_instance
+                    )
                     self.test_statistic = self.analysis.test_statistic_factory(
                         Params.from_dict({"ns": 0}), self._data
                     )
@@ -688,7 +704,9 @@ class IceCubeLike(PluginPrototype):
                     )
                     self.llh_model = likelihood_model_instance
                     self.energy_sob_factory.source = mlasource
-                    self.energy_sob_factory.spectrum = Spectrum(likelihood_model_instance)
+                    self.energy_sob_factory.spectrum = Spectrum(
+                        likelihood_model_instance
+                    )
                     self.test_statistic = self.analysis.test_statistic_factory(
                         Params.from_dict({"ns": 0}), self._data
                     )
@@ -777,16 +795,12 @@ class IceCubeLike(PluginPrototype):
         return self._dec
 
 
-
-
 class icecube_analysis(PluginPrototype):
     """Docstring"""
-      
-    def __init__(self,
-        listoficecubelike,
-        newton_flux_norm = False,
-        name = "combine",
-        verbose = False):
+
+    def __init__(
+        self, listoficecubelike, newton_flux_norm=False, name="combine", verbose=False
+    ):
         """Docstring"""
         nuisance_parameters = {}
         super(icecube_analysis, self).__init__(name, nuisance_parameters)
@@ -801,23 +815,22 @@ class icecube_analysis(PluginPrototype):
         self.verbose = verbose
         self.current_fit_ns = 0
 
-    
     def get_log_like(self, verbose=None):
         if self.newton_flux_norm:
             sob = []
             n_drop = 0
             for icecubeobject in self.listoficecubelike:
                 icecubeobject.update_model()
-                sob = np.append(sob,icecubeobject.test_statistic._calculate_sob())
+                sob = np.append(sob, icecubeobject.test_statistic._calculate_sob())
                 n_drop += icecubeobject.test_statistic.n_dropped
-            ns_ratio = self.newton_method(sob, n_drop)
+            ns_ratio = newton_method(sob, n_drop)
             llh = np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1)
             drop_term = np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio))
             llh = 2 * (llh.sum() + n_drop * drop_term)
-            self.current_fit_ns = ns_ratio*(len(sob)+n_drop)
+            self.current_fit_ns = ns_ratio * (len(sob) + n_drop)
             if self.verbose:
                 print(self.current_fit_ns, llh)
-                
+
         else:
             llh = 0
             ns = 0
@@ -829,48 +842,15 @@ class icecube_analysis(PluginPrototype):
             if self.verbose:
                 print(self.current_fit_ns, llh)
         return llh
-    
+
     def get_current_fit_ns(self):
         return self.current_fit_ns
-        
-    
-    def newton_method(self, sob: np.ndarray , n_drop: float) -> float:
-        """Docstring
 
-        Args:
-            sob:
-            n_drop:
-        Returns:
-
-        """
-        newton_precision = 0
-        newton_iterations = 20
-        precision = newton_precision + 1
-        eps = 1e-5
-        k = 1 / (sob - 1)
-        x = [1./n_drop] * newton_iterations
-
-        for i in range(newton_iterations - 1):
-            # get next iteration and clamp
-            inv_terms = x[i] + k
-            inv_terms[inv_terms == 0] = eps
-            terms = 1 / inv_terms
-            drop_term = 1 / (x[i] - 1)
-            d1 = np.sum(terms) + n_drop * drop_term
-            d2 = np.sum(terms**2) + n_drop * drop_term**2
-            x[i + 1] = min(1 - eps, max(0, x[i] + d1 / d2))
-
-            if x[i] == x[i + 1] or (
-                x[i] < x[i + 1] and x[i + 1] <= x[i] * precision
-            ) or (x[i + 1] < x[i] and x[i] <= x[i + 1] * precision):
-                break
-        return x[i + 1]
-    
     def set_model(self, likelihood_model_instance):
         for icecubeobject in self.listoficecubelike:
             icecubeobject.set_model(likelihood_model_instance)
         return
-    
+
     def inner_fit(self):
         return self.get_log_like()
 

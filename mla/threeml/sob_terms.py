@@ -61,10 +61,13 @@ class ThreeMLPSEnergyTerm(sob_terms.SoBTerm):
         """Docstring"""
         return self._energysobhist[self._sin_dec_idx, self._log_energy_idx]
 
+
 @dataclasses.dataclass
 class ThreeMLBaseEnergyTermFactory(sob_terms.SoBTermFactory):
     """Docstring"""
+
     pass
+
 
 @dataclasses.dataclass
 class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
@@ -122,13 +125,17 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
 
     def _build_ow_hist(self) -> np.ndarray:
         """Docstring"""
-        self._ow_hist, self._ow_ebin = np.histogram(self.data_handler.sim['trueE'], bins = 200, weights = self.data_handler.sim['ow'])
+        self._ow_hist, self._ow_ebin = np.histogram(
+            self.data_handler.sim["trueE"],
+            bins=200,
+            weights=self.data_handler.sim["ow"],
+        )
         self._ow_ebin = self._ow_ebin[:-1] + (self._ow_ebin[1] - self._ow_ebin[0])
-        
+
     def get_ns(self) -> float:
         """Docstring"""
-        return (self.spectrum(self._ow_ebin)*self._ow_hist).sum()
-        
+        return (self.spectrum(self._ow_ebin) * self._ow_hist).sum()
+
     def _init_bg_sob_map(self) -> np.ndarray:
         """Docstring"""
         if self.config["mc_bkgweight"] is None:
@@ -233,6 +240,7 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
         config["list_log_energy_bins"] = PSTrackv4_log_energy_bins
         return config
 
+
 @dataclasses.dataclass
 class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     """Docstring"""
@@ -251,7 +259,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     _trueEbin: np.ndarray = dataclasses.field(init=False, repr=False)
     _irf: np.ndarray = dataclasses.field(init=False, repr=False)
     _sindec_bounds: np.ndarray = dataclasses.field(init=False, repr=False)
-    _ntrueEbin:int = dataclasses.field(init=False, repr=False)
+    _ntrueEbin: int = dataclasses.field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         """Docstring"""
@@ -265,13 +273,25 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
             )
         else:
             self._log_energy_bins = self.config["list_log_energy_bins"]
-        lower_sindec = np.maximum(np.sin(self.source.location[1]-self.data_handler.config["reco_sampling_width"]),-0.99)
-        upper_sindec = np.minimum(np.sin(self.source.location[1]+self.data_handler.config["reco_sampling_width"]),1)
+        lower_sindec = np.maximum(
+            np.sin(
+                self.source.location[1]
+                - self.data_handler.config["reco_sampling_width"]
+            ),
+            -0.99,
+        )
+        upper_sindec = np.minimum(
+            np.sin(
+                self.source.location[1]
+                + self.data_handler.config["reco_sampling_width"]
+            ),
+            1,
+        )
         lower_sindec_index = np.searchsorted(self._sin_dec_bins, lower_sindec) - 1
         uppper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
         self._sindec_bounds = np.array([lower_sindec_index, uppper_sindec_index])
         self._bins = np.array([self._sin_dec_bins, self._log_energy_bins])
-        self._truelogEbin = self.config['list_truelogEbin']
+        self._truelogEbin = self.config["list_truelogEbin"]
         self._init_bg_sob_map()
         self._build_ow_hist()
         self._init_irf()
@@ -313,36 +333,53 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
 
     def _init_irf(self) -> None:
         """Docstring"""
-        self._irf = np.zeros((len(self._sin_dec_bins)-1, len(self._log_energy_bins)-1, len(self._truelogEbin)-1))
-        self._trueEbin = 10**(self._truelogEbin[:-1]+self._truelogEbin[1]-self._truelogEbin[0])
-        sindec_idx = np.digitize(np.sin(self.data_handler._full_sim['dec']), self._sin_dec_bins) - 1
-    
-        for i in (range(len( self._sin_dec_bins)-1)):
-            events_dec = self.data_handler._full_sim[(sindec_idx==i)]
-            loge_idx = np.digitize(events_dec['logE'], self._log_energy_bins) - 1
-        
-            for j in (range(len(self._log_energy_bins)-1)):
-                events = events_dec[(loge_idx==j)]
-                
+        self._irf = np.zeros(
+            (
+                len(self._sin_dec_bins) - 1,
+                len(self._log_energy_bins) - 1,
+                len(self._truelogEbin) - 1,
+            )
+        )
+        self._trueEbin = 10 ** (
+            self._truelogEbin[:-1] + self._truelogEbin[1] - self._truelogEbin[0]
+        )
+        sindec_idx = (
+            np.digitize(np.sin(self.data_handler._full_sim["dec"]), self._sin_dec_bins)
+            - 1
+        )
+
+        for i in range(len(self._sin_dec_bins) - 1):
+            events_dec = self.data_handler._full_sim[(sindec_idx == i)]
+            loge_idx = np.digitize(events_dec["logE"], self._log_energy_bins) - 1
+
+            for j in range(len(self._log_energy_bins) - 1):
+                events = events_dec[(loge_idx == j)]
+
                 # Don't bother if we don't find events.
-                if events['ow'].sum() == 0: continue
-                    
+                if events["ow"].sum() == 0:
+                    continue
+
                 # True bins are in log(trueE) to ensure they're well spaced.
-                self._irf[i,j], bins = np.histogram(np.log10(events['trueE']), bins=self._truelogEbin,
-                                              weights = events['ow'])
-                
+                self._irf[i, j], bins = np.histogram(
+                    np.log10(events["trueE"]),
+                    bins=self._truelogEbin,
+                    weights=events["ow"],
+                )
+
                 # Have to pick an "energy" to assign to the bin. That's complicated, since
-                # you'd (in principle) want the flux-weighted average energy, but we don't 
+                # you'd (in principle) want the flux-weighted average energy, but we don't
                 # have a flux function here. Instead, try just using the minimum energy of
                 # the bin? Should be fine for small enough bins.
-                #self._trueEbin[i,j] = np.exp(bins[:-1] + (bins[1] - bins[0]))
-                #emean[i,j] = np.average(events['trueE'], weights=events['ow'])
-            
+                # self._trueEbin[i,j] = np.exp(bins[:-1] + (bins[1] - bins[0]))
+                # emean[i,j] = np.average(events['trueE'], weights=events['ow'])
+
     def build_sig_h(self, spectrum: spectral.BaseSpectrum) -> np.ndarray:
         """Docstring"""
         sig = np.zeros(self._bg_sob.shape)
         flux = spectrum(self._trueEbin)
-        sig[self._sindec_bounds[0]:self._sindec_bounds[1],:] = np.dot(self._irf[self._sindec_bounds[0]:self._sindec_bounds[1],:,:],flux)
+        sig[self._sindec_bounds[0] : self._sindec_bounds[1], :] = np.dot(
+            self._irf[self._sindec_bounds[0] : self._sindec_bounds[1], :, :], flux
+        )
         sig /= np.sum(sig, axis=1)[:, None]
         return sig
 
@@ -364,10 +401,9 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
             log(energy) for a given gamma.
         """
         sig_h = self.build_sig_h(self.spectrum)
-            
+
         bin_spline = self._log_energy_bins[:-1]
         # Normalize histogram by dec band
-        
 
         # div-0 okay here
         with np.errstate(divide="ignore", invalid="ignore"):
@@ -390,7 +426,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
                 ratio[i] = good_vals
             else:
                 ratio[i] = 0
-        
+
         return ratio
 
     def calculate_drop_mask(self, events: np.ndarray) -> np.ndarray:
@@ -426,5 +462,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         config["mc_bkgweight"] = None
         config["list_sin_dec_bins"] = PSTrackv4_sin_dec_bin
         config["list_log_energy_bins"] = PSTrackv4_log_energy_bins
-        config["list_truelogEbin"] = np.arange(2, 9.01 + 0.01, 0.01) #equal spacing required
+        config["list_truelogEbin"] = np.arange(
+            2, 9.01 + 0.01, 0.01
+        )  # equal spacing required
         return config
