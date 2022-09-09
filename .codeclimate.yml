@@ -9,10 +9,10 @@ checks:
       threshold: 4
   file-lines:
     config:
-      threshold: 400
+      threshold: 1000
   method-complexity:
     config:
-      threshold: 5
+      threshold: 8
   method-count:
     config:
       threshold: 20
