@@ -26,7 +26,7 @@ from mla import analysis
 from mla import sources
 from mla import minimizers
 from mla import trial_generators
-from mla.utility_functions import newton_method
+from mla.utility_functions import newton_method, newton_method_multidataset
 
 __all__ = ["NeutrinoPointSource"]
 r"""This IceCube plugin is currently under develop by Kwok Lung Fan"""
@@ -766,7 +766,7 @@ class IceCubeLike(PluginPrototype):
             if verbose:
                 print(ns, llh)
 
-        return -llh
+        return -llh / 2
 
     def get_number_of_data_points(self):
         """docstring"""
@@ -810,6 +810,10 @@ class icecube_analysis(PluginPrototype):
         self.totallivetime = []
         self._p = []
         self.mc_index = []
+        self.dataset_ratio = []
+        self.totaln = 0
+        for icecube in listoficecubelike:
+            self.totaln += len(icecube.data)
         self.init_mc_array()
         self.newton_flux_norm = newton_flux_norm
         self.verbose = verbose
@@ -818,18 +822,30 @@ class icecube_analysis(PluginPrototype):
     def get_log_like(self, verbose=None):
         if self.newton_flux_norm:
             sob = []
-            n_drop = 0
-            for icecubeobject in self.listoficecubelike:
+            n_drop = []
+            fraction = []
+            for i, icecubeobject in enumerate(self.listoficecubelike):
                 icecubeobject.update_model()
-                sob = np.append(sob, icecubeobject.test_statistic._calculate_sob())
-                n_drop += icecubeobject.test_statistic.n_dropped
-            ns_ratio = newton_method(sob, n_drop)
-            llh = np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1)
-            drop_term = np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio))
-            llh = 2 * (llh.sum() + n_drop * drop_term)
-            self.current_fit_ns = ns_ratio * (len(sob) + n_drop)
+                sob.append(icecubeobject.test_statistic._calculate_sob())
+                n_drop.append(icecubeobject.test_statistic.n_dropped)
+                fraction.append(
+                    self.totaln * self.dataset_ratio[i] / len(icecubeobject.data)
+                )
+            fraction = np.array(fraction)
+            # fraction = fraction/fraction.sum()
+            ns_ratio = newton_method_multidataset(sob, n_drop, fraction)
+            llh = 0
+            for i, icecubeobject in enumerate(self.listoficecubelike):
+                templlh = np.sign(ns_ratio) * np.log(
+                    np.abs(ns_ratio) * fraction[i] * (sob[i] - 1) + 1
+                )
+                drop_term = np.sign(ns_ratio) * np.log(
+                    1 - np.abs(ns_ratio) * fraction[i]
+                )
+                llh += 2 * (templlh.sum() + n_drop[i] * drop_term)
+            self.current_fit_ns = ns_ratio * self.totaln
             if self.verbose:
-                print(self.current_fit_ns, llh)
+                print(self.current_fit_ns, llh / 2)
 
         else:
             llh = 0
@@ -840,8 +856,8 @@ class icecube_analysis(PluginPrototype):
                 ns += icecubeobject.get_current_fit_ns()
             self.current_fit_ns = ns
             if self.verbose:
-                print(self.current_fit_ns, llh)
-        return llh
+                print(self.current_fit_ns, llh / 2)
+        return llh / 2
 
     def get_current_fit_ns(self):
         return self.current_fit_ns
@@ -865,6 +881,8 @@ class icecube_analysis(PluginPrototype):
         self.totallivetime = self.livetime_ratio.sum()
         self.livetime_ratio /= np.sum(self.livetime_ratio)
         self.effA_ratio /= np.sum(self.effA_ratio)
+        self.dataset_ratio = self.livetime_ratio * self.effA_ratio
+        self.dataset_ratio = self.dataset_ratio / self.dataset_ratio.sum()
         for i, sample in enumerate(self.listoficecubelike):
             sim = sample.analysis.data_handler_source[0].sim
             mc_array = rf.append_fields(
@@ -891,6 +909,7 @@ class icecube_analysis(PluginPrototype):
 
     def injection(self, n_signal=0, flux_norm=None, poisson=False):
         """docstring"""
+        self.totaln = 0
         if flux_norm is not None:
             for i, icecubeobject in enumerate(self.listoficecubelike):
                 time_intergrated = flux_norm * icecubeobject.livetime
@@ -899,9 +918,7 @@ class icecube_analysis(PluginPrototype):
                 self.listoficecubelike[i].update_data(tempdata)
         else:
             if poisson:
-
-                ratio_injection = self.livetime_ratio * self.effA_ratio
-                ratio_injection = (ratio_injection / ratio_injection.sum()) * n_signal
+                ratio_injection = self.dataset_ratio * n_signal
                 for i, icecubeobject in enumerate(self.listoficecubelike):
                     icecubeobject.trial_generator.config["fixed_ns"] = True
                     injection_signal = np.random.poisson(ratio_injection[i])
@@ -909,6 +926,9 @@ class icecube_analysis(PluginPrototype):
                     self.listoficecubelike[i].update_data(tempdata)
             else:
                 print("No fix number injection implemented")
+                self.totaln = 0
+        for icecube in self.listoficecubelike:
+            self.totaln += len(icecube.data)
 
     def cal_injection_ns(self, flux_norm):
         """Docstring"""

@@ -252,7 +252,7 @@ class NuSourcesDataHandler(DataHandler):
         config['assumed_gamma'] = -2
         config['dec_cut_location'] = None
         config['dec_bandwidth (rad)'] = None
-        config['sin_dec_bins'] = 30
+        config['sin_dec_bins'] = 50
         config['dec_spline_kwargs'] = {
             'bbox': [-1, 1],
             's': 1.5e-5,

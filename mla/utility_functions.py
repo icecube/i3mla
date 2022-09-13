@@ -194,6 +194,47 @@ def newton_method(sob: np.ndarray, n_drop: float) -> float:
     return x[i + 1]
 
 
+def newton_method_multidataset(
+    sob: list, n_drop: np.ndarray, fraction: np.ndarray
+) -> float:
+    """Docstring
+
+    Args:
+        sob:
+        n_drop:
+    Returns:
+
+    """
+    newton_precision = 0
+    newton_iterations = 20
+    precision = newton_precision + 1
+    eps = 1e-5
+    k = []
+    for i in range(len(sob)):
+        k.append(1 / (sob[i] - 1))
+    x = [0.0] * newton_iterations
+    for i in range(newton_iterations - 1):
+        # get next iteration and clamp
+        d1 = 0
+        d2 = 0
+        for j in range(len(sob)):
+            inv_terms = x[i] * fraction[j] + k[j]
+            inv_terms[inv_terms == 0] = eps
+            terms = fraction[j] / inv_terms
+            drop_term = fraction[j] / (x[i] * fraction[j] - 1)
+            d1 += np.sum(terms) + n_drop[j] * drop_term
+            d2 += np.sum(terms ** 2) + n_drop[j] * drop_term ** 2
+        x[i + 1] = min(1 - eps, max(0, x[i] + d1 / d2))
+
+        if (
+            x[i] == x[i + 1]
+            or (x[i] < x[i + 1] and x[i + 1] <= x[i] * precision)
+            or (x[i + 1] < x[i] and x[i] <= x[i + 1] * precision)
+        ):
+            break
+    return x[i + 1]
+
+
 def trimsim(sim: np.ndarray, fraction: float, scaleow: bool = True) -> np.ndarray:
     """Keep only fraction of the simulation
 

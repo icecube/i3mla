@@ -13,7 +13,6 @@ import dataclasses
 
 import numpy as np
 from scipy.interpolate import UnivariateSpline as Spline
-
 from .. import sob_terms
 from .. import sources
 from .. import params as par
@@ -340,9 +339,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
                 len(self._truelogebin) - 1,
             )
         )
-        self._trueebin = 10 ** (
-            self._truelogebin[:-1] + self._truelogebin[1] - self._truelogebin[0]
-        )
+        self._trueebin = 10 ** (self._truelogebin[:-1])
         sindec_idx = (
             np.digitize(np.sin(self.data_handler.full_sim["dec"]), self._sin_dec_bins)
             - 1
@@ -377,8 +374,8 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         """Docstring"""
         sig = np.zeros(self._bg_sob.shape)
         flux = spectrum(self._trueebin)
-        sig[self._sindec_bounds[0]:self._sindec_bounds[1], :] = np.dot(
-            self._irf[self._sindec_bounds[0]:self._sindec_bounds[1], :, :], flux
+        sig[self._sindec_bounds[0] : self._sindec_bounds[1], :] = np.dot(
+            self._irf[self._sindec_bounds[0] : self._sindec_bounds[1], :, :], flux
         )
         sig /= np.sum(sig, axis=1)[:, None]
         return sig
@@ -392,6 +389,19 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     def source(self, source: sources.PointSource) -> None:
         """Docstring"""
         self._source = source
+
+    def fill_zeros_with_last(self, arr):
+        """Docstring"""
+        prev = np.arange(len(arr))
+        prev[arr == 0] = 0
+        prev = np.maximum.accumulate(prev)
+        return arr[prev]
+
+    def extrapolate(self, hist):
+        """Docstring"""
+        for i in range(hist.shape[0]):
+            hist[i] = fill_zeros_with_last(fill_zeros_with_last(hist[i])[::-1])[::-1]
+        return hist
 
     def cal_sob_map(self) -> np.ndarray:
         """Creates sob histogram for a given spectrum.
