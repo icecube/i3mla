@@ -125,11 +125,11 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
     def _build_ow_hist(self) -> np.ndarray:
         """Docstring"""
         self._ow_hist, self._ow_ebin = np.histogram(
-            self.data_handler.sim["trueE"],
+            np.log10(self.data_handler.sim["trueE"]),
             bins=200,
             weights=self.data_handler.sim["ow"],
         )
-        self._ow_ebin = self._ow_ebin[:-1] + (self._ow_ebin[1] - self._ow_ebin[0])
+        self._ow_ebin = 10**self._ow_ebin[:-1]
 
     def get_ns(self) -> float:
         """Docstring"""
@@ -460,6 +460,6 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         config["list_sin_dec_bins"] = PSTrackv4_sin_dec_bin
         config["list_log_energy_bins"] = PSTrackv4_log_energy_bins
         config["list_truelogebin"] = np.arange(
-            2, 9.01 + 0.01, 0.01
+            2, 9.01 + 0.01, 0.005
         )  # equal spacing required
         return config

@@ -764,7 +764,7 @@ class IceCubeLike(PluginPrototype):
             self.fit_ns = ns
             self.fit_likelihood = llh
             if verbose:
-                print(ns, llh)
+                print(ns, llh / 2)
 
         return -llh / 2
 
@@ -811,6 +811,7 @@ class icecube_analysis(PluginPrototype):
         self._p = []
         self.mc_index = []
         self.dataset_ratio = []
+        self.dataset_weight = []
         self.totaln = 0
         for icecube in listoficecubelike:
             self.totaln += len(icecube.data)
@@ -824,12 +825,20 @@ class icecube_analysis(PluginPrototype):
             sob = []
             n_drop = []
             fraction = []
-            for i, icecubeobject in enumerate(self.listoficecubelike):
+            self.totaln = 0
+            dataset_weight = []
+            for icecubeobject in self.listoficecubelike:
+                self.totaln += len(icecubeobject.data)
                 icecubeobject.update_model()
+                dataset_weight.append(icecubeobject.get_ns())
+            dataset_weight = np.array(dataset_weight)
+            self.dataset_weight = dataset_weight / dataset_weight.sum()
+
+            for i, icecubeobject in enumerate(self.listoficecubelike):
                 sob.append(icecubeobject.test_statistic._calculate_sob())
                 n_drop.append(icecubeobject.test_statistic.n_dropped)
                 fraction.append(
-                    self.totaln * self.dataset_ratio[i] / len(icecubeobject.data)
+                    self.totaln * self.dataset_weight[i] / len(icecubeobject.data)
                 )
             fraction = np.array(fraction)
             # fraction = fraction/fraction.sum()
@@ -842,10 +851,10 @@ class icecube_analysis(PluginPrototype):
                 drop_term = np.sign(ns_ratio) * np.log(
                     1 - np.abs(ns_ratio) * fraction[i]
                 )
-                llh += 2 * (templlh.sum() + n_drop[i] * drop_term)
+                llh += templlh.sum() + n_drop[i] * drop_term
             self.current_fit_ns = ns_ratio * self.totaln
             if self.verbose:
-                print(self.current_fit_ns, llh / 2)
+                print(self.current_fit_ns, llh)
 
         else:
             llh = 0
@@ -856,8 +865,8 @@ class icecube_analysis(PluginPrototype):
                 ns += icecubeobject.get_current_fit_ns()
             self.current_fit_ns = ns
             if self.verbose:
-                print(self.current_fit_ns, llh / 2)
-        return llh / 2
+                print(self.current_fit_ns, llh)
+        return llh
 
     def get_current_fit_ns(self):
         return self.current_fit_ns
@@ -879,10 +888,11 @@ class icecube_analysis(PluginPrototype):
             )
         self.livetime_ratio = np.array(self.livetime_ratio)
         self.totallivetime = self.livetime_ratio.sum()
-        self.livetime_ratio /= np.sum(self.livetime_ratio)
-        self.effA_ratio /= np.sum(self.effA_ratio)
         self.dataset_ratio = self.livetime_ratio * self.effA_ratio
         self.dataset_ratio = self.dataset_ratio / self.dataset_ratio.sum()
+        self.livetime_ratio /= np.sum(self.livetime_ratio)
+        self.effA_ratio /= np.sum(self.effA_ratio)
+
         for i, sample in enumerate(self.listoficecubelike):
             sim = sample.analysis.data_handler_source[0].sim
             mc_array = rf.append_fields(
