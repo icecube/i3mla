@@ -461,5 +461,5 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         config["list_log_energy_bins"] = PSTrackv4_log_energy_bins
         config["list_truelogebin"] = np.arange(
             2, 9.01 + 0.01, 0.005
-        )  # equal spacing required
+        )  
         return config

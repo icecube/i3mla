@@ -254,8 +254,8 @@ class NuSourcesDataHandler(DataHandler):
         config['dec_bandwidth (rad)'] = None
         config['sin_dec_bins'] = 50
         config['dec_spline_kwargs'] = {
-            'bbox': [-1, 1],
-            's': 1.5e-5,
+            's': 0,
+            'k': 2,
             'ext': 3,
         }
         return config
