@@ -1,13 +1,13 @@
 """Docstring"""
 
-__author__ = 'John Evans'
-__copyright__ = 'Copyright 2021 John Evans'
-__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
-__license__ = 'Apache License 2.0'
-__version__ = '0.0.1'
-__maintainer__ = 'John Evans'
-__email__ = 'john.evans@icecube.wisc.edu'
-__status__ = 'Development'
+__author__ = "John Evans"
+__copyright__ = "Copyright 2021 John Evans"
+__credits__ = ["John Evans", "Jason Fan", "Michael Larson"]
+__license__ = "Apache License 2.0"
+__version__ = "0.0.1"
+__maintainer__ = "John Evans"
+__email__ = "john.evans@icecube.wisc.edu"
+__status__ = "Development"
 
 import dataclasses
 
@@ -19,42 +19,37 @@ from . import spectral
 
 
 @dataclasses.dataclass
-class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
+class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
     """Docstring"""
+
     injection_spectrum: spectral.BaseSpectrum
     _injection_spectrum: spectral.BaseSpectrum = dataclasses.field(
-        init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2))
+        init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2)
+    )
     _reduced_reco_sim: np.ndarray = dataclasses.field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         """Docstring"""
         self._reduced_reco_sim = self.cut_reconstructed_sim(
-            self.config['dec_cut_location'], self.config['reco_sampling_width'])
+            self.config["dec_cut_location"], self.config["reco_sampling_width"]
+        )
 
     def build_signal_energy_histogram(
-        self,
-        spectrum: spectral.BaseSpectrum,
-        bins: np.ndarray
+        self, spectrum: spectral.BaseSpectrum, bins: np.ndarray
     ) -> np.ndarray:
         """Docstring"""
         return np.histogram2d(
-            self.reduced_reco_sim['sindec'],
-            self.reduced_reco_sim['logE'],
+            self.reduced_reco_sim["sindec"],
+            self.reduced_reco_sim["logE"],
             bins=bins,
-            weights=self.reduced_reco_sim['ow'] * spectrum(
-                self.reduced_reco_sim['trueE']
-            ),
+            weights=self.reduced_reco_sim["ow"]
+            * spectrum(self.reduced_reco_sim["trueE"]),
             density=True,
         )[0]
 
-    def cut_reconstructed_sim(
-        self,
-        dec: float,
-        sampling_width: float
-    ) -> np.ndarray:
+    def cut_reconstructed_sim(self, dec: float, sampling_width: float) -> np.ndarray:
         """Docstring"""
-        dec_dist = np.abs(
-            dec - self._full_sim['dec'])
+        dec_dist = np.abs(dec - self._full_sim["dec"])
         close = dec_dist < sampling_width
         return self._full_sim[close].copy()
 
@@ -64,10 +59,7 @@ class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
         return self._reduced_reco_sim
 
     @reduced_reco_sim.setter
-    def reduced_reco_sim(
-        self,
-        reduced_reco_sim: np.ndarray
-    ) -> None:
+    def reduced_reco_sim(self, reduced_reco_sim: np.ndarray) -> None:
         """Docstring"""
         self._reduced_reco_sim = reduced_reco_sim.copy()
 
@@ -77,24 +69,22 @@ class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
         return self._injection_spectrum
 
     @injection_spectrum.setter
-    def injection_spectrum(
-        self,
-        inject_spectrum: spectral.BaseSpectrum
-    ) -> None:
+    def injection_spectrum(self, inject_spectrum: spectral.BaseSpectrum) -> None:
         """Docstring"""
         if isinstance(inject_spectrum, property):
             # initial value not specified, use default
             inject_spectrum = ThreeMLDataHandler._injection_spectrum
         self._injection_spectrum = inject_spectrum
-        if 'weight' not in self._full_sim.dtype.names:
+        if "weight" not in self._full_sim.dtype.names:
             self._full_sim = rf.append_fields(
-                self._full_sim, 'weight',
+                self._full_sim,
+                "weight",
                 np.zeros(len(self._full_sim)),
-                dtypes=np.float32
+                dtypes=np.float32,
             )
 
-        self._full_sim['weight'] = self._full_sim['ow'] * (
-            inject_spectrum(self._full_sim['trueE'])
+        self._full_sim["weight"] = self._full_sim["ow"] * (
+            inject_spectrum(self._full_sim["trueE"])
         )
 
         self._cut_sim_dec()
@@ -109,18 +99,19 @@ class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
         """Docstring"""
         self._full_sim = sim.copy()
 
-        if 'sindec' not in self._full_sim.dtype.names:
+        if "sindec" not in self._full_sim.dtype.names:
             self._full_sim = rf.append_fields(
                 self._full_sim,
-                'sindec',
-                np.sin(self._full_sim['dec']),
+                "sindec",
+                np.sin(self._full_sim["dec"]),
                 usemask=False,
             )
-        if 'weight' not in self._full_sim.dtype.names:
+        if "weight" not in self._full_sim.dtype.names:
             self._full_sim = rf.append_fields(
-                self._full_sim, 'weight',
+                self._full_sim,
+                "weight",
                 np.zeros(len(self._full_sim)),
-                dtypes=np.float32
+                dtypes=np.float32,
             )
 
         self._cut_sim_dec()
@@ -129,5 +120,18 @@ class ThreeMLDataHandler(data_handlers.TimeDependentNuSourcesDataHandler):
     def generate_config(cls):
         """Docstring"""
         config = super().generate_config()
-        config['reco_sampling_width'] = np.deg2rad(5)
+        config["reco_sampling_width"] = np.deg2rad(5)
+        return config
+
+
+@dataclasses.dataclass
+class ThreeMLTimeDepDataHandler(
+    data_handlers.TimeDependentNuSourcesDataHandler, ThreeMLDataHandler
+):
+    """Docstring"""
+
+    @classmethod
+    def generate_config(cls):
+        """Docstring"""
+        config = super().generate_config()
         return config

@@ -26,6 +26,7 @@ from mla import analysis
 from mla import sources
 from mla import minimizers
 from mla import trial_generators
+from mla.utility_functions import newton_method, newton_method_multidataset
 
 __all__ = ["NeutrinoPointSource"]
 r"""This IceCube plugin is currently under develop by Kwok Lung Fan"""
@@ -244,15 +245,17 @@ class NeutrinoPointSource(PointSource):
                             return reentrant_call(e, tag=None)
 
                         # Now integrate
-                        integrals[i] = scipy.integrate.quad(integral, a, b, epsrel=1e-5)[
-                            0
-                        ]
+                        integrals[i] = scipy.integrate.quad(
+                            integral, a, b, epsrel=1e-5
+                        )[0]
 
                 return old_div(integrals, (b - a))
 
 
 class NeutrinoExtendedSource(ExtendedSource):
-    def __init__(self, source_name, spatial_shape, spectral_shape=None, components=None):
+    def __init__(
+        self, source_name, spatial_shape, spectral_shape=None, components=None
+    ):
 
         # Check that we have all the required information
         # and set the units
@@ -278,7 +281,9 @@ class NeutrinoExtendedSource(ExtendedSource):
 
             # Components in this case have energy as x and differential flux as y
 
-            diff_flux_units = (current_u.energy * current_u.area * current_u.time) ** (-1)
+            diff_flux_units = (current_u.energy * current_u.area * current_u.time) ** (
+                -1
+            )
 
             # Now set the units of the components
             for component in components:
@@ -524,10 +529,13 @@ class Spectrum(object):
     def __call__(self, energy, **kwargs):
         r"""Evaluate spectrum at E"""
         if self.point:
-            return self.model.point_sources[self.neutrinosource].call(energy) * self.norm
+            return (
+                self.model.point_sources[self.neutrinosource].call(energy) * self.norm
+            )
         else:
             return (
-                self.model.extended_sources[self.neutrinosource].call(energy) * self.norm
+                self.model.extended_sources[self.neutrinosource].call(energy)
+                * self.norm
             )
 
     def validate(self):
@@ -612,7 +620,7 @@ class IceCubeLike(PluginPrototype):
         for term in llh.sob_term_factories:
             if isinstance(term, sob_terms_base.SpatialTermFactory):
                 self.spatial_sob_factory = term
-            if isinstance(term, sob_terms.ThreeMLPSEnergyTermFactory):
+            if isinstance(term, sob_terms.ThreeMLBaseEnergyTermFactory):
                 self.energy_sob_factory = term
         self.verbose = verbose
         self._data = data
@@ -623,7 +631,9 @@ class IceCubeLike(PluginPrototype):
             Params.from_dict({"ns": 0}), data
         )
         for key in self.test_statistic.sob_terms.keys():
-            if isinstance(self.test_statistic.sob_terms[key], sob_terms.ThreeMLPSEnergyTerm):
+            if isinstance(
+                self.test_statistic.sob_terms[key], sob_terms.ThreeMLPSEnergyTerm
+            ):
                 self.energyname = key
         return
 
@@ -640,7 +650,9 @@ class IceCubeLike(PluginPrototype):
                 dec = source.position.get_dec()
                 if self._ra == ra and self._dec == dec:
                     self.llh_model = likelihood_model_instance
-                    self.energy_sob_factory.spectrum = Spectrum(likelihood_model_instance)
+                    self.energy_sob_factory.spectrum = Spectrum(
+                        likelihood_model_instance
+                    )
                     self.test_statistic = self.analysis.test_statistic_factory(
                         Params.from_dict({"ns": 0}), self._data
                     )
@@ -657,7 +669,9 @@ class IceCubeLike(PluginPrototype):
                     )
                     self.llh_model = likelihood_model_instance
                     self.energy_sob_factory.source = mlasource
-                    self.energy_sob_factory.spectrum = Spectrum(likelihood_model_instance)
+                    self.energy_sob_factory.spectrum = Spectrum(
+                        likelihood_model_instance
+                    )
                     self.test_statistic = self.analysis.test_statistic_factory(
                         Params.from_dict({"ns": 0}), self._data
                     )
@@ -669,7 +683,9 @@ class IceCubeLike(PluginPrototype):
                 sigma = source.spatial_shape.sigma.value
                 if self._ra == ra and self._dec == dec and self._sigma == sigma:
                     self.llh_model = likelihood_model_instance
-                    self.energy_sob_factory.spectrum = Spectrum(likelihood_model_instance)
+                    self.energy_sob_factory.spectrum = Spectrum(
+                        likelihood_model_instance
+                    )
                     self.test_statistic = self.analysis.test_statistic_factory(
                         Params.from_dict({"ns": 0}), self._data
                     )
@@ -688,7 +704,9 @@ class IceCubeLike(PluginPrototype):
                     )
                     self.llh_model = likelihood_model_instance
                     self.energy_sob_factory.source = mlasource
-                    self.energy_sob_factory.spectrum = Spectrum(likelihood_model_instance)
+                    self.energy_sob_factory.spectrum = Spectrum(
+                        likelihood_model_instance
+                    )
                     self.test_statistic = self.analysis.test_statistic_factory(
                         Params.from_dict({"ns": 0}), self._data
                     )
@@ -700,17 +718,11 @@ class IceCubeLike(PluginPrototype):
     def inject_background_and_signal(self, **kwargs) -> None:
         """docstring"""
         self._data = self.trial_generator(**kwargs)
-        self.test_statistic = self.analysis.test_statistic_factory(
-            Params.from_dict({"ns": 0}), self._data
-        )
         return
 
     def update_data(self, data) -> None:
         """docstring"""
         self._data = data
-        self.test_statistic = self.analysis.test_statistic_factory(
-            Params.from_dict({"ns": 0}), data
-        )
         return
 
     def update_injection(self, source: sources.PointSource):
@@ -729,13 +741,7 @@ class IceCubeLike(PluginPrototype):
 
     def get_ns(self):
         """docstring"""
-        ns = (
-            self.energy_sob_factory.spectrum(
-                self.analysis.data_handler_source[0].sim["trueE"]
-            )
-            * self.analysis.data_handler_source[0].sim["ow"]
-            * self.livetime
-        ).sum()
+        ns = self.energy_sob_factory.get_ns() * self.livetime
         return ns
 
     def get_log_like(self, verbose=None):
@@ -758,9 +764,9 @@ class IceCubeLike(PluginPrototype):
             self.fit_ns = ns
             self.fit_likelihood = llh
             if verbose:
-                print(ns, llh)
+                print(ns, llh / 2)
 
-        return -llh
+        return -llh / 2
 
     def get_number_of_data_points(self):
         """docstring"""
@@ -789,16 +795,12 @@ class IceCubeLike(PluginPrototype):
         return self._dec
 
 
-
-
 class icecube_analysis(PluginPrototype):
     """Docstring"""
-      
-    def __init__(self,
-        listoficecubelike,
-        newton_flux_norm = False,
-        name = "combine",
-        verbose = False):
+
+    def __init__(
+        self, listoficecubelike, newton_flux_norm=False, name="combine", verbose=False
+    ):
         """Docstring"""
         nuisance_parameters = {}
         super(icecube_analysis, self).__init__(name, nuisance_parameters)
@@ -808,28 +810,52 @@ class icecube_analysis(PluginPrototype):
         self.totallivetime = []
         self._p = []
         self.mc_index = []
+        self.dataset_ratio = []
+        self.dataset_weight = []
+        self.totaln = 0
+        for icecube in listoficecubelike:
+            self.totaln += len(icecube.data)
         self.init_mc_array()
         self.newton_flux_norm = newton_flux_norm
         self.verbose = verbose
         self.current_fit_ns = 0
 
-    
     def get_log_like(self, verbose=None):
         if self.newton_flux_norm:
             sob = []
-            n_drop = 0
+            n_drop = []
+            fraction = []
+            self.totaln = 0
+            dataset_weight = []
             for icecubeobject in self.listoficecubelike:
+                self.totaln += len(icecubeobject.data)
                 icecubeobject.update_model()
-                sob = np.append(sob,icecubeobject.test_statistic._calculate_sob())
-                n_drop += icecubeobject.test_statistic.n_dropped
-            ns_ratio = self.newton_method(sob, n_drop)
-            llh = np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1)
-            drop_term = np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio))
-            llh = 2 * (llh.sum() + n_drop * drop_term)
-            self.current_fit_ns = ns_ratio*(len(sob)+n_drop)
+                dataset_weight.append(icecubeobject.get_ns())
+            dataset_weight = np.array(dataset_weight)
+            self.dataset_weight = dataset_weight / dataset_weight.sum()
+
+            for i, icecubeobject in enumerate(self.listoficecubelike):
+                sob.append(icecubeobject.test_statistic._calculate_sob())
+                n_drop.append(icecubeobject.test_statistic.n_dropped)
+                fraction.append(
+                    self.totaln * self.dataset_weight[i] / len(icecubeobject.data)
+                )
+            fraction = np.array(fraction)
+            # fraction = fraction/fraction.sum()
+            ns_ratio = newton_method_multidataset(sob, n_drop, fraction)
+            llh = 0
+            for i, icecubeobject in enumerate(self.listoficecubelike):
+                templlh = np.sign(ns_ratio) * np.log(
+                    np.abs(ns_ratio) * fraction[i] * (sob[i] - 1) + 1
+                )
+                drop_term = np.sign(ns_ratio) * np.log(
+                    1 - np.abs(ns_ratio) * fraction[i]
+                )
+                llh += templlh.sum() + n_drop[i] * drop_term
+            self.current_fit_ns = ns_ratio * self.totaln
             if self.verbose:
                 print(self.current_fit_ns, llh)
-                
+
         else:
             llh = 0
             ns = 0
@@ -841,48 +867,15 @@ class icecube_analysis(PluginPrototype):
             if self.verbose:
                 print(self.current_fit_ns, llh)
         return llh
-    
+
     def get_current_fit_ns(self):
         return self.current_fit_ns
-        
-    
-    def newton_method(self, sob: np.ndarray , n_drop: float) -> float:
-        """Docstring
 
-        Args:
-            sob:
-            n_drop:
-        Returns:
-
-        """
-        newton_precision = 0
-        newton_iterations = 20
-        precision = newton_precision + 1
-        eps = 1e-5
-        k = 1 / (sob - 1)
-        x = [0.] * newton_iterations
-
-        for i in range(newton_iterations - 1):
-            # get next iteration and clamp
-            inv_terms = x[i] + k
-            inv_terms[inv_terms == 0] = eps
-            terms = 1 / inv_terms
-            drop_term = 1 / (x[i] - 1)
-            d1 = np.sum(terms) + n_drop * drop_term
-            d2 = np.sum(terms**2) + n_drop * drop_term**2
-            x[i + 1] = min(1 - eps, max(0, x[i] + d1 / d2))
-
-            if x[i] == x[i + 1] or (
-                x[i] < x[i + 1] and x[i + 1] <= x[i] * precision
-            ) or (x[i + 1] < x[i] and x[i] <= x[i + 1] * precision):
-                break
-        return x[i + 1]
-    
     def set_model(self, likelihood_model_instance):
         for icecubeobject in self.listoficecubelike:
             icecubeobject.set_model(likelihood_model_instance)
         return
-    
+
     def inner_fit(self):
         return self.get_log_like()
 
@@ -895,8 +888,11 @@ class icecube_analysis(PluginPrototype):
             )
         self.livetime_ratio = np.array(self.livetime_ratio)
         self.totallivetime = self.livetime_ratio.sum()
+        self.dataset_ratio = self.livetime_ratio * self.effA_ratio
+        self.dataset_ratio = self.dataset_ratio / self.dataset_ratio.sum()
         self.livetime_ratio /= np.sum(self.livetime_ratio)
         self.effA_ratio /= np.sum(self.effA_ratio)
+
         for i, sample in enumerate(self.listoficecubelike):
             sim = sample.analysis.data_handler_source[0].sim
             mc_array = rf.append_fields(
@@ -923,6 +919,7 @@ class icecube_analysis(PluginPrototype):
 
     def injection(self, n_signal=0, flux_norm=None, poisson=False):
         """docstring"""
+        self.totaln = 0
         if flux_norm is not None:
             for i, icecubeobject in enumerate(self.listoficecubelike):
                 time_intergrated = flux_norm * icecubeobject.livetime
@@ -931,9 +928,7 @@ class icecube_analysis(PluginPrototype):
                 self.listoficecubelike[i].update_data(tempdata)
         else:
             if poisson:
-
-                ratio_injection = self.livetime_ratio * self.effA_ratio
-                ratio_injection = (ratio_injection / ratio_injection.sum()) * n_signal
+                ratio_injection = self.dataset_ratio * n_signal
                 for i, icecubeobject in enumerate(self.listoficecubelike):
                     icecubeobject.trial_generator.config["fixed_ns"] = True
                     injection_signal = np.random.poisson(ratio_injection[i])
@@ -941,6 +936,9 @@ class icecube_analysis(PluginPrototype):
                     self.listoficecubelike[i].update_data(tempdata)
             else:
                 print("No fix number injection implemented")
+                self.totaln = 0
+        for icecube in self.listoficecubelike:
+            self.totaln += len(icecube.data)
 
     def cal_injection_ns(self, flux_norm):
         """Docstring"""
