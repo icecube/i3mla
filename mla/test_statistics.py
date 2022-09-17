@@ -61,7 +61,10 @@ class LLHTestStatistic():
         else:
             ns_ratio = self._newton_ns_ratio(sob)
 
-        ts = self._calculate_ts(ns_ratio, sob)
+        if ns_ratio == 0:
+            ts = 0
+        else:
+            ts = self._calculate_ts(ns_ratio, sob)
 
         if ts < self._best_ts:
             self._best_ts = ts
@@ -69,16 +72,20 @@ class LLHTestStatistic():
 
         return ts
 
-    def _calculate_ts(ns_ratio: float, sob: np.ndarray) -> float:
+    def _calculate_ts(self, ns_ratio: float, sob: np.ndarray) -> float:
         """Docstring"""
-        llh = np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1)
-        drop_term = np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio))
-        return -2 * (llh.sum() + self.n_dropped * drop_term)
+        return self._calculate_dropterm(ns_ratio) + self._calculate_llh(ns_ratio, sob)
+
+    def _calculate_llh(self, ns_ratio: float, sob: np.ndarray) -> np.ndarray:
+        return -2 * np.sum(np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1))
+
+    def _calculate_dropterm(self, ns_ratio: float) -> float:
+        return -2 * self.n_dropped * np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio))
 
     def _calculate_sob(self) -> np.ndarray:
         """Docstring"""
         sob = np.ones(self.n_kept)
-        for _, term in self.sob_terms.items():
+        for name, term in self.sob_terms.items():
             sob *= term.sob.reshape((-1,))
         return sob
 
@@ -162,9 +169,9 @@ class LLHTestStatistic():
 @dataclasses.dataclass(kw_only=True)
 class LLHTestStatisticFactory(Configurable):
     """Docstring"""
+    _factory_of: ClassVar = LLHTestStatistic
     sob_term_factories: List[SoBTermFactory]
 
-    _factory_of: ClassVar = LLHTestStatistic
     _config_map: ClassVar[dict] = {
         '_newton_precision': ('Newton Method n_s Precision', 0),
         '_newton_iterations': ('Newton Method n_s Iterations', 20),
@@ -190,7 +197,7 @@ class LLHTestStatisticFactory(Configurable):
         ]))
 
         n_kept = drop_mask.sum()
-        pruned_events = events.from_idx(drop_mask)
+        pruned_events = events.from_idx(np.nonzero(drop_mask))
 
         sob_terms = {
             term_factory.name: term_factory(params, pruned_events)
@@ -233,31 +240,63 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
     _min_length: float
     _time_term_name: str
 
-    _ts_dict: dict[tuple[float, float], float] = dataclasses.field(
-        init=False, default_factory=dict())
+    _best_ts_dict: dict[tuple[float, float], float] = dataclasses.field(
+        init=False, default_factory=dict)
+    _best_time_params: dict[str, float] = dataclasses.field(
+        init=False, default_factory=dict)
 
-    def _calculate_ts(ns_ratio: float, sob: np.ndarray) -> float:
+    def _calculate_sob(self) -> np.ndarray:
+        sob = np.ones(self.n_kept)
+        for name, term in self.sob_terms.items():
+            if name == self._time_term_name:
+                continue
+            sob *= term.sob.reshape((-1,))
+        return sob
+
+    def _calculate_ts(self, ns_ratio: float, sob: np.ndarray) -> float:
         """Docstring"""
-        self._ts_dict = {}
+        ts_dict = {}
         time_params = self.sob_terms[self._time_term_name].params
         if 'start' not in time_params or 'length' not in time_params:
             raise TypeError('Only mla.UniformProfile is currently supported')
-        
+
         edges = self._events.time[sob >= self._min_sob]
-        
+
+        if len(edges) == 0:
+            return 0
+
         for i, start in enumerate(edges):
             for end in edges[i+1:]:
                 length = end - start
                 if length >= self._min_length:
-                    self._ts_dict[(start, length)] = np.nan
+                    ts_dict[(start, length)] = np.nan
 
-        for start, length in self._ts_dict:
+        if len(ts_dict) == 0:
+            return 0
+
+        drop_term = self._calculate_dropterm(ns_ratio)
+
+        for start, length in ts_dict:
             time_params['start'] = start
             time_params['length'] = length
             self.sob_terms[self._time_term_name].params = time_params
-            self._ts_dict[(start, length)] = super()._calculate_ts(ns_ratio, sob)
+            ts_dict[(start, length)] = super()._calculate_llh(
+                ns_ratio, sob * self.sob_terms[self._time_term_name].sob) + drop_term
 
-        return max(self._ts_dict.values())
+        ts = min(ts_dict.values())
+        if ts < self._best_ts:
+            self._best_ts_dict = ts_dict
+            self._best_time_params['start'], self._best_time_params['length'] = min(
+                ts_dict, key=ts_dict.get)
+        return ts
+
+    @property
+    def best_ts_dict(self) -> dict:
+        return self._best_ts_dict
+
+    @property
+    def best_time_params(self) -> dict:
+        return self._best_time_params
 
 @dataclasses.dataclass(kw_only=True)
 class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
@@ -274,7 +313,7 @@ class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
     _min_length: float = 1
     _time_term_name: str = 'TimeTerm'
 
-    def _factory_kwargs() -> dict:
+    def _factory_kwargs(self) -> dict:
         """Docstring"""
         return {
             **super()._factory_kwargs(),

@@ -14,9 +14,9 @@ class Events():
 
     # dtype_name: (dtype_val, idx, required)
     _dtype_map: ClassVar[dict] = {
-        'run': (np.dtype('int64'), 0, True),
-        'event': (np.dtype('int64'), 1, True),
-        'subevent': (np.dtype('int64'), 2, True),
+        'run': (np.dtype('uint64'), 0, True),
+        'event': (np.dtype('uint64'), 1, True),
+        'subevent': (np.dtype('uint64'), 2, True),
         'ra': (np.dtype('float64'), 0, True),
         'dec': (np.dtype('float64'), 1, True),
         'azi': (np.dtype('float64'), 2, True),
@@ -27,13 +27,13 @@ class Events():
         'sinDec': (np.dtype('float64'), 7, False),
     }
 
-    _ints: npt.NDArray[np.int64]
+    _ints: npt.NDArray[np.uint64]
     _floats: npt.NDArray[np.float64]
 
     @classmethod
     def _get_n_dtypes(cls) -> Tuple[int, int]:
         n_ints = sum([
-            val == np.dtype('int64') for _, (val, _, _) in cls._dtype_map.items()])
+            val == np.dtype('uint64') for _, (val, _, _) in cls._dtype_map.items()])
         n_floats = sum([
             val == np.dtype('float64') for _, (val, _, _) in cls._dtype_map.items()])
         return (n_ints, n_floats)
@@ -43,7 +43,7 @@ class Events():
         """Docstring"""
         n_ints, n_floats = cls._get_n_dtypes()
         return cls(
-            _ints=np.empty((n_ints, 0), dtype=np.int64),
+            _ints=np.empty((n_ints, 0), dtype=np.uint64),
             _floats=np.empty((n_floats, 0), dtype=np.float64),
         )
 
@@ -52,7 +52,7 @@ class Events():
     def from_nusources_events(cls: Type[T], nu_sources_events: np.ndarray) -> T:
         """Docstring"""
         n_ints, n_floats = cls._get_n_dtypes()
-        ints = np.empty((n_ints, len(nu_sources_events)), dtype=np.int64)
+        ints = np.empty((n_ints, len(nu_sources_events)), dtype=np.uint64)
         floats = np.empty((n_floats, len(nu_sources_events)), dtype=np.float64)
         optionals_to_generate = []
 
@@ -65,14 +65,19 @@ class Events():
                     optionals_to_generate.append(dtype_name)
                     continue
             if not dtype_val == nu_sources_events.dtype.fields[dtype_name][0]:
-                raise ValueError(''.join([
-                    f'Dtype of {dtype_name} in input structured array is ',
-                    f'{nu_sources_events.dtype.fields[dtype_name]} when it should be ',
-                    f'{dtype_val}.',
-                ]))
-            if dtype_val == np.dtype('int64'):
+                if nu_sources_events.dtype.fields[dtype_name][0] == np.dtype('uint8'):
+                    ints[idx, :] = nu_sources_events[dtype_name].astype(np.uint64)
+                elif nu_sources_events.dtype.fields[dtype_name][0] == np.dtype('float32'):
+                    floats[idx, :] = nu_sources_events[dtype_name].astype(np.float64)
+                else:    
+                    raise ValueError(''.join([
+                        f'Dtype of {dtype_name} in input structured array is ',
+                        f'{nu_sources_events.dtype.fields[dtype_name][0]} when it should ',
+                        f'be {dtype_val}.',
+                    ]))
+            elif dtype_val == np.dtype('uint64'):
                 ints[idx, :] = nu_sources_events[dtype_name]
-            if dtype_val == np.dtype('float64'):
+            elif dtype_val == np.dtype('float64'):
                 floats[idx, :] = nu_sources_events[dtype_name]
 
         for dtype_name in optionals_to_generate:
@@ -80,25 +85,25 @@ class Events():
 
         return cls(_ints=ints, _floats=floats)
 
-    def _get_int(self, dtype_name: str) -> npt.NDArray[np.int64]:
-        return self._ints[self.__class__._dtype_map[dtype_name][1], :]
+    def _get_int(self, dtype_name: str) -> npt.NDArray[np.uint64]:
+        return np.squeeze(self._ints[self.__class__._dtype_map[dtype_name][1], :])
 
     def _get_float(self, dtype_name: str) -> npt.NDArray[np.float64]:
-        return self._floats[self.__class__._dtype_map[dtype_name][1], :]
+        return np.squeeze(self._floats[self.__class__._dtype_map[dtype_name][1], :])
 
     def _set_float(self, dtype_name: str, arr: npt.NDArray[np.float64]) -> None:
         self._floats[self.__class__._dtype_map[dtype_name][1], :] = arr
 
     @property
-    def run(self) -> npt.NDArray[np.int64]:
+    def run(self) -> npt.NDArray[np.uint64]:
         return self._get_int('run')
 
     @property
-    def event(self) -> npt.NDArray[np.int64]:
+    def event(self) -> npt.NDArray[np.uint64]:
         return self._get_int('event')
 
     @property
-    def subevent(self) -> npt.NDArray[np.int64]:
+    def subevent(self) -> npt.NDArray[np.uint64]:
         return self._get_int('subevent')
 
     @property
@@ -152,7 +157,7 @@ class Events():
         ints: np.ndarray,
         floats: np.ndarray,
         dtype_name: str,
-    ) -> Tuple[npt.NDArray[np.int64], npt.NDArray[np.float64]]:
+    ) -> Tuple[npt.NDArray[np.uint64], npt.NDArray[np.float64]]:
         """Docstring"""
         if dtype_name == 'sinDec':
             floats[cls._dtype_map['sinDec'][1], :] = np.sin(
@@ -174,6 +179,14 @@ class Events():
             _ints=self._ints.copy(),
             _floats=self._floats.copy(),
         )
+
+    def sort(self, key) -> None:
+        if self.__class__._dtype_map[key][0] == np.dtype('uint64'):
+            idxs = np.argsort(self._ints[self.__class__._dtype_map[key][1], :])
+        else:
+            idxs = np.argsort(self._floats[self.__class__._dtype_map[key][1], :])
+        self._ints = self._ints[:, idxs]
+        self._floats = self._floats[:, idxs]
 
     def __len__(self):
         return self._ints.shape[-1]
@@ -211,7 +224,7 @@ class SimEvents(Events):
         ints: np.ndarray,
         floats: np.ndarray,
         dtype_name: str,
-    ) -> Tuple[npt.NDArray[np.int64], npt.NDArray[np.float64]]:
+    ) -> Tuple[npt.NDArray[np.uint64], npt.NDArray[np.float64]]:
         if dtype_name == 'weight':
             floats[cls._dtype_map[dtype_name][1], :] = np.ones(ints.shape[-1])
         return super(SimEvents, cls)._generate_optional_field(ints, floats, dtype_name)

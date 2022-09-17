@@ -31,6 +31,10 @@ class Params:
         """Docstring"""
         return self.value_array[self.key_idx_map[key]]
 
+    def __setitem__(self, key: str, val) -> None:
+        """Docstring"""
+        self.value_array[self.key_idx_map[key]] = val
+
     @property
     def names(self) -> List[str]:
         """Docstring"""
@@ -39,7 +43,7 @@ class Params:
     @classmethod
     def from_dict(cls, value_dict: dict, bounds: Optional[dict] = None) -> 'Params':
         """Docstring"""
-        value_array = np.array(list(value_dict.values()))
+        value_array = np.array(list(value_dict.values()), dtype=np.float64)
         key_idx_map = {key: i for i, key in enumerate(value_dict)}
         return cls._build_params(value_array, key_idx_map, bounds)
 

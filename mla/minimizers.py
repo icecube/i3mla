@@ -21,7 +21,7 @@ import numpy as np
 import scipy.optimize
 
 from .configurable import Configurable
-from .test_statistics import LLHTestStatistic
+from .test_statistics import LLHTestStatistic, FlareStackLLHTestStatistic
 
 
 @dataclasses.dataclass
@@ -67,7 +67,7 @@ class GridSearchMinimizerFactory(MinimizerFactory, Configurable):
             _min_method=self._min_method,
             test_statistic=test_statistic,
         )
- 
+
 
 @dataclasses.dataclass(kw_only=True)
 class GridSearchMinimizer(Minimizer):
@@ -76,7 +76,7 @@ class GridSearchMinimizer(Minimizer):
     _min_method: str
 
     def __call__(
-            self, fitting_params: Optional[List[str]] = None) -> Tuple[float, np.ndarray]:
+            self, fitting_params: Optional[List[str]] = None) -> dict:
         """Docstring"""
         if fitting_params is None:
             fitting_key_idx_map = self.test_statistic.params.key_idx_map
@@ -144,4 +144,52 @@ class GridSearchMinimizer(Minimizer):
             idx = self.test_statistic.params.key_idx_map['ns']
             best_param_values[idx] = self.test_statistic.best_ns
 
-        return best_ts_value, best_param_values
+        to_return = {
+            'ts': best_ts_value,
+            **{
+                key: best_param_values[idx]
+                for key, idx in self.test_statistic.params.key_idx_map.items()
+            },
+        }
+
+        for key, val in self.test_statistic.best_time_params.items():
+            to_return[key] = val
+
+        return to_return
+
+@dataclasses.dataclass(kw_only=True)
+class FlareStackGridSearchMinimizer(GridSearchMinimizer):
+    test_statistic: FlareStackLLHTestStatistic
+    _return_perflare_ts: bool = False
+
+    def _minimize(
+        self,
+        point: np.ndarray,
+        fitting_key_idx_map: dict,
+        fitting_bounds: dict,
+    ) -> Tuple[float, np.ndarray]:
+        best_dict = super()._minimize(point, fitting_key_idx_map, fitting_bounds)
+        if self._return_perflare_ts:
+            best_dict['perflare_ts'] = self.test_statistic.best_ts_dict
+        return best_dict
+
+@dataclasses.dataclass(kw_only=True)
+class FlareStackGridSearchMinimizerFactory(GridSearchMinimizerFactory, Configurable):
+    _config_map: ClassVar[dict] = {
+        **GridSearchMinimizerFactory._config_map,
+        '_return_perflare_ts': ('Return Per-Flare Test Statistic', False),
+    }
+
+    _return_perflare_ts: bool = False
+
+    def __call__(
+        self,
+        test_statistic: FlareStackLLHTestStatistic,
+    ) -> FlareStackGridSearchMinimizer:
+        """Docstring"""
+        return FlareStackGridSearchMinimizer(
+            _gs_pts=self._gs_pts,
+            _min_method=self._min_method,
+            _return_perflare_ts=self._return_perflare_ts,
+            test_statistic=test_statistic,
+        )

@@ -13,7 +13,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import Callable, ClassVar, Dict, List, Optional, Tuple
+from typing import Callable, ClassVar, List, Optional, Tuple
 
 import abc
 import dataclasses
@@ -150,6 +150,10 @@ class GenericProfile(metaclass=abc.ABCMeta):
     def param_dtype(self) -> np.dtype:
         """Returns the parameter names and datatypes formatted for numpy dtypes.
         """
+
+    @abc.abstractmethod
+    def pdf_inrange(self, times: np.ndarray) -> np.ndarray:
+        """Docstring"""
 
 
 @dataclasses.dataclass(kw_only=True)
@@ -305,6 +309,9 @@ class GaussProfile(GenericProfile, Configurable):
     def param_dtype(self) -> np.dtype:
         return self._param_dtype
 
+    def pdf_inrange(self, times: np.ndarray) -> np.ndarray:
+        return self.pdf(times)
+
 
 @dataclasses.dataclass(kw_only=True)
 class UniformProfile(GenericProfile, Configurable):
@@ -352,10 +359,12 @@ class UniformProfile(GenericProfile, Configurable):
         Returns:
             A numpy array of probability amplitudes at the given times.
         """
-        output = np.zeros_like(times)
-        output[
-            (times >= self.range[0]) & (times < self.range[1])
-        ] = 1 / (self.range[1] - self.range[0])
+        # assume time sorted
+        idxs = np.searchsorted(times, self.range)
+        output = np.empty(times.shape)
+        output[:idxs[0]] = 0
+        output[idxs[0]:idxs[1]] = 1 / (self.range[1] - self.range[0])
+        output[idxs[1]:] = 0
         return output
 
     def logpdf(self, times: np.ndarray) -> np.ndarray:
@@ -448,6 +457,9 @@ class UniformProfile(GenericProfile, Configurable):
     @property
     def param_dtype(self) -> np.dtype:
         return self._param_dtype
+
+    def pdf_inrange(self, times: np.ndarray) -> np.ndarray:
+        return np.ones_like(times) / (self.range[1] - self.range[0])
 
 
 @dataclasses.dataclass(kw_only=True)
@@ -635,3 +647,6 @@ class CustomProfile(GenericProfile, Configurable):
     @property
     def param_dtype(self) -> np.dtype:
         return self._param_dtype
+
+    def pdf_inrange(self, times: np.ndarray) -> np.ndarray:
+        return self.pdf(times)

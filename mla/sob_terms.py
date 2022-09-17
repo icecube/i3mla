@@ -153,7 +153,15 @@ class TimeTerm(SoBTerm):
     @property
     def sob(self) -> np.ndarray:
         """Docstring"""
-        return self._sob * self._signal_time_profile.pdf(self._times)
+        # assume sorted by times
+        idxs = np.searchsorted(
+            self._times, self._signal_time_profile.range)
+        sob = np.empty(self._sob.shape)
+        sob[:idxs[0]] = 0
+        sob[idxs[0]:idxs[1]] = self._sob[idxs[0]:idxs[1]] * self._signal_time_profile.pdf_inrange(
+            self._times[idxs[0]:idxs[1]])
+        sob[idxs[1]:] = 0
+        return sob
 
 
 @dataclasses.dataclass(kw_only=True)
@@ -304,7 +312,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
             axis=1
         )
 
-        splines = [self._spline_map[i][j] for i, j in spline_idxs.T]
+        splines = [self._spline_map[i][j] for i, j in np.squeeze(spline_idxs).T]
 
         return SplineMapEnergyTerm(
             name=self.name,

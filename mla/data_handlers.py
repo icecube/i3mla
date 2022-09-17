@@ -422,6 +422,9 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
         valid = np.logical_and(grl_start_cdf < 1, grl_stop_cdf > 0)
         rates = grl_stop_cdf[valid] - grl_start_cdf[valid]
 
+        if not np.any(valid):
+            return events
+
         runs = np.random.choice(
             self._grl[valid],
             size=len(events),
@@ -431,5 +434,7 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
 
         events.time = time_profile.inverse_transform_sample(
             runs['start'], runs['stop'])
+    
+        events.sort('time')
 
         return events
