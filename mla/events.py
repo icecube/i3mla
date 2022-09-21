@@ -67,6 +67,8 @@ class Events():
             if not dtype_val == nu_sources_events.dtype.fields[dtype_name][0]:
                 if nu_sources_events.dtype.fields[dtype_name][0] == np.dtype('uint8'):
                     ints[idx, :] = nu_sources_events[dtype_name].astype(np.uint64)
+                elif nu_sources_events.dtype.fields[dtype_name][0] == np.dtype('uint32'):
+                    ints[idx, :] = nu_sources_events[dtype_name].astype(np.uint64)
                 elif nu_sources_events.dtype.fields[dtype_name][0] == np.dtype('float32'):
                     floats[idx, :] = nu_sources_events[dtype_name].astype(np.float64)
                 else:    
