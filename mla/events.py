@@ -213,9 +213,9 @@ class SimEvents(Events):
         **Events._dtype_map,
         'trueRa': (np.dtype('float64'), 8, True),
         'trueDec': (np.dtype('float64'), 9, True),
-        'trueE': (np.dtype('float64'), 12, True),
-        'ow': (np.dtype('float64'), 13, True),
-        'weight': (np.dtype('float64'), 14, False),
+        'trueE': (np.dtype('float64'), 10, True),
+        'ow': (np.dtype('float64'), 11, True),
+        'weight': (np.dtype('float64'), 12, False),
     }
 
     @classmethod
