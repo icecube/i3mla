@@ -213,8 +213,6 @@ class SimEvents(Events):
         **Events._dtype_map,
         'trueRa': (np.dtype('float64'), 8, True),
         'trueDec': (np.dtype('float64'), 9, True),
-        'trueAzi': (np.dtype('float64'), 10, True),
-        'trueZen': (np.dtype('float64'), 11, True),
         'trueE': (np.dtype('float64'), 12, True),
         'ow': (np.dtype('float64'), 13, True),
         'weight': (np.dtype('float64'), 14, False),
@@ -243,14 +241,6 @@ class SimEvents(Events):
     @property
     def trueDec(self) -> npt.NDArray[np.float64]:
         return self._get_float('trueDec')
-
-    @property
-    def trueAzi(self) -> npt.NDArray[np.float64]:
-        return self._get_float('trueAzi')
-
-    @property
-    def trueZen(self) -> npt.NDArray[np.float64]:
-        return self._get_float('trueZen')
 
     @property
     def trueE(self) -> npt.NDArray[np.float64]:
