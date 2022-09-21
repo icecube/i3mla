@@ -12,6 +12,7 @@ __status__ = 'Development'
 from typing import ClassVar, Dict, List, Optional
 
 import dataclasses
+import math
 import numpy as np
 
 from .configurable import Configurable
@@ -239,6 +240,7 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
     _min_sob: float
     _min_length: float
     _time_term_name: str
+    _window_length: float
 
     _best_ts_dict: dict[tuple[float, float], float] = dataclasses.field(
         init=False, default_factory=dict)
@@ -256,6 +258,7 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
     def _calculate_ts(self, ns_ratio: float, sob: np.ndarray) -> float:
         """Docstring"""
         ts_dict = {}
+
         time_params = self.sob_terms[self._time_term_name].params
         if 'start' not in time_params or 'length' not in time_params:
             raise TypeError('Only mla.UniformProfile is currently supported')
@@ -277,11 +280,12 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
         drop_term = self._calculate_dropterm(ns_ratio)
 
         for start, length in ts_dict:
+            time_correction = -2 * math.log(length / self._window_length)
             time_params['start'] = start
             time_params['length'] = length
             self.sob_terms[self._time_term_name].params = time_params
             ts_dict[(start, length)] = super()._calculate_llh(
-                ns_ratio, sob * self.sob_terms[self._time_term_name].sob) + drop_term
+                ns_ratio, sob * self.sob_terms[self._time_term_name].sob) + drop_term + time_correction
 
         ts = min(ts_dict.values())
         if ts < self._best_ts:
@@ -307,11 +311,13 @@ class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
         '_min_sob': ('Minimum Signal-over-background Ratio For Flare', 1),
         '_min_length': ('Minimum Flare Duration (days)', 1),
         '_time_term_name': ('Time Term Name', 'TimeTerm'),
+        '_window_length': ('Full Time Window Length (days)', 1),
     }
 
     _min_sob: float = 1
     _min_length: float = 1
     _time_term_name: str = 'TimeTerm'
+    _window_length: float = 1
 
     def _factory_kwargs(self) -> dict:
         """Docstring"""
@@ -320,4 +326,5 @@ class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
             '_min_sob': self._min_sob,
             '_min_length': self._min_length,
             '_time_term_name': self._time_term_name,
+            '_window_length': self._window_length,
         }
