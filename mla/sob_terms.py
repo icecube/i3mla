@@ -22,7 +22,7 @@ from scipy.interpolate import UnivariateSpline as Spline
 from .configurable import Configurable
 from .params import Params
 from .sources import PointSource
-from .data_handlers import DataHandler
+from .data_handlers import DataHandler, Injector
 from .time_profiles import GenericProfile
 from .events import Events
 
@@ -96,7 +96,7 @@ class SpatialTerm(SoBTerm):
 @dataclasses.dataclass(kw_only=True)
 class SpatialTermFactory(SoBTermFactory, Configurable):
     """Docstring"""
-    data_handler: DataHandler
+    injector: Injector
     source: PointSource
 
     _config_map: ClassVar[dict] = {'name': ('Name', 'SpatialTerm')}
@@ -105,12 +105,12 @@ class SpatialTermFactory(SoBTermFactory, Configurable):
     def from_config(
         cls,
         config: dict,
-        data_handler: DataHandler,
+        injector: Injector,
         source: PointSource,
     ) -> 'SpatialTermFactory':
         """Docstring"""
         return cls(
-            data_handler=data_handler,
+            injector=injector,
             source=source,
             **cls._map_kwargs(config),
         )
@@ -118,7 +118,7 @@ class SpatialTermFactory(SoBTermFactory, Configurable):
     def __call__(self, params: Params, events: Events) -> SoBTerm:
         """Docstring"""
         sob_spatial = self.source.spatial_pdf(events)
-        sob_spatial /= self.data_handler.evaluate_background_sindec_pdf(events)
+        sob_spatial /= self.injector.evaluate_background_sindec_pdf(events)
         return SpatialTerm(
             name=self.name,
             _params=params,
@@ -245,7 +245,7 @@ class SplineMapEnergyTerm(SoBTerm):
 @dataclasses.dataclass(kw_only=True)
 class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
     """Docstring"""
-    data_handler: DataHandler
+    data_handler: dataclasses.InitVar[DataHandler]
 
     _config_map: ClassVar[dict] = {
         'name': ('Name', 'SplineMapEnergyTerm'),
@@ -292,14 +292,14 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
         """Docstring"""
         return cls(data_handler=data_handler, **cls._map_kwargs(config))
 
-    def __post_init__(self) -> None:
+    def __post_init__(self, data_handler: DataHandler) -> None:
         """Docstring"""
         self._sin_dec_bins = np.linspace(-1, 1, 1 + self._sin_dec_bins_config)
         self._log_energy_bins = np.linspace(
             *self._log_energy_bounds, 1 + self._log_energy_bins_config)
         self._gamma_bins = np.linspace(
             *self._gamma_bounds, 1 + self._gamma_bins_config)
-        self._spline_map = self._init_spline_map()
+        self._spline_map = self._init_spline_map(data_handler)
 
     def __call__(self, params: Params, events: Events) -> SoBTerm:
         """Docstring"""
@@ -332,6 +332,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
 
     def _init_sob_map(
         self,
+        data_handler: DataHandler,
         gamma: float,
         bins: np.ndarray,
         bin_centers: np.ndarray,
@@ -346,7 +347,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
             An array of signal-over-background values binned in sin(dec) and
             log(energy) for a given gamma.
         """
-        sig_h = self.data_handler.build_signal_sindec_logenergy_histogram(gamma, bins)
+        sig_h = data_handler.build_signal_sindec_logenergy_histogram(gamma, bins)
 
         # Normalize histogram by dec band
         sig_h /= np.sum(sig_h, axis=1)[:, None]
@@ -368,7 +369,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
             ratio[i] = spline(bin_centers)
         return ratio
 
-    def _init_spline_map(self) -> List[List[Spline]]:
+    def _init_spline_map(self, data_handler: DataHandler) -> List[List[Spline]]:
         """Builds a 3D hist of sob vs. sin(dec), log(energy), and gamma, then
             returns splines of sob vs. gamma.
 
@@ -376,7 +377,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
         """
         bins = np.array([self._sin_dec_bins, self._log_energy_bins])
         bin_centers = bins[1, :-1] + np.diff(bins[1]) / 2
-        bg_h = self.data_handler.build_background_sindec_logenergy_histogram(bins)
+        bg_h = data_handler.build_background_sindec_logenergy_histogram(bins)
 
         # Normalize histogram by dec band
         bg_h /= np.sum(bg_h, axis=1)[:, None]
@@ -384,7 +385,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
             bg_h[bg_h <= 0] = np.min(bg_h[bg_h > 0])
 
         sob_maps = np.array([
-            self._init_sob_map(gamma, bins, bin_centers, bg_h)
+            self._init_sob_map(data_handler, gamma, bins, bin_centers, bg_h)
             for gamma in self._gamma_bins
         ])
 

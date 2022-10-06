@@ -16,7 +16,7 @@ import numpy as np
 
 from . import utility_functions as uf
 from .configurable import Configurable
-from .data_handlers import DataHandler
+from .data_handlers import Injector
 from .sources import PointSource
 from .events import Events, SimEvents
 
@@ -24,7 +24,7 @@ from .events import Events, SimEvents
 @dataclasses.dataclass(kw_only=True)
 class SingleSourceTrialGenerator(Configurable):
     """Docstring"""
-    data_handler: dataclasses.InitVar[DataHandler]
+    injector: dataclasses.InitVar[Injector]
     source: dataclasses.InitVar[PointSource]
 
     _config_map: ClassVar[dict] = {
@@ -35,23 +35,23 @@ class SingleSourceTrialGenerator(Configurable):
     _random_seed: Optional[int] = None
     _fixed_ns: bool = False
 
-    _data_handler: DataHandler = dataclasses.field(init=False, repr=False)
+    _injector: Injector = dataclasses.field(init=False, repr=False)
     _source: PointSource = dataclasses.field(init=False, repr=False)
 
-    def __post_init__(self, data_handler: DataHandler, source: PointSource) -> None:
+    def __post_init__(self, injector: Injector, source: PointSource) -> None:
         self._source = source
-        self.data_handler = data_handler
+        self._injector = injector
 
     @classmethod
     def from_config(
         cls,
         config: dict,
-        data_handler: DataHandler,
+        injector: Injector,
         source: PointSource,
     ) -> 'SingleSourceTrialGenerator':
         """Docstring"""
         return cls(
-            data_handler=data_handler,
+            injector=injector,
             source=source,
             **cls._map_kwargs(config),
         )
@@ -66,15 +66,15 @@ class SingleSourceTrialGenerator(Configurable):
             An array of combined signal and background events.
         """
         rng = np.random.default_rng(self._random_seed)
-        n_background = rng.poisson(self.data_handler.n_background)
+        n_background = rng.poisson(self.injector.n_background)
         if not self._fixed_ns:
-            n_signal = rng.poisson(self.data_handler.calculate_n_signal(n_signal))
+            n_signal = rng.poisson(self.injector.calculate_n_signal(n_signal))
 
-        background = self.data_handler.sample_background(n_background, rng)
+        background = self.injector.sample_background(n_background, rng)
         background.ra = rng.uniform(0, 2 * np.pi, len(background))
 
         if n_signal > 0:
-            signal = self.data_handler.sample_signal(int(n_signal), rng)
+            signal = self.injector.sample_signal(int(n_signal), rng)
             signal = self._rotate_signal(signal)
         else:
             signal = SimEvents.empty()
@@ -119,32 +119,12 @@ class SingleSourceTrialGenerator(Configurable):
         """Docstring"""
         return self._source
 
-    @source.setter
-    def source(self, source: PointSource) -> None:
+    @property
+    def injector(self) -> Injector:
         """Docstring"""
-        self._data_handler.dec_cut_loc = source.location[1]
-        self._source = source
+        return self._injector
 
     @property
-    def data_handler(self) -> DataHandler:
+    def injector_source(self) -> Tuple[Injector, PointSource]:
         """Docstring"""
-        return self._data_handler
-
-    @data_handler.setter
-    def data_handler(self, data_handler: DataHandler) -> None:
-        """Docstring"""
-        self._data_handler = data_handler
-        self._data_handler.dec_cut_loc = self._source.location[1]
-
-    @property
-    def data_handler_source(self) -> Tuple[DataHandler, PointSource]:
-        """Docstring"""
-        return (self._data_handler, self._source)
-
-    @data_handler_source.setter
-    def data_handler_source(
-            self, data_handler_source: Tuple[DataHandler, PointSource]) -> None:
-        """Docstring"""
-        self._data_handler = data_handler_source[0]
-        self._source = data_handler_source[1]
-        self._data_handler.dec_cut_loc = self._source.location[1]
+        return (self._injector, self._source)

@@ -13,7 +13,7 @@ from typing import ClassVar, List, Tuple
 from dataclasses import InitVar, dataclass, field
 
 from .configurable import Configurable
-from .data_handlers import DataHandler
+from .data_handlers import DataHandler, Injector
 from .minimizers import MinimizerFactory
 from .params import Params
 from .sources import PointSource
@@ -26,12 +26,12 @@ class SingleSourceLLHAnalysis:
     """Docstring"""
     minimizer_factory: MinimizerFactory
     test_statistic_factory: LLHTestStatisticFactory
-    data_handler_source: InitVar[Tuple[DataHandler, PointSource]]
+    injector_source: InitVar[Tuple[Injector, PointSource]]
     trial_generator: SingleSourceTrialGenerator
-    _data_handler_source: Tuple[DataHandler, PointSource] = field(init=False, repr=False)
+    _injector_source: Tuple[DataHandler, PointSource] = field(init=False, repr=False)
 
-    def __post_init__(self, data_handler_source: Tuple[DataHandler, PointSource]) -> None:
-        self.data_handler_source = data_handler_source
+    def __post_init__(self, injector_source: Tuple[Injector, PointSource]) -> None:
+        self._injector_source = injector_source
 
     def produce_and_minimize(
         self,
@@ -50,13 +50,6 @@ class SingleSourceLLHAnalysis:
         return self.test_statistic_factory.generate_params()
 
     @property
-    def data_handler_source(self) -> Tuple[DataHandler, PointSource]:
+    def injector_source(self) -> Tuple[Injector, PointSource]:
         """Docstring"""
-        return self._data_handler_source
-
-    @data_handler_source.setter
-    def data_handler_source(
-            self, data_handler_source: Tuple[DataHandler, PointSource]) -> None:
-        """Docstring"""
-        self._data_handler_source = data_handler_source
-        self.trial_generator.data_handler_source = data_handler_source
+        return self._injector_source
