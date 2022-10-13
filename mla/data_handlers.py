@@ -204,7 +204,7 @@ class NuSourcesDataHandler(DataHandler, Configurable):
             self.full_sim.sinDec,
             self.full_sim.logE,
             bins=bins,
-            weights=self.full_sim.ow * self.full_sim.trueE**gamma,
+            weights=self.full_sim.ow * (self.full_sim.trueE)**gamma,
             density=True,
         )[0]
 
@@ -291,6 +291,44 @@ class NuSourcesDataHandler(DataHandler, Configurable):
         self._cut_sim_dec()
 
 
+def _contained_run_mask(
+    start: float,
+    stop: float,
+    grl: np.ndarray,
+    return_stop_contained: bool = True,
+) -> np.ndarray:
+    """Docstring"""
+
+    fully_contained = (grl['start'] >= start) & (grl['stop'] < stop)
+    start_contained = (grl['start'] < start) & (grl['stop'] > start)
+
+    if not return_stop_contained:
+        return fully_contained | start_contained
+
+    stop_contained = (grl['start'] < stop) & (grl['stop'] > stop)
+
+    return fully_contained | start_contained | stop_contained
+
+
+def _contained_livetime(
+    start: float,
+    stop: float,
+    contained_runs: np.ndarray,
+) -> float:
+    """Docstring"""
+    runs_before_start = contained_runs[contained_runs['start'] < start]
+    runs_after_stop = contained_runs[contained_runs['stop'] > stop]
+    contained_livetime = contained_runs['livetime'].sum()
+
+    if len(runs_before_start) == 1:
+        contained_livetime -= start - runs_before_start['start'][0]
+
+    if len(runs_after_stop) == 1:
+        contained_livetime -= runs_after_stop['stop'][0] - stop
+
+    return contained_livetime
+
+
 @dataclass(kw_only=True)
 class TimeDependentNuSourcesInjector(NuSourcesInjector):
     """Docstring"""
@@ -306,7 +344,9 @@ class TimeDependentNuSourcesInjector(NuSourcesInjector):
     def sample_signal(self, n: int, rng: np.random.Generator) -> SimEvents:
         """Docstring"""
         events = super().sample_signal(n, rng)
-        return self._randomize_times(events, self._signal_time_profile)
+        events = self._randomize_times(events, self._signal_time_profile)
+        print(events.time)
+        return events
 
     def _randomize_times(
         self,
@@ -332,6 +372,11 @@ class TimeDependentNuSourcesInjector(NuSourcesInjector):
             runs['start'], runs['stop'])
         events.sort('time')
         return events
+
+    def contained_livetime(self, start: float, stop: float) -> float:
+        """Docstring"""
+        contained_runs = self._grl[_contained_run_mask(start, stop, self._grl)]
+        return _contained_livetime(start, stop, contained_runs)
 
 
 @dataclass(kw_only=True)
@@ -406,9 +451,10 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
             start -= self._outside_time_prof
             return_stop_contained = False
 
-        background_run_mask = self._contained_run_mask(
+        background_run_mask = _contained_run_mask(
             start,
             stop,
+            self._grl,
             return_stop_contained=return_stop_contained,
         )
 
@@ -420,7 +466,7 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
         background_grl = self._grl[background_run_mask]
         self._n_background = background_grl['events'].sum()
         self._n_background /= background_grl['livetime'].sum()
-        self._n_background *= self._contained_livetime(*profile.range, background_grl)
+        self._n_background *= _contained_livetime(*profile.range, background_grl)
         self._background_time_profile = copy.deepcopy(profile)
 
     @property
@@ -432,52 +478,3 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
     def signal_time_profile(self, profile: GenericProfile) -> None:
         """Docstring"""
         self._signal_time_profile = copy.deepcopy(profile)
-
-    def _contained_run_mask(
-        self,
-        start: float,
-        stop: float,
-        return_stop_contained: bool = True,
-    ) -> np.ndarray:
-        """Docstring"""
-
-        fully_contained = (
-            self._grl['start'] >= start
-        ) & (self._grl['stop'] < stop)
-
-        start_contained = (
-            self._grl['start'] < start
-        ) & (self._grl['stop'] > start)
-
-        if not return_stop_contained:
-            return fully_contained | start_contained
-
-        stop_contained = (
-            self._grl['start'] < stop
-        ) & (self._grl['stop'] > stop)
-
-        return fully_contained | start_contained | stop_contained
-
-    def contained_livetime(self, start: float, stop: float) -> float:
-        """Docstring"""
-        contained_runs = self._grl[self._contained_run_mask(start, stop)]
-        return self._contained_livetime(start, stop, contained_runs)
-
-    @staticmethod
-    def _contained_livetime(
-        start: float,
-        stop: float,
-        contained_runs: np.ndarray,
-    ) -> float:
-        """Docstring"""
-        runs_before_start = contained_runs[contained_runs['start'] < start]
-        runs_after_stop = contained_runs[contained_runs['stop'] > stop]
-        contained_livetime = contained_runs['livetime'].sum()
-
-        if len(runs_before_start) == 1:
-            contained_livetime -= start - runs_before_start['start'][0]
-
-        if len(runs_after_stop) == 1:
-            contained_livetime -= runs_after_stop['stop'][0] - stop
-
-        return contained_livetime

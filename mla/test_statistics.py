@@ -14,11 +14,60 @@ from typing import ClassVar, Dict, List, Optional
 import dataclasses
 import math
 import numpy as np
+from numba import njit
 
 from .configurable import Configurable
 from .sob_terms import SoBTerm, SoBTermFactory
 from .events import Events
 from .params import Params
+from .data_handlers import Injector
+
+
+@njit(parallel=True, fastmath=True)
+def _newton_ns_ratio(
+    sob: np.ndarray,
+    precision: float,
+    iterations: int,
+    n_dropped: int,
+) -> float:
+    """Docstring
+
+    Args:
+        sob:
+
+    Returns:
+
+    """
+    precision += 1
+    eps = 1e-5
+    k = 1 / (sob - 1)
+    x = [0.] * iterations
+
+    for i in range(iterations - 1):
+        # get next iteration and clamp
+        inv_terms = x[i] + k
+        inv_terms[inv_terms == 0] = eps
+        terms = 1 / inv_terms
+        drop_term = 1 / (x[i] - 1)
+        d1 = np.sum(terms) + n_dropped * drop_term
+        d2 = np.sum(terms**2) + n_dropped * drop_term**2
+        x[i + 1] = min(1 - eps, max(0, x[i] + d1 / d2))
+
+        if x[i] == x[i + 1] or (
+            x[i] < x[i + 1] and x[i + 1] <= x[i] * precision
+        ) or (x[i + 1] < x[i] and x[i] <= x[i + 1] * precision):
+            break
+    return x[i + 1]
+
+
+@njit(parallel=True, fastmath=True)
+def _calculate_llh(ns_ratio: float, sob: np.ndarray) -> np.ndarray:
+    return np.sum(np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1))
+
+
+@njit(fastmath=True)
+def _calculate_dropterm(ns_ratio: float, n_dropped: int) -> float:
+    return n_dropped * np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio))
 
 
 @dataclasses.dataclass(kw_only=True)
@@ -60,12 +109,12 @@ class LLHTestStatistic():
         if fitting_ns:
             ns_ratio = self._params['ns'] / self._n_events
         else:
-            ns_ratio = self._newton_ns_ratio(sob)
+            ns_ratio = None
 
         if ns_ratio == 0:
             ts = 0
         else:
-            ts = self._calculate_ts(ns_ratio, sob)
+            ns_ratio, ts = self._calculate_ts(ns_ratio, sob)
 
         if ts < self._best_ts:
             self._best_ts = ts
@@ -75,13 +124,15 @@ class LLHTestStatistic():
 
     def _calculate_ts(self, ns_ratio: float, sob: np.ndarray) -> float:
         """Docstring"""
-        return self._calculate_dropterm(ns_ratio) + self._calculate_llh(ns_ratio, sob)
+        if ns_ratio is None:
+            ns_ratio = _newton_ns_ratio(
+                sob, self._newton_precision, self._newton_iterations, self.n_dropped)
 
-    def _calculate_llh(self, ns_ratio: float, sob: np.ndarray) -> np.ndarray:
-        return -2 * np.sum(np.sign(ns_ratio) * np.log(np.abs(ns_ratio) * (sob - 1) + 1))
-
-    def _calculate_dropterm(self, ns_ratio: float) -> float:
-        return -2 * self.n_dropped * np.sign(ns_ratio) * np.log(1 - np.abs(ns_ratio))
+        return (
+            ns_ratio,
+            -2 * (
+                _calculate_dropterm(ns_ratio, n_dropped) + _calculate_llh(ns_ratio, sob)),
+        )
 
     def _calculate_sob(self) -> np.ndarray:
         """Docstring"""
@@ -89,36 +140,6 @@ class LLHTestStatistic():
         for name, term in self.sob_terms.items():
             sob *= term.sob.reshape((-1,))
         return sob
-
-    def _newton_ns_ratio(self, sob: np.ndarray) -> float:
-        """Docstring
-
-        Args:
-            sob:
-
-        Returns:
-
-        """
-        precision = self._newton_precision + 1
-        eps = 1e-5
-        k = 1 / (sob - 1)
-        x = [0.] * self._newton_iterations
-
-        for i in range(self._newton_iterations - 1):
-            # get next iteration and clamp
-            inv_terms = x[i] + k
-            inv_terms[inv_terms == 0] = eps
-            terms = 1 / inv_terms
-            drop_term = 1 / (x[i] - 1)
-            d1 = np.sum(terms) + self.n_dropped * drop_term
-            d2 = np.sum(terms**2) + self.n_dropped * drop_term**2
-            x[i + 1] = min(1 - eps, max(0, x[i] + d1 / d2))
-
-            if x[i] == x[i + 1] or (
-                x[i] < x[i + 1] and x[i + 1] <= x[i] * precision
-            ) or (x[i + 1] < x[i] and x[i] <= x[i + 1] * precision):
-                break
-        return x[i + 1]
 
     @property
     def params(self) -> Params:
@@ -240,7 +261,9 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
     _min_sob: float
     _min_length: float
     _time_term_name: str
+    _window_start: float
     _window_length: float
+    _injector: Injector
 
     _best_ts_dict: dict[tuple[float, float], float] = dataclasses.field(
         init=False, default_factory=dict)
@@ -255,9 +278,11 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
             sob *= term.sob.reshape((-1,))
         return sob
 
-    def _calculate_ts(self, ns_ratio: float, sob: np.ndarray) -> float:
+    def _calculate_ts(self, ns_ratio: Optional[float], sob: np.ndarray) -> float:
         """Docstring"""
         ts_dict = {}
+        term_dict = {}
+        valid_flares = []
 
         time_params = self.sob_terms[self._time_term_name].params
         if 'start' not in time_params or 'length' not in time_params:
@@ -272,27 +297,52 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
             for end in edges[i+1:]:
                 length = end - start
                 if length >= self._min_length:
-                    ts_dict[(start, length)] = np.nan
+                    valid_flares.append((start, length))
 
-        if len(ts_dict) == 0:
+        if len(valid_flares) == 0:
             return 0
 
-        drop_term = self._calculate_dropterm(ns_ratio)
+        log_bg_livetime = math.log(self._injector.contained_livetime(
+            self._window_start, self._window_start + self._window_length))
 
-        for start, length in ts_dict:
-            time_correction = -2 * math.log(length / self._window_length)
-            time_params['start'] = start
-            time_params['length'] = length
+        signal_livetimes = np.empty(len(valid_flares))
+        for i, (start, length) in enumerate(valid_flares):
+            signal_livetimes[i] = self._injector.contained_livetime(start, start + length)
+        time_corrections = np.log(signal_livetimes) - log_bg_livetime
+
+        for i, (start, length) in enumerate(valid_flares):
+            time_params['start'], time_params['length'] = start, length
             self.sob_terms[self._time_term_name].params = time_params
-            ts_dict[(start, length)] = super()._calculate_llh(
-                ns_ratio, sob * self.sob_terms[self._time_term_name].sob) + drop_term + time_correction
+            combined_sob = sob * self.sob_terms[self._time_term_name].sob
 
-        ts = min(ts_dict.values())
-        if ts < self._best_ts:
-            self._best_ts_dict = ts_dict
-            self._best_time_params['start'], self._best_time_params['length'] = min(
-                ts_dict, key=ts_dict.get)
-        return ts
+            if ns_ratio is None:
+                flare_ns_ratio = _newton_ns_ratio(
+                    combined_sob,
+                    self._newton_precision,
+                    self._newton_iterations,
+                    self.n_dropped,
+                )
+            else:
+                flare_ns_ratio = ns_ratio
+
+            drop_term = _calculate_dropterm(flare_ns_ratio, self.n_dropped)
+            llh = _calculate_llh(flare_ns_ratio, combined_sob)
+            ts_dict[(start, length)] = -2 * (llh + drop_term + time_corrections[i])
+
+            term_dict[(start, length)] = {
+                'ts': ts_dict[(start, length)],
+                'llh': llh,
+                'drop term': drop_term,
+                'time_correction': time_corrections[i],
+                'ns_ratio': flare_ns_ratio,
+            }
+
+        ts_pair = min(ts_dict.items(), key=lambda x: x[1])
+        print(ts_pair)
+        if ts_pair[1] < self._best_ts:
+            self._best_ts_dict = term_dict
+            self._best_time_params['start'], self._best_time_params['length'] = ts_pair[0]
+        return term_dict[ts_pair[0]]['ns_ratio'], ts_pair[1]
 
     @property
     def best_ts_dict(self) -> dict:
@@ -311,13 +361,30 @@ class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
         '_min_sob': ('Minimum Signal-over-background Ratio For Flare', 1),
         '_min_length': ('Minimum Flare Duration (days)', 1),
         '_time_term_name': ('Time Term Name', 'TimeTerm'),
+        '_window_start': ('Full Time Window Start (MJD)', 1),
         '_window_length': ('Full Time Window Length (days)', 1),
     }
 
+    _injector: Injector
     _min_sob: float = 1
     _min_length: float = 1
     _time_term_name: str = 'TimeTerm'
+    _window_start: float = 1
     _window_length: float = 1
+
+    @classmethod
+    def from_config(
+        cls,
+        config: dict,
+        sob_term_factories: List[SoBTermFactory],
+        Injector: Injector,
+    ) -> 'LLHTestStatisticFactory':
+        """Docstring"""
+        return cls(
+            sob_term_factories=sob_term_factories,
+            _injector=Injector,
+            **cls._map_kwargs(config),
+        )
 
     def _factory_kwargs(self) -> dict:
         """Docstring"""
@@ -326,5 +393,7 @@ class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
             '_min_sob': self._min_sob,
             '_min_length': self._min_length,
             '_time_term_name': self._time_term_name,
+            '_window_start': self._window_start,
             '_window_length': self._window_length,
+            '_injector': self._injector,
         }

@@ -138,6 +138,7 @@ class TimeTerm(SoBTerm):
     """Docstring"""
     _times: np.ndarray
     _signal_time_profile: GenericProfile
+    _injector: Injector
 
     @property
     def params(self) -> Params:
@@ -156,10 +157,24 @@ class TimeTerm(SoBTerm):
         # assume sorted by times
         idxs = np.searchsorted(
             self._times, self._signal_time_profile.range)
+
+        # the flare edges are event times that should be included
+        idxs[1] = idxs[1] + 1
+
         sob = np.empty(self._sob.shape)
+        signal_window = (
+            max(self._times[0], self._signal_time_profile.range[0]),
+            min(self._times[-1], self._signal_time_profile.range[1]),
+        )
+        signal_window_width = signal_window[1] - signal_window[0]
+        livetime_weight = (
+            signal_window_width) / self._injector.contained_livetime(*signal_window)
         sob[:idxs[0]] = 0
-        sob[idxs[0]:idxs[1]] = self._sob[idxs[0]:idxs[1]] * self._signal_time_profile.pdf_inrange(
-            self._times[idxs[0]:idxs[1]])
+        sob[idxs[0]:idxs[1]] = self._sob[
+            idxs[0]:idxs[1]
+        ] * self._signal_time_profile.pdf_inrange(
+            self._times[idxs[0]:idxs[1]]
+        ) * livetime_weight
         sob[idxs[1]:] = 0
         return sob
 
@@ -169,6 +184,7 @@ class TimeTermFactory(SoBTermFactory, Configurable):
     """Docstring"""
     background_time_profile: GenericProfile
     signal_time_profile: GenericProfile
+    injector: Injector
 
     _config_map: ClassVar[dict] = {'name': ('Name', 'TimeTerm')}
 
@@ -178,11 +194,13 @@ class TimeTermFactory(SoBTermFactory, Configurable):
         config: dict,
         background_time_profile: GenericProfile,
         signal_time_profile: GenericProfile,
+        injector: Injector,
     ) -> 'TimeTermFactory':
         """Docstring"""
         return cls(
             background_time_profile=background_time_profile,
             signal_time_profile=signal_time_profile,
+            injector=injector,
             **cls._map_kwargs(config),
         )
 
@@ -192,7 +210,13 @@ class TimeTermFactory(SoBTermFactory, Configurable):
         times[:] = events.time[:]
         signal_time_profile = copy.deepcopy(self.signal_time_profile)
         signal_time_profile.params = params
+        background_window_width = np.min([
+            self.background_time_profile.range[1] - self.background_time_profile.range[0],
+            times[-1] - times[0],
+        ])
         sob_bg = 1 / self.background_time_profile.pdf(times)
+        sob_bg /= self.injector.contained_livetime(*self.background_time_profile.range)
+        sob_bg *= background_window_width
 
         if np.logical_not(np.all(np.isfinite(sob_bg))):
             warnings.warn(
@@ -206,6 +230,7 @@ class TimeTermFactory(SoBTermFactory, Configurable):
             _sob=sob_bg,
             _times=times,
             _signal_time_profile=signal_time_profile,
+            _injector=self.injector,
         )
 
     def calculate_drop_mask(self, events: Events) -> np.ndarray:
@@ -254,7 +279,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
         '_log_energy_bins_config': ('log_10(Energy) Bins', 50),
         '_log_energy_bounds': ('log_10(Energy) Bounds (log_10(GeV))', (1, 8)),
         '_gamma_bins_config': ('Gamma Bins', 50),
-        '_gamma_bounds': ('Gamma Bounds', (-4.25, -0.5)),
+        '_gamma_bounds': ('Gamma Bounds', (-3.75, -0.5)),
         '_norm_bghist_by_dec_band': (
             'Normalize Background Histogram By Declination Band', False),
         '_sob_spline_kwargs': ('Signal-over-background Spline Keyword Arguments', {
@@ -274,13 +299,14 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
     _log_energy_bins_config: int = 50
     _log_energy_bounds: Tuple[float, float] = (1, 8)
     _gamma_bins_config: int = 50
-    _gamma_bounds: Tuple[float, float] = (-4.25, -0.5)
+    _gamma_bounds: Tuple[float, float] = (-3.75, -0.5)
     _norm_bghist_by_dec_band: bool = False
     _sob_spline_kwargs: dict = dataclasses.field(
         default_factory=lambda: {'k': 3, 's': 0, 'ext': 'raise'})
     _energy_spline_kwargs: dict = dataclasses.field(
         default_factory=lambda: {'k': 1, 's': 0, 'ext': 3})
 
+    _sob_maps: np.ndarray = dataclasses.field(init=False, repr=False)
     _sin_dec_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _gamma_bins: np.ndarray = dataclasses.field(init=False, repr=False)
@@ -299,7 +325,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
             *self._log_energy_bounds, 1 + self._log_energy_bins_config)
         self._gamma_bins = np.linspace(
             *self._gamma_bounds, 1 + self._gamma_bins_config)
-        self._spline_map = self._init_spline_map(data_handler)
+        self._sob_maps, self._spline_map = self._init_spline_map(data_handler)
 
     def __call__(self, params: Params, events: Events) -> SoBTerm:
         """Docstring"""
@@ -328,7 +354,7 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
         return np.ones(len(events), dtype=bool)
 
     def generate_params(self) -> tuple:
-        return {'gamma': -2}, {'gamma': (-4, -1)}
+        return {'gamma': -2}, {'gamma': self._gamma_bounds}
 
     def _init_sob_map(
         self,
@@ -389,6 +415,8 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
             for gamma in self._gamma_bins
         ])
 
+
+
         transposed_log_sob_maps = np.log(sob_maps.transpose(1, 2, 0))
 
         splines = [[
@@ -396,4 +424,12 @@ class SplineMapEnergyTermFactory(SoBTermFactory, Configurable):
             for log_ratios in dec_bin
         ] for dec_bin in transposed_log_sob_maps]
 
-        return splines
+        return sob_maps, splines
+
+    @property
+    def sob_maps(self) -> np.ndarray:
+        return self._sob_maps
+
+    @property
+    def gamma_bins(self) -> np.ndarray:
+        return self._gamma_bins
