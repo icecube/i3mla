@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import ClassVar, Dict, List, Optional
+from typing import ClassVar, Dict, List, Optional, Tuple
 
 import dataclasses
 import math
@@ -122,7 +122,7 @@ class LLHTestStatistic():
 
         return ts
 
-    def _calculate_ts(self, ns_ratio: float, sob: np.ndarray) -> float:
+    def _calculate_ts(self, ns_ratio: float, sob: np.ndarray) -> Tuple[float, float]:
         """Docstring"""
         if ns_ratio is None:
             ns_ratio = _newton_ns_ratio(
@@ -190,26 +190,15 @@ class LLHTestStatistic():
 
 @dataclasses.dataclass(kw_only=True)
 class LLHTestStatisticFactory(Configurable):
-    """Docstring"""
-    _factory_of: ClassVar = LLHTestStatistic
+    """
+        newton_precision: Newton Method n_s Precision
+        newton_iterations: Newton Method n_s Iterations
+    """
+    factory_of: ClassVar = LLHTestStatistic
     sob_term_factories: List[SoBTermFactory]
 
-    _config_map: ClassVar[dict] = {
-        '_newton_precision': ('Newton Method n_s Precision', 0),
-        '_newton_iterations': ('Newton Method n_s Iterations', 20),
-    }
-
-    _newton_precision: float = 0
-    _newton_iterations: int = 20
-
-    @classmethod
-    def from_config(
-        cls,
-        config: dict,
-        sob_term_factories: List[SoBTermFactory],
-    ) -> 'LLHTestStatisticFactory':
-        """Docstring"""
-        return cls(sob_term_factories=sob_term_factories, **cls._map_kwargs(config))
+    newton_precision: float = 0
+    newton_iterations: int = 20
 
     def __call__(self, params: Params, events: Events) -> LLHTestStatistic:
         """Docstring"""
@@ -226,7 +215,7 @@ class LLHTestStatisticFactory(Configurable):
             for term_factory in self.sob_term_factories
         }
 
-        return self.__class__._factory_of(
+        return self.__class__.factory_of(
             sob_terms=sob_terms,
             _n_events=len(events),
             _n_kept=n_kept,
@@ -238,8 +227,8 @@ class LLHTestStatisticFactory(Configurable):
     def _factory_kwargs(self) -> dict:
         """Docstring"""
         return {
-            '_newton_iterations': self._newton_iterations,
-            '_newton_precision': self._newton_precision,
+            '_newton_iterations': self.newton_iterations,
+            '_newton_precision': self.newton_precision,
         }
 
     def generate_params(self) -> Params:
@@ -259,7 +248,6 @@ class LLHTestStatisticFactory(Configurable):
 class FlareStackLLHTestStatistic(LLHTestStatistic):
     """Docstring"""
     _min_sob: float
-    _min_length: float
     _time_term_name: str
     _window_start: float
     _window_length: float
@@ -278,11 +266,12 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
             sob *= term.sob.reshape((-1,))
         return sob
 
-    def _calculate_ts(self, ns_ratio: Optional[float], sob: np.ndarray) -> float:
+    def _calculate_ts(
+            self, ns_ratio: Optional[float], sob: np.ndarray) -> Tuple[float, float]:
         """Docstring"""
         ts_dict = {}
         term_dict = {}
-        valid_flares = []
+        flares = []
 
         time_params = self.sob_terms[self._time_term_name].params
         if 'start' not in time_params or 'length' not in time_params:
@@ -291,29 +280,24 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
         edges = self._events.time[sob >= self._min_sob]
 
         if len(edges) == 0:
-            return 0
+            return 0, 0
 
-        for i, start in enumerate(edges):
-            for end in edges[i+1:]:
-                length = end - start
-                if length >= self._min_length:
-                    valid_flares.append((start, length))
-
-        if len(valid_flares) == 0:
-            return 0
+        for i, start in enumerate(edges[:-1]):
+            for end in edges[i + 1:]:
+                flares.append((start, end - start))
 
         log_bg_livetime = math.log(self._injector.contained_livetime(
             self._window_start, self._window_start + self._window_length))
 
-        signal_livetimes = np.empty(len(valid_flares))
-        for i, (start, length) in enumerate(valid_flares):
+        signal_livetimes = np.empty(len(flares))
+        for i, (start, length) in enumerate(flares):
             signal_livetimes[i] = self._injector.contained_livetime(start, start + length)
         time_corrections = np.log(signal_livetimes) - log_bg_livetime
 
-        for i, (start, length) in enumerate(valid_flares):
+        for i, (start, length) in enumerate(flares):
             time_params['start'], time_params['length'] = start, length
             self.sob_terms[self._time_term_name].params = time_params
-            combined_sob = sob * self.sob_terms[self._time_term_name].sob
+            combined_sob = sob * self.sob_terms[self._time_term_name].sob.reshape((-1,))
 
             if ns_ratio is None:
                 flare_ns_ratio = _newton_ns_ratio(
@@ -338,7 +322,6 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
             }
 
         ts_pair = min(ts_dict.items(), key=lambda x: x[1])
-        print(ts_pair)
         if ts_pair[1] < self._best_ts:
             self._best_ts_dict = term_dict
             self._best_time_params['start'], self._best_time_params['length'] = ts_pair[0]
@@ -354,46 +337,27 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
 
 @dataclasses.dataclass(kw_only=True)
 class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
-    """Docstring"""
-    _factory_of: ClassVar = FlareStackLLHTestStatistic
-    _config_map: ClassVar[dict] = {
-        **LLHTestStatisticFactory._config_map,
-        '_min_sob': ('Minimum Signal-over-background Ratio For Flare', 1),
-        '_min_length': ('Minimum Flare Duration (days)', 1),
-        '_time_term_name': ('Time Term Name', 'TimeTerm'),
-        '_window_start': ('Full Time Window Start (MJD)', 1),
-        '_window_length': ('Full Time Window Length (days)', 1),
-    }
+    """
+        min_sob: Minimum Signal-over-background Ratio For Flare
+        time_term_name: Time Term Name
+        window_start: Full Time Window Start (MJD)
+        window_length: Full Time Window Length (days)
+    """
+    factory_of: ClassVar = FlareStackLLHTestStatistic
+    injector: Injector
 
-    _injector: Injector
-    _min_sob: float = 1
-    _min_length: float = 1
-    _time_term_name: str = 'TimeTerm'
-    _window_start: float = 1
-    _window_length: float = 1
-
-    @classmethod
-    def from_config(
-        cls,
-        config: dict,
-        sob_term_factories: List[SoBTermFactory],
-        Injector: Injector,
-    ) -> 'LLHTestStatisticFactory':
-        """Docstring"""
-        return cls(
-            sob_term_factories=sob_term_factories,
-            _injector=Injector,
-            **cls._map_kwargs(config),
-        )
+    min_sob: float = 1
+    time_term_name: str = 'TimeTerm'
+    window_start: float = 1
+    window_length: float = 1
 
     def _factory_kwargs(self) -> dict:
         """Docstring"""
         return {
             **super()._factory_kwargs(),
-            '_min_sob': self._min_sob,
-            '_min_length': self._min_length,
-            '_time_term_name': self._time_term_name,
-            '_window_start': self._window_start,
-            '_window_length': self._window_length,
-            '_injector': self._injector,
+            '_min_sob': self.min_sob,
+            '_time_term_name': self.time_term_name,
+            '_window_start': self.window_start,
+            '_window_length': self.window_length,
+            '_injector': self.injector,
         }

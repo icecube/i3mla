@@ -23,21 +23,13 @@ import numpy as np
 
 @dataclasses.dataclass(kw_only=True)
 class PointSource(Configurable):
-    """Stores a source object name and location"""
-    _config_map: ClassVar[dict] = {
-        'name': ('Source Name', 'source_name'),
-        '_ra': ('Right Ascension (rad)', np.nan),
-        '_dec': ('Declination (rad)', np.nan),
-    }
+    """Stores a source object name and location
+        ra: Right Ascension (rad)
+        dec: Declination (rad)
+    """
 
-    name: str = 'source_name'
-    _ra: float
-    _dec: float
-
-    @classmethod
-    def from_config(cls, config: dict) -> 'PointSource':
-        """Docstring"""
-        return cls(**cls._map_kwargs(config))
+    ra: float = np.nan
+    dec: float = np.nan
 
     def sample(self, size: int = 1) -> tuple:
         """Sample locations.
@@ -45,7 +37,7 @@ class PointSource(Configurable):
         Args:
             size: number of points to sample
         """
-        return (np.ones(size) * self._ra, np.ones(size) * self._dec)
+        return (np.ones(size) * self.ra, np.ones(size) * self.dec)
 
     def spatial_pdf(self, events: Events) -> np.ndarray:
         """calculates the signal probability of events.
@@ -69,7 +61,7 @@ class PointSource(Configurable):
     @property
     def location(self) -> Tuple[float, float]:
         """return location of the source"""
-        return (self._ra, self._dec)
+        return (self.ra, self.dec)
 
     @property
     def sigma(self) -> float:
@@ -79,18 +71,11 @@ class PointSource(Configurable):
 
 @dataclasses.dataclass(kw_only=True)
 class GaussianExtendedSource(PointSource, Configurable):
-    """Gaussian Extended Source"""
-    _config_map: ClassVar[dict] = {
-        **PointSource._config_map,
-        '_sigma': ('Sigma (rad)', np.deg2rad(1)),
-    }
+    """Gaussian Extended Source
+        sigma: Sigma (rad)
+    """
 
     sigma: float = np.deg2rad(1)
-
-    @classmethod
-    def from_config(cls, config: dict) -> 'GaussianExtendedSource':
-        """Docstring"""
-        return cls(**cls._map_kwargs(config))
 
     def sample(self, size: int = 1) -> np.ndarray:
         """Sample locations.

@@ -46,25 +46,19 @@ class Minimizer(metaclass=abc.ABCMeta):
 
 @dataclasses.dataclass(kw_only=True)
 class GridSearchMinimizerFactory(MinimizerFactory, Configurable):
-    """Docstring"""
-    _config_map: ClassVar[dict] = {
-        '_gs_pts': ('GridSearch Points', 5),
-        '_min_method': ('Scipy Minimize Method', 'L-BFGS-B'),
-    }
+    """
+        gs_pts: GridSearch Points
+        min_method: Scipy Minimize Method
+    """
 
-    _gs_pts: int = 5
-    _min_method: str = 'L-BFGS-B'
-
-    @classmethod
-    def from_config(cls, config: dict) -> 'GridSearchMinimizerFactory':
-        """Docstring"""
-        return cls(**cls._map_kwargs(config))
+    gs_pts: int = 5
+    min_method: str = 'L-BFGS-B'
 
     def __call__(self, test_statistic: LLHTestStatistic) -> 'GridSearchMinimizer':
         """Docstring"""
         return GridSearchMinimizer(
-            _gs_pts=self._gs_pts,
-            _min_method=self._min_method,
+            gs_pts=self.gs_pts,
+            min_method=self.min_method,
             test_statistic=test_statistic,
         )
 
@@ -72,8 +66,8 @@ class GridSearchMinimizerFactory(MinimizerFactory, Configurable):
 @dataclasses.dataclass(kw_only=True)
 class GridSearchMinimizer(Minimizer):
     """Docstring"""
-    _gs_pts: int
-    _min_method: str
+    gs_pts: int
+    min_method: str
 
     def __call__(
             self, fitting_params: Optional[List[str]] = None) -> dict:
@@ -95,7 +89,7 @@ class GridSearchMinimizer(Minimizer):
             return 0, np.array([(0,)], dtype=[('ns', np.float64)])
 
         grid = [
-            np.linspace(lo, hi, self._gs_pts)
+            np.linspace(lo, hi, self.gs_pts)
             for lo, hi in fitting_bounds.values()
         ]
 
@@ -127,17 +121,17 @@ class GridSearchMinimizer(Minimizer):
         point: np.ndarray,
         fitting_key_idx_map: dict,
         fitting_bounds: dict,
-    ) -> Tuple[float, np.ndarray]:
+    ) -> dict:
         """Docstring"""
         result = scipy.optimize.minimize(
             self._eval_test_statistic,
             x0=point,
             args=(fitting_key_idx_map,),
             bounds=fitting_bounds.values(),
-            method=self._min_method,
+            method=self.min_method,
         )
 
-        best_ts_value = -result.fun
+        best_ts_value = result.fun
         best_param_values = self._param_values(result.x, fitting_key_idx_map)
 
         if 'ns' not in fitting_key_idx_map:
@@ -157,30 +151,31 @@ class GridSearchMinimizer(Minimizer):
 
         return to_return
 
+
 @dataclasses.dataclass(kw_only=True)
 class FlareStackGridSearchMinimizer(GridSearchMinimizer):
     test_statistic: FlareStackLLHTestStatistic
-    _return_perflare_ts: bool = False
+    return_perflare_ts: bool = False
 
     def _minimize(
         self,
         point: np.ndarray,
         fitting_key_idx_map: dict,
         fitting_bounds: dict,
-    ) -> Tuple[float, np.ndarray]:
+    ) -> dict:
         best_dict = super()._minimize(point, fitting_key_idx_map, fitting_bounds)
-        if self._return_perflare_ts:
+        if self.return_perflare_ts:
             best_dict['perflare_ts'] = self.test_statistic.best_ts_dict
         return best_dict
 
+
 @dataclasses.dataclass(kw_only=True)
 class FlareStackGridSearchMinimizerFactory(GridSearchMinimizerFactory, Configurable):
-    _config_map: ClassVar[dict] = {
-        **GridSearchMinimizerFactory._config_map,
-        '_return_perflare_ts': ('Return Per-Flare Test Statistic', False),
-    }
+    """
+        return_perflare_ts: Return Per-Flare Test Statistic
+    """
 
-    _return_perflare_ts: bool = False
+    return_perflare_ts: bool = False
 
     def __call__(
         self,
@@ -188,8 +183,8 @@ class FlareStackGridSearchMinimizerFactory(GridSearchMinimizerFactory, Configura
     ) -> FlareStackGridSearchMinimizer:
         """Docstring"""
         return FlareStackGridSearchMinimizer(
-            _gs_pts=self._gs_pts,
-            _min_method=self._min_method,
-            _return_perflare_ts=self._return_perflare_ts,
+            gs_pts=self.gs_pts,
+            min_method=self.min_method,
+            return_perflare_ts=self.return_perflare_ts,
             test_statistic=test_statistic,
         )

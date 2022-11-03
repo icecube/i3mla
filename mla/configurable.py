@@ -9,38 +9,28 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
+from typing import ClassVar
 from abc import ABCMeta, abstractmethod
 import inspect
+import dataclasses
 
+@dataclasses.dataclass(kw_only=True)
 class Configurable(metaclass=ABCMeta):
     """Docstring"""
-    _config_map = {}
-
     @classmethod
     def default_config(cls) -> dict:
         """Docstring"""
         sig = inspect.signature(cls.__init__)
         defaults = {
-            param: param.default
+            param.name: param.default
             for param in sig.parameters.values()
-            if param.default is not param.empty
+            if (param.default is not param.empty) and (type(param.default) is not property)
         }
-        return {key: defaults[var] for var, key in cls._config_map.items()}
-
-    @property
-    def config(self) -> dict:
-        """Docstring"""
-        return {
-            key: getattr(self, var)
-            for var, key in self.__class__._config_map.items()
-        }
-
-    @classmethod
-    @abstractmethod
-    def from_config(cls, config: dict, *args) -> 'Configurable':
-        """Docstring"""
-
-    @classmethod
-    def _map_kwargs(cls, config: dict) -> dict:
-        """Docstring"""
-        return {var: config[key] for var, (key, _) in cls._config_map.items()}
+        to_change = {}
+        for var, default in defaults.items():
+            if type(default) == dataclasses._HAS_DEFAULT_FACTORY_CLASS:
+                to_change[var] = next(f for f in dataclasses.fields(cls)
+                     if f.name == var).default_factory()
+        for var, default in to_change.items():
+            defaults[var] = default
+        return {'class': str(cls.__name__), 'args': defaults}

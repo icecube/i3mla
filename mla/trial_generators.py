@@ -23,38 +23,15 @@ from .events import Events, SimEvents
 
 @dataclasses.dataclass(kw_only=True)
 class SingleSourceTrialGenerator(Configurable):
-    """Docstring"""
-    injector: dataclasses.InitVar[Injector]
-    source: dataclasses.InitVar[PointSource]
+    """
+        random_seed: Random Seed
+        fixed_ns: Fixed n_s
+    """
+    injector: Injector
+    source: PointSource
 
-    _config_map: ClassVar[dict] = {
-        '_random_seed': ('Random Seed', None),
-        '_fixed_ns': ('Fixed n_s', False),
-    }
-
-    _random_seed: Optional[int] = None
-    _fixed_ns: bool = False
-
-    _injector: Injector = dataclasses.field(init=False, repr=False)
-    _source: PointSource = dataclasses.field(init=False, repr=False)
-
-    def __post_init__(self, injector: Injector, source: PointSource) -> None:
-        self._source = source
-        self._injector = injector
-
-    @classmethod
-    def from_config(
-        cls,
-        config: dict,
-        injector: Injector,
-        source: PointSource,
-    ) -> 'SingleSourceTrialGenerator':
-        """Docstring"""
-        return cls(
-            injector=injector,
-            source=source,
-            **cls._map_kwargs(config),
-        )
+    random_seed: Optional[int] = None
+    fixed_ns: bool = False
 
     def __call__(self, n_signal: float = 0) -> Events:
         """Produces a single trial of background+signal events based on inputs.
@@ -65,9 +42,9 @@ class SingleSourceTrialGenerator(Configurable):
         Returns:
             An array of combined signal and background events.
         """
-        rng = np.random.default_rng(self._random_seed)
+        rng = np.random.default_rng(self.random_seed)
         n_background = rng.poisson(self.injector.n_background)
-        if not self._fixed_ns:
+        if not self.fixed_ns:
             n_signal = rng.poisson(self.injector.calculate_n_signal(n_signal))
 
         background = self.injector.sample_background(n_background, rng)
@@ -88,7 +65,9 @@ class SingleSourceTrialGenerator(Configurable):
 
         # Combine the signal background events and time-sort them.
         # Use recfunctions.stack_arrays to prevent numpy from scrambling entry order
-        return Events.concatenate([signal, background])
+        events = Events.concatenate([signal, background])
+        events.sort('time')
+        return events
 
     def _rotate_signal(self, signal: SimEvents) -> SimEvents:
         """Docstring"""
@@ -113,18 +92,3 @@ class SingleSourceTrialGenerator(Configurable):
         )
 
         return signal
-
-    @property
-    def source(self) -> PointSource:
-        """Docstring"""
-        return self._source
-
-    @property
-    def injector(self) -> Injector:
-        """Docstring"""
-        return self._injector
-
-    @property
-    def injector_source(self) -> Tuple[Injector, PointSource]:
-        """Docstring"""
-        return (self._injector, self._source)

@@ -173,27 +173,20 @@ class GaussProfile(GenericProfile, Configurable):
             for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
+        '_mean': 'Mean (MJD)',
+        '_sigma': 'Sigma (days)',
     """
-    _config_map: ClassVar[dict] = {
-        '_mean': ('Mean (MJD)', np.nan),
-        '_sigma': ('Sigma (days)', np.nan),
-    }
 
-    _mean: float
-    _sigma: float
+    mean: float = np.nan
+    sigma: float = np.nan
 
     scipy_dist: scipy.stats.distributions.rv_frozen = dataclasses.field(init=False)
     _param_dtype: ClassVar[np.dtype] = np.dtype(
         [('mean', np.float32), ('sigma', np.float32)])
 
-    @classmethod
-    def from_config(cls, config: dict) -> 'GaussProfile':
-        """Docstring"""
-        return cls(**cls._map_kwargs(config))
-
     def __post_init__(self) -> None:
         """Initializes the time profile."""
-        self.scipy_dist = scipy.stats.norm(self._mean, self._sigma)
+        self.scipy_dist = scipy.stats.norm(self.mean, self.sigma)
 
     def pdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the probability for each time.
@@ -276,7 +269,7 @@ class GaussProfile(GenericProfile, Configurable):
     @property
     def params(self) -> dict:
         """Docstring"""
-        return {'mean': self._mean, 'sigma': self._sigma}
+        return {'mean': self.mean, 'sigma': self.sigma}
 
     @params.setter
     def params(self, params: Params) -> None:
@@ -284,14 +277,14 @@ class GaussProfile(GenericProfile, Configurable):
         update = False
 
         if 'mean' in params:
-            self._mean = params['mean']
+            self.mean = params['mean']
             update = True
         if 'sigma' in params:
-            self._sigma = params['sigma']
+            self.sigma = params['sigma']
             update = True
 
         if update:
-            self.scipy_dist = scipy.stats.norm(self._mean, self._sigma)
+            self.scipy_dist = scipy.stats.norm(self.mean, self.sigma)
 
     @property
     def param_bounds(self) -> dict:
@@ -299,7 +292,7 @@ class GaussProfile(GenericProfile, Configurable):
 
     @property
     def exposure(self) -> float:
-        return np.sqrt(2 * np.pi * self._sigma**2)
+        return np.sqrt(2 * np.pi * self.sigma**2)
 
     @property
     def range(self) -> Tuple[float, float]:
@@ -328,27 +321,20 @@ class UniformProfile(GenericProfile, Configurable):
             for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
+        '_start': 'Start (MJD)',
+        '_length': 'Length (days)',
     """
-    _config_map: ClassVar[dict] = {
-        '_start': ('Start (MJD)', np.nan),
-        '_length': ('Length (days)', np.nan),
-    }
 
-    _start: float
-    _length: float
+    start: float = np.nan
+    length: float = np.nan
 
     _range: Tuple[float, float] = dataclasses.field(init=False, repr=False)
     _param_dtype: ClassVar[np.dtype] = np.dtype(
         [('start', np.float32), ('length', np.float32)])
 
-    @classmethod
-    def from_config(cls, config: dict) -> 'UniformProfile':
-        """Docstring"""
-        return cls(**cls._map_kwargs(config))
-
     def __post_init__(self) -> None:
         """Constructs the time profile."""
-        self._range = (self._start, self._start + self._length)
+        self._range = (self.start, self.start + self.length)
 
     def pdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the probability for each time.
@@ -483,31 +469,20 @@ class CustomProfile(GenericProfile, Configurable):
             for this time profile.
         param_dtype (List[Tuple[str, str]]): The numpy dytpe for the fitting
             parameters.
+        '_range': 'Range (MJD, MJD)',
+        '_bins': 'Bins',
+        '_offset': 'Offset (days)',
     """
     dist: Callable[[np.ndarray, Tuple[float, float]], np.ndarray]
 
-    _config_map = {
-        '_range': ('Range (MJD, MJD)', (np.nan, np.nan)),
-        '_bins': ('Bins', 100),
-        '_offset': ('Offset (days)', 0),
-    }
-
-    _range: Tuple[float, float]
-    _bins: int = 100
-    _offset: float = 0
+    start: float = np.nan
+    end: float = np.nan
+    bins: int = 100
+    offset: float = 0
 
     _dist: scipy.stats.rv_histogram = dataclasses.field(init=False, repr=False)
     _exposure: float = dataclasses.field(init=False, repr=False)
     _param_dtype: ClassVar[np.dtype] = np.dtype([('offset', np.float32)])
-
-    @classmethod
-    def from_config(
-        cls,
-        config: dict,
-        dist: Callable[[np.ndarray, Tuple[float, float]], np.ndarray],
-    ) -> 'CustomProfile':
-        """Docstring"""
-        return cls(dist=dist, **cls._map_kwargs(config))
 
     @property
     def dist(self) -> scipy.stats.rv_histogram:
@@ -524,15 +499,15 @@ class CustomProfile(GenericProfile, Configurable):
         Args:
             dist:
         """
-        if isinstance(self._bins, int):
-            bin_edges = np.linspace(*self._range, self._bins)
+        if isinstance(self.bins, int):
+            bin_edges = np.linspace(self.start, self.end, self.bins)
         else:
-            span = self._range[1] - self._range[0]
-            bin_edges = span * np.array(self._bins)
+            span = self.end - self.start
+            bin_edges = span * np.array(self.bins)
 
         bin_widths = np.diff(bin_edges)
         bin_centers = bin_edges[:-1] + bin_widths
-        hist = dist(bin_centers, tuple(self._range))
+        hist = dist(bin_centers, (self.start, self.end))
 
         area_under_hist = np.sum(hist * bin_widths)
         hist *= 1 / area_under_hist
@@ -632,17 +607,9 @@ class CustomProfile(GenericProfile, Configurable):
         return self._exposure
 
     @property
-    def offset(self) -> float:
-        return self._offset
-
-    @offset.setter
-    def offset(self, offset: float) -> None:
-        self._offset = offset
-
-    @property
     def range(self) -> Tuple[Optional[float], Optional[float]]:
         return (
-            self._range[0] + self.offset, self._range[1] + self.offset)
+            self.start + self.offset, self.end + self.offset)
 
     @property
     def param_dtype(self) -> np.dtype:
