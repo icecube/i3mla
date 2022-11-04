@@ -9,7 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import ClassVar, Optional, Tuple
+from typing import Optional, Tuple
 
 import abc
 import copy
@@ -210,20 +210,18 @@ class NuSourcesDataHandler(DataHandler, Configurable):
             self._sim = self._full_sim
             return
 
-        sindec_dist = np.abs(self.dec_cut_loc - self._full_sim.trueDec)
-        close = sindec_dist < self.dec_band
+        dec_dist = np.abs(self.dec_cut_loc - self._full_sim.trueDec)
+        close = np.flatnonzero(dec_dist < self.dec_band)
         self._sim = self._full_sim.from_idx(close)
 
-        self._sim.ow /= 2 * np.pi * (np.min([np.sin(
+        scale_factor = 2 * np.pi * (np.min([np.sin(
             self.dec_cut_loc + self.dec_band
         ), 1]) - np.max([np.sin(
             self.dec_cut_loc - self.dec_band
         ), -1]))
-        self._sim.weight /= 2 * np.pi * (np.min([np.sin(
-            self.dec_cut_loc + self.dec_band
-        ), 1]) - np.max([np.sin(
-            self.dec_cut_loc - self.dec_band
-        ), -1]))
+
+        self._sim.ow /= scale_factor
+        self._sim.weight /= scale_factor
 
     @property
     def data_grl(self) -> Tuple[Events, np.ndarray]:
@@ -306,9 +304,7 @@ class TimeDependentNuSourcesInjector(NuSourcesInjector):
     def sample_signal(self, n: int, rng: np.random.Generator) -> SimEvents:
         """Docstring"""
         events = super().sample_signal(n, rng)
-        events = self._randomize_times(events, self.signal_time_profile)
-        print(events.time)
-        return events
+        return self._randomize_times(events, self.signal_time_profile)
 
     def _randomize_times(
         self,
@@ -332,7 +328,6 @@ class TimeDependentNuSourcesInjector(NuSourcesInjector):
 
         events.time = time_profile.inverse_transform_sample(
             runs['start'], runs['stop'])
-        events.sort('time')
         return events
 
     def contained_livetime(self, start: float, stop: float) -> float:

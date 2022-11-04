@@ -71,16 +71,17 @@ class Events():
                     ints[idx, :] = nu_sources_events[dtype_name].astype(np.uint64)
                 elif nu_sources_events.dtype.fields[dtype_name][0] == np.dtype('float32'):
                     floats[idx, :] = nu_sources_events[dtype_name].astype(np.float64)
-                else:    
+                else:
                     raise ValueError(''.join([
                         f'Dtype of {dtype_name} in input structured array is ',
-                        f'{nu_sources_events.dtype.fields[dtype_name][0]} when it should ',
-                        f'be {dtype_val}.',
+                        f'{nu_sources_events.dtype.fields[dtype_name][0]} when it should',
+                        f' be {dtype_val}.',
                     ]))
             elif dtype_val == np.dtype('uint64'):
                 ints[idx, :] = nu_sources_events[dtype_name]
             elif dtype_val == np.dtype('float64'):
                 floats[idx, :] = nu_sources_events[dtype_name]
+
 
         for dtype_name in optionals_to_generate:
             ints, floats = cls._generate_optional_field(ints, floats, dtype_name)
@@ -168,7 +169,8 @@ class Events():
 
     def sample(self: T, n: int, rng: np.random.Generator) -> T:
         """Docstring"""
-        return self.from_idx(rng.choice(self._ints.shape[-1], n))
+        idxs = rng.choice(self._ints.shape[-1], n)
+        return self.from_idx(idxs)
 
     def from_idx(self: T, idx: np.ndarray) -> T:
         return self.__class__(
@@ -232,7 +234,9 @@ class SimEvents(Events):
     def sample(self: S, n: int, rng: np.random.Generator) -> S:
         p = self._floats[self.__class__._dtype_map['weight'][1], :] / self._floats[
             self.__class__._dtype_map['weight'][1], :].sum()
-        return self.from_idx(rng.choice(self._ints.shape[-1], n, replace=False, p=p))
+
+        idxs = rng.choice(self._ints.shape[-1], n, replace=False, p=p)
+        return self.from_idx(idxs)
 
     @property
     def trueRa(self) -> npt.NDArray[np.float64]:

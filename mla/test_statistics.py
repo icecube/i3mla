@@ -20,7 +20,7 @@ from .configurable import Configurable
 from .sob_terms import SoBTerm, SoBTermFactory
 from .events import Events
 from .params import Params
-from .data_handlers import Injector
+from .data_handlers import Injector, TimeDependentNuSourcesInjector
 
 
 @njit(parallel=True, fastmath=True)
@@ -251,9 +251,9 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
     _time_term_name: str
     _window_start: float
     _window_length: float
-    _injector: Injector
+    _injector: TimeDependentNuSourcesInjector
 
-    _best_ts_dict: dict[tuple[float, float], float] = dataclasses.field(
+    _best_ts_dict: dict[tuple[float, float], dict] = dataclasses.field(
         init=False, default_factory=dict)
     _best_time_params: dict[str, float] = dataclasses.field(
         init=False, default_factory=dict)
@@ -285,6 +285,9 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
         for i, start in enumerate(edges[:-1]):
             for end in edges[i + 1:]:
                 flares.append((start, end - start))
+
+        if len(flares) == 0:
+            return 0, 0
 
         log_bg_livetime = math.log(self._injector.contained_livetime(
             self._window_start, self._window_start + self._window_length))
