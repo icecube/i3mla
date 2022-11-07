@@ -32,7 +32,7 @@ __all__ = ["NeutrinoPointSource"]
 r"""This IceCube plugin is currently under develop by Kwok Lung Fan"""
 
 
-class NeutrinoPointSource(PointSource):
+class NeutrinoPointSource(PointSource,Node):
     """
     Class for NeutrinoPointSource. It is inherited from astromodels PointSource class.
     """

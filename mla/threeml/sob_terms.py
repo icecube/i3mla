@@ -35,14 +35,21 @@ PSTrackv4_log_energy_bins = np.arange(1, 9.5 + 0.01, 0.125)
 
 @dataclasses.dataclass
 class ThreeMLPSEnergyTerm(sob_terms.SoBTerm):
-    """Docstring"""
+    """
+    Energy term for 3ML. Constructs only from 3ML energy term factory
+    """
 
     _energysobhist: np.ndarray
     _sin_dec_idx: np.ndarray
     _log_energy_idx: np.ndarray
 
     def update_sob_hist(self, factory: sob_terms.SoBTermFactory) -> None:
-        """Docstring"""
+        """
+        Updating the signal-over-background energy histogram.
+        
+        Args:
+            factory: energy term factory
+        """
         self._energysobhist = factory.cal_sob_map()
 
     @property
@@ -70,7 +77,15 @@ class ThreeMLBaseEnergyTermFactory(sob_terms.SoBTermFactory):
 
 @dataclasses.dataclass
 class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
-    """Docstring"""
+    """
+    This is the class for using MC directly to build the Energy terms.
+    We sugguest using the IRF for Energy term factory due to speed.
+    
+    Args:
+        data_handler: 3ML data handler
+        source: 3ML source object
+        spectrum: signal spectrum
+    """
 
     data_handler: data_handlers.ThreeMLDataHandler
     source: sources.PointSource
@@ -85,6 +100,7 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
     _bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _ow_hist: np.ndarray = dataclasses.field(init=False, repr=False)
     _ow_ebin: np.ndarray = dataclasses.field(init=False, repr=False)
+    _unit_scale: float = dataclasses.field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         """Docstring"""
@@ -102,6 +118,7 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
             self.source.location[1],
             self.data_handler.config["reco_sampling_width"],
         )
+        self._unit_scale = self.config["Energy_convesion(ToGeV)"]
         self._bins = np.array([self._sin_dec_bins, self._log_energy_bins])
         self._init_bg_sob_map()
         self._build_ow_hist()
@@ -175,7 +192,7 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
             log(energy) for a given gamma.
         """
         sig_h = self.data_handler.build_signal_energy_histogram(
-            self.spectrum, self._bins
+            self.spectrum, self._bins, self._unit_scale
         )
         bin_centers = self._log_energy_bins[:-1] + np.diff(self._log_energy_bins) / 2
         # Normalize histogram by dec band
@@ -259,6 +276,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     _irf: np.ndarray = dataclasses.field(init=False, repr=False)
     _sindec_bounds: np.ndarray = dataclasses.field(init=False, repr=False)
     _ntrueebin: int = dataclasses.field(init=False, repr=False)
+    _unit_scale: float = dataclasses.field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         """Docstring"""
@@ -291,6 +309,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         self._sindec_bounds = np.array([lower_sindec_index, uppper_sindec_index])
         self._bins = np.array([self._sin_dec_bins, self._log_energy_bins])
         self._truelogebin = self.config["list_truelogebin"]
+        self._unit_scale = self.config["Energy_convesion(ToGeV)"]
         self._init_bg_sob_map()
         self._build_ow_hist()
         self._init_irf()
@@ -373,7 +392,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     def build_sig_h(self, spectrum: spectral.BaseSpectrum) -> np.ndarray:
         """Docstring"""
         sig = np.zeros(self._bg_sob.shape)
-        flux = spectrum(self._trueebin)
+        flux = spectrum(self._trueebin*self._unit_scale) # converting unit
         sig[self._sindec_bounds[0]:self._sindec_bounds[1], :] = np.dot(
             self._irf[self._sindec_bounds[0]:self._sindec_bounds[1], :, :], flux
         )
@@ -462,4 +481,5 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         config["list_truelogebin"] = np.arange(
             2, 9.01 + 0.01, 0.01
         )
+        config["Energy_convesion(ToGeV)"] = 1e6 #GeV to keV
         return config
