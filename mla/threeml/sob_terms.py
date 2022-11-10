@@ -46,7 +46,7 @@ class ThreeMLPSEnergyTerm(sob_terms.SoBTerm):
     def update_sob_hist(self, factory: sob_terms.SoBTermFactory) -> None:
         """
         Updating the signal-over-background energy histogram.
-        
+
         Args:
             factory: energy term factory
         """
@@ -80,7 +80,7 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
     """
     This is the class for using MC directly to build the Energy terms.
     We sugguest using the IRF for Energy term factory due to speed.
-    
+
     Args:
         data_handler: 3ML data handler
         source: 3ML source object
@@ -392,7 +392,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     def build_sig_h(self, spectrum: spectral.BaseSpectrum) -> np.ndarray:
         """Docstring"""
         sig = np.zeros(self._bg_sob.shape)
-        flux = spectrum(self._trueebin*self._unit_scale) # converting unit
+        flux = spectrum(self._trueebin * self._unit_scale)  # converting unit
         sig[self._sindec_bounds[0]:self._sindec_bounds[1], :] = np.dot(
             self._irf[self._sindec_bounds[0]:self._sindec_bounds[1], :, :], flux
         )
@@ -481,5 +481,5 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         config["list_truelogebin"] = np.arange(
             2, 9.01 + 0.01, 0.01
         )
-        config["Energy_convesion(ToGeV)"] = 1e6 #GeV to keV
+        config["Energy_convesion(ToGeV)"] = 1e6  # GeV to keV
         return config

@@ -23,7 +23,7 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
     """
     Inheritance class from NuSourcesDataHandler.
     For time independent 3ML analysis.
-    
+
     Additional init argument:
         injection_spectrum: spectral.BaseSpectrum
     """
@@ -46,9 +46,9 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
         """
         Building the signal energy histogram.
         Only used when using MC instead of IRF to build signal energy histogram.
-        
+
         Args:
-            spectrum: signal spectrum 
+            spectrum: signal spectrum
             bins: 2d bins in sindec and logE
         """
         return np.histogram2d(
@@ -56,7 +56,7 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
             self.reduced_reco_sim["logE"],
             bins=bins,
             weights=self.reduced_reco_sim["ow"]
-            * spectrum(self.reduced_reco_sim["trueE"]*scale),
+            * spectrum(self.reduced_reco_sim["trueE"] * scale),
             density=True,
         )[0]
 
@@ -85,7 +85,7 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
     def reduced_reco_sim(self, reduced_reco_sim: np.ndarray) -> None:
         """
         setting the reduced sim based on reconstructed dec directly.
-        
+
         Args:
             reduced_reco_sim: reduced sim based on reconstructed dec
         """
@@ -102,9 +102,9 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
     def injection_spectrum(self, inject_spectrum: spectral.BaseSpectrum) -> None:
         """
         Setting the injection spectrum
-        
+
         Args:
-            inject_spectrum: spectrum used for injection 
+            inject_spectrum: spectrum used for injection
         """
         if isinstance(inject_spectrum, property):
             # initial value not specified, use default
