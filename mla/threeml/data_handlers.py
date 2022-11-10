@@ -20,7 +20,13 @@ from . import spectral
 
 @dataclasses.dataclass
 class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
-    """Docstring"""
+    """
+    Inheritance class from NuSourcesDataHandler.
+    For time independent 3ML analysis.
+
+    Additional init argument:
+        injection_spectrum: spectral.BaseSpectrum
+    """
 
     injection_spectrum: spectral.BaseSpectrum
     _injection_spectrum: spectral.BaseSpectrum = dataclasses.field(
@@ -35,42 +41,71 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
         )
 
     def build_signal_energy_histogram(
-        self, spectrum: spectral.BaseSpectrum, bins: np.ndarray
+        self, spectrum: spectral.BaseSpectrum, bins: np.ndarray, scale: float
     ) -> np.ndarray:
-        """Docstring"""
+        """
+        Building the signal energy histogram.
+        Only used when using MC instead of IRF to build signal energy histogram.
+
+        Args:
+            spectrum: signal spectrum
+            bins: 2d bins in sindec and logE
+        """
         return np.histogram2d(
             self.reduced_reco_sim["sindec"],
             self.reduced_reco_sim["logE"],
             bins=bins,
             weights=self.reduced_reco_sim["ow"]
-            * spectrum(self.reduced_reco_sim["trueE"]),
+            * spectrum(self.reduced_reco_sim["trueE"] * scale),
             density=True,
         )[0]
 
     def cut_reconstructed_sim(self, dec: float, sampling_width: float) -> np.ndarray:
-        """Docstring"""
+        """
+        Cutting the MC based on reconstructed dec.
+        Only use when using MC instead of IRF to build signal energy histogram.
+
+        Args:
+            dec: declination of the source
+            sampling_width: size of the sampling band in reconstruction dec.
+        """
         dec_dist = np.abs(dec - self._full_sim["dec"])
         close = dec_dist < sampling_width
         return self._full_sim[close].copy()
 
     @property
     def reduced_reco_sim(self) -> np.ndarray:
-        """Docstring"""
+        """
+        Return the reduced sim based on reconstructed dec.
+        This is the return output of cut_reconstructed_sim.
+        """
         return self._reduced_reco_sim
 
     @reduced_reco_sim.setter
     def reduced_reco_sim(self, reduced_reco_sim: np.ndarray) -> None:
-        """Docstring"""
+        """
+        setting the reduced sim based on reconstructed dec directly.
+
+        Args:
+            reduced_reco_sim: reduced sim based on reconstructed dec
+        """
         self._reduced_reco_sim = reduced_reco_sim.copy()
 
     @property
     def injection_spectrum(self) -> spectral.BaseSpectrum:
-        """Docstring"""
+        """
+        Getting the injection spectrum
+        """
         return self._injection_spectrum
 
     @injection_spectrum.setter
     def injection_spectrum(self, inject_spectrum: spectral.BaseSpectrum) -> None:
-        """Docstring"""
+        """
+        Setting the injection spectrum
+
+        Args:
+            inject_spectrum: spectrum used for injection
+        """
         if isinstance(inject_spectrum, property):
             # initial value not specified, use default
             inject_spectrum = ThreeMLDataHandler._injection_spectrum
