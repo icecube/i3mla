@@ -7,7 +7,7 @@ from astromodels import Model
 import numpy as np
 
 
-class profilellh(PluginPrototype):
+class ProfileLLHLike(PluginPrototype):
     """Docstring"""
     def __init__(
         self,
@@ -19,8 +19,8 @@ class profilellh(PluginPrototype):
         nuisance_parameters = {}
 
         """
-        A generic plugin for profile likelihood. 
-        Give either a pandas dataframe in format of parameter1,2...,-llh 
+        A generic plugin for profile likelihood.
+        Give either a pandas dataframe in format of parameter1,2...,-llh
         or a spline which return -llh.
 
         :param name:
@@ -32,7 +32,7 @@ class profilellh(PluginPrototype):
         :returns:
         """
 
-        super(ProfilellhLike, self).__init__(name, nuisance_parameters)
+        super(ProfileLLHLike, self).__init__(name, nuisance_parameters)
         if spline is not None:
             self.spline = spline
             self.df = None
@@ -58,7 +58,7 @@ class profilellh(PluginPrototype):
 
     def set_model(self, likelihood_model_instance: Model) -> None:
         """
-        Set the model to be used in the joint minimization. 
+        Set the model to be used in the joint minimization.
         Must be a LikelihoodModel instance.
         :param likelihood_model_instance: instance of Model
         :type likelihood_model_instance: astromodels.Model
