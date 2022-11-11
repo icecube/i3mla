@@ -1,3 +1,4 @@
+"""Docstring"""
 from threeML.plugin_prototype import PluginPrototype
 from scipy.interpolate import RegularGridInterpolator
 import pandas as pd
@@ -6,7 +7,8 @@ from astromodels import Model
 import numpy as np
 
 
-class ProfilellhLike(PluginPrototype):
+class profilellh(PluginPrototype):
+    """Docstring"""
     def __init__(
         self,
         name: str,
@@ -17,7 +19,10 @@ class ProfilellhLike(PluginPrototype):
         nuisance_parameters = {}
 
         """
-        A generic plugin for profile likelihood. Give either a pandas dataframe in format of parameter1,2...,-llh or a spline which return -llh.
+        A generic plugin for profile likelihood. 
+        Give either a pandas dataframe in format of parameter1,2...,-llh 
+        or a spline which return -llh.
+
         :param name:
         :type name: str
         :param df:
@@ -49,17 +54,12 @@ class ProfilellhLike(PluginPrototype):
     @property
     def likelihood_model(self) -> Model:
 
-        if self._likelihood_model is None:
-
-            log.error(f"plugin {self._name} does not have a likelihood model")
-
-            raise RuntimeError()
-
         return self._likelihood_model
 
     def set_model(self, likelihood_model_instance: Model) -> None:
         """
-        Set the model to be used in the joint minimization. Must be a LikelihoodModel instance.
+        Set the model to be used in the joint minimization. 
+        Must be a LikelihoodModel instance.
         :param likelihood_model_instance: instance of Model
         :type likelihood_model_instance: astromodels.Model
         """
