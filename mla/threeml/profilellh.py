@@ -32,7 +32,7 @@ class ProfileLLHLike(PluginPrototype):
         :returns:
         """
 
-        super(ProfileLLHLike, self).__init__(name, nuisance_parameters)
+        super().__init__(name, nuisance_parameters)
         if spline is not None:
             self.spline = spline
             self.df = None
