@@ -4,7 +4,7 @@ with open("./README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="mla-thejevans",
+    name="mla",
     version="1.3.0",
     author="John Evans, Jason Fan, Michael Larson",
     author_email="john.evans@icecube.wisc.edu",
