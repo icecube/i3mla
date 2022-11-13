@@ -5,7 +5,7 @@ with open("./README.md", "r") as fh:
 
 setuptools.setup(
     name="mla-thejevans",
-    version="0.0.1",
+    version="1.3.0",
     author="John Evans, Jason Fan, Michael Larson",
     author_email="john.evans@icecube.wisc.edu",
     description="IceCube analysis tools for use with public data",
