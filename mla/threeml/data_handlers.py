@@ -32,6 +32,9 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
     _injection_spectrum: spectral.BaseSpectrum = dataclasses.field(
         init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2)
     )
+    _flux_unit_conversion: float = dataclasses.field(
+        init=False, repr=False
+    )
     _reduced_reco_sim: np.ndarray = dataclasses.field(init=False, repr=False)
 
     def __post_init__(self) -> None:
@@ -39,6 +42,7 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
         self._reduced_reco_sim = self.cut_reconstructed_sim(
             self.config["dec_cut_location"], self.config["reco_sampling_width"]
         )
+        self._flux_unit_conversion = self.config['flux_unit_conversion']
 
     def build_signal_energy_histogram(
         self, spectrum: spectral.BaseSpectrum, bins: np.ndarray, scale: float
@@ -119,7 +123,7 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
             )
 
         self._full_sim["weight"] = self._full_sim["ow"] * (
-            inject_spectrum(self._full_sim["trueE"])
+            inject_spectrum(self._full_sim["trueE"] * self._flux_unit_conversion)
         )
 
         self._cut_sim_dec()
@@ -156,6 +160,7 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
         """Docstring"""
         config = super().generate_config()
         config["reco_sampling_width"] = np.deg2rad(5)
+        config["flux_unit_conversion"] = 1e6
         return config
 
 
