@@ -408,6 +408,23 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     def source(self, source: sources.PointSource) -> None:
         """Docstring"""
         self._source = source
+        lower_sindec = np.maximum(
+            np.sin(
+                self.source.location[1]
+                - self.data_handler.config["reco_sampling_width"]
+            ),
+            -0.99,
+        )
+        upper_sindec = np.minimum(
+            np.sin(
+                self.source.location[1]
+                + self.data_handler.config["reco_sampling_width"]
+            ),
+            1,
+        )
+        lower_sindec_index = np.searchsorted(self._sin_dec_bins, lower_sindec) - 1
+        uppper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
+        self._sindec_bounds = np.array([lower_sindec_index, uppper_sindec_index])
 
     def cal_sob_map(self) -> np.ndarray:
         """Creates sob histogram for a given spectrum.
