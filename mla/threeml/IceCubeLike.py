@@ -667,6 +667,7 @@ class IceCubeLike(PluginPrototype):
                         self.analysis.data_handler_source[0],
                         mlasource,
                     )
+                    self.spatial_sob_factory.source = mlasource
                     self.llh_model = likelihood_model_instance
                     self.energy_sob_factory.source = mlasource
                     self.energy_sob_factory.spectrum = Spectrum(
@@ -702,6 +703,7 @@ class IceCubeLike(PluginPrototype):
                         self.analysis.data_handler_source[0],
                         mlasource,
                     )
+                    self.spatial_sob_factory.source = mlasource
                     self.llh_model = likelihood_model_instance
                     self.energy_sob_factory.source = mlasource
                     self.energy_sob_factory.spectrum = Spectrum(
