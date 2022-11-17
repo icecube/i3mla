@@ -122,8 +122,10 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
                 dtypes=np.float32,
             )
 
-        self._full_sim["weight"] = self._full_sim["ow"] * (
-            inject_spectrum(self._full_sim["trueE"] * self._flux_unit_conversion)
+        self._full_sim["weight"] = (
+            self._full_sim["ow"]
+            * (inject_spectrum(self._full_sim["trueE"] * self._flux_unit_conversion))
+            / self._flux_unit_conversion
         )
 
         self._cut_sim_dec()
