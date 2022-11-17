@@ -23,7 +23,7 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
     """
     Inheritance class from NuSourcesDataHandler.
     For time independent 3ML analysis.
-    
+
     Additional init argument:
         injection_spectrum: spectral.BaseSpectrum(in keV by default)
     """
@@ -33,7 +33,7 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
         init=False, repr=False, default=spectral.PowerLaw(1e9, 1e-22, -2)
     )
     _flux_unit_conversion: float = dataclasses.field(
-        init=False, repr=False, default = 1e6
+        init=False, repr=False, default=1e6
     )
     _reduced_reco_sim: np.ndarray = dataclasses.field(init=False, repr=False)
 
