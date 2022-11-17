@@ -42,7 +42,7 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
         self._reduced_reco_sim = self.cut_reconstructed_sim(
             self.config["dec_cut_location"], self.config["reco_sampling_width"]
         )
-        self._flux_unit_conversion = self.config['flux_unit_conversion']
+        self._flux_unit_conversion = self.config["flux_unit_conversion"]
 
     def build_signal_energy_histogram(
         self, spectrum: spectral.BaseSpectrum, bins: np.ndarray, scale: float
