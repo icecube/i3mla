@@ -95,8 +95,12 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
         init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2)
     )
     _bg_sob: np.ndarray = dataclasses.field(init=False, repr=False)
-    _sin_dec_bins: np.ndarray = dataclasses.field(init=False, repr=False)
-    _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)
+    _sin_dec_bins: np.ndarray = dataclasses.field(
+        init=False, repr=False, default=PSTrackv4_sin_dec_bin
+    )
+    _log_energy_bins: np.ndarray = dataclasses.field(
+        init=False, repr=False, default=PSTrackv4_log_energy_bins
+    )
     _bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _ow_hist: np.ndarray = dataclasses.field(init=False, repr=False)
     _ow_ebin: np.ndarray = dataclasses.field(init=False, repr=False)
@@ -146,7 +150,7 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
             bins=200,
             weights=self.data_handler.sim["ow"],
         )
-        self._ow_ebin = 10**self._ow_ebin[:-1]
+        self._ow_ebin = 10 ** self._ow_ebin[:-1]
 
     def get_ns(self) -> float:
         """Docstring"""
@@ -393,8 +397,8 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         """Docstring"""
         sig = np.zeros(self._bg_sob.shape)
         flux = spectrum(self._trueebin * self._unit_scale)  # converting unit
-        sig[self._sindec_bounds[0]:self._sindec_bounds[1], :] = np.dot(
-            self._irf[self._sindec_bounds[0]:self._sindec_bounds[1], :, :], flux
+        sig[self._sindec_bounds[0] : self._sindec_bounds[1], :] = np.dot(
+            self._irf[self._sindec_bounds[0] : self._sindec_bounds[1], :, :], flux
         )
         sig /= np.sum(sig, axis=1)[:, None]
         return sig
@@ -495,8 +499,6 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         config["mc_bkgweight"] = None
         config["list_sin_dec_bins"] = PSTrackv4_sin_dec_bin
         config["list_log_energy_bins"] = PSTrackv4_log_energy_bins
-        config["list_truelogebin"] = np.arange(
-            2, 9.01 + 0.01, 0.01
-        )
+        config["list_truelogebin"] = np.arange(2, 9.01 + 0.01, 0.01)
         config["Energy_convesion(ToGeV)"] = 1e6  # GeV to keV
         return config
