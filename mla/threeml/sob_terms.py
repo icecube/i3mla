@@ -397,8 +397,8 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         """Docstring"""
         sig = np.zeros(self._bg_sob.shape)
         flux = spectrum(self._trueebin * self._unit_scale)  # converting unit
-        sig[self._sindec_bounds[0] : self._sindec_bounds[1], :] = np.dot(
-            self._irf[self._sindec_bounds[0] : self._sindec_bounds[1], :, :], flux
+        sig[self._sindec_bounds[0]:self._sindec_bounds[1], :] = np.dot(
+            self._irf[self._sindec_bounds[0]:self._sindec_bounds[1], :, :], flux
         )
         sig /= np.sum(sig, axis=1)[:, None]
         return sig
