@@ -572,7 +572,7 @@ class IceCubeLike(PluginPrototype):
             data_handlers: mla.threeml.data_handlers ThreeMLDataHandler object
             llh: test_statistics.LLHTestStatistic object. Used to evaluate the ts
             source: injection location(only when need injection)
-            livetime: livetime(calculated using livetime within time profile if None)
+            livetime: livetime in days(calculated using livetime within time profile if None)
             fix_flux_norm: only fit the spectrum shape
             verbose: print the output or not
 
@@ -667,6 +667,7 @@ class IceCubeLike(PluginPrototype):
                         self.analysis.data_handler_source[0],
                         mlasource,
                     )
+                    self.spatial_sob_factory.source = mlasource
                     self.llh_model = likelihood_model_instance
                     self.energy_sob_factory.source = mlasource
                     self.energy_sob_factory.spectrum = Spectrum(
@@ -702,6 +703,7 @@ class IceCubeLike(PluginPrototype):
                         self.analysis.data_handler_source[0],
                         mlasource,
                     )
+                    self.spatial_sob_factory.source = mlasource
                     self.llh_model = likelihood_model_instance
                     self.energy_sob_factory.source = mlasource
                     self.energy_sob_factory.spectrum = Spectrum(
@@ -944,7 +946,7 @@ class icecube_analysis(PluginPrototype):
         """Docstring"""
         ns = 0
         for icecubeobject in self.listoficecubelike:
-            time_intergrated = flux_norm * icecubeobject.livetime
+            time_intergrated = flux_norm * icecubeobject.livetime * 3600 * 24
             tempns = (
                 time_intergrated
                 * icecubeobject.analysis.data_handler_source[0].sim["weight"].sum()
@@ -959,6 +961,8 @@ class icecube_analysis(PluginPrototype):
             tempweight = (
                 icecubeobject.analysis.data_handler_source[0].sim["weight"].sum()
                 * icecubeobject.livetime
+                * 3600
+                * 24
             )
             totalweight = totalweight + tempweight
         return ns / totalweight
