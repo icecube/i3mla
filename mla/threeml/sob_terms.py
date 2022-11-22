@@ -269,7 +269,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2)
     )
     _bg_sob: np.ndarray = dataclasses.field(init=False, repr=False)
-    _sin_dec_bins: np.ndarray = dataclasses.field(init=False, repr=False)
+    _sin_dec_bins: np.ndarray = dataclasses.field(init=False, repr=False, default=PSTrackv4_sin_dec_bin)
     _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _trueebin: np.ndarray = dataclasses.field(init=False, repr=False)
@@ -408,6 +408,23 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     def source(self, source: sources.PointSource) -> None:
         """Docstring"""
         self._source = source
+        lower_sindec = np.maximum(
+            np.sin(
+                self.source.location[1]
+                - self.data_handler.config["reco_sampling_width"]
+            ),
+            -0.99,
+        )
+        upper_sindec = np.minimum(
+            np.sin(
+                self.source.location[1]
+                + self.data_handler.config["reco_sampling_width"]
+            ),
+            1,
+        )
+        lower_sindec_index = np.searchsorted(self._sin_dec_bins, lower_sindec) - 1
+        uppper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
+        self._sindec_bounds = np.array([lower_sindec_index, uppper_sindec_index])
 
     def cal_sob_map(self) -> np.ndarray:
         """Creates sob histogram for a given spectrum.
