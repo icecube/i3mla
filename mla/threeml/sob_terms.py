@@ -146,7 +146,7 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
             bins=200,
             weights=self.data_handler.sim["ow"],
         )
-        self._ow_ebin = 10**self._ow_ebin[:-1]
+        self._ow_ebin = 10**self._ow_ebin[:-1] * self._unit_scale
 
     def get_ns(self) -> float:
         """Docstring"""
