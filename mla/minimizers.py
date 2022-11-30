@@ -146,9 +146,6 @@ class GridSearchMinimizer(Minimizer):
             },
         }
 
-        for key, val in self.test_statistic.best_time_params.items():
-            to_return[key] = val
-
         return to_return
 
 
@@ -164,6 +161,8 @@ class FlareStackGridSearchMinimizer(GridSearchMinimizer):
         fitting_bounds: dict,
     ) -> dict:
         best_dict = super()._minimize(point, fitting_key_idx_map, fitting_bounds)
+        for key, val in self.test_statistic.best_time_params.items():
+            best_dict[key] = val
         if self.return_perflare_ts:
             best_dict['perflare_ts'] = self.test_statistic.best_ts_dict
         return best_dict
