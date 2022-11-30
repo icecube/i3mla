@@ -130,8 +130,8 @@ class LLHTestStatistic():
 
         return (
             ns_ratio,
-            -2 * (
-                _calculate_dropterm(ns_ratio, n_dropped) + _calculate_llh(ns_ratio, sob)),
+            -2 * (_calculate_dropterm(
+                    ns_ratio, self.n_dropped) + _calculate_llh(ns_ratio, sob)),
         )
 
     def _calculate_sob(self) -> np.ndarray:
