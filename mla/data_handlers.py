@@ -120,7 +120,7 @@ class NuSourcesDataHandler(DataHandler, Configurable):
     data: InitVar[Events]
     grl: InitVar[np.ndarray]
 
-    norm_energy: float = 100e3
+    norm_energy: float = 1e3
     assumed_gamma: float = -2
     dec_cut_loc: Optional[float] = None
     dec_band: Optional[float] = None
@@ -139,8 +139,8 @@ class NuSourcesDataHandler(DataHandler, Configurable):
     _sin_dec_bins: np.ndarray = field(init=False, repr=False)
 
     def __post_init__(self, sim: SimEvents, data: Events, grl: np.ndarray) -> None:
-        self.sim = sim
         self.data_grl = (data, grl)
+        self.sim = sim
 
     def build_injector(self) -> NuSourcesInjector:
         return NuSourcesInjector(
@@ -199,7 +199,9 @@ class NuSourcesDataHandler(DataHandler, Configurable):
         """Docstring"""
         self._full_sim = sim.copy()
 
-        self._full_sim.weight = self._full_sim.ow * (
+        livetime_sec = self.livetime * 24 * 60 * 60
+
+        self._full_sim.weight = self._full_sim.ow * livetime_sec * (
             self._full_sim.trueE / self.norm_energy)**self.assumed_gamma
 
         self._cut_sim_dec()
@@ -214,11 +216,9 @@ class NuSourcesDataHandler(DataHandler, Configurable):
         close = np.flatnonzero(dec_dist < self.dec_band)
         self._sim = self._full_sim.from_idx(close)
 
-        scale_factor = 2 * np.pi * (np.min([np.sin(
-            self.dec_cut_loc + self.dec_band
-        ), 1]) - np.max([np.sin(
-            self.dec_cut_loc - self.dec_band
-        ), -1]))
+        max_sin_dec = np.sin(min(np.deg2rad(90), self.dec_cut_loc + self.dec_band))
+        min_sin_dec = np.sin(max(np.deg2rad(-90), self.dec_cut_loc - self.dec_band))
+        scale_factor = 2 * np.pi * (max_sin_dec - min_sin_dec)
 
         self._sim.ow /= scale_factor
         self._sim.weight /= scale_factor
@@ -248,7 +248,7 @@ class NuSourcesDataHandler(DataHandler, Configurable):
             self._data.sinDec, bins=self._sin_dec_bins, density=True)
         bin_centers = bins[:-1] + np.diff(bins) / 2
 
-        self._dec_spline = Spline(bin_centers, hist, **self.dec_spline_kwargs)
+        self.dec_spline = Spline(bin_centers, hist, **self.dec_spline_kwargs)
 
 
 def _contained_run_mask(
