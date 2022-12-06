@@ -23,13 +23,6 @@ from .params import Params
 from .data_handlers import Injector, TimeDependentNuSourcesInjector
 
 
-class MinimizingTestStatistic():
-    """Docstring"""
-    def minimize(self, fitting_params: Optional[List[str]] = None) -> dict:
-        """Docstring"""
-        raise NotImplementedError
-
-
 @njit(parallel=True, fastmath=True)
 def _newton_ns_ratio(
     sob: np.ndarray,
@@ -89,6 +82,12 @@ class NonMinimizingLLHTestStatistic():
     _newton_iterations: int
     _best_ts: float = dataclasses.field(init=False, default=0)
     _best_ns: float = dataclasses.field(init=False, default=0)
+
+    def minimize(self, fitting_params: Optional[List[str]] = None) -> dict:
+        return {
+            'ts': self._calculate_ts_wrapper(),
+            'ns': self._best_ns,
+        }
 
     def evaluate(self) -> float:
         """Docstring"""
@@ -256,7 +255,7 @@ class NonMinimizingLLHTestStatisticFactory(Configurable):
 
 
 @dataclasses.dataclass(kw_only=True)
-class LLHTestStatistic(NonMinimizingLLHTestStatistic, MinimizingTestStatistic):
+class LLHTestStatistic(NonMinimizingLLHTestStatistic):
     """Docstring"""
     _gridsearch_size: int
     _minimization_algorithm: str
@@ -608,6 +607,12 @@ class FlareExpMaxLLHTestStatistic(NonMinimizingLLHTestStatistic):
 
     _best_time_params: dict[str, float] = dataclasses.field(
         init=False, default_factory=dict)
+
+    def minimize(self, fitting_params: Optional[List[str]] = None) -> dict:
+        return {
+            **super().minimize(),
+            **self._best_time_params,
+        }
 
     def _calculate_sob(self) -> np.ndarray:
         sob = np.ones(self.n_kept)

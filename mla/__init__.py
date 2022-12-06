@@ -4,7 +4,6 @@ from .analysis import *
 from .core import *
 from .configurable import *
 from .data_handlers import *
-from .minimizers import *
 from .params import *
 from .sob_terms import *
 from .sources import *
