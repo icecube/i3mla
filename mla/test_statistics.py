@@ -321,7 +321,7 @@ class LLHTestStatistic(NonMinimizingLLHTestStatistic):
             x0=point,
             args=(fitting_key_idx_map,),
             bounds=fitting_bounds.values(),
-            method=self.min_method,
+            method=self.minimization_algorithm,
         )
 
         best_ts_value = result.fun
