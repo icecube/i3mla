@@ -21,14 +21,13 @@ from .sob_terms import SoBTerm, SoBTermFactory
 from .events import Events
 from .params import Params
 from .data_handlers import Injector, TimeDependentNuSourcesInjector
-from .minimizers import Minimizer
 
 
 class MinimizingTestStatistic():
     """Docstring"""
-    def __call__(minimizer: Minimizer, params: Params, fitting_params: List[str]) -> dict:
+    def minimize(self, fitting_params: Optional[List[str]] = None) -> dict:
         """Docstring"""
-        return {}
+        raise NotImplementedError
 
 
 @njit(parallel=True, fastmath=True)
@@ -79,7 +78,7 @@ def _calculate_dropterm(ns_ratio: float, n_dropped: int) -> float:
 
 
 @dataclasses.dataclass(kw_only=True)
-class LLHTestStatistic():
+class NonMinimizingLLHTestStatistic():
     """Docstring"""
     sob_terms: Dict[str, SoBTerm]
     _n_events: int
@@ -91,17 +90,17 @@ class LLHTestStatistic():
     _best_ts: float = dataclasses.field(init=False, default=0)
     _best_ns: float = dataclasses.field(init=False, default=0)
 
-    def __call__(
+    def evaluate(self) -> float:
+        """Docstring"""
+        return self._calculate_ts_wrapper()
+
+    def _calculate_ts_wrapper(
         self,
         param_values: Optional[np.ndarray] = None,
         fitting_ns: bool = False,
     ) -> float:
         """Evaluates the test-statistic for the given events and parameters
 
-        sob_t_sig = (amp / sigma) * np.exp((-1/2) * ((times - mu) / sigma)**2)
-        sob_t = sob_t_sig / sob_t_bg
-        resp_mat, last_bg_term = _calculate_expectation(sob_se, sob_t, livetime, ns_ratio)
-        llh = _calculate_expmax_llh(sob_se, sob_t, ns_ratio, bg_term, n_dropped, n_events)
         Calculates the test-statistic using a given event model, n_signal, and
         gamma. This function does not attempt to fit n_signal or gamma.
 
@@ -201,12 +200,12 @@ class LLHTestStatistic():
 
 
 @dataclasses.dataclass(kw_only=True)
-class LLHTestStatisticFactory(Configurable):
+class NonMinimizingLLHTestStatisticFactory(Configurable):
     """
         newton_precision: Newton Method n_s Precision
         newton_iterations: Newton Method n_s Iterations
     """
-    factory_of: ClassVar = LLHTestStatistic
+    factory_of: ClassVar = NonMinimizingLLHTestStatistic
     sob_term_factories: List[SoBTermFactory]
 
     newton_precision: float = 0
@@ -257,13 +256,116 @@ class LLHTestStatisticFactory(Configurable):
 
 
 @dataclasses.dataclass(kw_only=True)
-class FlareStackLLHTestStatistic(LLHTestStatistic, MinimizingTestStatistic):
+class LLHTestStatistic(NonMinimizingLLHTestStatistic, MinimizingTestStatistic):
+    """Docstring"""
+    _gridsearch_size: int
+    _minimization_algorithm: str
+
+    def minimize(self, fitting_params: Optional[List[str]] = None) -> dict:
+        if fitting_params is None:
+            fitting_params = list(self.params.key_idx_map)
+
+        fitting_key_idx_map = {
+            key: val for key, val in self.params.key_idx_map.items()
+            if key in fitting_params
+        }
+
+        fitting_bounds = {
+            key: val for key, val in self.params.bounds.items()
+            if key in fitting_params
+        }
+
+        if self.n_kept == 0:
+            return 0, np.array([(0,)], dtype=[('ns', np.float64)])
+
+        grid = [
+            np.linspace(lo, hi, self._gridsearch_size)
+            for lo, hi in fitting_bounds.values()
+        ]
+
+        points = np.array(np.meshgrid(*grid)).T
+
+        grid_ts_values = np.array([
+            self._minimize_ts_wrapper(point, fitting_key_idx_map)
+            for point in points
+        ])
+
+        return self._minimizer_wrapper(
+            points[grid_ts_values.argmin()], fitting_key_idx_map, fitting_bounds)
+
+    def _param_values(self, point: np.ndarray, fitting_key_idx_map: dict) -> np.ndarray:
+        """Docstring"""
+        param_values = self.params.value_array.copy()
+
+        for i, j in enumerate(fitting_key_idx_map.values()):
+            param_values[j] = point[i]
+
+        return param_values
+
+    def _minimize_ts_wrapper(self, point: np.ndarray, fitting_key_idx_map: dict) -> float:
+        """Docstring"""
+        return self._calculate_ts_wrapper(
+            self._param_values(point, fitting_key_idx_map),
+            fitting_ns='ns' in fitting_key_idx_map,
+        )
+
+    def _minimizer_wrapper(
+        self,
+        point: np.ndarray
+        fitting_key_idx_map: dict,
+        fitting_bounds: dict,
+        fitting_ns: bool,
+    ) -> dict:
+        """Docstring"""
+        result = scipy.optimize.minimize(
+            self._minimize_ts_wrapper,
+            x0=point,
+            args=(fitting_key_idx_map,),
+            bounds=fitting_bounds.values(),
+            method=self.min_method,
+        )
+
+        best_ts_value = result.fun
+        best_param_values = self._param_values(result.x, fitting_key_idx_map)
+
+        if 'ns' not in fitting_key_idx_map:
+            idx = self.params.key_idx_map['ns']
+            best_param_values[idx] = self.best_ns
+
+        return {
+            'ts': best_ts_value,
+            **{
+                key: best_param_values[idx]
+                for key, idx in self.params.key_idx_map.items()
+            },
+        }
+
+
+@dataclasses.dataclass(kw_only=True)
+class LLHTestStatisticFactory(NonMinimizingLLHTestStatisticFactory):
+    """Docstring"""
+    factory_of: ClassVar = LLHTestStatistic
+    gridsearch_size: int = 5
+    minimization_algorithm: str = 'L-BFGS-B'
+
+    def _factory_kwargs(self) -> dict:
+        """Docstring"""
+        return {
+            **super()._factory_kwargs(),
+            '_gridsearch_size': self.gridsearch_size,
+            '_minimization_algorithm': self.minimization_algorithm,
+        }
+
+
+@dataclasses.dataclass(kw_only=True)
+class FlareStackLLHTestStatistic(LLHTestStatistic):
     """Docstring"""
     _min_sob: float
     _time_term_name: str
     _window_start: float
     _window_length: float
     _injector: TimeDependentNuSourcesInjector
+    _return_perflare_ts: bool
 
     _best_ts_dict: dict[tuple[float, float], dict] = dataclasses.field(
         init=False, default_factory=dict)
@@ -342,6 +444,19 @@ class FlareStackLLHTestStatistic(LLHTestStatistic, MinimizingTestStatistic):
             self._best_time_params['start'], self._best_time_params['length'] = ts_pair[0]
         return term_dict[ts_pair[0]]['ns_ratio'], ts_pair[1]
 
+    def _minimizer_wrapper(
+        self,
+        point: np.ndarray,
+        fitting_key_idx_map: dict,
+        fitting_bounds: dict,
+    ) -> dict:
+        best_dict = super()._minimizer_wrapper(point, fitting_key_idx_map, fitting_bounds)
+        for key, val in self.best_time_params.items():
+            best_dict[key] = val
+        if self._return_perflare_ts:
+            best_dict['perflare_ts'] = self.best_ts_dict
+        return best_dict
+
     @property
     def best_ts_dict(self) -> dict:
         return self._best_ts_dict
@@ -352,7 +467,7 @@ class FlareStackLLHTestStatistic(LLHTestStatistic, MinimizingTestStatistic):
 
 
 @dataclasses.dataclass(kw_only=True)
-class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
+class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory):
     """
         min_sob: Minimum Signal-over-background Ratio For Flare
         time_term_name: Time Term Name
@@ -366,6 +481,7 @@ class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
     time_term_name: str = 'TimeTerm'
     window_start: float = 1
     window_length: float = 1
+    return_perflare_ts: bool = False
 
     def _factory_kwargs(self) -> dict:
         """Docstring"""
@@ -376,6 +492,7 @@ class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
             '_window_start': self.window_start,
             '_window_length': self.window_length,
             '_injector': self.injector,
+            '_return_perflare_ts': self.return_perflare_ts,
         }
 
 
@@ -426,9 +543,7 @@ def _expectation_maximization(
             n_events,
         )
 
-        if (
-            old_llh == llh
-        ) or (
+        if (old_llh == llh) or (
             llh < old_llh and old_llh <= llh * precision
         ) or (
             old_llh < llh and llh <= old_llh * precision
@@ -483,7 +598,7 @@ def _calculate_maximization(
     return mu_fit, one_over_sigma_fit, ns_ratio_fit
 
 
-class FlareExpMaxLLHTestStatistic(LLHTestStatistic):
+class FlareExpMaxLLHTestStatistic(NonMinimizingLLHTestStatistic):
     """Docstring"""
     _time_term_name: str
     _window_start: float
@@ -539,7 +654,7 @@ class FlareExpMaxLLHTestStatistic(LLHTestStatistic):
         return ns_ratio, ts
 
 
-class FlareExpMaxLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
+class FlareExpMaxLLHTestStatisticFactory(NonMinimizingLLHTestStatisticFactory):
     """Docstring"""
     factory_of: ClassVar = FlareExpMaxLLHTestStatistic
     injector: TimeDependentNuSourcesInjector
