@@ -21,6 +21,14 @@ from .sob_terms import SoBTerm, SoBTermFactory
 from .events import Events
 from .params import Params
 from .data_handlers import Injector, TimeDependentNuSourcesInjector
+from .minimizers import Minimizer
+
+
+class MinimizingTestStatistic():
+    """Docstring"""
+    def __call__(minimizer: Minimizer, params: Params, fitting_params: List[str]) -> dict:
+        """Docstring"""
+        return {}
 
 
 @njit(parallel=True, fastmath=True)
@@ -90,6 +98,10 @@ class LLHTestStatistic():
     ) -> float:
         """Evaluates the test-statistic for the given events and parameters
 
+        sob_t_sig = (amp / sigma) * np.exp((-1/2) * ((times - mu) / sigma)**2)
+        sob_t = sob_t_sig / sob_t_bg
+        resp_mat, last_bg_term = _calculate_expectation(sob_se, sob_t, livetime, ns_ratio)
+        llh = _calculate_expmax_llh(sob_se, sob_t, ns_ratio, bg_term, n_dropped, n_events)
         Calculates the test-statistic using a given event model, n_signal, and
         gamma. This function does not attempt to fit n_signal or gamma.
 
@@ -245,7 +257,7 @@ class LLHTestStatisticFactory(Configurable):
 
 
 @dataclasses.dataclass(kw_only=True)
-class FlareStackLLHTestStatistic(LLHTestStatistic):
+class FlareStackLLHTestStatistic(LLHTestStatistic, MinimizingTestStatistic):
     """Docstring"""
     _min_sob: float
     _time_term_name: str
@@ -338,6 +350,7 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
     def best_time_params(self) -> dict:
         return self._best_time_params
 
+
 @dataclasses.dataclass(kw_only=True)
 class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
     """
@@ -363,4 +376,188 @@ class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
             '_window_start': self.window_start,
             '_window_length': self.window_length,
             '_injector': self.injector,
+        }
+
+
+@njit
+def _expectation_maximization(
+    sob_se: np.ndarray,
+    times: np.ndarray,
+    sob_t_bg: np.ndarray,
+    livetime: float,
+    n_dropped: int,
+    n_events: int,
+    mu: float,
+    sigma: float,
+    ns_ratio: float,
+    iterations: int,
+    precision: float,
+) -> Tuple[float, float, float, float]:
+    """Docstring"""
+    precision += 1
+    one_over_sigma = 1 / sigma
+    bos_se = 1 / sob_se
+    resp_mat, llh = _expectation_llh(
+        sob_se,
+        bos_se,
+        times,
+        sob_t_bg,
+        livetime,
+        mu,
+        one_over_sigma,
+        ns_ratio,
+        n_dropped,
+        n_events,
+    )
+
+    for _ in range(iterations):
+        old_llh = llh
+        mu, one_over_sigma, ns_ratio = _calculate_maximization(resp_mat, times, n_events)
+        resp_mat, llh = _expectation_llh(
+            sob_se,
+            bos_se,
+            times,
+            sob_t_bg,
+            livetime,
+            mu,
+            one_over_sigma,
+            ns_ratio,
+            n_dropped,
+            n_events,
+        )
+
+        if (
+            old_llh == llh
+        ) or (
+            llh < old_llh and old_llh <= llh * precision
+        ) or (
+            old_llh < llh and llh <= old_llh * precision
+        ):
+            break
+
+    return llh, mu, 1 / one_over_sigma, ns_ratio
+
+
+ONE_OVER_ROOT_TWO_PI = 1 / np.sqrt(2 * np.pi)
+
+
+@njit
+def _expectation_llh(
+    sob_se: np.ndarray,
+    bos_se: np.ndarray,
+    times: np.ndarray,
+    sob_t_bg: np.ndarray,
+    livetime: float,
+    mu: float,
+    one_over_sigma: float,
+    ns_ratio: float,
+    n_dropped: int,
+    n_events: int,
+) -> Tuple[np.ndarray, float]:
+    """Docstring"""
+    sob_t_sig = ONE_OVER_ROOT_TWO_PI * one_over_sigma * np.exp(
+            (-0.5) * ((times - mu) * one_over_sigma)**2)
+    sob_t = sob_t_sig * sob_t_bg
+
+    sob = sob_se * sob_t
+    bg_term = (1 - ns_ratio) / (livetime * ns_ratio)
+
+    drop_term = n_dropped * (np.log(bg_term) - 1)
+    ns_term = n_events * np.log(ns_ratio)
+    sob_term = np.sum(np.log(sob_t + bg_term * bos_se))
+
+    return sob / (sob + bg_term), ns_term + drop_term + sob_term
+
+
+@njit
+def _calculate_maximization(
+    responsibility_matrix: np.ndarray,
+    times: np.ndarray,
+    n_events: int,
+) -> Tuple[float, float, float]:
+    """Docstring"""
+    ns_fit = np.sum(responsibility_matrix)
+    mu_fit = np.sum(responsibility_matrix * times) / ns_fit
+    one_over_sigma_fit = ns_fit / np.sum(responsibility_matrix * (times - mu_fit)**2)
+    ns_ratio_fit = ns_fit / n_events
+    return mu_fit, one_over_sigma_fit, ns_ratio_fit
+
+
+class FlareExpMaxLLHTestStatistic(LLHTestStatistic):
+    """Docstring"""
+    _time_term_name: str
+    _window_start: float
+    _window_length: float
+    _expmax_precision: float
+    _expmax_iterations: int
+    _injector: TimeDependentNuSourcesInjector
+
+    _best_time_params: dict[str, float] = dataclasses.field(
+        init=False, default_factory=dict)
+
+    def _calculate_sob(self) -> np.ndarray:
+        sob = np.ones(self.n_kept)
+        for name, term in self.sob_terms.items():
+            if name == self._time_term_name:
+                continue
+            sob *= term.sob.reshape((-1,))
+        return sob
+
+    def _calculate_ts(
+            self, ns_ratio: Optional[float], sob: np.ndarray) -> Tuple[float, float]:
+        """Docstring"""
+        time_params = self.sob_terms[self._time_term_name].params
+        if 'mean' not in time_params or 'sigma' not in time_params:
+            raise TypeError('Only mla.GaussProfile is currently supported')
+
+        livetime = self._injector.contained_livetime(
+            self._window_start, self._window_start + self._window_length)
+
+        if ns_ratio is None:
+            ns_ratio = 0
+
+        llh, mu, sigma, ns_ratio = _expectation_maximization(
+            sob,
+            self.sob_terms[self._time_term_name].times,
+            self.sob_terms[self._time_term_name]._sob,
+            livetime,
+            self.n_dropped,
+            self.n_events,
+            self.params['mean'],
+            self.params['sigma'],
+            ns_ratio,
+            self._expmax_precision,
+            self._expmax_iterations,
+        )
+
+        ts = -2 * llh
+
+        if ts < self._best_ts:
+            self._best_time_params['mean'] = mu
+            self._best_time_params['sigma'] = sigma
+
+        return ns_ratio, ts
+
+
+class FlareExpMaxLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
+    """Docstring"""
+    factory_of: ClassVar = FlareExpMaxLLHTestStatistic
+    injector: TimeDependentNuSourcesInjector
+
+    time_term_name: str = 'TimeTerm'
+    window_start: float = 1
+    window_length: float = 1
+    expmax_precision: float = 1e-5
+    expmax_iterations: int = 50
+
+    def _factory_kwargs(self) -> dict:
+        """Docstring"""
+        return {
+            **super()._factory_kwargs(),
+            '_time_term_name': self.time_term_name,
+            '_window_start': self.window_start,
+            '_window_length': self.window_length,
+            '_injector': self.injector,
+            '_expmax_precision': self.expmax_precision,
+            '_expmax_iterations': self.expmax_iterations,
         }
