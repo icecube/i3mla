@@ -238,7 +238,7 @@ class NonMinimizingLLHTestStatisticFactory(Configurable):
     def _factory_kwargs(self) -> dict:
         """Docstring"""
         return {
-            '_newton_iterations': self.newton_iterations,
+                '_newton_iterations': self.newton_iterations,
             '_newton_precision': self.newton_precision,
         }
 
@@ -341,7 +341,7 @@ class LLHTestStatistic(NonMinimizingLLHTestStatistic):
 
 
 @dataclasses.dataclass(kw_only=True)
-class LLHTestStatisticFactory(NonMinimizingLLHTestStatisticFactory):
+class LLHTestStatisticFactory(NonMinimizingLLHTestStatisticFactory, Configurable):
     """Docstring"""
     factory_of: ClassVar = LLHTestStatistic
     gridsearch_size: int = 5
@@ -466,7 +466,7 @@ class FlareStackLLHTestStatistic(LLHTestStatistic):
 
 
 @dataclasses.dataclass(kw_only=True)
-class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory):
+class FlareStackLLHTestStatisticFactory(LLHTestStatisticFactory, Configurable):
     """
         min_sob: Minimum Signal-over-background Ratio For Flare
         time_term_name: Time Term Name
@@ -659,7 +659,8 @@ class FlareExpMaxLLHTestStatistic(NonMinimizingLLHTestStatistic):
         return ns_ratio, ts
 
 
-class FlareExpMaxLLHTestStatisticFactory(NonMinimizingLLHTestStatisticFactory):
+class FlareExpMaxLLHTestStatisticFactory(
+        NonMinimizingLLHTestStatisticFactory, Configurable):
     """Docstring"""
     factory_of: ClassVar = FlareExpMaxLLHTestStatistic
     injector: TimeDependentNuSourcesInjector
