@@ -591,6 +591,10 @@ def _calculate_maximization(
 ) -> Tuple[float, float, float]:
     """Docstring"""
     ns_fit = np.sum(responsibility_matrix)
+
+    if ns_fit == 0:
+        ns_fit = 1e-5
+
     mu_fit = np.sum(responsibility_matrix * times) / ns_fit
     one_over_sigma_fit = ns_fit / np.sum(responsibility_matrix * (times - mu_fit)**2)
     ns_ratio_fit = ns_fit / n_events
