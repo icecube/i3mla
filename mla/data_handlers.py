@@ -367,7 +367,7 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
             sim=self._sim,
             data=self._data,
             grl=self._grl,
-            dec_spline=self._dec_spline,
+            dec_spline=self.dec_spline,
             background_time_profile=self._background_time_profile,
             signal_time_profile=self._signal_time_profile,
         )
