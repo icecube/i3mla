@@ -2,6 +2,7 @@
 
 from typing import ClassVar, List, Tuple, Type, TypeVar
 import dataclasses
+import warnings
 
 import numpy as np
 import numpy.typing as npt
@@ -64,24 +65,21 @@ class Events():
                 else:
                     optionals_to_generate.append(dtype_name)
                     continue
+
             if not dtype_val == nu_sources_events.dtype.fields[dtype_name][0]:
-                if nu_sources_events.dtype.fields[dtype_name][0] == np.dtype('uint8'):
+                if dtype_val == np.dtype('uint64'):
                     ints[idx, :] = nu_sources_events[dtype_name].astype(np.uint64)
-                elif nu_sources_events.dtype.fields[dtype_name][0] == np.dtype('uint32'):
-                    ints[idx, :] = nu_sources_events[dtype_name].astype(np.uint64)
-                elif nu_sources_events.dtype.fields[dtype_name][0] == np.dtype('float32'):
+                elif dtype_val == np.dtype('float64'):
                     floats[idx, :] = nu_sources_events[dtype_name].astype(np.float64)
-                else:
-                    raise ValueError(''.join([
-                        f'Dtype of {dtype_name} in input structured array is ',
-                        f'{nu_sources_events.dtype.fields[dtype_name][0]} when it should',
-                        f' be {dtype_val}.',
-                    ]))
+                warnings.warn(''.join([
+                    f'Dtype of \'{dtype_name}\' in input structured array is ',
+                    f'{nu_sources_events.dtype.fields[dtype_name][0]}. Converting to ',
+                    f'{dtype_val}.',
+                ]))
             elif dtype_val == np.dtype('uint64'):
                 ints[idx, :] = nu_sources_events[dtype_name]
             elif dtype_val == np.dtype('float64'):
                 floats[idx, :] = nu_sources_events[dtype_name]
-
 
         for dtype_name in optionals_to_generate:
             ints, floats = cls._generate_optional_field(ints, floats, dtype_name)
