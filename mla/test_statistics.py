@@ -15,6 +15,7 @@ import dataclasses
 import math
 import numpy as np
 from numba import njit
+import scipy
 
 from .configurable import Configurable
 from .sob_terms import SoBTerm, SoBTermFactory
