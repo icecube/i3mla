@@ -211,7 +211,7 @@ class NonMinimizingLLHTestStatisticFactory(Configurable):
     newton_precision: float = 0
     newton_iterations: int = 20
 
-    def __call__(self, params: Params, events: Events) -> LLHTestStatistic:
+    def __call__(self, params: Params, events: Events) -> NonMinimizingLLHTestStatistic:
         """Docstring"""
         drop_mask = np.logical_and.reduce(np.array([
             term_factory.calculate_drop_mask(events)
@@ -314,7 +314,6 @@ class LLHTestStatistic(NonMinimizingLLHTestStatistic, MinimizingTestStatistic):
         point: np.ndarray,
         fitting_key_idx_map: dict,
         fitting_bounds: dict,
-        fitting_ns: bool,
     ) -> dict:
         """Docstring"""
         result = scipy.optimize.minimize(
