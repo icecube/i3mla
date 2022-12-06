@@ -311,7 +311,7 @@ class LLHTestStatistic(NonMinimizingLLHTestStatistic, MinimizingTestStatistic):
 
     def _minimizer_wrapper(
         self,
-        point: np.ndarray
+        point: np.ndarray,
         fitting_key_idx_map: dict,
         fitting_bounds: dict,
         fitting_ns: bool,
