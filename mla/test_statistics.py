@@ -597,6 +597,7 @@ def _calculate_maximization(
     return mu_fit, one_over_sigma_fit, ns_ratio_fit
 
 
+@dataclasses.dataclass(kw_only=True)
 class FlareExpMaxLLHTestStatistic(NonMinimizingLLHTestStatistic):
     """Docstring"""
     _time_term_name: str
@@ -659,6 +660,7 @@ class FlareExpMaxLLHTestStatistic(NonMinimizingLLHTestStatistic):
         return ns_ratio, ts
 
 
+@dataclasses.dataclass(kw_only=True)
 class FlareExpMaxLLHTestStatisticFactory(
         NonMinimizingLLHTestStatisticFactory, Configurable):
     """Docstring"""
