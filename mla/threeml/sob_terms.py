@@ -150,7 +150,7 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
 
     def get_ns(self) -> float:
         """Docstring"""
-        return (self.spectrum(self._ow_ebin) * self._ow_hist).sum()
+        return (self.spectrum(self._ow_ebin) * self._ow_hist *).sum() * self._unit_scale
 
     def _init_bg_sob_map(self) -> np.ndarray:
         """Docstring"""
