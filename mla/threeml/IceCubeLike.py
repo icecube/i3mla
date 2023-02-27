@@ -743,7 +743,7 @@ class IceCubeLike(PluginPrototype):
 
     def get_ns(self):
         """docstring"""
-        ns = self.energy_sob_factory.get_ns() * self.livetime
+        ns = self.energy_sob_factory.get_ns() * self.livetime * 3600 * 24
         return ns
 
     def get_log_like(self, verbose=None):
