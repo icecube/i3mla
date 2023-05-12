@@ -9,8 +9,7 @@ __maintainer__ = 'John Evans'
 __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
-from typing import ClassVar
-from abc import ABCMeta, abstractmethod
+from abc import ABCMeta
 import inspect
 import dataclasses
 
@@ -24,13 +23,17 @@ class Configurable(metaclass=ABCMeta):
         defaults = {
             param.name: param.default
             for param in sig.parameters.values()
-            if (param.default is not param.empty) and (type(param.default) is not property)
+            if (
+                (param.default is not param.empty)
+                and not isinstance(param.default, property)
+            )
         }
         to_change = {}
         for var, default in defaults.items():
-            if type(default) == dataclasses._HAS_DEFAULT_FACTORY_CLASS:
-                to_change[var] = next(f for f in dataclasses.fields(cls)
-                     if f.name == var).default_factory()
+            if isinstance(default, dataclasses._HAS_DEFAULT_FACTORY_CLASS):
+                to_change[var] = next(
+                    f for f in dataclasses.fields(cls) if f.name == var
+                ).default_factory()
         for var, default in to_change.items():
             defaults[var] = default
         return {'class': str(cls.__name__), 'args': defaults}

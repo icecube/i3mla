@@ -12,7 +12,7 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 import dataclasses
-from typing import ClassVar, Tuple
+from typing import Tuple
 
 from .configurable import Configurable
 from .events import Events

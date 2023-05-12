@@ -7,7 +7,7 @@ def generate_default_config(classes: list) -> dict:
     """Docstring"""
     to_return = {}
     for c in classes:
-        if type(c) is tuple:
+        if isinstance(c, tuple):
             cls = c[0]
             name = c[1]
         else:

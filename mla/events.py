@@ -14,7 +14,7 @@ class Events():
     """Docstring"""
 
     # dtype_name: (dtype_val, idx, required)
-    _dtype_map: ClassVar[dict] = {
+    dtype_map: ClassVar[dict] = {
         'run': (np.dtype('uint64'), 0, True),
         'event': (np.dtype('uint64'), 1, True),
         'subevent': (np.dtype('uint64'), 2, True),
@@ -33,10 +33,10 @@ class Events():
 
     @classmethod
     def _get_n_dtypes(cls) -> Tuple[int, int]:
-        n_ints = sum([
-            val == np.dtype('uint64') for _, (val, _, _) in cls._dtype_map.items()])
-        n_floats = sum([
-            val == np.dtype('float64') for _, (val, _, _) in cls._dtype_map.items()])
+        n_ints = sum((
+            val == np.dtype('uint64') for _, (val, _, _) in cls.dtype_map.items()))
+        n_floats = sum((
+            val == np.dtype('float64') for _, (val, _, _) in cls.dtype_map.items()))
         return (n_ints, n_floats)
 
     @classmethod
@@ -57,7 +57,7 @@ class Events():
         floats = np.empty((n_floats, len(nu_sources_events)), dtype=np.float64)
         optionals_to_generate = []
 
-        for dtype_name, (dtype_val, idx, req) in cls._dtype_map.items():
+        for dtype_name, (dtype_val, idx, req) in cls.dtype_map.items():
             if dtype_name not in nu_sources_events.dtype.fields:
                 if req:
                     raise KeyError(
@@ -87,13 +87,13 @@ class Events():
         return cls(_ints=ints, _floats=floats)
 
     def _get_int(self, dtype_name: str) -> npt.NDArray[np.uint64]:
-        return np.squeeze(self._ints[self.__class__._dtype_map[dtype_name][1], :])
+        return np.squeeze(self._ints[self.__class__.dtype_map[dtype_name][1], :])
 
     def _get_float(self, dtype_name: str) -> npt.NDArray[np.float64]:
-        return np.squeeze(self._floats[self.__class__._dtype_map[dtype_name][1], :])
+        return np.squeeze(self._floats[self.__class__.dtype_map[dtype_name][1], :])
 
     def _set_float(self, dtype_name: str, arr: npt.NDArray[np.float64]) -> None:
-        self._floats[self.__class__._dtype_map[dtype_name][1], :] = arr
+        self._floats[self.__class__.dtype_map[dtype_name][1], :] = arr
 
     @property
     def run(self) -> npt.NDArray[np.uint64]:
@@ -161,8 +161,8 @@ class Events():
     ) -> Tuple[npt.NDArray[np.uint64], npt.NDArray[np.float64]]:
         """Docstring"""
         if dtype_name == 'sinDec':
-            floats[cls._dtype_map['sinDec'][1], :] = np.sin(
-                floats[cls._dtype_map['dec'][1], :])
+            floats[cls.dtype_map['sinDec'][1], :] = np.sin(
+                floats[cls.dtype_map['dec'][1], :])
         return ints, floats
 
     def sample(self: T, n: int, rng: np.random.Generator) -> T:
@@ -183,10 +183,10 @@ class Events():
         )
 
     def sort(self, key) -> None:
-        if self.__class__._dtype_map[key][0] == np.dtype('uint64'):
-            idxs = np.argsort(self._ints[self.__class__._dtype_map[key][1], :])
+        if self.__class__.dtype_map[key][0] == np.dtype('uint64'):
+            idxs = np.argsort(self._ints[self.__class__.dtype_map[key][1], :])
         else:
-            idxs = np.argsort(self._floats[self.__class__._dtype_map[key][1], :])
+            idxs = np.argsort(self._floats[self.__class__.dtype_map[key][1], :])
         self._ints = self._ints[:, idxs]
         self._floats = self._floats[:, idxs]
 
@@ -209,8 +209,8 @@ S = TypeVar('S', bound='SimEvents')
 @dataclasses.dataclass(kw_only=True)
 class SimEvents(Events):
     """Docstring"""
-    _dtype_map: ClassVar[dict] = {
-        **Events._dtype_map,
+    dtype_map: ClassVar[dict] = {
+        **Events.dtype_map,
         'trueRa': (np.dtype('float64'), 8, True),
         'trueDec': (np.dtype('float64'), 9, True),
         'trueE': (np.dtype('float64'), 10, True),
@@ -226,12 +226,12 @@ class SimEvents(Events):
         dtype_name: str,
     ) -> Tuple[npt.NDArray[np.uint64], npt.NDArray[np.float64]]:
         if dtype_name == 'weight':
-            floats[cls._dtype_map[dtype_name][1], :] = np.ones(ints.shape[-1])
+            floats[cls.dtype_map[dtype_name][1], :] = np.ones(ints.shape[-1])
         return super(SimEvents, cls)._generate_optional_field(ints, floats, dtype_name)
 
     def sample(self: S, n: int, rng: np.random.Generator) -> S:
-        p = self._floats[self.__class__._dtype_map['weight'][1], :] / self._floats[
-            self.__class__._dtype_map['weight'][1], :].sum()
+        p = self._floats[self.__class__.dtype_map['weight'][1], :] / self._floats[
+            self.__class__.dtype_map['weight'][1], :].sum()
 
         idxs = rng.choice(self._ints.shape[-1], n, replace=False, p=p)
         return self.from_idx(idxs)
@@ -275,4 +275,3 @@ class SimEvents(Events):
     def to_events(self) -> Events:
         # rewrite in a more maintainable, but still fast way
         return Events(_ints=self._ints, _floats=self._floats[:8, :])
-

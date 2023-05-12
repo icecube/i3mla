@@ -72,7 +72,7 @@ def _calculate_dropterm(ns_ratio: float, n_dropped: int) -> float:
 
 
 @dataclasses.dataclass(kw_only=True)
-class NonMinimizingLLHTestStatistic():
+class NonMinimizingLLHTestStatistic:
     """Docstring"""
     sob_terms: Dict[str, SoBTerm]
     _n_events: int
@@ -133,7 +133,8 @@ class NonMinimizingLLHTestStatistic():
 
         return ts
 
-    def _calculate_ts(self, ns_ratio: float, sob: np.ndarray) -> Tuple[float, float]:
+    def _calculate_ts(
+            self, ns_ratio: Optional[float], sob: np.ndarray) -> Tuple[float, float]:
         """Docstring"""
         if ns_ratio is None:
             ns_ratio = _newton_ns_ratio(
@@ -148,7 +149,7 @@ class NonMinimizingLLHTestStatistic():
     def _calculate_sob(self) -> np.ndarray:
         """Docstring"""
         sob = np.ones(self.n_kept)
-        for name, term in self.sob_terms.items():
+        for _, term in self.sob_terms.items():
             sob *= term.sob.reshape((-1,))
         return sob
 
@@ -174,16 +175,6 @@ class NonMinimizingLLHTestStatistic():
             term.params = self.params
 
     @property
-    def best_ns(self) -> float:
-        """Docstring"""
-        return self._best_ns
-
-    @property
-    def best_ts(self) -> float:
-        """Docstring"""
-        return self._best_ts
-
-    @property
     def n_events(self) -> int:
         """Docstring"""
         return self._n_events
@@ -197,6 +188,16 @@ class NonMinimizingLLHTestStatistic():
     def n_dropped(self) -> int:
         """Docstring"""
         return self._n_events - self._n_kept
+
+    @property
+    def best_ns(self) -> float:
+        """Docstring"""
+        return self._best_ns
+
+    @property
+    def best_ts(self) -> float:
+        """Docstring"""
+        return self._best_ts
 
 
 @dataclasses.dataclass(kw_only=True)
@@ -276,7 +277,7 @@ class LLHTestStatistic(NonMinimizingLLHTestStatistic):
         }
 
         if self.n_kept == 0:
-            return 0, np.array([(0,)], dtype=[('ns', np.float64)])
+            return {'ts': 0, 'ns': 0}
 
         grid = [
             np.linspace(lo, hi, self._gridsearch_size)
@@ -542,10 +543,10 @@ def _expectation_maximization(
             n_events,
         )
 
-        if (old_llh == llh) or (
-            llh < old_llh and old_llh <= llh * precision
+        if  (
+            llh <= old_llh <= llh * precision
         ) or (
-            old_llh < llh and llh <= old_llh * precision
+            old_llh < llh <= old_llh * precision
         ):
             break
 
