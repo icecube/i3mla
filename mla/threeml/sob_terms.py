@@ -119,7 +119,7 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
             self.data_handler.config["reco_sampling_width"],
         )
         self._unit_scale = self.config["Energy_convesion(ToGeV)"]
-        self._bins = np.array([self._sin_dec_bins, self._log_energy_bins])
+        self._bins = np.array([self._sin_dec_bins, self._log_energy_bins], dtype=object)
         self._init_bg_sob_map()
         self._build_ow_hist()
 
@@ -309,7 +309,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         lower_sindec_index = np.searchsorted(self._sin_dec_bins, lower_sindec) - 1
         uppper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
         self._sindec_bounds = np.array([lower_sindec_index, uppper_sindec_index])
-        self._bins = np.array([self._sin_dec_bins, self._log_energy_bins])
+        self._bins = np.array([self._sin_dec_bins, self._log_energy_bins], dtype=object)
         self._truelogebin = self.config["list_truelogebin"]
         self._unit_scale = self.config["Energy_convesion(ToGeV)"]
         self._init_bg_sob_map()
