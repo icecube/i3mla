@@ -917,7 +917,7 @@ class icecube_analysis(PluginPrototype):
             )
             self.mc_index.append(mc_array)
 
-        self.mc_index = np.array(self.mc_index)
+        self.mc_index = np.array(self.mc_index, dtype=object)
 
     def injection(self, n_signal=0, flux_norm=None, poisson=False):
         """docstring"""
