@@ -369,28 +369,24 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
 
     def sample_signal(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """Docstring"""
-        self.events = super().sample_signal(n, rng)
-        #print('in data handlers events', self.events.dtype)
-        #print('signal time profile pdf',self._signal_time_profile.pdf(self._grl['start']))
-        #print(self._randomize_times(self.events, self._signal_time_profile))
-        return self._randomize_times(self.events, self._signal_time_profile)
+        events = super().sample_signal(n, rng)
+        return self._randomize_times(events, self._signal_time_profile)
 
     def _randomize_times(
         self,
         events: np.ndarray,
         time_profile: GenericProfile,
     ) -> np.ndarray:
-        self.grl_start_cdf = time_profile.cdf(self._grl['start'])
-        self.grl_stop_cdf = time_profile.cdf(self._grl['stop'])
-        self.valid = np.logical_and(self.grl_start_cdf <= 1, self.grl_stop_cdf >= 0)
-        self.rates = self.grl_stop_cdf[self.valid] - self.grl_start_cdf[self.valid]
-        #print(self.rates, self.rates.sum())
-        #print(len(events))
+        grl_start_cdf = time_profile.cdf(self._grl['start'])
+        grl_stop_cdf = time_profile.cdf(self._grl['stop'])
+        valid = np.logical_and(grl_start_cdf < 1, grl_stop_cdf > 0)
+        rates = grl_stop_cdf[valid] - grl_start_cdf[valid]
+
         runs = np.random.choice(
-            self._grl[self.valid],
+            self._grl[valid],
             size=len(events),
             replace=True,
-            p=self.rates / self.rates.sum(),
+            p=rates / rates.sum(),
         )
 
         events['time'] = time_profile.inverse_transform_sample(

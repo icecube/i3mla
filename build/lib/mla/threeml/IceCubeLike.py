@@ -1,5 +1,3 @@
-from __future__ import print_function
-from __future__ import division
 """Docstring"""
 
 __author__ = 'John Evans and Jason Fan'
@@ -11,8 +9,8 @@ __maintainer__ = 'Jason Fan'
 __email__ = 'klfan@terpmail.umd.edu'
 __status__ = 'Development'
 
-#from __future__ import print_function
-#from __future__ import division
+from __future__ import print_function
+from __future__ import division
 from past.utils import old_div
 import collections
 import scipy
@@ -945,9 +943,7 @@ class icecube_analysis(PluginPrototype):
                 ratio_injection = self.dataset_ratio * n_signal
                 for i, icecubeobject in enumerate(self.listoficecubelike):
                     icecubeobject.trial_generator.config["fixed_ns"] = True
-                    #print('in IceCubelike test injection', n_signal)
                     injection_signal = np.random.poisson(ratio_injection[i])
-                    #print(injection_signal)
                     tempdata = icecubeobject.trial_generator(injection_signal)
                     self.listoficecubelike[i].update_data(tempdata)
             else:

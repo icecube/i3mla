@@ -499,28 +499,21 @@ class CustomProfile(GenericProfile):
         self._offset = self.config['offset']
 
         if isinstance(self.config['bins'], int):
-            bin_edges = np.linspace(*self.config['range'], self.config['bins']+1)
-            #print(bin_edges, *self.config['range'])
+            bin_edges = np.linspace(*self.config['range'], self.config['bins'])
         else:
             span = self.config['range'][1] - self.config['range'][0]
-            bin_edges = np.array(self.config['bins']) #*span
-            #print('span, bin edges',span, bin_edges)
-      
+            bin_edges = span * np.array(self.config['bins'])
+
         bin_widths = np.diff(bin_edges)
-        bin_centers = bin_edges[:-1] + bin_widths/2
-        
-        hist,_ = np.histogram(bin_centers,bins =bin_edges)
-        hist = hist.astype(float)
-        #print('hist, bin_widths', hist, bin_widths)
+        bin_centers = bin_edges[:-1] + bin_widths
+        hist = dist(bin_centers, tuple(self.config['range']))
+
         area_under_hist = np.sum(hist * bin_widths)
-        #print('area', area_under_hist)
-        hist *= 1. / area_under_hist
-        #print('normed hist, bin centers', hist, bin_centers)
+        hist *= 1 / area_under_hist
         self._exposure = 1 / np.max(hist)
         hist *= bin_widths
-        #print('final hist', hist)
-        #print('setting dist', scipy.stats.rv_histogram((hist,bin_edges)).pdf(bin_centers))
-        self._dist = scipy.stats.rv_histogram((hist,bin_edges))
+
+        self._dist = scipy.stats.rv_histogram((hist, bin_edges))
 
     def pdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the probability density for each time.
