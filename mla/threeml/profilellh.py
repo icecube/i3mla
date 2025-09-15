@@ -50,14 +50,9 @@ class ProfileLLHLike(PluginPrototype):
             self.df = df
             self.par_name = list(df.columns)
             self.par_name.pop()
-            listofpoint = []
-            shape = []
-            for n in self.par_name:
-                sort_idx = np.lexsort([df[p].values for p in reversed(par_name)])
-                points = np.unique(df[n])
-                listofpoint.append(points)
-                shape.append(points.shape[0])
-            llh = np.reshape(df["llh"].values[sort_idx], shape)
+            listofpoint = [np.unique(df[n]) for n in par_name]
+            shape = [len(points) for points in listofpoint]
+            sort_idx = np.lexsort([df[p].values for p in reversed(par_name)])
             self.spline = RegularGridInterpolator(
                 listofpoint, llh, bounds_error=False, fill_value=fill_value
             )
