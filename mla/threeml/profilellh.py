@@ -53,7 +53,7 @@ class ProfileLLHLike(PluginPrototype):
             listofpoint = []
             shape = []
             for n in self.par_name:
-                sort_idx = np.lexsort([df_ver[p].values for p in reversed(par_name)])
+                sort_idx = np.lexsort([df[p].values for p in reversed(par_name)])
                 points = np.unique(df[n])
                 listofpoint.append(points)
                 shape.append(points.shape[0])
