@@ -1,13 +1,13 @@
 """Docstring"""
 
-__author__ = 'John Evans and Jason Fan'
-__copyright__ = 'Copyright 2024'
-__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
-__license__ = 'Apache License 2.0'
-__version__ = '1.4.1'
-__maintainer__ = 'Jason Fan'
-__email__ = 'klfan@terpmail.umd.edu'
-__status__ = 'Development'
+__author__ = "John Evans and Jason Fan"
+__copyright__ = "Copyright 2024"
+__credits__ = ["John Evans", "Jason Fan", "Michael Larson"]
+__license__ = "Apache License 2.0"
+__version__ = "1.4.1"
+__maintainer__ = "Jason Fan"
+__email__ = "klfan@terpmail.umd.edu"
+__status__ = "Development"
 
 from threeML.plugin_prototype import PluginPrototype
 from scipy.interpolate import RegularGridInterpolator
@@ -45,14 +45,15 @@ class ProfileLLHLike(PluginPrototype):
         super().__init__(name, nuisance_parameters)
         if spline is not None:
             self.spline = spline
-            self.df = df#None
+            self.df = df  # None
         else:
             self.df = df
             self.par_name = list(df.columns)
             self.par_name.pop()
             listofpoint = [np.unique(df[n]) for n in self.par_name]
             shape = [len(points) for points in listofpoint]
-            sort_idx = np.lexsort([df[p].values for p in reversed(self.par_name)])
+            sort_idx = np.lexsort(
+                         [df[p].values for p in reversed(self.par_name)])
             llh = np.reshape(df["llh"].values[sort_idx], shape)
             self.spline = RegularGridInterpolator(
                 listofpoint, llh, bounds_error=False, fill_value=fill_value
@@ -87,10 +88,14 @@ class ProfileLLHLike(PluginPrototype):
 
     def inner_fit(self) -> float:
         """
-        This is used for the profile likelihood. Keeping fixed all parameters in the
-        LikelihoodModel, this method minimize the logLike over the remaining nuisance
-        parameters, i.e., the parameters belonging only to the model for this
-        particular detector. If there are no nuisance parameters, simply return the
+        This is used for the profile likelihood.
+        Keeping fixed all parameters in the
+        LikelihoodModel, this method minimize the logLike
+        over the remaining nuisance
+        parameters, i.e., the parameters belonging
+        only to the model for this
+        particular detector. If there are no nuisance parameters,
+        simply return the
         logLike value.
         """
 
