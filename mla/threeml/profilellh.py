@@ -45,18 +45,15 @@ class ProfileLLHLike(PluginPrototype):
         super().__init__(name, nuisance_parameters)
         if spline is not None:
             self.spline = spline
-            self.df = None
+            self.df = df#None
         else:
             self.df = df
             self.par_name = list(df.columns)
             self.par_name.pop()
-            listofpoint = []
-            shape = []
-            for n in self.par_name:
-                points = np.unique(df[n])
-                listofpoint.append(points)
-                shape.append(points.shape[0])
-            llh = np.reshape(df["llh"].values, shape)
+            listofpoint = [np.unique(df[n]) for n in self.par_name]
+            shape = [len(points) for points in listofpoint]
+            sort_idx = np.lexsort([df[p].values for p in reversed(self.par_name)])
+            llh = np.reshape(df["llh"].values[sort_idx], shape)
             self.spline = RegularGridInterpolator(
                 listofpoint, llh, bounds_error=False, fill_value=fill_value
             )
