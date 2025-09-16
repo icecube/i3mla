@@ -13,3 +13,6 @@ Pipfile
 **/.venv
 **/.vim
 pyvenv.cfg
+
+build/
+dist/
