@@ -173,7 +173,10 @@ class TimeTermFactory(SoBTermFactory):
         return 1 / self.background_time_profile.pdf(events['time']) != 0
 
     def generate_params(self) -> tuple:
-        return self.signal_time_profile.params, self.signal_time_profile.param_bounds
+        return (
+               self.signal_time_profile.params,
+               self.signal_time_profile.param_bounds
+               )
 
 
 @dataclasses.dataclass
@@ -233,8 +236,10 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
 
     def __call__(self, params: Params, events: np.ndarray) -> SoBTerm:
         """Docstring"""
-        sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1], events['sindec'])
-        log_energy_idx = np.searchsorted(self._log_energy_bins[:-1], events['logE'])
+        sin_dec_idx = np.searchsorted(
+            self._sin_dec_bins[:-1], events['sindec'])
+        log_energy_idx = np.searchsorted(
+            self._log_energy_bins[:-1], events['logE'])
 
         spline_idxs, event_spline_idxs = np.unique(
             [sin_dec_idx - 1, log_energy_idx - 1],
@@ -276,7 +281,8 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
             An array of signal-over-background values binned in sin(dec) and
             log(energy) for a given gamma.
         """
-        sig_h = self.data_handler.build_signal_sindec_logenergy_histogram(gamma, bins)
+        sig_h = self.data_handler.build_signal_sindec_logenergy_histogram(
+            gamma, bins)
 
         # Normalize histogram by dec band
         sig_h /= np.sum(sig_h, axis=1)[:, None]
@@ -292,7 +298,10 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
             good_bins, good_vals = bin_centers[good], ratio[i][good]
 
             # Do a linear interpolation across the energy range
-            spline = Spline(good_bins, good_vals, **self.config['energy_spline_kwargs'])
+            spline = Spline(
+                good_bins,
+                good_vals,
+                **self.config['energy_spline_kwargs'])
 
             # And store the interpolated values
             ratio[i] = spline(bin_centers)
@@ -306,7 +315,8 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         """
         bins = np.array([self._sin_dec_bins, self._log_energy_bins])
         bin_centers = bins[1, :-1] + np.diff(bins[1]) / 2
-        bg_h = self.data_handler.build_background_sindec_logenergy_histogram(bins)
+        bg_h = self.data_handler.build_background_sindec_logenergy_histogram(
+            bins)
 
         # Normalize histogram by dec band
         bg_h /= np.sum(bg_h, axis=1)[:, None]
@@ -323,7 +333,8 @@ class SplineMapEnergyTermFactory(SoBTermFactory):
         transposed_log_sob_maps = np.log(sob_maps.transpose(1, 2, 0))
 
         splines = [[
-            Spline(self._gamma_bins, log_ratios, **self.config['sob_spline_kwargs'])
+            Spline(self._gamma_bins, log_ratios,
+                   **self.config['sob_spline_kwargs'])
             for log_ratios in dec_bin
         ] for dec_bin in transposed_log_sob_maps]
 

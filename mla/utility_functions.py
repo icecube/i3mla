@@ -89,12 +89,12 @@ def rotate(
     ra3 = np.atleast_1d(ra3)
     dec3 = np.atleast_1d(dec3)
 
-    if not len(ra1) == len(dec1) == len(ra2) == len(dec2) == len(ra3) == len(dec3):
+    if not len(ra1) == len(dec1) == len(
+            ra2) == len(dec2) == len(ra3) == len(dec3):
         raise IndexError("Arguments must all have the same dimension.")
 
-    cos_alpha = np.cos(ra2 - ra1) * np.cos(dec1) * np.cos(dec2) + np.sin(dec1) * np.sin(
-        dec2
-    )
+    cos_alpha = np.cos(ra2 - ra1) * np.cos(dec1) * \
+        np.cos(dec2) + np.sin(dec1) * np.sin(dec2)
 
     # correct rounding errors
     cos_alpha[cos_alpha > 1] = 1
@@ -134,7 +134,11 @@ def rotate(
     return r_a, dec
 
 
-def angular_distance(src_ra: float, src_dec: float, r_a: float, dec: float) -> float:
+def angular_distance(
+        src_ra: float,
+        src_dec: float,
+        r_a: float,
+        dec: float) -> float:
     """Computes angular distance between source and location.
 
     Args:
@@ -235,7 +239,8 @@ def newton_method_multidataset(
     return x[i + 1]
 
 
-def trimsim(sim: np.ndarray, fraction: float, scaleow: bool = True) -> np.ndarray:
+def trimsim(sim: np.ndarray, fraction: float,
+            scaleow: bool = True) -> np.ndarray:
     """Keep only fraction of the simulation
 
     Args:

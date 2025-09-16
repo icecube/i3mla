@@ -29,9 +29,12 @@ class SingleSourceLLHAnalysis:
     sob_term_factories: List[SoBTermFactory]
     data_handler_source: Tuple[DataHandler, PointSource]
     _sob_term_factories: List[SoBTermFactory] = field(init=False, repr=False)
-    _data_handler_source: Tuple[DataHandler, PointSource] = field(init=False, repr=False)
-    _trial_generator: SingleSourceTrialGenerator = field(init=False, repr=False)
-    _test_statistic_factory: LLHTestStatisticFactory = field(init=False, repr=False)
+    _data_handler_source: Tuple[DataHandler,
+                                PointSource] = field(init=False, repr=False)
+    _trial_generator: SingleSourceTrialGenerator = field(
+        init=False, repr=False)
+    _test_statistic_factory: LLHTestStatisticFactory = field(
+        init=False, repr=False)
 
     def produce_and_minimize(
         self,
@@ -66,10 +69,12 @@ class SingleSourceLLHAnalysis:
         return self._sob_term_factories
 
     @sob_term_factories.setter
-    def sob_term_factories(self, sob_term_factories: List[SoBTermFactory]) -> None:
+    def sob_term_factories(
+            self,
+            sob_term_factories: List[SoBTermFactory]) -> None:
         """Docstring"""
         self._sob_term_factories = sob_term_factories
-        self._test_statistic_factory = LLHTestStatisticFactory(  # pylint: disable=too-many-function-args
+        self._test_statistic_factory = LLHTestStatisticFactory(
             self.config['LLHTestStatisticFactory'],
             self._sob_term_factories,
         )
@@ -80,8 +85,9 @@ class SingleSourceLLHAnalysis:
         return self._data_handler_source
 
     @data_handler_source.setter
-    def data_handler_source(
-            self, data_handler_source: Tuple[DataHandler, PointSource]) -> None:
+    def data_handler_source(self,
+                            data_handler_source: Tuple[DataHandler,
+                                                       PointSource]) -> None:
         """Docstring"""
         self._data_handler_source = data_handler_source
         self._trial_generator = SingleSourceTrialGenerator(

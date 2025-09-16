@@ -49,7 +49,8 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
     ) -> np.ndarray:
         """
         Building the signal energy histogram.
-        Only used when using MC instead of IRF to build signal energy histogram.
+        Only used when using MC instead of IRF
+         to build signal energy histogram.
 
         Args:
             spectrum: signal spectrum
@@ -64,7 +65,8 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
             density=True,
         )[0]
 
-    def cut_reconstructed_sim(self, dec: float, sampling_width: float) -> np.ndarray:
+    def cut_reconstructed_sim(
+            self, dec: float, sampling_width: float) -> np.ndarray:
         """
         Cutting the MC based on reconstructed dec.
         Only use when using MC instead of IRF to build signal energy histogram.
@@ -103,7 +105,8 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
         return self._injection_spectrum
 
     @injection_spectrum.setter
-    def injection_spectrum(self, inject_spectrum: spectral.BaseSpectrum) -> None:
+    def injection_spectrum(
+            self, inject_spectrum: spectral.BaseSpectrum) -> None:
         """
         Setting the injection spectrum
 
@@ -124,7 +127,8 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
 
         self._full_sim["weight"] = (
             self._full_sim["ow"]
-            * (inject_spectrum(self._full_sim["trueE"] * self._flux_unit_conversion))
+            * (inject_spectrum(self._full_sim["trueE"]
+                               * self._flux_unit_conversion))
             * self._flux_unit_conversion
         )
 

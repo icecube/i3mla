@@ -11,8 +11,8 @@ __maintainer__ = 'Jason Fan'
 __email__ = 'klfan@terpmail.umd.edu'
 __status__ = 'Development'
 
-#from __future__ import print_function
-#from __future__ import division
+# from __future__ import print_function
+# from __future__ import division
 from past.utils import old_div
 import collections
 import scipy
@@ -38,15 +38,16 @@ from mla import analysis
 from mla import sources
 from mla import minimizers
 from mla import trial_generators
-from mla.utility_functions import newton_method, newton_method_multidataset
+from mla.utility_functions import newton_method_multidataset
 
 __all__ = ["NeutrinoPointSource"]
 r"""This IceCube plugin is currently under develop by Kwok Lung Fan"""
 
 
-class NeutrinoPointSource(PointSource,Node):
+class NeutrinoPointSource(PointSource, Node):
     """
-    Class for NeutrinoPointSource. It is inherited from astromodels PointSource class.
+    Class for NeutrinoPointSource.
+    It is inherited from astromodels PointSource class.
     """
 
     def __init__(
@@ -69,10 +70,12 @@ class NeutrinoPointSource(PointSource,Node):
             source_name:Name of the source
             ra: right ascension in degree
             dec: declination in degree
-            spectral_shape: Shape of the spectrum.Check 3ML example for more detail.
+            spectral_shape:
+              Shape of the spectrum.Check 3ML example for more detail.
             l: galactic longitude in degree
             b: galactic   in degree
-            components: Spectral Component.Check 3ML example for more detail.
+            components:
+               Spectral Component.Check 3ML example for more detail.
             sky_position: sky position
             energy_unit: Unit of the energy
         """
@@ -86,7 +89,8 @@ class NeutrinoPointSource(PointSource,Node):
             (ra is not None and dec is not None)
             ^ (l is not None and b is not None)
             ^ (sky_position is not None)
-        ), "You have to provide one and only one specification for the position"
+        ), "You have to provide one and only one \
+           specification for the position"
 
         # Gather the position
 
@@ -104,10 +108,10 @@ class NeutrinoPointSource(PointSource,Node):
                 except (TypeError, ValueError):
 
                     raise AssertionError(
-                        "RA and Dec must be numbers. If you are confused by this message,"
-                        " you are likely using the constructor in the wrong way. Check"
-                        " the documentation."
-                    )
+                        "RA and Dec must be numbers. "
+                        "If you are confused by this message, "
+                        "you are likely using the constructor in the wrong way"
+                        ". Check the documentation.")
 
                 sky_position = SkyDirection(ra=ra, dec=dec)
 
@@ -119,7 +123,8 @@ class NeutrinoPointSource(PointSource,Node):
 
         # Now gather the component(s)
 
-        # We need either a single component, or a list of components, but not both
+        # We need either a single component,
+        # or a list of components, but not both
         # (that's the ^ symbol)
 
         assert (spectral_shape is not None) ^ (components is not None), (
@@ -157,7 +162,8 @@ class NeutrinoPointSource(PointSource,Node):
         # Components in this case have energy as x and differential flux as y
 
         x_unit = energy_unit
-        y_unit = (energy_unit * current_units.area * current_units.time) ** (-1)
+        y_unit = (energy_unit * current_units.area *
+                  current_units.time) ** (-1)
 
         # Now set the units of the components
         for component in list(self._components.values()):
@@ -199,8 +205,8 @@ class NeutrinoPointSource(PointSource,Node):
                 # Slow version with units
 
                 results = [
-                    component.shape(x) for component in list(self.components.values())
-                ]
+                    component.shape(x) for component in list(
+                        self.components.values())]
 
                 # We need to sum like this (slower) because using
                 # np.sum will not preserve the units (thanks astropy.units)
@@ -209,12 +215,13 @@ class NeutrinoPointSource(PointSource,Node):
 
             else:
 
-                # Fast version without units, where x is supposed to be in the same
+                # Fast version without units,
+                # where x is supposed to be in the same
                 # units as currently defined in units.get_units()
 
                 results = [
-                    component.shape(x) for component in list(self.components.values())
-                ]
+                    component.shape(x) for component in list(
+                        self.components.values())]
 
                 return np.sum(results, 0)
 
@@ -278,7 +285,8 @@ class NeutrinoExtendedSource(ExtendedSource):
 
             # Now gather the component(s)
 
-            # We need either a single component, or a list of components, but not both
+            # We need either a single component,
+            # or a list of components, but not both
             # (that's the ^ symbol)
 
             assert (spectral_shape is not None) ^ (components is not None), (
@@ -291,11 +299,11 @@ class NeutrinoExtendedSource(ExtendedSource):
 
                 components = [SpectralComponent("main", spectral_shape)]
 
-            # Components in this case have energy as x and differential flux as y
+            # Components in this case have energy as x and differential flux as
+            # y
 
-            diff_flux_units = (current_u.energy * current_u.area * current_u.time) ** (
-                -1
-            )
+            diff_flux_units = (current_u.energy *
+                               current_u.area * current_u.time) ** (-1)
 
             # Now set the units of the components
             for component in components:
@@ -345,7 +353,6 @@ class NeutrinoExtendedSource(ExtendedSource):
         return self._spatial_shape
 
     def get_spatially_integrated_flux(self, energies):
-
         """
         Returns total flux of source at the given energy
         :param energies: energies (array or float)
@@ -399,7 +406,8 @@ class NeutrinoExtendedSource(ExtendedSource):
                 # Slow version with units
 
                 # We need to sum like this (slower) because
-                # using np.sum will not preserve the units (thanks astropy.units)
+                # using np.sum will not preserve the units (thanks
+                # astropy.units)
 
                 result = np.zeros((lat.shape[0], energies.shape[0])) * (
                     u.keV ** -1 * u.cm ** -2 * u.second ** -1 * u.degree ** -2
@@ -507,7 +515,8 @@ class NeutrinoExtendedSource(ExtendedSource):
         repr_dict[key]["spectrum"] = collections.OrderedDict()
 
         for component_name, component in list(self.components.items()):
-            repr_dict[key]["spectrum"][component_name] = component.to_dict(minimal=True)
+            repr_dict[key]["spectrum"][component_name] = component.to_dict(
+                minimal=True)
 
         return dict_to_list(repr_dict, rich_output)
 
@@ -529,11 +538,15 @@ class Spectrum(object):
         r"""Constructor of the class"""
         self.model = likelihood_model_instance
         self.norm = A
-        for source_name, source in likelihood_model_instance.point_sources.items():
+        for source_name, source in (
+            likelihood_model_instance.point_sources.items()
+        ):
             if isinstance(source, NeutrinoPointSource):
                 self.neutrinosource = source_name
                 self.point = True
-        for source_name, source in likelihood_model_instance.extended_sources.items():
+        for source_name, source in (
+                likelihood_model_instance.extended_sources.items()
+        ):
             if isinstance(source, NeutrinoExtendedSource):
                 self.neutrinosource = source_name
                 self.point = False
@@ -541,9 +554,8 @@ class Spectrum(object):
     def __call__(self, energy, **kwargs):
         r"""Evaluate spectrum at E"""
         if self.point:
-            return (
-                self.model.point_sources[self.neutrinosource].call(energy) * self.norm
-            )
+            return (self.model.point_sources[self.neutrinosource].call(
+                energy) * self.norm)
         else:
             return (
                 self.model.extended_sources[self.neutrinosource].call(energy)
@@ -555,7 +567,8 @@ class Spectrum(object):
 
     def __str__(self):
         r"""String representation of class"""
-        return "SpectrumConverter class doesn't support string representation now"
+        return "SpectrumConverter class doesn't \
+                support string representation now"
 
     def copy(self):
         r"""Return copy of this class"""
@@ -582,9 +595,11 @@ class IceCubeLike(PluginPrototype):
             name: name for the plugin
             data: data of experiment
             data_handlers: mla.threeml.data_handlers ThreeMLDataHandler object
-            llh: test_statistics.LLHTestStatistic object. Used to evaluate the ts
+            llh: test_statistics.LLHTestStatistic object.
+                 Used to evaluate the ts
             source: injection location(only when need injection)
-            livetime: livetime in days(calculated using livetime within time profile if None)
+            livetime: livetime in days(calculated using
+                      livetime within time profile if None)
             fix_flux_norm: only fit the spectrum shape
             verbose: print the output or not
 
@@ -614,13 +629,14 @@ class IceCubeLike(PluginPrototype):
             config["dec"] = 0
             source = sources.PointSource(config=config)
         self.injected_source = source
-        trial_config = trial_generators.SingleSourceTrialGenerator.generate_config()
+        trial_config = \
+            trial_generators.SingleSourceTrialGenerator.generate_config()
         self.trial_generator = trial_generators.SingleSourceTrialGenerator(
             trial_config, data_handlers, source
         )
-        analysis_config = analysis.SingleSourceLLHAnalysis.generate_default_config(
-            minimizer_class=minimizers.GridSearchMinimizer
-        )
+        analysis_config = \
+            analysis.SingleSourceLLHAnalysis.generate_default_config(
+                minimizer_class=minimizers.GridSearchMinimizer)
         self.analysis = analysis.SingleSourceLLHAnalysis(
             config=analysis_config,
             minimizer_class=minimizers.GridSearchMinimizer,
@@ -644,8 +660,8 @@ class IceCubeLike(PluginPrototype):
         )
         for key in self.test_statistic.sob_terms.keys():
             if isinstance(
-                self.test_statistic.sob_terms[key], sob_terms.ThreeMLPSEnergyTerm
-            ):
+                    self.test_statistic.sob_terms[key],
+                    sob_terms.ThreeMLPSEnergyTerm):
                 self.energyname = key
         return
 
@@ -655,7 +671,9 @@ class IceCubeLike(PluginPrototype):
 
             return
 
-        for source_name, source in likelihood_model_instance.point_sources.items():
+        for source_name, source in (
+            likelihood_model_instance.point_sources.items()
+        ):
             if isinstance(source, NeutrinoPointSource):
                 self.source_name = source_name
                 ra = source.position.get_ra()
@@ -688,13 +706,16 @@ class IceCubeLike(PluginPrototype):
                     self.test_statistic = self.analysis.test_statistic_factory(
                         Params.from_dict({"ns": 0}), self._data
                     )
-        for source_name, source in likelihood_model_instance.extended_sources.items():
+        for source_name, source in (
+            likelihood_model_instance.extended_sources.items()
+        ):
             if isinstance(source, NeutrinoExtendedSource):
                 self.source_name = source_name
                 ra = source.spatial_shape.lon0.value
                 dec = source.spatial_shape.lat0.value
                 sigma = source.spatial_shape.sigma.value
-                if self._ra == ra and self._dec == dec and self._sigma == sigma:
+                if (self._ra == ra and self._dec == dec
+                        and self._sigma == sigma):
                     self.llh_model = likelihood_model_instance
                     self.energy_sob_factory.spectrum = Spectrum(
                         likelihood_model_instance
@@ -813,8 +834,11 @@ class icecube_analysis(PluginPrototype):
     """Docstring"""
 
     def __init__(
-        self, listoficecubelike, newton_flux_norm=False, name="combine", verbose=False
-    ):
+            self,
+            listoficecubelike,
+            newton_flux_norm=False,
+            name="combine",
+            verbose=False):
         """Docstring"""
         nuisance_parameters = {}
         super(icecube_analysis, self).__init__(name, nuisance_parameters)
@@ -851,9 +875,9 @@ class icecube_analysis(PluginPrototype):
             for i, icecubeobject in enumerate(self.listoficecubelike):
                 sob.append(icecubeobject.test_statistic._calculate_sob())
                 n_drop.append(icecubeobject.test_statistic.n_dropped)
-                fraction.append(
-                    self.totaln * self.dataset_weight[i] / len(icecubeobject.data)
-                )
+                fraction.append(self.totaln *
+                                self.dataset_weight[i] /
+                                len(icecubeobject.data))
             fraction = np.array(fraction)
             # fraction = fraction/fraction.sum()
             ns_ratio = newton_method_multidataset(sob, n_drop, fraction)
@@ -945,9 +969,9 @@ class icecube_analysis(PluginPrototype):
                 ratio_injection = self.dataset_ratio * n_signal
                 for i, icecubeobject in enumerate(self.listoficecubelike):
                     icecubeobject.trial_generator.config["fixed_ns"] = True
-                    #print('in IceCubelike test injection', n_signal)
+                    # print('in IceCubelike test injection', n_signal)
                     injection_signal = np.random.poisson(ratio_injection[i])
-                    #print(injection_signal)
+                    # print(injection_signal)
                     tempdata = icecubeobject.trial_generator(injection_signal)
                     self.listoficecubelike[i].update_data(tempdata)
             else:
@@ -962,9 +986,10 @@ class icecube_analysis(PluginPrototype):
         for icecubeobject in self.listoficecubelike:
             time_intergrated = flux_norm * icecubeobject.livetime * 3600 * 24
             tempns = (
-                time_intergrated
-                * icecubeobject.analysis.data_handler_source[0].sim["weight"].sum()
-            )
+                time_intergrated *
+                icecubeobject.analysis
+                .data_handler_source[0]
+                .sim["weight"].sum())
             ns = ns + tempns
         return ns
 
@@ -973,10 +998,11 @@ class icecube_analysis(PluginPrototype):
         totalweight = 0
         for icecubeobject in self.listoficecubelike:
             tempweight = (
-                icecubeobject.analysis.data_handler_source[0].sim["weight"].sum()
-                * icecubeobject.livetime
-                * 3600
-                * 24
-            )
+                icecubeobject.analysis
+                .data_handler_source[0]
+                .sim["weight"].sum() *
+                icecubeobject.livetime *
+                3600 *
+                24)
             totalweight = totalweight + tempweight
         return ns / totalweight
