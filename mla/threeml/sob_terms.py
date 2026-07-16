@@ -158,18 +158,16 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
 
     def get_ns(self) -> float:
         """Docstring"""
-        return (self.spectrum(self._ow_ebin) *
-                self._ow_hist).sum() * self._unit_scale
+        return (self.spectrum(self._ow_ebin)
+                * self._ow_hist).sum() * self._unit_scale
 
     def _init_bg_sob_map(self) -> np.ndarray:
         """Docstring"""
         if self.config["mc_bkgweight"] is None:
-            bg_h = \
-                self.data_handler.build_background_sindec_logenergy_histogram(
+            bg_h = self.data_handler.build_background_sindec_logenergy_histogram(
                     self._bins)
         else:
-            bg_h = \
-               self.data_handler.build_mcbackground_sindec_logenergy_histogram(
+            bg_h = self.data_handler.build_mcbackground_sindec_logenergy_histogram(
                     self._bins, self.config["mc_bkgweight"])
             print("using mc background")
         # Normalize histogram by dec band
@@ -283,7 +281,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     _bg_sob: np.ndarray = dataclasses.field(init=False, repr=False)
     _sin_dec_bins: np.ndarray = dataclasses.field(
         init=False, repr=False, default=PSTrackv4_sin_dec_bin
-        )
+    )
     _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _trueebin: np.ndarray = dataclasses.field(init=False, repr=False)
@@ -301,7 +299,6 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
                                      -1, 1, 1 + self.config["sin_dec_bins"])
         else:
             self._sin_dec_bins = self.config["list_sin_dec_bins"]
-
         if self.config["list_log_energy_bins"] is None:
             self._log_energy_bins = np.linspace(
                 *self.config["log_energy_bounds"],
@@ -360,12 +357,10 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     def _init_bg_sob_map(self) -> None:
         """Docstring"""
         if self.config["mc_bkgweight"] is None:
-            bg_h = \
-                self.data_handler.build_background_sindec_logenergy_histogram(
+            bg_h = self.data_handler.build_background_sindec_logenergy_histogram(
                  self._bins)
         else:
-            bg_h = \
-               self.data_handler.build_mcbackground_sindec_logenergy_histogram(
+            bg_h = self.data_handler.build_mcbackground_sindec_logenergy_histogram(
                 self._bins, self.config["mc_bkgweight"])
             print("using mc background")
         # Normalize histogram by dec band
@@ -390,8 +385,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
             np.digitize(
                 np.sin(
                     self.data_handler.full_sim["dec"]),
-                self._sin_dec_bins) -
-            1)
+                self._sin_dec_bins) - 1)
 
         for i in range(len(self._sin_dec_bins) - 1):
             events_dec = self.data_handler.full_sim[(sindec_idx == i)]

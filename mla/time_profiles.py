@@ -505,8 +505,7 @@ class CustomProfile(GenericProfile):
         return self._dist
 
     @dist.setter
-    def dist(
-        self,_) -> None:
+    def dist(self, _) -> None:
         """Constructs the time profile.
 
         Args:
