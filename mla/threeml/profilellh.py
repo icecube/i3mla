@@ -53,14 +53,10 @@ class ProfileLLHLike(PluginPrototype):
             self.df = df
             self.par_name = list(df.columns)
             self.par_name.pop()
-            # order rows so that interpolator has no issues
-            order = np.lexsort([df[p].values for p in reversed(self.par_name)])
-            df = df.iloc[order]
-            # Grid axes
             listofpoint = [np.unique(df[n]) for n in self.par_name]
             shape = [len(points) for points in listofpoint]
-            # Likelihood grid
-            llh = np.reshape(df["llh"].values, shape)
+            sort_idx = np.lexsort([df[p].values for p in reversed(self.par_name)])
+            llh = np.reshape(df["llh"].values[sort_idx], shape)
             self.spline = RegularGridInterpolator(
                 listofpoint, llh, bounds_error=False, fill_value=fill_value
             )
