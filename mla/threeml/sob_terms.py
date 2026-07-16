@@ -282,8 +282,8 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
 
     _bg_sob: np.ndarray = dataclasses.field(init=False, repr=False)
     _sin_dec_bins: np.ndarray = dataclasses.field(
-        init=False, repr=False,
-        default_factory=lambda: PSTrackv4_sin_dec_bin.copy())
+        init=False, repr=False, default=PSTrackv4_sin_dec_bin
+        )
     _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _trueebin: np.ndarray = dataclasses.field(init=False, repr=False)

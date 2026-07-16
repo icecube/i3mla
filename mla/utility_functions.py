@@ -2,15 +2,14 @@
 Math functions needed for this package
 """
 
-__author__ = 'John Evans and Jason Fan'
-__copyright__ = 'Copyright 2024'
-__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
-__license__ = 'Apache License 2.0'
-__version__ = '1.4.1'
-__maintainer__ = 'Jason Fan'
-__email__ = 'klfan@terpmail.umd.edu'
-__status__ = 'Development'
-
+__author__ = "John Evans and Jason Fan"
+__copyright__ = "Copyright 2024"
+__credits__ = ["John Evans", "Jason Fan", "Michael Larson"]
+__license__ = "Apache License 2.0"
+__version__ = "1.4.1"
+__maintainer__ = "Jason Fan"
+__email__ = "klfan@terpmail.umd.edu"
+__status__ = "Development"
 import numpy as np
 
 

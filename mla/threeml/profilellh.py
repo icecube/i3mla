@@ -53,7 +53,7 @@ class ProfileLLHLike(PluginPrototype):
             listofpoint = [np.unique(df[n]) for n in self.par_name]
             shape = [len(points) for points in listofpoint]
             sort_idx = np.lexsort(
-                         [df[p].values for p in reversed(self.par_name)])
+                       [df[p].values for p in reversed(self.par_name)])
             llh = np.reshape(df["llh"].values[sort_idx], shape)
             self.spline = RegularGridInterpolator(
                 listofpoint, llh, bounds_error=False, fill_value=fill_value

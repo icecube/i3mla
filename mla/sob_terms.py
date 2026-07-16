@@ -173,10 +173,7 @@ class TimeTermFactory(SoBTermFactory):
         return 1 / self.background_time_profile.pdf(events['time']) != 0
 
     def generate_params(self) -> tuple:
-        return (
-               self.signal_time_profile.params,
-               self.signal_time_profile.param_bounds
-               )
+        return self.signal_time_profile.params, self.signal_time_profile.param_bounds
 
 
 @dataclasses.dataclass

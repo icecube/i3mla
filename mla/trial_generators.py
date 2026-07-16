@@ -1,13 +1,13 @@
 """Docstring"""
 
-__author__ = 'John Evans and Jason Fan'
-__copyright__ = 'Copyright 2024'
-__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
-__license__ = 'Apache License 2.0'
-__version__ = '1.4.1'
-__maintainer__ = 'Jason Fan'
-__email__ = 'klfan@terpmail.umd.edu'
-__status__ = 'Development'
+__author__ = "John Evans and Jason Fan"
+__copyright__ = "Copyright 2024"
+__credits__ = ["John Evans", "Jason Fan", "Michael Larson"]
+__license__ = "Apache License 2.0"
+__version__ = "1.4.1"
+__maintainer__ = "Jason Fan"
+__email__ = "klfan@terpmail.umd.edu"
+__status__ = "Development"
 
 import dataclasses
 
@@ -60,8 +60,7 @@ class SingleSourceTrialGenerator(configurable.Configurable):
         # energy, and 'oneweight'.
         signal = rf.drop_fields(
             signal, [
-                n for n in signal.dtype.names if (
-                                    n not in background.dtype.names)])
+                n for n in signal.dtype.names if n not in background.dtype.names])
 
         # Combine the signal background events and time-sort them.
         # Use recfunctions.stack_arrays to prevent numpy from scrambling entry

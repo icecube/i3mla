@@ -506,9 +506,7 @@ class CustomProfile(GenericProfile):
 
     @dist.setter
     def dist(
-        self,
-        dist: Callable[[np.ndarray, Tuple[float, float]], np.ndarray],
-    ) -> None:
+        self,_) -> None:
         """Constructs the time profile.
 
         Args:
