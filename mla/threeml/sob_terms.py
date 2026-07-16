@@ -158,8 +158,8 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
 
     def get_ns(self) -> float:
         """Docstring"""
-        return (self.spectrum(self._ow_ebin) *
-                self._ow_hist).sum() * self._unit_scale
+        return (self.spectrum(self._ow_ebin)
+                * self._ow_hist).sum() * self._unit_scale
 
     def _init_bg_sob_map(self) -> np.ndarray:
         """Docstring"""
@@ -385,8 +385,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
             np.digitize(
                 np.sin(
                     self.data_handler.full_sim["dec"]),
-                self._sin_dec_bins) -
-            1)
+                self._sin_dec_bins) - 1)
 
         for i in range(len(self._sin_dec_bins) - 1):
             events_dec = self.data_handler.full_sim[(sindec_idx == i)]

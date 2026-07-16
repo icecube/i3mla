@@ -30,10 +30,10 @@ class PointSource(configurable.Configurable):
             size: number of points to sample
         """
         return (
-            np.ones(size) *
-            self.config['ra'],
-            np.ones(size) *
-            self.config['dec'])
+            np.ones(size)
+            * self.config['ra'],
+            np.ones(size)
+            * self.config['dec'])
 
     def spatial_pdf(self, events: np.ndarray) -> np.ndarray:
         """calculates the signal probability of events.

@@ -91,7 +91,7 @@ def rotate(
 
     if not len(ra1) == len(dec1) == len(
             ra2) == len(dec2) == len(ra3) == len(dec3):
-        raise IndexError('Arguments must all have the same dimension.')
+        raise IndexError("Arguments must all have the same dimension.")
 
     cos_alpha = np.cos(ra2 - ra1) * np.cos(dec1) * \
         np.cos(dec2) + np.sin(dec1) * np.sin(dec2)
