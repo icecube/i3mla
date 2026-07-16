@@ -10,6 +10,7 @@ __version__ = "1.4.1"
 __maintainer__ = "Jason Fan"
 __email__ = "klfan@terpmail.umd.edu"
 __status__ = "Development"
+
 import numpy as np
 
 
@@ -90,7 +91,7 @@ def rotate(
 
     if not len(ra1) == len(dec1) == len(
             ra2) == len(dec2) == len(ra3) == len(dec3):
-        raise IndexError("Arguments must all have the same dimension.")
+        raise IndexError('Arguments must all have the same dimension.')
 
     cos_alpha = np.cos(ra2 - ra1) * np.cos(dec1) * \
         np.cos(dec2) + np.sin(dec1) * np.sin(dec2)
@@ -240,7 +241,7 @@ def newton_method_multidataset(
 
 def trimsim(sim: np.ndarray, fraction: float,
             scaleow: bool = True) -> np.ndarray:
-    """Keep only fraction of the simulation
+    '''Keep only fraction of the simulation
 
     Args:
         sim: simulation.
@@ -249,7 +250,7 @@ def trimsim(sim: np.ndarray, fraction: float,
 
     Returns:
         Trimmed sim
-    """
+    '''
     simsize = len(sim)
     n_keep = int(fraction * simsize)
     sim = np.random.choice(sim, n_keep)

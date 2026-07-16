@@ -105,8 +105,8 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
     def __post_init__(self) -> None:
         """Docstring"""
         if self.config["list_sin_dec_bins"] is None:
-            self._sin_dec_bins = np.linspace(
-                -1, 1, 1 + self.config["sin_dec_bins"])
+            self._sin_dec_bins = np.linspace(-1,
+                                             1, 1 + self.config["sin_dec_bins"])
         else:
             self._sin_dec_bins = self.config["list_sin_dec_bins"]
         if self.config["list_log_energy_bins"] is None:
@@ -158,8 +158,8 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
 
     def get_ns(self) -> float:
         """Docstring"""
-        return (self.spectrum(self._ow_ebin)
-                * self._ow_hist).sum() * self._unit_scale
+        return (self.spectrum(self._ow_ebin) *
+                self._ow_hist).sum() * self._unit_scale
 
     def _init_bg_sob_map(self) -> np.ndarray:
         """Docstring"""
@@ -295,7 +295,8 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         print("Calling __post_init__")  # or use logging
         # self._source = self.config.get("source", None)
         if self.config["list_sin_dec_bins"] is None:
-            self._sin_dec_bins = np.linspace(-1, 1, 1 + self.config["sin_dec_bins"])
+            self._sin_dec_bins = np.linspace(-1,
+                                             1, 1 + self.config["sin_dec_bins"])
         else:
             self._sin_dec_bins = self.config["list_sin_dec_bins"]
         if self.config["list_log_energy_bins"] is None:
@@ -321,7 +322,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         lower_sindec_index = np.searchsorted(
             self._sin_dec_bins, lower_sindec) - 1
         uppper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
-        # print(lower_sindec_index,uppper_sindec_index)
+
         self._sindec_bounds = np.array(
             [lower_sindec_index, uppper_sindec_index])
         self._bins = np.array(
@@ -384,7 +385,8 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
             np.digitize(
                 np.sin(
                     self.data_handler.full_sim["dec"]),
-                self._sin_dec_bins) - 1)
+                self._sin_dec_bins) -
+            1)
 
         for i in range(len(self._sin_dec_bins) - 1):
             events_dec = self.data_handler.full_sim[(sindec_idx == i)]
@@ -436,22 +438,25 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     def source(self, source: sources.PointSource) -> None:
         """Docstring"""
         self._source = source
-        # flake8 says that this variable is not used. Kept it under the comment
-        # section if we end up having to use it
-        # lower_sindec = np.maximum(
-        #    np.sin(
-        #        self._source.location[1]
-        #        - self.data_handler.config["reco_sampling_width"]
-        #    ),
-        #    -0.99,
-        # )
-        # upper_sindec = np.minimum(
-        #    np.sin(
-        #        self._source.location[1]
-        #        + self.data_handler.config["reco_sampling_width"]
-        #    ),
-        #    1,
-        # )
+        lower_sindec = np.maximum(
+            np.sin(
+                self.source.location[1]
+                - self.data_handler.config["reco_sampling_width"]
+            ),
+            -0.99,
+        )
+        upper_sindec = np.minimum(
+            np.sin(
+                self.source.location[1]
+                + self.data_handler.config["reco_sampling_width"]
+            ),
+            1,
+        )
+        lower_sindec_index = np.searchsorted(
+            self._sin_dec_bins, lower_sindec) - 1
+        uppper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
+        self._sindec_bounds = np.array(
+            [lower_sindec_index, uppper_sindec_index])
 
     def cal_sob_map(self) -> np.ndarray:
         """Creates sob histogram for a given spectrum.

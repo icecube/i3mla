@@ -11,8 +11,6 @@ __status__ = 'Development'
 
 import unittest
 
-
-
 class TestGenericProfile(unittest.TestCase):
     """Docstring"""
 

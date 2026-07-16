@@ -108,10 +108,9 @@ class NeutrinoPointSource(PointSource, Node):
                 except (TypeError, ValueError):
 
                     raise AssertionError(
-                        "RA and Dec must be numbers. "
-                        "If you are confused by this message, "
-                        "you are likely using the constructor in the wrong way"
-                        ". Check the documentation.")
+                        "RA and Dec must be numbers. If you are confused by this message,"
+                        " you are likely using the constructor in the wrong way. Check"
+                        " the documentation.")
 
                 sky_position = SkyDirection(ra=ra, dec=dec)
 
@@ -634,9 +633,8 @@ class IceCubeLike(PluginPrototype):
         self.trial_generator = trial_generators.SingleSourceTrialGenerator(
             trial_config, data_handlers, source
         )
-        analysis_config = \
-            analysis.SingleSourceLLHAnalysis.generate_default_config(
-                minimizer_class=minimizers.GridSearchMinimizer)
+        analysis_config = analysis.SingleSourceLLHAnalysis.generate_default_config(
+            minimizer_class=minimizers.GridSearchMinimizer)
         self.analysis = analysis.SingleSourceLLHAnalysis(
             config=analysis_config,
             minimizer_class=minimizers.GridSearchMinimizer,
@@ -987,9 +985,7 @@ class icecube_analysis(PluginPrototype):
             time_intergrated = flux_norm * icecubeobject.livetime * 3600 * 24
             tempns = (
                 time_intergrated *
-                icecubeobject.analysis
-                .data_handler_source[0]
-                .sim["weight"].sum())
+                icecubeobject.analysis.data_handler_source[0].sim["weight"].sum())
             ns = ns + tempns
         return ns
 
@@ -998,9 +994,7 @@ class icecube_analysis(PluginPrototype):
         totalweight = 0
         for icecubeobject in self.listoficecubelike:
             tempweight = (
-                icecubeobject.analysis
-                .data_handler_source[0]
-                .sim["weight"].sum() *
+                icecubeobject.analysis.data_handler_source[0].sim["weight"].sum() *
                 icecubeobject.livetime *
                 3600 *
                 24)

@@ -43,7 +43,8 @@ def parse_args() -> argparse.Namespace:
         help='',
     )
     parser.add_argument(
-        '-b', '--box-size',
+        '-b',
+        '--box-size',
         type=float,
         default=2,
         help='Size of box to cut events around source in degrees (default = 2)',

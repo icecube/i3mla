@@ -121,8 +121,7 @@ class GenericProfile(configurable.Configurable):
     def inverse_transform_sample(
             self,
             start_times: np.ndarray,
-            stop_times: np.ndarray
-    ) -> np.ndarray:
+            stop_times: np.ndarray) -> np.ndarray:
         """Docstring"""
 
     @property
@@ -270,8 +269,7 @@ class GaussProfile(GenericProfile):
     def inverse_transform_sample(
             self,
             start_times: np.ndarray,
-            stop_times: np.ndarray
-    ) -> np.ndarray:
+            stop_times: np.ndarray) -> np.ndarray:
         """Docstring"""
         start_cdfs = self.cdf(start_times)
         stop_cdfs = self.cdf(stop_times)
@@ -347,7 +345,8 @@ class UniformProfile(GenericProfile):
         """Constructs the time profile."""
         self._range = (
             self.config['start'],
-            self.config['start'] + self.config['length'])
+            self.config['start'] +
+            self.config['length'])
 
     def pdf(self, times: np.ndarray) -> np.ndarray:
         """Calculates the probability for each time.
@@ -441,7 +440,9 @@ class UniformProfile(GenericProfile):
         if 'start' in params:
             self._range = (
                 params['start'],
-                params['start'] + self._range[1] - self._range[0])
+                params['start'] +
+                self._range[1] -
+                self._range[0])
         if 'length' in params:
             self._range = (self._range[0], self._range[0] + params['length'])
 
@@ -632,8 +633,10 @@ class CustomProfile(GenericProfile):
     @property
     def range(self) -> Tuple[Optional[float], Optional[float]]:
         return (
-            self.config['range'][0] + self.offset,
-            self.config['range'][1] + self.offset)
+            self.config['range'][0] +
+            self.offset,
+            self.config['range'][1] +
+            self.offset)
 
     @property
     def param_dtype(self) -> np.dtype:

@@ -49,6 +49,7 @@ grl_dtype = [
     ('events', '<i8')
 ]
 
+
 def get_random_data(length: int) -> np.ndarray:
     """generate junk data of a given length
 
@@ -72,6 +73,7 @@ def get_random_data(length: int) -> np.ndarray:
     data['angErr'] = np.random.random_sample(size=length) * .1
 
     return data
+
 
 def get_random_sim(length: int) -> np.ndarray:
     """generate junk sim of a given length
@@ -101,6 +103,7 @@ def get_random_sim(length: int) -> np.ndarray:
     sim['ow'] *= np.random.random_sample(size=length) * 1e15
 
     return sim
+
 
 def get_random_grl(data: np.ndarray) -> np.ndarray:
     """generate junk grl based on data

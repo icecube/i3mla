@@ -56,7 +56,7 @@ def print_results(to_print: np.ndarray, column_width: int = 8) -> None:
 
     lines = [header, *[
         ''.join([
-            f'{x : .{min(4, column_width - 2)}g}'.ljust(column_width)
+            f'{x: .{min(4, column_width - 2)}g}'.ljust(column_width)
             for x in result
         ])
         for result in results
