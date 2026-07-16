@@ -46,16 +46,16 @@ class ProfileLLHLike(PluginPrototype):
         super().__init__(name, nuisance_parameters)
         if spline is not None:
             self.spline = spline
-            self.df = df  # None 
-            #I am not sure why df should be set at None here. 
-            #This seems to create issues while minimizing
+            self.df = df  # None
+            # I am not sure why df should be set at None here.
+            # This seems to create issues while minimizing
         else:
             self.df = df
             self.par_name = list(df.columns)
             self.par_name.pop()
             # order rows so that interpolator has no issues
             order = np.lexsort([df[p].values for p in reversed(self.par_name)])
-            df = df.iloc[order] 
+            df = df.iloc[order]
             # Grid axes
             listofpoint = [np.unique(df[n]) for n in self.par_name]
             shape = [len(points) for points in listofpoint]
