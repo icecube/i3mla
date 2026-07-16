@@ -11,8 +11,6 @@ __status__ = 'Development'
 
 import unittest
 
-from context import mla
-from mla import time_profiles
 
 
 class TestGenericProfile(unittest.TestCase):

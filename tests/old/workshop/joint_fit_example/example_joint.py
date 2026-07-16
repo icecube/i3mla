@@ -66,7 +66,7 @@ def main():
     y = [5.92e-14, 1.81e-14, 6.39e-15, 1.62e-15, 2.41e-16, 1.87e-17] # keV s-1 cm-2
     yerr = [1.77e-15, 5.45e-16, 8.93e-17, 4.86e-17, 5.24e-18, 7.28e-19] # keV s-1 cm-2
     # Just save a copy for later use (plot points). Will redefine similar objects with other "source_name"
-    xy_test = threeML.XYLike("xy_test", x, y, yerr,  poisson_data=False, quiet=False, source_name='XY_Test')
+    threeML.XYLike("xy_test", x, y, yerr,  poisson_data=False, quiet=False, source_name='XY_Test')
 
  
     joint_data = {"name":"Fermi_VERITAS_HAWC", "data":[fermi_lat, veritas, hawc], "Emin":0.1*u.GeV, "Emax": 37e3*u.GeV, "E0":1*u.TeV}
@@ -101,7 +101,7 @@ def main():
             # This VERITASLike spits a lot of numpy errors. Silent them, I hope that's OK...
             # Udara told me that's normal.
             best_fit_parameters, likelihood_values = jl.fit()
-            err = jl.get_errors()
+            jl.get_errors()
 
             jl.results.write_to("likelihoodresults_{0}.fits".format(dataset["name"]), overwrite=True)
                     

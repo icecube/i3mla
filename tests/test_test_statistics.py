@@ -10,8 +10,6 @@ __email__ = 'john.evans@icecube.wisc.edu'
 __status__ = 'Development'
 
 import unittest
-from context import mla
-from mla import test_statistics
 
 
 class TestPsTestStatistic(unittest.TestCase):
