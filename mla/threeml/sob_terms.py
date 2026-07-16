@@ -165,10 +165,10 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
         """Docstring"""
         if self.config["mc_bkgweight"] is None:
             bg_h = self.data_handler.build_background_sindec_logenergy_histogram(
-                    self._bins)
+                self._bins)
         else:
             bg_h = self.data_handler.build_mcbackground_sindec_logenergy_histogram(
-                    self._bins, self.config["mc_bkgweight"])
+                self._bins, self.config["mc_bkgweight"])
             print("using mc background")
         # Normalize histogram by dec band
         bg_h /= np.sum(bg_h, axis=1)[:, None]
@@ -295,8 +295,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         print("Calling __post_init__")  # or use logging
         # self._source = self.config.get("source", None)
         if self.config["list_sin_dec_bins"] is None:
-            self._sin_dec_bins = np.linspace(
-                                     -1, 1, 1 + self.config["sin_dec_bins"])
+            self._sin_dec_bins = np.linspace(-1, 1, 1 + self.config["sin_dec_bins"])
         else:
             self._sin_dec_bins = self.config["list_sin_dec_bins"]
         if self.config["list_log_energy_bins"] is None:
@@ -358,7 +357,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         """Docstring"""
         if self.config["mc_bkgweight"] is None:
             bg_h = self.data_handler.build_background_sindec_logenergy_histogram(
-                 self._bins)
+                self._bins)
         else:
             bg_h = self.data_handler.build_mcbackground_sindec_logenergy_histogram(
                 self._bins, self.config["mc_bkgweight"])
