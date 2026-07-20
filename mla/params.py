@@ -37,7 +37,10 @@ class Params:
         return [*self.key_idx_map]
 
     @classmethod
-    def from_dict(cls, value_dict: dict, bounds: Optional[dict] = None) -> 'Params':
+    def from_dict(
+            cls,
+            value_dict: dict,
+            bounds: Optional[dict] = None) -> 'Params':
         """Docstring"""
         value_array = np.array(list(value_dict.values()))
         key_idx_map = {key: i for i, key in enumerate(value_dict)}
@@ -50,8 +53,11 @@ class Params:
         bounds: Optional[dict] = None,
     ) -> 'Params':
         """Docstring"""
-        value_array = rf.structured_to_unstructured(named_value_array, copy=True)[0]
-        key_idx_map = {name: i for i, name in enumerate(named_value_array.dtype.names)}
+        value_array = rf.structured_to_unstructured(
+            named_value_array, copy=True)[0]
+        key_idx_map = {
+            name: i for i, name in enumerate(
+                named_value_array.dtype.names)}
         return cls._build_params(value_array, key_idx_map, bounds)
 
     @classmethod

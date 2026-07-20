@@ -1,13 +1,13 @@
 """Docstring"""
 
-__author__ = 'John Evans and Jason Fan'
-__copyright__ = 'Copyright 2024'
-__credits__ = ['John Evans', 'Jason Fan', 'Michael Larson']
-__license__ = 'Apache License 2.0'
-__version__ = '1.4.1'
-__maintainer__ = 'Jason Fan'
-__email__ = 'klfan@terpmail.umd.edu'
-__status__ = 'Development'
+__author__ = "John Evans and Jason Fan"
+__copyright__ = "Copyright 2024"
+__credits__ = ["John Evans", "Jason Fan", "Michael Larson"]
+__license__ = "Apache License 2.0"
+__version__ = "1.4.1"
+__maintainer__ = "Jason Fan"
+__email__ = "klfan@terpmail.umd.edu"
+__status__ = "Development"
 
 import dataclasses
 
@@ -105,30 +105,38 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
     def __post_init__(self) -> None:
         """Docstring"""
         if self.config["list_sin_dec_bins"] is None:
-            self._sin_dec_bins = np.linspace(-1, 1, 1 + self.config["sin_dec_bins"])
+            self._sin_dec_bins = np.linspace(
+                -1, 1, 1 + self.config["sin_dec_bins"])
         else:
             self._sin_dec_bins = self.config["list_sin_dec_bins"]
         if self.config["list_log_energy_bins"] is None:
             self._log_energy_bins = np.linspace(
-                *self.config["log_energy_bounds"], 1 + self.config["log_energy_bins"]
-            )
+                *self.config["log_energy_bounds"],
+                1 + self.config["log_energy_bins"])
         else:
             self._log_energy_bins = self.config["list_log_energy_bins"]
-        self.data_handler.reduced_reco_sim = self.data_handler.cut_reconstructed_sim(
-            self.source.location[1],
-            self.data_handler.config["reco_sampling_width"],
-        )
+        self.data_handler.reduced_reco_sim = \
+            self.data_handler.cut_reconstructed_sim(
+                self.source.location[1],
+                self.data_handler.config["reco_sampling_width"],
+            )
         self._unit_scale = self.config["Energy_convesion(ToGeV)"]
-        self._bins = np.array([self._sin_dec_bins, self._log_energy_bins], dtype=object)
+        self._bins = np.array(
+            [self._sin_dec_bins, self._log_energy_bins], dtype=object)
         self._init_bg_sob_map()
         self._build_ow_hist()
 
-    def __call__(self, params: par.Params, events: np.ndarray) -> sob_terms.SoBTerm:
+    def __call__(
+            self,
+            params: par.Params,
+            events: np.ndarray) -> sob_terms.SoBTerm:
         """Docstring"""
         # Get the bin that each event belongs to
-        sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1], events["sindec"]) - 1
+        sin_dec_idx = np.searchsorted(
+            self._sin_dec_bins[:-1], events["sindec"]) - 1
 
-        log_energy_idx = np.searchsorted(self._log_energy_bins[:-1], events["logE"]) - 1
+        log_energy_idx = np.searchsorted(
+            self._log_energy_bins[:-1], events["logE"]) - 1
 
         return ThreeMLPSEnergyTerm(
             name=self.config["name"],
@@ -150,18 +158,17 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
 
     def get_ns(self) -> float:
         """Docstring"""
-        return (self.spectrum(self._ow_ebin) * self._ow_hist).sum() * self._unit_scale
+        return (self.spectrum(self._ow_ebin)
+                * self._ow_hist).sum() * self._unit_scale
 
     def _init_bg_sob_map(self) -> np.ndarray:
         """Docstring"""
         if self.config["mc_bkgweight"] is None:
             bg_h = self.data_handler.build_background_sindec_logenergy_histogram(
-                self._bins
-            )
+                self._bins)
         else:
             bg_h = self.data_handler.build_mcbackground_sindec_logenergy_histogram(
-                self._bins, self.config["mc_bkgweight"]
-            )
+                self._bins, self.config["mc_bkgweight"])
             print("using mc background")
         # Normalize histogram by dec band
         bg_h /= np.sum(bg_h, axis=1)[:, None]
@@ -180,10 +187,11 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
     def source(self, source: sources.PointSource) -> None:
         """Docstring"""
         self._source = source
-        self.data_handler.reduced_reco_sim = self.data_handler.cut_reconstructed_sim(
-            self.source.location[1],
-            self.data_handler.config["reco_sampling_width"],
-        )
+        self.data_handler.reduced_reco_sim = \
+            self.data_handler.cut_reconstructed_sim(
+                self.source.location[1],
+                self.data_handler.config["reco_sampling_width"],
+            )
 
     def cal_sob_map(self) -> np.ndarray:
         """Creates sob histogram for a given spectrum.
@@ -194,7 +202,8 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
         sig_h = self.data_handler.build_signal_energy_histogram(
             self.spectrum, self._bins, self._unit_scale
         )
-        bin_centers = self._log_energy_bins[:-1] + np.diff(self._log_energy_bins) / 2
+        bin_centers = self._log_energy_bins[:-1] + \
+            np.diff(self._log_energy_bins) / 2
         # Normalize histogram by dec band
         sig_h /= np.sum(sig_h, axis=1)[:, None]
 
@@ -268,6 +277,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     _spectrum: spectral.BaseSpectrum = dataclasses.field(
         init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2)
     )
+
     _bg_sob: np.ndarray = dataclasses.field(init=False, repr=False)
     _sin_dec_bins: np.ndarray = dataclasses.field(
         init=False, repr=False, default=PSTrackv4_sin_dec_bin
@@ -282,14 +292,16 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
 
     def __post_init__(self) -> None:
         """Docstring"""
+        print("Calling __post_init__")  # or use logging
+        # self._source = self.config.get("source", None)
         if self.config["list_sin_dec_bins"] is None:
             self._sin_dec_bins = np.linspace(-1, 1, 1 + self.config["sin_dec_bins"])
         else:
             self._sin_dec_bins = self.config["list_sin_dec_bins"]
         if self.config["list_log_energy_bins"] is None:
             self._log_energy_bins = np.linspace(
-                *self.config["log_energy_bounds"], 1 + self.config["log_energy_bins"]
-            )
+                *self.config["log_energy_bounds"],
+                1 + self.config["log_energy_bins"])
         else:
             self._log_energy_bins = self.config["list_log_energy_bins"]
         lower_sindec = np.maximum(
@@ -306,22 +318,31 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
             ),
             1,
         )
-        lower_sindec_index = np.searchsorted(self._sin_dec_bins, lower_sindec) - 1
+        lower_sindec_index = np.searchsorted(
+            self._sin_dec_bins, lower_sindec) - 1
         uppper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
-        self._sindec_bounds = np.array([lower_sindec_index, uppper_sindec_index])
-        self._bins = np.array([self._sin_dec_bins, self._log_energy_bins], dtype=object)
+        # print(lower_sindec_index,uppper_sindec_index)
+        self._sindec_bounds = np.array(
+            [lower_sindec_index, uppper_sindec_index])
+        self._bins = np.array(
+            [self._sin_dec_bins, self._log_energy_bins], dtype=object)
         self._truelogebin = self.config["list_truelogebin"]
         self._unit_scale = self.config["Energy_convesion(ToGeV)"]
         self._init_bg_sob_map()
         self._build_ow_hist()
         self._init_irf()
 
-    def __call__(self, params: par.Params, events: np.ndarray) -> sob_terms.SoBTerm:
+    def __call__(
+            self,
+            params: par.Params,
+            events: np.ndarray) -> sob_terms.SoBTerm:
         """Docstring"""
         # Get the bin that each event belongs to
-        sin_dec_idx = np.searchsorted(self._sin_dec_bins[:-1], events["sindec"]) - 1
+        sin_dec_idx = np.searchsorted(
+            self._sin_dec_bins[:-1], events["sindec"]) - 1
 
-        log_energy_idx = np.searchsorted(self._log_energy_bins[:-1], events["logE"]) - 1
+        log_energy_idx = np.searchsorted(
+            self._log_energy_bins[:-1], events["logE"]) - 1
 
         return ThreeMLPSEnergyTerm(
             name=self.config["name"],
@@ -336,12 +357,10 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         """Docstring"""
         if self.config["mc_bkgweight"] is None:
             bg_h = self.data_handler.build_background_sindec_logenergy_histogram(
-                self._bins
-            )
+                self._bins)
         else:
             bg_h = self.data_handler.build_mcbackground_sindec_logenergy_histogram(
-                self._bins, self.config["mc_bkgweight"]
-            )
+                self._bins, self.config["mc_bkgweight"])
             print("using mc background")
         # Normalize histogram by dec band
         bg_h /= np.sum(bg_h, axis=1)[:, None]
@@ -362,13 +381,16 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         )
         self._trueebin = 10 ** (self._truelogebin[:-1])
         sindec_idx = (
-            np.digitize(np.sin(self.data_handler.full_sim["dec"]), self._sin_dec_bins)
-            - 1
-        )
+            np.digitize(
+                np.sin(
+                    self.data_handler.full_sim["dec"]),
+                self._sin_dec_bins) - 1)
 
         for i in range(len(self._sin_dec_bins) - 1):
             events_dec = self.data_handler.full_sim[(sindec_idx == i)]
-            loge_idx = np.digitize(events_dec["logE"], self._log_energy_bins) - 1
+            loge_idx = np.digitize(
+                events_dec["logE"],
+                self._log_energy_bins) - 1
 
             for j in range(len(self._log_energy_bins) - 1):
                 events = events_dec[(loge_idx == j)]
@@ -384,19 +406,23 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
                     weights=events["ow"],
                 )
 
-                # Have to pick an "energy" to assign to the bin. That's complicated, since
-                # you'd (in principle) want the flux-weighted average energy, but we don't
-                # have a flux function here. Instead, try just using the minimum energy of
+                # Have to pick an "energy" to assign to the bin.
+                # That's complicated, since
+                # you'd (in principle) want the flux-weighted average energy,
+                # but we don't have a flux function here. Instead, try just
+                # using the minimum energy of
                 # the bin? Should be fine for small enough bins.
                 # self._trueebin[i,j] = np.exp(bins[:-1] + (bins[1] - bins[0]))
-                # emean[i,j] = np.average(events['trueE'], weights=events['ow'])
+                # emean[i,j] = np.average(events['trueE'],
+                # weights=events['ow'])
 
     def build_sig_h(self, spectrum: spectral.BaseSpectrum) -> np.ndarray:
         """Docstring"""
         sig = np.zeros(self._bg_sob.shape)
         flux = spectrum(self._trueebin * self._unit_scale)  # converting unit
         sig[self._sindec_bounds[0]:self._sindec_bounds[1], :] = np.dot(
-            self._irf[self._sindec_bounds[0]:self._sindec_bounds[1], :, :], flux
+            self._irf[self._sindec_bounds[0]:self._sindec_bounds[1], :, :],
+            flux
         )
         sig /= np.sum(sig, axis=1)[:, None]
         return sig
@@ -410,23 +436,22 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     def source(self, source: sources.PointSource) -> None:
         """Docstring"""
         self._source = source
-        lower_sindec = np.maximum(
-            np.sin(
-                self.source.location[1]
-                - self.data_handler.config["reco_sampling_width"]
-            ),
-            -0.99,
-        )
-        upper_sindec = np.minimum(
-            np.sin(
-                self.source.location[1]
-                + self.data_handler.config["reco_sampling_width"]
-            ),
-            1,
-        )
-        lower_sindec_index = np.searchsorted(self._sin_dec_bins, lower_sindec) - 1
-        uppper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
-        self._sindec_bounds = np.array([lower_sindec_index, uppper_sindec_index])
+        # flake8 says that this variable is not used. Kept it under the comment
+        # section if we end up having to use it
+        # lower_sindec = np.maximum(
+        #    np.sin(
+        #        self._source.location[1]
+        #        - self.data_handler.config["reco_sampling_width"]
+        #    ),
+        #    -0.99,
+        # )
+        # upper_sindec = np.minimum(
+        #    np.sin(
+        #        self._source.location[1]
+        #        + self.data_handler.config["reco_sampling_width"]
+        #    ),
+        #    1,
+        # )
 
     def cal_sob_map(self) -> np.ndarray:
         """Creates sob histogram for a given spectrum.

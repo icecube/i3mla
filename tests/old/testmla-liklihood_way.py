@@ -5,8 +5,7 @@
 
 
 import numpy as np
-import os, sys, glob, abc
-from matplotlib import pyplot as plt, colors
+import glob
 def read(filelist):
     data = []
     for f in sorted(filelist):
@@ -49,7 +48,6 @@ print(sorted(grl.dtype.names))
 
 import mla.core
 from mla.spectral import *
-from mla import injection
 import mla.sensitivtiy 
 
 dec = 22.0145*np.pi/180
@@ -60,7 +58,6 @@ ra = 83.63*np.pi/180
 
 
 from imp import reload
-import scipy.optimize
 reload(mla.core)
 reload( mla.sensitivtiy )
 

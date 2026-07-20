@@ -33,26 +33,31 @@ class Minimizer(configurable.Configurable):
 
     @abc.abstractmethod
     def __call__(
-            self, fitting_params: Optional[List[str]] = None) -> Tuple[float, np.ndarray]:
+        self, fitting_params: Optional[List[str]] = None
+    ) -> Tuple[float, np.ndarray]:
         """Docstring"""
 
 
 @dataclasses.dataclass
 class GridSearchMinimizer(Minimizer):
     """Docstring"""
+
     def __call__(
-            self, fitting_params: Optional[List[str]] = None) -> Tuple[float, np.ndarray]:
+        self, fitting_params: Optional[List[str]] = None
+    ) -> Tuple[float, np.ndarray]:
         """Docstring"""
         if fitting_params is None:
             fitting_key_idx_map = self.test_statistic.params.key_idx_map
             fitting_bounds = self.test_statistic.params.bounds
         else:
             fitting_key_idx_map = {
-                key: val for key, val in self.test_statistic.params.key_idx_map.items()
+                key: val
+                for key, val in self.test_statistic.params.key_idx_map.items()
                 if key in fitting_params
             }
             fitting_bounds = {
-                key: val for key, val in self.test_statistic.params.bounds.items()
+                key: val
+                for key, val in self.test_statistic.params.bounds.items()
                 if key in fitting_params
             }
 
@@ -72,13 +77,22 @@ class GridSearchMinimizer(Minimizer):
         ])
 
         return self._minimize(
-            points[grid_ts_values.argmin()], fitting_key_idx_map, fitting_bounds)
+            points[grid_ts_values.argmin()],
+            fitting_key_idx_map, fitting_bounds)
 
-    def _eval_test_statistic(self, point: np.ndarray, fitting_key_idx_map: dict) -> float:
+    def _eval_test_statistic(
+            self,
+            point: np.ndarray,
+            fitting_key_idx_map: dict) -> float:
         """Docstring"""
-        return self.test_statistic(self._param_values(point, fitting_key_idx_map))
+        return self.test_statistic(
+            self._param_values(
+                point, fitting_key_idx_map))
 
-    def _param_values(self, point: np.ndarray, fitting_key_idx_map: dict) -> np.ndarray:
+    def _param_values(
+            self,
+            point: np.ndarray,
+            fitting_key_idx_map: dict) -> np.ndarray:
         """Docstring"""
         param_values = self.test_statistic.params.value_array.copy()
 

@@ -22,13 +22,18 @@ import numpy as np
 @dataclasses.dataclass
 class PointSource(configurable.Configurable):
     """Stores a source object name and location"""
+
     def sample(self, size: int = 1) -> tuple:
         """Sample locations.
 
         Args:
             size: number of points to sample
         """
-        return (np.ones(size) * self.config['ra'], np.ones(size) * self.config['dec'])
+        return (
+            np.ones(size)
+            * self.config['ra'],
+            np.ones(size)
+            * self.config['dec'])
 
     def spatial_pdf(self, events: np.ndarray) -> np.ndarray:
         """calculates the signal probability of events.
@@ -72,6 +77,7 @@ class PointSource(configurable.Configurable):
 @dataclasses.dataclass
 class GaussianExtendedSource(PointSource):
     """Gaussian Extended Source"""
+
     def sample(self, size: int = 1) -> np.ndarray:
         """Sample locations.
 

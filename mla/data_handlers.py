@@ -31,7 +31,10 @@ class DataHandler(configurable.Configurable):
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
-    def sample_background(self, n: int, rng: np.random.Generator) -> np.ndarray:
+    def sample_background(
+            self,
+            n: int,
+            rng: np.random.Generator) -> np.ndarray:
         """Docstring"""
 
     @abc.abstractmethod
@@ -47,7 +50,8 @@ class DataHandler(configurable.Configurable):
         """Docstring"""
 
     @abc.abstractmethod
-    def build_background_sindec_logenergy_histogram(self, bins: np.ndarray) -> np.ndarray:
+    def build_background_sindec_logenergy_histogram(
+            self, bins: np.ndarray) -> np.ndarray:
         """Docstring"""
 
     @abc.abstractmethod
@@ -77,7 +81,10 @@ class NuSourcesDataHandler(DataHandler):
     _livetime: float = field(init=False, repr=False)
     _sin_dec_bins: np.ndarray = field(init=False, repr=False)
 
-    def sample_background(self, n: int, rng: np.random.Generator) -> np.ndarray:
+    def sample_background(
+            self,
+            n: int,
+            rng: np.random.Generator) -> np.ndarray:
         """Docstring"""
         return rng.choice(self._data, n)
 
@@ -105,7 +112,8 @@ class NuSourcesDataHandler(DataHandler):
         """
         return (1 / (2 * np.pi)) * self._dec_spline(events['sindec'])
 
-    def build_background_sindec_logenergy_histogram(self, bins: np.ndarray) -> np.ndarray:
+    def build_background_sindec_logenergy_histogram(
+            self, bins: np.ndarray) -> np.ndarray:
         """Docstring"""
         return np.histogram2d(
             self._data['sindec'],
@@ -188,14 +196,18 @@ class NuSourcesDataHandler(DataHandler):
             self._sim = self._full_sim[close].copy()
 
             self._sim['ow'] /= 2 * np.pi * (np.min([np.sin(
-                self.config['dec_cut_location'] + self.config['dec_bandwidth (rad)']
+                self.config['dec_cut_location']
+                + self.config['dec_bandwidth (rad)']
             ), 1]) - np.max([np.sin(
-                self.config['dec_cut_location'] - self.config['dec_bandwidth (rad)']
+                self.config['dec_cut_location']
+                - self.config['dec_bandwidth (rad)']
             ), -1]))
             self._sim['weight'] /= 2 * np.pi * (np.min([np.sin(
-                self.config['dec_cut_location'] + self.config['dec_bandwidth (rad)']
+                self.config['dec_cut_location']
+                + self.config['dec_bandwidth (rad)']
             ), 1]) - np.max([np.sin(
-                self.config['dec_cut_location'] - self.config['dec_bandwidth (rad)']
+                self.config['dec_cut_location']
+                - self.config['dec_bandwidth (rad)']
             ), -1]))
         else:
             self._sim = self._full_sim
@@ -208,7 +220,8 @@ class NuSourcesDataHandler(DataHandler):
     @data_grl.setter
     def data_grl(self, data_grl: Tuple[np.ndarray, np.ndarray]) -> None:
         """Docstring"""
-        self._sin_dec_bins = np.linspace(-1, 1, 1 + self.config['sin_dec_bins'])
+        self._sin_dec_bins = np.linspace(-1, 1,
+                                         1 + self.config['sin_dec_bins'])
         self._data = data_grl[0].copy()
         self._grl = data_grl[1].copy()
         if 'sindec' not in self._data.dtype.names:
@@ -232,7 +245,8 @@ class NuSourcesDataHandler(DataHandler):
             self._data['sindec'], bins=self._sin_dec_bins, density=True)
         bin_centers = bins[:-1] + np.diff(bins) / 2
 
-        self._dec_spline = Spline(bin_centers, hist, **self.config['dec_spline_kwargs'])
+        self._dec_spline = Spline(
+            bin_centers, hist, **self.config['dec_spline_kwargs'])
 
     @property
     def livetime(self) -> float:
@@ -301,7 +315,8 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
         background_grl = self._grl[background_run_mask]
         self._n_background = background_grl['events'].sum()
         self._n_background /= background_grl['livetime'].sum()
-        self._n_background *= self._contained_livetime(*profile.range, background_grl)
+        self._n_background *= self._contained_livetime(
+            *profile.range, background_grl)
         self._background_time_profile = copy.deepcopy(profile)
 
     @property
@@ -362,31 +377,38 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
 
         return contained_livetime
 
-    def sample_background(self, n: int, rng: np.random.Generator) -> np.ndarray:
+    def sample_background(
+            self,
+            n: int,
+            rng: np.random.Generator) -> np.ndarray:
         """Docstring"""
         events = super().sample_background(n, rng)
         return self._randomize_times(events, self._background_time_profile)
 
     def sample_signal(self, n: int, rng: np.random.Generator) -> np.ndarray:
         """Docstring"""
-        events = super().sample_signal(n, rng)
-        return self._randomize_times(events, self._signal_time_profile)
+        self.events = super().sample_signal(n, rng)
+        return self._randomize_times(self.events, self._signal_time_profile)
 
     def _randomize_times(
         self,
         events: np.ndarray,
         time_profile: GenericProfile,
     ) -> np.ndarray:
-        grl_start_cdf = time_profile.cdf(self._grl['start'])
-        grl_stop_cdf = time_profile.cdf(self._grl['stop'])
-        valid = np.logical_and(grl_start_cdf < 1, grl_stop_cdf > 0)
-        rates = grl_stop_cdf[valid] - grl_start_cdf[valid]
-
+        self.grl_start_cdf = time_profile.cdf(self._grl['start'])
+        self.grl_stop_cdf = time_profile.cdf(self._grl['stop'])
+        self.valid = np.logical_and(
+            self.grl_start_cdf <= 1,
+            self.grl_stop_cdf >= 0)
+        self.rates = self.grl_stop_cdf[self.valid] - \
+            self.grl_start_cdf[self.valid]
+        # print(self.rates, self.rates.sum())
+        # print(len(events))
         runs = np.random.choice(
-            self._grl[valid],
+            self._grl[self.valid],
             size=len(events),
             replace=True,
-            p=rates / rates.sum(),
+            p=self.rates / self.rates.sum(),
         )
 
         events['time'] = time_profile.inverse_transform_sample(
