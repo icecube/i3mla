@@ -65,6 +65,8 @@ class SingleSourceTrialGenerator(configurable.Configurable):
         # Combine the signal background events and time-sort them.
         # Use recfunctions.stack_arrays to prevent numpy from scrambling entry
         # order
+        print('in trial gen bkg, sig',background,signal)
+        print('sizes',background.size,signal.size)
         if background.dtype == signal.dtype:
             return np.concatenate([background, signal])
         else:
