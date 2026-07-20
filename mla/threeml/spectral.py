@@ -125,6 +125,7 @@ class PowerLaw(BaseSpectrum):
 class CustomSpectrum(BaseSpectrum):
     '''Custom spectrum using callable object
     '''
+
     def __init__(self, spectrum):
         """Constructor of CustomSpectrum object.
 

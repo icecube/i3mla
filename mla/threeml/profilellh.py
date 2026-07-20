@@ -19,6 +19,7 @@ import numpy as np
 
 class ProfileLLHLike(PluginPrototype):
     """Docstring"""
+
     def __init__(
         self,
         name: str,
@@ -46,6 +47,8 @@ class ProfileLLHLike(PluginPrototype):
         if spline is not None:
             self.spline = spline
             self.df = df  # None
+            # I am not sure why df should be set at None here.
+            # This seems to create issues while minimizing
         else:
             self.df = df
             self.par_name = list(df.columns)

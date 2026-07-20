@@ -66,7 +66,9 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
         )[0]
 
     def cut_reconstructed_sim(
-            self, dec: float, sampling_width: float) -> np.ndarray:
+            self,
+            dec: float,
+            sampling_width: float) -> np.ndarray:
         """
         Cutting the MC based on reconstructed dec.
         Only use when using MC instead of IRF to build signal energy histogram.
@@ -106,7 +108,8 @@ class ThreeMLDataHandler(data_handlers.NuSourcesDataHandler):
 
     @injection_spectrum.setter
     def injection_spectrum(
-            self, inject_spectrum: spectral.BaseSpectrum) -> None:
+            self,
+            inject_spectrum: spectral.BaseSpectrum) -> None:
         """
         Setting the injection spectrum
 

@@ -105,8 +105,8 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
     def __post_init__(self) -> None:
         """Docstring"""
         if self.config["list_sin_dec_bins"] is None:
-            self._sin_dec_bins = np.linspace(
-                -1, 1, 1 + self.config["sin_dec_bins"])
+            self._sin_dec_bins = np.linspace(-1,
+                                             1, 1 + self.config["sin_dec_bins"])
         else:
             self._sin_dec_bins = self.config["list_sin_dec_bins"]
         if self.config["list_log_energy_bins"] is None:
@@ -295,7 +295,8 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         print("Calling __post_init__")  # or use logging
         # self._source = self.config.get("source", None)
         if self.config["list_sin_dec_bins"] is None:
-            self._sin_dec_bins = np.linspace(-1, 1, 1 + self.config["sin_dec_bins"])
+            self._sin_dec_bins = np.linspace(-1,
+                                             1, 1 + self.config["sin_dec_bins"])
         else:
             self._sin_dec_bins = self.config["list_sin_dec_bins"]
         if self.config["list_log_energy_bins"] is None:
@@ -321,7 +322,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         lower_sindec_index = np.searchsorted(
             self._sin_dec_bins, lower_sindec) - 1
         uppper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
-        # print(lower_sindec_index,uppper_sindec_index)
+
         self._sindec_bounds = np.array(
             [lower_sindec_index, uppper_sindec_index])
         self._bins = np.array(
@@ -436,22 +437,25 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     def source(self, source: sources.PointSource) -> None:
         """Docstring"""
         self._source = source
-        # flake8 says that this variable is not used. Kept it under the comment
-        # section if we end up having to use it
-        # lower_sindec = np.maximum(
-        #    np.sin(
-        #        self._source.location[1]
-        #        - self.data_handler.config["reco_sampling_width"]
-        #    ),
-        #    -0.99,
-        # )
-        # upper_sindec = np.minimum(
-        #    np.sin(
-        #        self._source.location[1]
-        #        + self.data_handler.config["reco_sampling_width"]
-        #    ),
-        #    1,
-        # )
+        lower_sindec = np.maximum(
+            np.sin(
+                self.source.location[1]
+                - self.data_handler.config["reco_sampling_width"]
+            ),
+            -0.99,
+        )
+        upper_sindec = np.minimum(
+            np.sin(
+                self.source.location[1]
+                + self.data_handler.config["reco_sampling_width"]
+            ),
+            1,
+        )
+        lower_sindec_index = np.searchsorted(
+            self._sin_dec_bins, lower_sindec) - 1
+        uppper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
+        self._sindec_bounds = np.array(
+            [lower_sindec_index, uppper_sindec_index])
 
     def cal_sob_map(self) -> np.ndarray:
         """Creates sob histogram for a given spectrum.
