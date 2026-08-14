@@ -298,7 +298,6 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     _ntrueebin: int = dataclasses.field(init=False, repr=False)
     # _unit_scale: float = dataclasses.field(init=False, repr=False)
 
-
     def __post_init__(self) -> None:
         """Docstring"""
         print("Calling __post_init__")  # or use logging
