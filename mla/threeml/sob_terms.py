@@ -102,7 +102,7 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
     _ow_ebin: np.ndarray = dataclasses.field(init=False, repr=False)
     _unit_scale: float = dataclasses.field(init=False, repr=False)
 
-    
+ 
     def __post_init__(self) -> None:
         """Docstring"""
         if self.config["list_sin_dec_bins"] is None:
@@ -201,7 +201,7 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
                 self.data_handler.config["reco_sampling_width"],
             )
         )
-    
+ 
     def cal_sob_map(self) -> np.ndarray:
         """Creates sob histogram for a given spectrum.
         Returns:
@@ -471,7 +471,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
 
     def _update_source(self):
         super()._update_source()
-    
+ 
         lower_sindec = np.maximum(
             np.sin(
                 self.source.location[1]
@@ -491,7 +491,7 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         upper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
         self._sindec_bounds = np.array(
             [lower_sindec_index, upper_sindec_index])
-    
+ 
     def cal_sob_map(self) -> np.ndarray:
         """Creates sob histogram for a given spectrum.
 
