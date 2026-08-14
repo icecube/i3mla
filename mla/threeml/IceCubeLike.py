@@ -640,7 +640,7 @@ class IceCubeLike(PluginPrototype):
             minimizer_class=minimizers.GridSearchMinimizer,
             sob_term_factories=llh.sob_term_factories,
             data_handler_source=(data_handlers, source),
-        )
+        ) 
 
         self.sob_term_factories = llh.sob_term_factories
         for term in llh.sob_term_factories:
@@ -803,6 +803,7 @@ class IceCubeLike(PluginPrototype):
 
     def get_number_of_data_points(self):
         """docstring"""
+        print('number of data points',self.test_statistic.n_events)
         return self.test_statistic.n_events
 
     def get_current_fit_ns(self):
@@ -915,6 +916,14 @@ class icecube_analysis(PluginPrototype):
     def inner_fit(self):
         return self.get_log_like()
 
+    def get_number_of_data_points(self):
+        """added by aswathi on April 1 2026"""
+        nevents=0
+        for icecubeobject in self.listoficecubelike:
+            print('number of data points',icecubeobject.get_number_of_data_points())
+            nevents+=icecubeobject.get_number_of_data_points()
+        return nevents
+
     def init_mc_array(self):
         """Docstring"""
         for i, sample in enumerate(self.listoficecubelike):
@@ -965,12 +974,13 @@ class icecube_analysis(PluginPrototype):
         else:
             if poisson:
                 ratio_injection = self.dataset_ratio * n_signal
+                print(self.dataset_ratio,n_signal)
                 for i, icecubeobject in enumerate(self.listoficecubelike):
                     icecubeobject.trial_generator.config["fixed_ns"] = True
-                    # print('in IceCubelike test injection', n_signal)
                     injection_signal = np.random.poisson(ratio_injection[i])
-                    # print(injection_signal)
+                    print('injection',injection_signal,ratio_injection[i])
                     tempdata = icecubeobject.trial_generator(injection_signal)
+                    print('size of tempdata',tempdata.size)
                     self.listoficecubelike[i].update_data(tempdata)
             else:
                 print("No fix number injection implemented")

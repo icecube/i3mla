@@ -187,11 +187,19 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
     def source(self, source: sources.PointSource) -> None:
         """Docstring"""
         self._source = source
-        self.data_handler.reduced_reco_sim = \
+        # self.data_handler.reduced_reco_sim = \
+        #     self.data_handler.cut_reconstructed_sim(
+        #         self.source.location[1],
+        #         self.data_handler.config["reco_sampling_width"],
+        #     )
+
+    def _update_source(self):
+        self.data_handler.reduced_reco_sim = (
             self.data_handler.cut_reconstructed_sim(
                 self.source.location[1],
                 self.data_handler.config["reco_sampling_width"],
             )
+        )
 
     def cal_sob_map(self) -> np.ndarray:
         """Creates sob histogram for a given spectrum.
@@ -270,25 +278,25 @@ class ThreeMLPSEnergyTermFactory(ThreeMLBaseEnergyTermFactory):
 class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
     """Docstring"""
 
-    data_handler: data_handlers.ThreeMLDataHandler
-    source: sources.PointSource
-    spectrum: spectral.BaseSpectrum
-    _source: sources.PointSource = dataclasses.field(init=False, repr=False)
-    _spectrum: spectral.BaseSpectrum = dataclasses.field(
-        init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2)
-    )
+    # data_handler: data_handlers.ThreeMLDataHandler
+    # source: sources.PointSource
+    # spectrum: spectral.BaseSpectrum
+    # _source: sources.PointSource = dataclasses.field(init=False, repr=False)
+    # _spectrum: spectral.BaseSpectrum = dataclasses.field(
+    #     init=False, repr=False, default=spectral.PowerLaw(1e3, 1e-14, -2)
+    # )
 
-    _bg_sob: np.ndarray = dataclasses.field(init=False, repr=False)
-    _sin_dec_bins: np.ndarray = dataclasses.field(
-        init=False, repr=False, default=PSTrackv4_sin_dec_bin
-    )
-    _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)
-    _bins: np.ndarray = dataclasses.field(init=False, repr=False)
+    # _bg_sob: np.ndarray = dataclasses.field(init=False, repr=False)
+    # _sin_dec_bins: np.ndarray = dataclasses.field(
+    #     init=False, repr=False, default_factory=PSTrackv4_sin_dec_bin.copy
+    # )
+    # _log_energy_bins: np.ndarray = dataclasses.field(init=False, repr=False)
+    # _bins: np.ndarray = dataclasses.field(init=False, repr=False)
     _trueebin: np.ndarray = dataclasses.field(init=False, repr=False)
     _irf: np.ndarray = dataclasses.field(init=False, repr=False)
     _sindec_bounds: np.ndarray = dataclasses.field(init=False, repr=False)
     _ntrueebin: int = dataclasses.field(init=False, repr=False)
-    _unit_scale: float = dataclasses.field(init=False, repr=False)
+    # _unit_scale: float = dataclasses.field(init=False, repr=False)
 
     def __post_init__(self) -> None:
         """Docstring"""
@@ -321,14 +329,16 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         )
         lower_sindec_index = np.searchsorted(
             self._sin_dec_bins, lower_sindec) - 1
-        uppper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
+        upper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
 
         self._sindec_bounds = np.array(
-            [lower_sindec_index, uppper_sindec_index])
+            [lower_sindec_index, upper_sindec_index])
         self._bins = np.array(
             [self._sin_dec_bins, self._log_energy_bins], dtype=object)
         self._truelogebin = self.config["list_truelogebin"]
         self._unit_scale = self.config["Energy_convesion(ToGeV)"]
+
+        self._update_source()
         self._init_bg_sob_map()
         self._build_ow_hist()
         self._init_irf()
@@ -428,15 +438,37 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         sig /= np.sum(sig, axis=1)[:, None]
         return sig
 
-    @property
-    def source(self) -> sources.PointSource:
-        """Docstring"""
-        return self._source
+    # @property
+    # def source(self) -> sources.PointSource:
+    #     """Docstring"""
+    #     return self._source
 
-    @source.setter
-    def source(self, source: sources.PointSource) -> None:
-        """Docstring"""
-        self._source = source
+    # @source.setter
+    # def source(self, source: sources.PointSource) -> None:
+    #     """Docstring"""
+    #     self._source = source
+    #     lower_sindec = np.maximum(
+    #         np.sin(
+    #             self.source.location[1]
+    #             - self.data_handler.config["reco_sampling_width"]
+    #         ),
+    #         -0.99,
+    #     )
+    #     upper_sindec = np.minimum(
+    #         np.sin(
+    #             self.source.location[1]
+    #             + self.data_handler.config["reco_sampling_width"]
+    #         ),
+    #         1,
+    #     )
+    #     lower_sindec_index = np.searchsorted(
+    #         self._sin_dec_bins, lower_sindec) - 1
+    #     upper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
+    #     self._sindec_bounds = np.array(
+    #         [lower_sindec_index, upper_sindec_index])
+
+    def _update_source(self):
+        super()._update_source()
         lower_sindec = np.maximum(
             np.sin(
                 self.source.location[1]
@@ -453,13 +485,12 @@ class ThreeMLPSIRFEnergyTermFactory(ThreeMLPSEnergyTermFactory):
         )
         lower_sindec_index = np.searchsorted(
             self._sin_dec_bins, lower_sindec) - 1
-        uppper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
+        upper_sindec_index = np.searchsorted(self._sin_dec_bins, upper_sindec)
         self._sindec_bounds = np.array(
-            [lower_sindec_index, uppper_sindec_index])
+            [lower_sindec_index, upper_sindec_index])
 
     def cal_sob_map(self) -> np.ndarray:
         """Creates sob histogram for a given spectrum.
-
         Returns:
             An array of signal-over-background values binned in sin(dec) and
             log(energy) for a given gamma.
