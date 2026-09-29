@@ -402,8 +402,9 @@ class TimeDependentNuSourcesDataHandler(NuSourcesDataHandler):
             self.grl_stop_cdf >= 0)
         self.rates = self.grl_stop_cdf[self.valid] - \
             self.grl_start_cdf[self.valid]
-        # print(self.rates, self.rates.sum())
-        # print(len(events))
+        #print(self.rates, self.rates.sum())
+        #print(len(events))
+        #print(self._grl[self.valid])
         runs = np.random.choice(
             self._grl[self.valid],
             size=len(events),
